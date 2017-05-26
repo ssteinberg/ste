@@ -13,11 +13,11 @@ namespace gl {
 
 class cmd_write_timestamp : public command {
 private:
-	const vk::vk_query &query;
+	const vk::vk_query<> &query;
 	VkPipelineStageFlagBits stage;
 
 public:
-	cmd_write_timestamp(const vk::vk_query &query,
+	cmd_write_timestamp(const vk::vk_query<> &query,
 						VkPipelineStageFlagBits stage) : query(query), stage(stage) {}
 	virtual ~cmd_write_timestamp() noexcept {}
 

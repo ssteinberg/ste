@@ -22,7 +22,7 @@ namespace _internal {
 *	@brief	Describes the descriptor set layout
 */
 template <typename BindingLayout>
-class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout> {
+class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout<>> {
 public:
 	using bindings_vec_t = lib::vector<BindingLayout>;
 	using name_bindings_map_t = lib::flat_map<lib::string, typename bindings_vec_t::const_iterator>;
@@ -32,7 +32,7 @@ private:
 	pipeline_layout_set_index set_idx{ 0 };
 	name_bindings_map_t name_map;
 
-	vk::vk_descriptor_set_layout vk_layout;
+	vk::vk_descriptor_set_layout<> vk_layout;
 
 private:
 	template <typename T = BindingLayout>
@@ -46,17 +46,17 @@ private:
 		return *it;
 	}
 
-	auto generate_vk_layout(const vk::vk_logical_device &device) {
+	auto generate_vk_layout(const vk::vk_logical_device<> &device) {
 		lib::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		for (auto it = begin(); it != end(); ++it)
 			vk_bindings.push_back(access_it<>(it));
 
-		return vk::vk_descriptor_set_layout(device, 
-											vk_bindings);
+		return vk::vk_descriptor_set_layout<>(device,
+											  vk_bindings);
 	}
 
 public:
-	pipeline_binding_set_layout_impl(const vk::vk_logical_device &device,
+	pipeline_binding_set_layout_impl(const vk::vk_logical_device<> &device,
 									 bindings_vec_t &&bindings)
 		: bindings(std::move(bindings)),
 		vk_layout(generate_vk_layout(device))

@@ -9,6 +9,7 @@
 #include <vk_resource.hpp>
 #include <vk_buffer.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
@@ -20,15 +21,16 @@ namespace gl {
 
 namespace vk {
 
-class vk_buffer_dense : public vk_buffer, public vk_resource {
-	using Base = vk_buffer;
+template <typename host_allocator = vk_host_allocator<>>
+class vk_buffer_dense : public vk_buffer<host_allocator>, public vk_resource<host_allocator> {
+	using Base = vk_buffer<host_allocator>;
 
 private:
 	std::uint32_t element_size;
 	std::uint64_t count;
 
 protected:
-	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
+	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
 		vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
@@ -36,7 +38,7 @@ protected:
 	}
 
 public:
-	vk_buffer_dense(const vk_logical_device &device,
+	vk_buffer_dense(const vk_logical_device<host_allocator> &device,
 					std::uint32_t element_size,
 					std::uint64_t count,
 					const VkBufferUsageFlags &usage)

@@ -22,7 +22,7 @@ private:
 	using atomic_ptr = std::atomic<sampler_ptr>;
 
 private:
-	const vk::vk_logical_device *device;
+	const vk::vk_logical_device<> *device;
 
 	mutable atomic_ptr nearest{ nullptr };
 	mutable atomic_ptr linear{ nullptr };
@@ -64,7 +64,7 @@ private:
 	}
 
 public:
-	common_samplers(const vk::vk_logical_device &device) : device(&device) {}
+	common_samplers(const vk::vk_logical_device<> &device) : device(&device) {}
 	~common_samplers() noexcept {
 		dealloc(nearest);
 		dealloc(linear);

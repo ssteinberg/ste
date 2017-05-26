@@ -10,6 +10,7 @@
 #include <vk_descriptor_set_layout.hpp>
 #include <vk_push_constant_layout.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
@@ -21,14 +22,15 @@ namespace gl {
 
 namespace vk {
 
-class vk_pipeline_layout : public allow_type_decay<vk_pipeline_layout, VkPipelineLayout> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_pipeline_layout : public allow_type_decay<vk_pipeline_layout<host_allocator>, VkPipelineLayout> {
 private:
 	optional<VkPipelineLayout> layout;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_pipeline_layout(const vk_logical_device &device,
-					   const lib::vector<const vk_descriptor_set_layout*> &set_layouts,
+	vk_pipeline_layout(const vk_logical_device<host_allocator> &device,
+					   const lib::vector<const vk_descriptor_set_layout<host_allocator>*> &set_layouts,
 					   const lib::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
 		lib::vector<VkPushConstantRange> push_constant_layout_descriptors;
 		push_constant_layout_descriptors.reserve(push_constant_layouts.size());
@@ -50,7 +52,7 @@ public:
 		create_info.pSetLayouts = layouts.data();
 
 		VkPipelineLayout pipeline_layout;
-		vk_result res = vkCreatePipelineLayout(device, &create_info, nullptr, &pipeline_layout);
+		vk_result res = vkCreatePipelineLayout(device, &create_info, &host_allocator::allocation_callbacks(), &pipeline_layout);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -75,7 +77,7 @@ public:
 
 	void destroy_pipeline_layout() {
 		if (layout) {
-			vkDestroyPipelineLayout(device.get(), *this, nullptr);
+			vkDestroyPipelineLayout(device.get(), *this, &host_allocator::allocation_callbacks());
 			layout = none;
 		}
 	}

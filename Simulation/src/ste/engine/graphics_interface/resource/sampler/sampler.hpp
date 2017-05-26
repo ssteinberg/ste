@@ -35,9 +35,9 @@ struct params_chain_extracter<Param> {
 
 }
 
-class sampler : public allow_type_decay<sampler, vk::vk_sampler> {
+class sampler : public allow_type_decay<sampler, vk::vk_sampler<>> {
 private:
-	vk::vk_sampler s;
+	vk::vk_sampler<> s;
 
 private:
 	static auto default_sampler_info() {

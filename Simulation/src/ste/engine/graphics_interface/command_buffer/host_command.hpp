@@ -13,7 +13,7 @@ namespace gl {
 
 class host_command {
 private:
-	using command_t = std::function<void(const vk::vk_queue &)>;
+	using command_t = std::function<void(const vk::vk_queue<> &)>;
 
 private:
 	command_t cmd;
@@ -24,7 +24,7 @@ public:
 	host_command(host_command&&) = default;
 	host_command &operator=(host_command&&) = default;
 
-	auto operator()(const vk::vk_queue &queue) const {
+	auto operator()(const vk::vk_queue<> &queue) const {
 		return cmd(queue);
 	}
 };

@@ -47,7 +47,7 @@ public:
 		for (auto &e : image)
 			image_barriers.push_back(e);
 	}
-	cmd_wait_events(const vk::vk_event& event,
+	cmd_wait_events(const vk::vk_event<>& event,
 					const pipeline_barrier &barrier)
 		: cmd_wait_events({ static_cast<VkEvent>(event) }, barrier)
 	{}

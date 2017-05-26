@@ -69,7 +69,7 @@ private:
 
 			auto vptr = v;
 			auto new_size = this->new_size;
-			recorder << host_command([=](const vk::vk_queue &) { vptr->elements = new_size; });
+			recorder << host_command([=](const vk::vk_queue<> &) { vptr->elements = new_size; });
 		}
 	};
 	// Push back command
@@ -97,7 +97,7 @@ private:
 			recorder << v->buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
 
 			auto vptr = v;
-			recorder << host_command([size = data_size, vptr](const vk::vk_queue &) { vptr->elements += size; });
+			recorder << host_command([size = data_size, vptr](const vk::vk_queue<> &) { vptr->elements += size; });
 
 			// Copy data
 			recorder << update_cmd;
@@ -125,7 +125,7 @@ private:
 
 			auto vptr = v;
 			auto pop = count_to_pop;
-			recorder << host_command([=](const vk::vk_queue &) { vptr->elements -= pop; });
+			recorder << host_command([=](const vk::vk_queue<> &) { vptr->elements -= pop; });
 		}
 	};
 

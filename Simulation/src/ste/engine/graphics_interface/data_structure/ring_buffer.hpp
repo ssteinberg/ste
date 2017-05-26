@@ -9,6 +9,7 @@
 #include <ste_device_queue.hpp>
 #include <range.hpp>
 
+#include <vk_mmap.hpp>
 #include <buffer_usage.hpp>
 #include <unique_fence.hpp>
 #include <device_buffer.hpp>
@@ -25,7 +26,7 @@ template <typename Segment>
 class ring_buffer : ste_resource_deferred_create_trait, public allow_type_decay<ring_buffer<Segment>, device_buffer<Segment, device_resource_allocation_policy_device>> {
 private:
 	using buffer_t = device_buffer<Segment, device_resource_allocation_policy_device>;
-	using mmap_ptr_t = lib::unique_ptr<vk_mmap<Segment>>;
+	using mmap_ptr_t = lib::unique_ptr<vk::vk_mmap<Segment>>;
 	using lock_t = const unique_fence<void>*;
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 

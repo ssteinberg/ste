@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 #include <ste_queue_family.hpp>
 #include <vk_command_buffers.hpp>
@@ -20,16 +21,17 @@ namespace gl {
 
 namespace vk {
 
+template <typename host_allocator = vk_host_allocator<>>
 class vk_command_pool :
-	public ste_resource_pool_resetable_trait<const vk_logical_device &, std::uint32_t, VkCommandPoolCreateFlags>,
-	public allow_type_decay<vk_command_pool, VkCommandPool>
+	public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, std::uint32_t, VkCommandPoolCreateFlags>,
+	public allow_type_decay<vk_command_pool<host_allocator>, VkCommandPool>
 {
 private:
 	optional<VkCommandPool> pool;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_command_pool(const vk_logical_device &device,
+	vk_command_pool(const vk_logical_device<host_allocator> &device,
 					const ste_queue_family &queue_family,
 					VkCommandPoolCreateFlags flags = 0) : device(device) {
 		VkCommandPoolCreateInfo create_info = {};
@@ -39,7 +41,7 @@ public:
 		create_info.queueFamilyIndex = static_cast<std::uint32_t>(queue_family);
 
 		VkCommandPool pool;
-		vk_result res = vkCreateCommandPool(device, &create_info, nullptr, &pool);
+		vk_result res = vkCreateCommandPool(device, &create_info, &host_allocator::allocation_callbacks(), &pool);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -64,7 +66,7 @@ public:
 
 	void destroy_command_pool() {
 		if (pool) {
-			vkDestroyCommandPool(device.get(), *this, nullptr);
+			vkDestroyCommandPool(device.get(), *this, &host_allocator::allocation_callbacks());
 			pool = none;
 		}
 	}
@@ -94,7 +96,7 @@ public:
 		for (auto &b : buffers)
 			command_buffers.emplace_back(vk_command_buffer{ b });
 
-		return vk_command_buffers(std::move(command_buffers), device.get(), *this, type);
+		return vk_command_buffers<host_allocator>(std::move(command_buffers), device.get(), *this, type);
 	}
 
 	void reset() override {

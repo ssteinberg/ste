@@ -12,10 +12,10 @@ namespace gl {
 
 class device_swapchain_image : public device_image_base {
 private:
-	vk::vk_swapchain_image image;
+	vk::vk_swapchain_image<> image;
 
 public:
-	device_swapchain_image(vk::vk_swapchain_image &&image)
+	device_swapchain_image(vk::vk_swapchain_image<> &&image)
 		: image(std::move(image))
 	{}
 
@@ -24,7 +24,7 @@ public:
 
 	const glm::u32vec3& get_extent() const override final { return get_image_handle().get_extent(); }
 	format get_format() const override final { return static_cast<format>(image.get_format()); }
-	const vk::vk_image& get_image_handle() const override final { return image; };
+	const vk::vk_image<>& get_image_handle() const override final { return image; };
 };
 
 }

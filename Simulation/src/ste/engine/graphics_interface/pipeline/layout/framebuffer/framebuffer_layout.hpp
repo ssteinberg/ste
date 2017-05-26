@@ -131,9 +131,9 @@ public:
 			subpasses.emplace_back(color);
 
 		// Create Vulkan renderpass
-		return vk::vk_render_pass(ctx.device(),
-								  vk_attachments,
-								  subpasses);
+		return vk::vk_render_pass<>(ctx.device(),
+									vk_attachments,
+									subpasses);
 	}
 };
 

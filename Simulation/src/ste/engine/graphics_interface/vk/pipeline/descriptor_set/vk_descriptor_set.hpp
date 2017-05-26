@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 #include <vk_descriptor_set_write_resource.hpp>
+#include <vk_host_allocator.hpp>
 #include <vk_descriptor_set_copy_resources.hpp>
 
 #include <optional.hpp>
@@ -19,18 +20,22 @@ namespace gl {
 
 namespace vk {
 
-class vk_descriptor_set : public allow_type_decay<vk_descriptor_set, VkDescriptorSet> {
-	friend class vk_descriptor_pool;
+template <typename>
+class vk_descriptor_pool;
+
+template <typename host_allocator = vk_host_allocator<>>
+class vk_descriptor_set : public allow_type_decay<vk_descriptor_set<host_allocator>, VkDescriptorSet> {
+	friend vk_descriptor_pool<host_allocator>;
 
 private:
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 	optional<VkDescriptorSet> set;
 	VkDescriptorPool pool;
 	bool pool_allows_freeing_individual_sets;
 
 private:
-	vk_descriptor_set(const vk_logical_device &device,
+	vk_descriptor_set(const vk_logical_device<host_allocator> &device,
 					  VkDescriptorSet set,
 					  VkDescriptorPool pool,
 					  bool pool_allows_freeing_individual_sets)

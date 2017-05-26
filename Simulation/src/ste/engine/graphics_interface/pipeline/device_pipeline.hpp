@@ -140,7 +140,7 @@ protected:
 	/**
 	*	@brief	Recreates the pipeline, should return the old pipeline (sliced to a vk::vk_pipeline object), if any.
 	*/
-	virtual optional<vk::vk_pipeline> recreate_pipeline() = 0;
+	virtual optional<vk::vk_pipeline<>> recreate_pipeline() = 0;
 
 	device_pipeline(const ste_context &ctx,
 					lib::unique_ptr<pipeline_layout> &&layout,

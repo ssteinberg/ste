@@ -22,7 +22,7 @@ public:
 
 class unique_device_ptr {
 private:
-	using device_memory_ptr_t = vk::vk_device_memory*;
+	using device_memory_ptr_t = vk::vk_device_memory<>*;
 
 public:
 	using allocator_type = unique_device_ptr_allocator;
@@ -36,7 +36,7 @@ private:
 	std::uint64_t tag;
 
 public:
-	unique_device_ptr() {}
+	unique_device_ptr() = default;
 	unique_device_ptr(device_memory_ptr_t memory,
 					  const allocator_type *allocator,
 					  const device_memory_block<std::uint64_t> &block,

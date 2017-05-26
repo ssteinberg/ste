@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 
 #include <optional.hpp>
@@ -58,18 +59,19 @@ struct vk_sampler_info {
 	}
 };
 
-class vk_sampler : public allow_type_decay<vk_sampler, VkSampler> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_sampler : public allow_type_decay<vk_sampler<host_allocator>, VkSampler> {
 private:
 	optional<VkSampler> sampler;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_sampler(const vk_logical_device &device,
+	vk_sampler(const vk_logical_device<host_allocator> &device,
 			   const vk_sampler_info &info) : device(device) {
 		VkSamplerCreateInfo create_info = info;
 
 		VkSampler sampler;
-		vk_result res = vkCreateSampler(device, &create_info, nullptr, &sampler);
+		vk_result res = vkCreateSampler(device, &create_info, &host_allocator::allocation_callbacks(), &sampler);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -94,7 +96,7 @@ public:
 
 	void destroy_sampler() {
 		if (sampler) {
-			vkDestroySampler(device.get(), *this, nullptr);
+			vkDestroySampler(device.get(), *this, &host_allocator::allocation_callbacks());
 			sampler = none;
 		}
 	}

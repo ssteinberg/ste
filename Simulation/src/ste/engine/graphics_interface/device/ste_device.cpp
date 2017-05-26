@@ -6,7 +6,7 @@
 using namespace ste;
 using namespace ste::gl;
 
-ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &device,
+ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device<> &device,
 											   const ste_queue_descriptors &queue_descriptors,
 											   ste_device_sync_primitives_pools *sync_primitives_pools) {
 	queues_t q(queue_descriptors.size());

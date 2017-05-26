@@ -13,11 +13,11 @@ namespace gl {
 
 class cmd_reset_event : public command {
 private:
-	const vk::vk_event &event;
+	const vk::vk_event<> &event;
 	pipeline_stage stage;
 
 public:
-	cmd_reset_event(const vk::vk_event &event,
+	cmd_reset_event(const vk::vk_event<> &event,
 					const pipeline_stage &stage) : event(event), stage(stage) {}
 	virtual ~cmd_reset_event() noexcept {}
 

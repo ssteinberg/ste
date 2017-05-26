@@ -9,7 +9,7 @@
 namespace ste {
 namespace gl {
 
-using event = vk::vk_event;
+using event = vk::vk_event<>;
 
 }
 }

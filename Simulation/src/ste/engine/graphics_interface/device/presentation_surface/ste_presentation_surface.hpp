@@ -56,12 +56,12 @@ public:
 
 private:
 	const ste_gl_device_creation_parameters parameters;
-	const vk::vk_logical_device *presentation_device;
+	const vk::vk_logical_device<> *presentation_device;
 	const ste_window &presentation_window;
 
-	vk::vk_surface presentation_surface;
+	vk::vk_surface<> presentation_surface;
 	VkSurfaceCapabilitiesKHR surface_presentation_caps;
-	lib::unique_ptr<vk::vk_swapchain> swap_chain{ nullptr };
+	lib::unique_ptr<vk::vk_swapchain<>> swap_chain{ nullptr };
 	lib::vector<swap_chain_image_t> swap_chain_images;
 
 	lib::aligned_padded_ptr<shared_data_t> shared_data;
@@ -80,8 +80,8 @@ private:
 
 private:
 	acquire_next_image_return_t acquire_swapchain_image_impl(std::uint64_t timeout_ns,
-															 const vk::vk_semaphore *presentation_image_ready_semaphore,
-															 const vk::vk_fence *presentation_image_ready_fence) const;
+															 const vk::vk_semaphore<> *presentation_image_ready_semaphore,
+															 const vk::vk_fence<> *presentation_image_ready_fence) const;
 
 public:
 	/**
@@ -97,7 +97,7 @@ public:
 	*	@param instance				Vulkan instance that owns the presentation device
 	*/
 	ste_presentation_surface(const ste_gl_device_creation_parameters parameters,
-							 const vk::vk_logical_device *presentation_device,
+							 const vk::vk_logical_device<> *presentation_device,
 							 const ste_window &presentation_window,
 							 const vk::vk_instance<> &instance)
 		: parameters(parameters),
@@ -155,7 +155,7 @@ public:
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk::vk_semaphore &presentation_image_ready_semaphore,
+		const vk::vk_semaphore<> &presentation_image_ready_semaphore,
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
@@ -183,7 +183,7 @@ public:
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk::vk_fence &presentation_image_ready_fence,
+		const vk::vk_fence<> &presentation_image_ready_fence,
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
 		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
@@ -219,7 +219,7 @@ public:
 	*	@param	wait_semaphore		Semaphore that signals that rendering to the presentation image is complete
 	*/
 	void present(std::uint32_t image_index,
-				 const vk::vk_queue &presentation_queue,
+				 const vk::vk_queue<> &presentation_queue,
 				 const semaphore &wait_semaphore);
 
 	bool test_and_clear_recreate_flag() const {

@@ -23,15 +23,15 @@ class device_pipeline_compute : public device_pipeline {
 	struct ctor {};
 
 private:
-	vk::vk_pipeline_compute compute_pipeline;
+	vk::vk_pipeline_compute<> compute_pipeline;
 
 private:
 	auto create_pipeline_object() const {
 		auto shader_stage_descriptors = get_layout().shader_stage_descriptors();
-		return vk::vk_pipeline_compute(ctx.get().device(),
-									   shader_stage_descriptors.front(),
-									   get_layout(),
-									   &ctx.get().device().pipeline_cache().current_thread_cache());
+		return vk::vk_pipeline_compute<>(ctx.get().device(),
+										 shader_stage_descriptors.front(),
+										 get_layout(),
+										 &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
 protected:
@@ -43,10 +43,10 @@ protected:
 		recorder << cmd_bind_pipeline(compute_pipeline);
 	}
 
-	optional<vk::vk_pipeline> recreate_pipeline() override final {
+	optional<vk::vk_pipeline<>> recreate_pipeline() override final {
 		// Slice old pipeline, storing the old vk::vk_pipeline object.
-		vk::vk_pipeline &old_pipeline_object = compute_pipeline;
-		vk::vk_pipeline old_pipeline = std::move(old_pipeline_object);
+		vk::vk_pipeline<> &old_pipeline_object = compute_pipeline;
+		vk::vk_pipeline<> old_pipeline = std::move(old_pipeline_object);
 
 		// Create new
 		compute_pipeline = create_pipeline_object();

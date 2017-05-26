@@ -11,6 +11,7 @@
 #include <vk_exception.hpp>
 #include <vk_render_pass.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
@@ -22,15 +23,16 @@ namespace gl {
 
 namespace vk {
 
-class vk_framebuffer : public allow_type_decay<vk_framebuffer, VkFramebuffer> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_framebuffer : public allow_type_decay<vk_framebuffer<host_allocator>, VkFramebuffer> {
 private:
 	optional<VkFramebuffer> framebuffer;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	glm::u32vec2 extent;
 
 public:
-	vk_framebuffer(const vk_logical_device &device,
-				   const vk_render_pass &render_pass,
+	vk_framebuffer(const vk_logical_device<host_allocator> &device,
+				   const vk_render_pass<host_allocator> &render_pass,
 				   const lib::vector<VkImageView> &attachments,
 				   const glm::u32vec2 &extent) : device(device), extent(extent) {
 		VkFramebuffer fb;
@@ -46,7 +48,7 @@ public:
 		create_info.height = extent.y;
 		create_info.layers = 1;
 
-		vk_result res = vkCreateFramebuffer(device, &create_info, nullptr, &fb);
+		vk_result res = vkCreateFramebuffer(device, &create_info, &host_allocator::allocation_callbacks(), &fb);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -70,7 +72,7 @@ public:
 
 	void destroy_framebuffer() {
 		if (framebuffer) {
-			vkDestroyFramebuffer(device.get(), *this, nullptr);
+			vkDestroyFramebuffer(device.get(), *this, &host_allocator::allocation_callbacks());
 			framebuffer = none;
 		}
 	}

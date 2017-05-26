@@ -135,7 +135,7 @@ public:
 	*	@brief	Binds the binding set collection
 	*/
 	auto cmd_bind(VkPipelineBindPoint bind_point,
-				  const vk::vk_pipeline_layout *layout) const {
+				  const vk::vk_pipeline_layout<> *layout) const {
 		return cmd_bind_t(this,
 						  bind_point,
 						  layout);

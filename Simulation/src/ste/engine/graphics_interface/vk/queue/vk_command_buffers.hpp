@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 #include <vk_handle.hpp>
-
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 
 #include <lib/vector.hpp>
@@ -18,6 +18,7 @@ namespace gl {
 
 namespace vk {
 
+template <typename>
 class vk_command_pool;
 
 enum class vk_command_buffer_type : std::uint32_t {
@@ -26,10 +27,11 @@ enum class vk_command_buffer_type : std::uint32_t {
 };
 
 class vk_command_buffer : public allow_type_decay<vk_command_buffer, VkCommandBuffer> {
-	friend vk_command_pool;
+	template <typename A>
+	friend class vk_command_pool;
 
 private:
-	VkCommandBuffer buffer{ vk::vk_null_handle };
+	VkCommandBuffer buffer{ vk_null_handle };
 
 	vk_command_buffer() = default;
 	vk_command_buffer(VkCommandBuffer b) : buffer(b) {}
@@ -71,18 +73,19 @@ public:
 	auto& get() const { return buffer; }
 };
 
+template <typename host_allocator = vk_host_allocator<>>
 class vk_command_buffers {
-	friend class vk_command_pool;
+	friend vk_command_pool<host_allocator>;
 
 private:
 	lib::vector<vk_command_buffer> buffers;
 	VkCommandPool pool;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	vk_command_buffer_type type;
 
 private:
 	vk_command_buffers(lib::vector<vk_command_buffer> &&buffers,
-					   const vk_logical_device &device,
+					   const vk_logical_device<host_allocator> &device,
 					   const VkCommandPool &pool,
 					   const vk_command_buffer_type &type)
 		: buffers(std::move(buffers)), pool(pool), device(device), type(type)
@@ -98,7 +101,24 @@ public:
 	vk_command_buffers(const vk_command_buffers &) = delete;
 	vk_command_buffers &operator=(const vk_command_buffers &) = delete;
 
-	void free();
+	void free() {
+		if (buffers.size() == 1) {
+			vkFreeCommandBuffers(device.get(), pool, 1, &buffers[0].get());
+			buffers.clear();
+		}
+		else if (buffers.size()) {
+			lib::vector<VkCommandBuffer> b;
+			b.reserve(buffers.size());
+			for (auto &e : buffers)
+				b.push_back(e.get());
+
+			vkFreeCommandBuffers(device.get(),
+								 pool,
+								 static_cast<std::uint32_t>(b.size()),
+								 b.data());
+			buffers.clear();
+		}
+	}
 
 	auto& operator[](std::size_t n) { return buffers[n]; }
 	auto& operator[](std::size_t n) const { return buffers[n]; }

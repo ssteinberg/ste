@@ -17,12 +17,12 @@ template <class SetCollection>
 class pipeline_binding_set_collection_cmd_bind : public command {
 	const SetCollection *collection;
 	VkPipelineBindPoint bind_point;
-	const vk::vk_pipeline_layout *layout;
+	const vk::vk_pipeline_layout<> *layout;
 
 public:
 	pipeline_binding_set_collection_cmd_bind(const SetCollection *collection,
 											 VkPipelineBindPoint bind_point,
-											 const vk::vk_pipeline_layout *layout)
+											 const vk::vk_pipeline_layout<> *layout)
 		: collection(collection),
 		bind_point(bind_point),
 		layout(layout)
@@ -39,7 +39,7 @@ private:
 
 		// Bind ranges of consecutive sets
 		for (auto it = sets.begin(); it != sets.end();) {
-			lib::vector<const vk::vk_descriptor_set*> bind_sets;
+			lib::vector<const vk::vk_descriptor_set<>*> bind_sets;
 			bind_sets.reserve(sets.size());
 
 			// Create a range

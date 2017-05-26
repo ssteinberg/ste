@@ -26,20 +26,20 @@ private:
 	using cache_t = ste_engine::engine_types::cache_t;
 
 	using thread_id_t = std::thread::id;
-	using pipeline_cache_t = vk::vk_pipeline_cache;
+	using pipeline_cache_t = vk::vk_pipeline_cache<>;
 
 	using created_caches_queue_t = lib::concurrent_queue<pipeline_cache_t>;
 
 	using pipeline_cache_ptr_t = created_caches_queue_t::stored_ptr;
 
 private:
-	alias<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device<>> device;
 	lib::string device_name;
 
 	alias<cache_t> non_volatile_cache;
 	pipeline_cache_ptr_t origin;
 
-	mutable lib::concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache*> thread_cache_map;
+	mutable lib::concurrent_unordered_map<thread_id_t, const vk::vk_pipeline_cache<>*> thread_cache_map;
 	mutable created_caches_queue_t created_caches;
 
 private:
@@ -47,7 +47,7 @@ private:
 	void store_all_caches();
 
 public:
-	ste_device_pipeline_cache(const vk::vk_logical_device &device,
+	ste_device_pipeline_cache(const vk::vk_logical_device<> &device,
 							  alias<cache_t> non_volatile_cache,
 							  const lib::string &device_name)
 		: device(device),

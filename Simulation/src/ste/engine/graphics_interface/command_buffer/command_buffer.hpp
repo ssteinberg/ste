@@ -32,14 +32,14 @@ public:
 	using commands_t = lib::vector<host_command>;
 
 protected:
-	vk::vk_command_buffers buffers;
+	vk::vk_command_buffers<> buffers;
 	vk::vk_command_buffer_type type;
 	ste_queue_descriptor queue_descriptor;
 
 	mutable commands_t commands;
 
 protected:
-	command_buffer(const vk::vk_command_pool &pool,
+	command_buffer(const vk::vk_command_pool<> &pool,
 				   const vk::vk_command_buffer_type &type,
 				   const ste_queue_descriptor &queue_descriptor)
 		: buffers(pool.allocate_buffers(1, type)),
@@ -58,7 +58,7 @@ protected:
 	void host_commands_reset() const {
 		commands.clear();
 	}
-	void submit_host_commands(const vk::vk_queue &queue) const {
+	void submit_host_commands(const vk::vk_queue<> &queue) const {
 		for (auto &cmd : commands)
 			cmd(queue);
 		host_commands_reset_on_submit_if_needed();
@@ -124,7 +124,7 @@ class command_buffer_impl : public command_buffer {
 	static constexpr vk::vk_command_buffer_type type = buffer_type;
 
 protected:
-	command_buffer_impl(const vk::vk_command_pool &pool,
+	command_buffer_impl(const vk::vk_command_pool<> &pool,
 						const ste_queue_descriptor &queue_descriptor)
 		: Base(pool,
 			   type,

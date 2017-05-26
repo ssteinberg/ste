@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_descriptor_set.hpp>
 #include <vk_descriptor_pool.hpp>
@@ -17,18 +18,19 @@ namespace gl {
 
 namespace vk {
 
-class vk_unique_descriptor_set : public allow_type_decay<vk_unique_descriptor_set, vk_descriptor_set> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_unique_descriptor_set : public allow_type_decay<vk_unique_descriptor_set<host_allocator>, vk_descriptor_set<host_allocator>> {
 private:
 	using binding_t = vk_descriptor_set_layout_binding;
 	using binding_set_t = lib::vector<vk_descriptor_set_layout_binding>;
 
 private:
-	vk_descriptor_pool pool;
-	vk_descriptor_set_layout layout;
-	vk_descriptor_set set;
+	vk_descriptor_pool<host_allocator> pool;
+	vk_descriptor_set_layout<host_allocator> layout;
+	vk_descriptor_set<host_allocator> set;
 
 public:
-	vk_unique_descriptor_set(const vk_logical_device &device,
+	vk_unique_descriptor_set(const vk_logical_device<host_allocator> &device,
 							 const binding_set_t &bindings)
 		: pool(device, 1, bindings, false),
 		layout(device, bindings),

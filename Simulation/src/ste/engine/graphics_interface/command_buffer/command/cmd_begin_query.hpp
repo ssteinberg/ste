@@ -13,11 +13,11 @@ namespace gl {
 
 class cmd_begin_query : public command {
 private:
-	const vk::vk_query &query;
+	const vk::vk_query<> &query;
 	bool precise;
 
 public:
-	cmd_begin_query(const vk::vk_query &query,
+	cmd_begin_query(const vk::vk_query<> &query,
 					bool precise = false) : query(query), precise(precise) {}
 	virtual ~cmd_begin_query() noexcept {}
 

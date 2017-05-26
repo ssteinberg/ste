@@ -20,8 +20,8 @@ struct device_pipeline_resources_marked_for_deletion {
 	lib::vector<pipeline_binding_set_layout> binding_set_layouts;
 	lib::vector<pipeline_binding_set> binding_sets;
 
-	lib::unique_ptr<vk::vk_pipeline_layout> pipeline_layout;
-	optional<vk::vk_pipeline> pipeline;
+	lib::unique_ptr<vk::vk_pipeline_layout<>> pipeline_layout;
+	optional<vk::vk_pipeline<>> pipeline;
 
 	operator bool() const {
 		return binding_set_layouts.size() ||

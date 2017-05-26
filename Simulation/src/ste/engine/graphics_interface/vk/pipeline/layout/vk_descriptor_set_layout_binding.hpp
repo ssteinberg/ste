@@ -33,7 +33,7 @@ public:
 	{}
 	vk_descriptor_set_layout_binding(const VkShaderStageFlags &stage,
 									 std::uint32_t binding_index,
-									 const lib::vector<std::reference_wrapper<const vk_sampler>> &immutable_samplers,
+									 const lib::vector<std::reference_wrapper<const vk_sampler<>>> &immutable_samplers,
 									 bool combined = false)
 		: type(combined ? VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER : VK_DESCRIPTOR_TYPE_SAMPLER),
 		stage(stage), binding_index(binding_index),

@@ -19,6 +19,7 @@
 #include <vk_blend_op_descriptor.hpp>
 #include <vk_rasterizer_op_descriptor.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
@@ -29,12 +30,13 @@ namespace gl {
 
 namespace vk {
 
-class vk_pipeline_graphics : public vk_pipeline {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_pipeline_graphics : public vk_pipeline<host_allocator> {
 public:
-	vk_pipeline_graphics(const vk_logical_device &device,
-						 const lib::vector<vk_shader_stage_descriptor> &shader_modules,
-						 const vk_pipeline_layout &layout,
-						 const vk_render_pass &render_pass,
+	vk_pipeline_graphics(const vk_logical_device<host_allocator> &device,
+						 const lib::vector<vk_shader_stage_descriptor<host_allocator>> &shader_modules,
+						 const vk_pipeline_layout<host_allocator> &layout,
+						 const vk_render_pass<host_allocator> &render_pass,
 						 std::uint32_t subpass,
 						 const VkViewport &viewport,
 						 const VkRect2D &scissor,
@@ -46,9 +48,9 @@ public:
 						 const lib::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
 						 lib::vector<VkDynamicState> dynamic_states,
-						 const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
+						 const vk_pipeline_cache<host_allocator> *cache = nullptr) : vk_pipeline(device) {
 		// Shader modules stages
-		lib::vector<vk_shader::shader_stage_info_t> stages_info(shader_modules.size());
+		lib::vector<typename vk_shader<host_allocator>::shader_stage_info_t> stages_info(shader_modules.size());
 		lib::vector<VkPipelineShaderStageCreateInfo> stages(shader_modules.size());
 		for (std::size_t i = 0; i < shader_modules.size(); ++i) {
 			auto &sd = shader_modules[i];
@@ -154,7 +156,7 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.layout = layout;
-		create_info.basePipelineHandle = vk::vk_null_handle;
+		create_info.basePipelineHandle = vk_null_handle;
 		create_info.basePipelineIndex = 0;
 		create_info.renderPass = render_pass;
 		create_info.subpass = subpass;
@@ -172,10 +174,10 @@ public:
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk::vk_null_handle,
+												  cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
 												  1,
 												  &create_info,
-												  nullptr,
+												  &host_allocator::allocation_callbacks(),
 												  &pipeline);
 		if (!res) {
 			throw vk_exception(res);

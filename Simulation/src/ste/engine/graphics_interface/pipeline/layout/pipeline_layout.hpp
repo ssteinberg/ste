@@ -37,7 +37,7 @@ namespace gl {
 *	@brief	The pipeline layout descriptor.
 *			Fully defines the pipeline shader stages, resource binding layouts and output attachment layouts.
 */
-class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline_layout>, anchored {
+class pipeline_layout : public allow_type_decay<pipeline_layout, vk::vk_pipeline_layout<>>, anchored {
 	friend class device_pipeline;
 
 public:
@@ -54,7 +54,7 @@ private:
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader::spec_map>;
+	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
 
 	using binding_sets_layout_map_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
@@ -76,7 +76,7 @@ private:
 
 	// Layouts of the descriptor sets
 	binding_sets_layout_map_t bindings_set_layouts;
-	lib::unique_ptr<vk::vk_pipeline_layout> layout;
+	lib::unique_ptr<vk::vk_pipeline_layout<>> layout;
 
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
@@ -390,8 +390,8 @@ public:
 	*	
 	*	@return	Returns the old layout object
 	*/
-	lib::unique_ptr<vk::vk_pipeline_layout> recreate_layout() {
-		lib::vector<const vk::vk_descriptor_set_layout*> set_layout_ptrs;
+	lib::unique_ptr<vk::vk_pipeline_layout<>> recreate_layout() {
+		lib::vector<const vk::vk_descriptor_set_layout<>*> set_layout_ptrs;
 		for (auto &s : bindings_set_layouts) {
 			set_layout_ptrs.push_back(&s.second.get());
 		}
@@ -410,9 +410,9 @@ public:
 		auto old_layout = std::move(layout);
 
 		// Create pipeline layout and raise layout invalidated flag
-		layout = lib::allocate_unique<vk::vk_pipeline_layout>(ctx.get().device(),
-														  set_layout_ptrs,
-														  push_constant_layouts);
+		layout = lib::allocate_unique<vk::vk_pipeline_layout<>>(ctx.get().device(),
+																set_layout_ptrs,
+																push_constant_layouts);
 		layout_invalidated_flag = false;
 
 		return old_layout;
@@ -474,7 +474,7 @@ public:
 	*	@brief	Returns the collection of shader stage descriptors, used to create pipeline objects.
 	*/
 	auto shader_stage_descriptors() const {
-		lib::vector<vk::vk_shader_stage_descriptor> descriptors;
+		lib::vector<vk::vk_shader_stage_descriptor<>> descriptors;
 		for (auto &s : stages)
 			descriptors.push_back(s.second->pipeline_stage_descriptor());
 

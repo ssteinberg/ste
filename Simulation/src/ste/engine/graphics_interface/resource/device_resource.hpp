@@ -21,7 +21,7 @@ class device_resource
 	: ste_resource_deferred_create_trait,
 	public allow_type_decay<device_resource<T, allocation_policy>, T, false>
 {
-	static_assert(std::is_base_of<vk::vk_resource, T>::value,
+	static_assert(std::is_base_of<vk::vk_resource<>, T>::value,
 				  "T must be a vk_resource derived type");
 
 protected:

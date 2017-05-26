@@ -11,6 +11,7 @@
 #include <vk_exception.hpp>
 #include <vk_buffer.hpp>
 #include <vk_queue.hpp>
+#include <vk_host_allocator.hpp>
 #include <vk_fence.hpp>
 
 #include <vk_sparse_memory_bind.hpp>
@@ -20,15 +21,16 @@ namespace gl {
 
 namespace vk {
 
-class vk_buffer_sparse : public vk_buffer {
-	using Base = vk_buffer;
+template <typename host_allocator = vk_host_allocator<>>
+class vk_buffer_sparse : public vk_buffer<host_allocator> {
+	using Base = vk_buffer<host_allocator>;
 
 private:
 	std::uint32_t element_size;
 	std::uint64_t count;
 
 public:
-	vk_buffer_sparse(const vk_logical_device &device,
+	vk_buffer_sparse(const vk_logical_device<host_allocator> &device,
 					 std::uint32_t element_size,
 					 std::uint64_t count,
 					 const VkBufferUsageFlags &usage)
@@ -52,11 +54,11 @@ public:
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 	*	@param	fence				Optional fence, to be signaled when the command has completed execution
 	*/
-	void cmd_bind_sparse_memory(const vk_queue &queue,
+	void cmd_bind_sparse_memory(const vk_queue<host_allocator> &queue,
 								const lib::vector<vk_sparse_memory_bind> &memory_binds,
 								const lib::vector<VkSemaphore> &wait_semaphores,
 								const lib::vector<VkSemaphore> &signal_semaphores,
-								const vk_fence *fence = nullptr) {
+								const vk_fence<host_allocator> *fence = nullptr) {
 		lib::vector<VkSemaphore> wait;
 		lib::vector<VkSemaphore> signal;
 		lib::vector<VkSparseMemoryBind> binds;
@@ -88,7 +90,7 @@ public:
 			}
 			else {
 				// Unbind
-				b.memory = vk::vk_null_handle;
+				b.memory = vk_null_handle;
 			}
 
 			binds.push_back(b);
@@ -115,7 +117,7 @@ public:
 
 		vk_result res = vkQueueBindSparse(queue,
 										  1, &info,
-										  fence != nullptr ? static_cast<VkFence>(*fence) : vk::vk_null_handle);
+										  fence != nullptr ? static_cast<VkFence>(*fence) : vk_null_handle);
 		if (!res) {
 			throw vk_exception(res);
 		}

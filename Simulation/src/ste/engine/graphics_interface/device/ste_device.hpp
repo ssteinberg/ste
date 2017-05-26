@@ -34,7 +34,7 @@
 namespace ste {
 namespace gl {
 
-class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device>, anchored {
+class ste_device : public allow_type_decay<ste_device, vk::vk_logical_device<>>, anchored {
 public:
 	using queues_and_surface_recreate_signal_type = signal<const ste_device*>;
 
@@ -50,7 +50,7 @@ private:
 	 */
 	const ste_gl_device_creation_parameters parameters;
 	const ste_queue_descriptors queue_descriptors;
-	const vk::vk_logical_device device;
+	const vk::vk_logical_device<> device;
 
 	/*
 	 *	Presentation surface
@@ -91,7 +91,7 @@ private:
 		return extensions;
 	}
 
-	static queues_t create_queues(const vk::vk_logical_device &device,
+	static queues_t create_queues(const vk::vk_logical_device<> &device,
 								  const ste_queue_descriptors &queue_descriptors,
 								  ste_device_sync_primitives_pools *sync_primitives_pools);
 

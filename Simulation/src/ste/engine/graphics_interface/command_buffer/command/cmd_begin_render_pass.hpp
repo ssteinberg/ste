@@ -15,14 +15,14 @@ namespace gl {
 
 class cmd_begin_render_pass : public command {
 private:
-	std::reference_wrapper<const vk::vk_framebuffer> framebuffer;
-	std::reference_wrapper<const vk::vk_render_pass> render_pass;
+	std::reference_wrapper<const vk::vk_framebuffer<>> framebuffer;
+	std::reference_wrapper<const vk::vk_render_pass<>> render_pass;
 	VkRect2D render_area;
 	lib::vector<VkClearValue> clear_values;
 
 public:
-	cmd_begin_render_pass(const vk::vk_framebuffer &framebuffer,
-						  const vk::vk_render_pass &render_pass,
+	cmd_begin_render_pass(const vk::vk_framebuffer<> &framebuffer,
+						  const vk::vk_render_pass<> &render_pass,
 						  glm::i32vec2 render_area_offset,
 						  glm::u32vec2 render_area_size,
 						  const lib::vector<VkClearValue> &clear_values)

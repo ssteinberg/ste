@@ -13,7 +13,7 @@ namespace gl {
 
 class cmd_copy_query_pool_results : public command {
 private:
-	std::reference_wrapper<const vk::vk_query_pool> pool;
+	std::reference_wrapper<const vk::vk_query_pool<>> pool;
 	std::reference_wrapper<const device_buffer_base> buffer;
 	std::uint32_t first;
 	std::uint32_t count;
@@ -22,7 +22,7 @@ private:
 	VkQueryResultFlags flags;
 
 public:
-	cmd_copy_query_pool_results(const vk::vk_query_pool &pool,
+	cmd_copy_query_pool_results(const vk::vk_query_pool<> &pool,
 								const device_buffer_base &buffer,
 								std::uint32_t first_query,
 								std::uint32_t queries_count,

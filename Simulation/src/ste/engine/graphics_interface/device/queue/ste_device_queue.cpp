@@ -5,7 +5,7 @@
 using namespace ste::gl;
 
 thread_local ste_device_queue *ste_device_queue::static_device_queue_ptr = nullptr;
-thread_local const vk::vk_queue *ste_device_queue::static_queue_ptr = nullptr;
+thread_local const vk::vk_queue<> *ste_device_queue::static_queue_ptr = nullptr;
 thread_local ste_device_queue::queue_index_t ste_device_queue::static_queue_index = 0xFFFFFFFF;
 
 void ste_device_queue::create_worker() {

@@ -9,7 +9,7 @@
 namespace ste {
 namespace gl {
 
-using semaphore = vk::vk_semaphore;
+using semaphore = vk::vk_semaphore<>;
 
 }
 }

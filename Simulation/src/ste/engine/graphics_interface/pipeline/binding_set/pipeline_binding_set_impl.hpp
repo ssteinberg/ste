@@ -25,12 +25,12 @@ namespace _internal {
  *			Layout must be a name->const pipeline_binding_base* map
  */
 template <typename Layout>
-class pipeline_binding_set_impl : public allow_type_decay<pipeline_binding_set_impl<Layout>, vk::vk_descriptor_set> {
+class pipeline_binding_set_impl : public allow_type_decay<pipeline_binding_set_impl<Layout>, vk::vk_descriptor_set<>> {
 private:
 	using binding_to_written_descriptors_range_map = lib::flat_map<std::uint32_t, range_list<std::uint32_t>>;
 
 private:
-	vk::vk_descriptor_set set;
+	vk::vk_descriptor_set<> set;
 	alias<const Layout> layout;
 
 	ultimate_type_erasure last_act;
@@ -102,7 +102,7 @@ private:
 
 public:
 	template <typename F>
-	pipeline_binding_set_impl(vk::vk_descriptor_set &&set,
+	pipeline_binding_set_impl(vk::vk_descriptor_set<> &&set,
 							  const Layout &layout,
 							  ultimate<F>&& last_act) :
 		set(std::move(set)),
@@ -115,7 +115,7 @@ public:
 	*	@brief	See copy() for more information
 	*/
 	template <typename F>
-	pipeline_binding_set_impl(vk::vk_descriptor_set &&set,
+	pipeline_binding_set_impl(vk::vk_descriptor_set<> &&set,
 							  const Layout &layout,
 							  ultimate<F>&& last_act,
 							  const pipeline_binding_set_impl &o)

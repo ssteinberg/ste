@@ -6,27 +6,30 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
+#include <vk_query.hpp>
 
 #include <optional.hpp>
 
-#include <vk_query.hpp>
 #include <lib/string.hpp>
 #include <alias.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_query_pool {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_query_pool : public allow_type_decay<vk_query_pool<host_allocator>, VkQueryPool> {
 private:
 	optional<VkQueryPool> query_pool;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	std::uint32_t size;
 
 protected:
-	vk_query_pool(const vk_logical_device &device,
+	vk_query_pool(const vk_logical_device<host_allocator> &device,
 				  const VkQueryType &type,
 				  std::uint32_t size,
 				  VkQueryPipelineStatisticFlags pipeline_statistic_flags = 0) : device(device), size(size) {
@@ -39,7 +42,7 @@ protected:
 		create_info.pipelineStatistics = pipeline_statistic_flags;
 
 		VkQueryPool query_pool;
-		vk_result res = vkCreateQueryPool(device, &create_info, nullptr, &query_pool);
+		vk_result res = vkCreateQueryPool(device, &create_info, &host_allocator::allocation_callbacks(), &query_pool);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -67,7 +70,7 @@ public:
 
 	void destroy_query_pool() {
 		if (query_pool) {
-			vkDestroyQueryPool(device.get(), *this, nullptr);
+			vkDestroyQueryPool(device.get(), *this, &host_allocator::allocation_callbacks());
 			query_pool = none;
 		}
 	}
@@ -92,41 +95,47 @@ public:
 	}
 
 	auto& get_creating_device() const { return device.get(); }
-	auto& get_query_pool() const { return query_pool.get(); }
-
-	vk_query operator[](std::uint32_t idx) const {
+	auto& get() const { return query_pool.get(); }
+	
+	auto operator[](std::uint32_t idx) const {
 		assert(idx < size);
-		return vk_query(*this, idx);
+		return vk_query<host_allocator>(*this, idx);
 	}
-
-	operator VkQueryPool() const { return get_query_pool(); }
 };
 
-class vk_occlusion_query_pool : public vk_query_pool {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_occlusion_query_pool : public vk_query_pool<host_allocator> {
 public:
-	vk_occlusion_query_pool(const vk_logical_device &device,
-							std::uint32_t size) : vk_query_pool(device,
-																VK_QUERY_TYPE_OCCLUSION,
-																size) {}
+	vk_occlusion_query_pool(const vk_logical_device<host_allocator> &device,
+							std::uint32_t size)
+		: vk_query_pool(device,
+						VK_QUERY_TYPE_OCCLUSION,
+						size)
+	{}
 };
 
-class vk_pipeline_statistics_query_pool : public vk_query_pool {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_pipeline_statistics_query_pool : public vk_query_pool<host_allocator> {
 public:
-	vk_pipeline_statistics_query_pool(const vk_logical_device &device,
+	vk_pipeline_statistics_query_pool(const vk_logical_device<host_allocator> &device,
 									  std::uint32_t size,
 									  VkQueryPipelineStatisticFlags pipeline_statistic_flags)
 		: vk_query_pool(device,
 						VK_QUERY_TYPE_PIPELINE_STATISTICS,
 						size,
-						pipeline_statistic_flags) {}
+						pipeline_statistic_flags) 
+	{}
 };
 
-class vk_timestamp_query_pool : public vk_query_pool {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_timestamp_query_pool : public vk_query_pool<host_allocator> {
 public:
-	vk_timestamp_query_pool(const vk_logical_device &device,
-							std::uint32_t size) : vk_query_pool(device,
-																VK_QUERY_TYPE_TIMESTAMP,
-																size) {}
+	vk_timestamp_query_pool(const vk_logical_device<host_allocator> &device,
+							std::uint32_t size)
+		: vk_query_pool(device,
+						VK_QUERY_TYPE_TIMESTAMP,
+						size)
+	{}
 };
 
 }

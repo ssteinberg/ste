@@ -172,8 +172,12 @@ auto inline bind(const lib::vector<pipeline::image> &images) {
 */
 auto inline bind(const pipeline::combined_image_sampler& cis) {
 	VkImageView v = cis.get_image_view().get_image_view_handle();
+
+	auto write = vk::vk_descriptor_set_write_image(v, 
+												   static_cast<VkImageLayout>(cis.get_layout()), 
+												   cis.get_sampler().get());
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>(0, {
-		vk::vk_descriptor_set_write_image{ v, static_cast<VkImageLayout>(cis.get_layout()), cis.get_sampler() }
+		std::move(write)
 	});
 }
 /**
@@ -190,7 +194,11 @@ auto inline bind(std::uint32_t array_element,
 	writes.reserve(ciss.size());
 	for (auto &p : ciss) {
 		VkImageView v = p.get_image_view().get_image_view_handle();
-		writes.push_back({ v, static_cast<VkImageLayout>(p.get_layout()), p.get_sampler() });
+
+		auto write = vk::vk_descriptor_set_write_image(v,
+													   static_cast<VkImageLayout>(p.get_layout()),
+													   p.get_sampler().get());
+		writes.emplace_back(std::move(write));
 	}
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>(array_element, std::move(writes));
 }

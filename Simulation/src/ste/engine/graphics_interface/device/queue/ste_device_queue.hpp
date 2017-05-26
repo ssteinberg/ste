@@ -40,7 +40,7 @@
 namespace ste {
 namespace gl {
 
-class ste_device_queue : public allow_type_decay<ste_device_queue, vk::vk_queue> {
+class ste_device_queue : public allow_type_decay<ste_device_queue, vk::vk_queue<>> {
 public:
 	using task_t = unique_thread_pool_type_erased_task<>;
 	template <typename R>
@@ -63,7 +63,7 @@ private:
 
 private:
 	const queue_index_t queue_index;
-	const vk::vk_queue queue;
+	const vk::vk_queue<> queue;
 	const ste_queue_descriptor descriptor;
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
@@ -78,7 +78,7 @@ private:
 
 private:
 	static thread_local ste_device_queue *static_device_queue_ptr;
-	static thread_local const vk::vk_queue *static_queue_ptr;
+	static thread_local const vk::vk_queue<> *static_queue_ptr;
 	static thread_local queue_index_t static_queue_index;
 
 private:
@@ -179,7 +179,7 @@ public:
 					cmd_buf.submit_host_commands(thread_queue());
 				// Submit finalized buffers
 				thread_queue().submit(command_buffers,
-									  lib::vector<vk::vk_queue::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
+									  lib::vector<vk::vk_queue<>::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
 									  vk_semaphores(signal_semaphores),
 									  &(*fence)->get_fence());
 
@@ -207,7 +207,7 @@ private:
 	bool is_thread_this_queue_thread() const { return thread_queue_index() == queue_index; }
 
 public:
-	ste_device_queue(const vk::vk_logical_device &device,
+	ste_device_queue(const vk::vk_logical_device<> &device,
 					 std::uint32_t device_family_index,
 					 ste_queue_descriptor descriptor,
 					 queue_index_t queue_index,

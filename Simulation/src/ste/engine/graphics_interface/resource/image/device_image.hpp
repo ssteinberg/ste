@@ -19,9 +19,9 @@ namespace gl {
 
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
 class device_image : public device_image_base,
-	public device_resource<vk::vk_image, allocation_policy>
+	public device_resource<vk::vk_image<>, allocation_policy>
 {
-	using Base = device_resource<vk::vk_image, allocation_policy>;
+	using Base = device_resource<vk::vk_image<>, allocation_policy>;
 	using extent_type = typename image_extent_type<dimensions>::type;
 
 public:
@@ -72,7 +72,7 @@ public:
 	auto& get_layers() const {
 		return get_image_handle().get_layers();
 	}
-	const vk::vk_image& get_image_handle() const override final { return *this; }
+	const vk::vk_image<>& get_image_handle() const override final { return *this; }
 };
 
 }

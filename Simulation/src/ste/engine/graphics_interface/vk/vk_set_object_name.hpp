@@ -14,8 +14,8 @@ namespace gl {
 
 namespace vk {
 
-template <typename T>
-void vk_set_object_name(const vk_logical_device &device,
+template <typename T, typename A>
+void vk_set_object_name(const vk_logical_device<A> &device,
 						const T &t,
 						VkDebugReportObjectTypeEXT type,
 						const char *str) {

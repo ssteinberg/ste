@@ -6,32 +6,35 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 
 #include <ste_resource_pool_traits.hpp>
 
 #include <optional.hpp>
 #include <alias.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_event : public ste_resource_pool_resetable_trait<const vk_logical_device &> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_event : public allow_type_decay<vk_event<host_allocator>, VkEvent>, public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &> {
 private:
 	optional<VkEvent> event;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_event(const vk_logical_device &device) : device(device) {
+	vk_event(const vk_logical_device<host_allocator> &device) : device(device) {
 		VkEventCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 
 		VkEvent event;
-		vk_result res = vkCreateEvent(device, &create_info, nullptr, &event);
+		vk_result res = vkCreateEvent(device, &create_info, &host_allocator::allocation_callbacks(), &event);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -56,7 +59,7 @@ public:
 
 	void destroy_event() {
 		if (event) {
-			vkDestroyEvent(device.get(), *this, nullptr);
+			vkDestroyEvent(device.get(), *this, &host_allocator::allocation_callbacks());
 			event = none;
 		}
 	}
@@ -93,9 +96,7 @@ public:
 	}
 
 	auto& get_creating_device() const { return device.get(); }
-	auto& get_event() const { return event.get(); }
-
-	operator VkEvent() const { return get_event(); }
+	auto& get() const { return event.get(); }
 };
 
 }

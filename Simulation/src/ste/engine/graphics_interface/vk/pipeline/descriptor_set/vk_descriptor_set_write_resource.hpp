@@ -19,22 +19,27 @@ namespace gl {
 namespace vk {
 
 struct vk_descriptor_set_write_image {
-	VkImageView image{ vk::vk_null_handle };
+	VkImageView image{ vk_null_handle };
 	VkImageLayout image_layout{ VK_IMAGE_LAYOUT_UNDEFINED };
-	VkSampler sampler{ vk::vk_null_handle };
+	VkSampler sampler{ vk_null_handle };
 
 	vk_descriptor_set_write_image() = default;
 	vk_descriptor_set_write_image(VkImageView image_view,
 								  VkImageLayout image_layout)
-		: image(image_view), image_layout(image_layout) {}
+		: image(image_view), image_layout(image_layout) 
+	{}
+	template <typename A>
 	vk_descriptor_set_write_image(VkImageView image_view,
 								  VkImageLayout image_layout,
-								  const vk_sampler &sampler)
+								  const vk_sampler<A> &sampler)
 		: image(image_view),
 		image_layout(image_layout),
-		sampler(sampler) {}
-	vk_descriptor_set_write_image(const vk_sampler &sampler)
-		: sampler(sampler) {}
+		sampler(sampler) 
+	{}
+	template <typename A>
+	vk_descriptor_set_write_image(const vk_sampler<A> &sampler)
+		: sampler(sampler) 
+	{}
 
 	operator VkDescriptorImageInfo() const {
 		return { sampler, image, image_layout };
@@ -42,7 +47,7 @@ struct vk_descriptor_set_write_image {
 };
 
 struct vk_descriptor_set_write_buffer {
-	VkBuffer buffer{ vk::vk_null_handle };
+	VkBuffer buffer{ vk_null_handle };
 	std::uint64_t buffer_offset{ 0 };
 	std::uint64_t buffer_range{ 0 };
 
@@ -57,6 +62,7 @@ struct vk_descriptor_set_write_buffer {
 };
 
 class vk_descriptor_set_write_resource {
+	template <typename>
 	friend class vk_descriptor_set;
 
 private:

@@ -8,6 +8,7 @@
 #include <vk_exception.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
@@ -19,7 +20,8 @@ namespace gl {
 
 namespace vk {
 
-class vk_logical_device : public allow_type_decay<vk_logical_device, VkDevice>, anchored {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_logical_device : public allow_type_decay<vk_logical_device<host_allocator>, VkDevice>, anchored {
 private:
 	vk_physical_device_descriptor physical_device;
 
@@ -49,7 +51,7 @@ public:
 		device_info.pEnabledFeatures = &requested_features;
 
 		VkDevice device;
-		vk_result res = vkCreateDevice(physical_device.device, &device_info, nullptr, &device);
+		vk_result res = vkCreateDevice(physical_device.device, &device_info, &host_allocator::allocation_callbacks(), &device);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -60,7 +62,7 @@ public:
 	~vk_logical_device() noexcept {
 		if (logical_device) {
 			wait_idle();
-			vkDestroyDevice(logical_device.get(), nullptr);
+			vkDestroyDevice(logical_device.get(), &host_allocator::allocation_callbacks());
 		}
 		logical_device = none;
 	}

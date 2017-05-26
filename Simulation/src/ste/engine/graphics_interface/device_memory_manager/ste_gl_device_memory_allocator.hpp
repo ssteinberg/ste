@@ -46,7 +46,7 @@ public:
 	using allocation_t = chunk_t::allocation_type;
 
 private:
-	alias<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device<>> device;
 	mutable heaps_t heaps;
 	std::uint64_t minimal_allocation_size_bytes;
 
@@ -56,7 +56,7 @@ private:
 		return !!(memory_requirements.memoryTypeBits & (1 << type));
 	}
 
-	static memory_type_t find_memory_type_for(const vk::vk_logical_device &device,
+	static memory_type_t find_memory_type_for(const vk::vk_logical_device<> &device,
 											  const VkMemoryRequirements &memory_requirements,
 											  const VkMemoryPropertyFlags &required_flags,
 											  const VkMemoryPropertyFlags &preferred_flags) {
@@ -135,7 +135,7 @@ private:
 		chunk_size = chunk_t::align(chunk_size, alignment);
 
 		// Create the device memory object
-		return vk::vk_device_memory(device, chunk_size, memory_type);
+		return vk::vk_device_memory<>(device, chunk_size, memory_type);
 	}
 
 	auto allocate(std::uint64_t size,
@@ -195,7 +195,7 @@ private:
 	}
 
 public:
-	ste_gl_device_memory_allocator(const vk::vk_logical_device &device,
+	ste_gl_device_memory_allocator(const vk::vk_logical_device<> &device,
 								   std::uint64_t minimal_allocation_size_bytes = default_minimal_allocation_size_bytes)
 		: device(device), 
 		minimal_allocation_size_bytes(minimal_allocation_size_bytes)

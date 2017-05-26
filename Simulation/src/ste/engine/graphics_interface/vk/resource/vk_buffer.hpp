@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
+#include <vk_host_allocator.hpp>
 #include <vk_exception.hpp>
 
 #include <optional.hpp>
@@ -19,22 +20,23 @@ namespace gl {
 
 namespace vk {
 
-class vk_buffer : public allow_type_decay<vk_buffer, VkBuffer> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_buffer : public allow_type_decay<vk_buffer<host_allocator>, VkBuffer> {
 private:
 	static constexpr auto sparse_buffer_flags = VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT | VK_BUFFER_CREATE_SPARSE_BINDING_BIT;
 
 protected:
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 private:
 	optional<VkBuffer> buffer;
 	VkBufferUsageFlags usage;
 
 public:
-	vk_buffer(const vk_logical_device &device,
-				   std::uint64_t bytes,
-				   const VkBufferUsageFlags &usage,
-				   bool sparse)
+	vk_buffer(const vk_logical_device<host_allocator> &device,
+			  std::uint64_t bytes,
+			  const VkBufferUsageFlags &usage,
+			  bool sparse)
 		: device(device), usage(usage)
 	{
 		VkBuffer buffer;
@@ -49,7 +51,7 @@ public:
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
-		vk_result res = vkCreateBuffer(device, &create_info, nullptr, &buffer);
+		vk_result res = vkCreateBuffer(device, &create_info, &host_allocator::allocation_callbacks(), &buffer);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -73,7 +75,7 @@ public:
 
 	void destroy_buffer() {
 		if (buffer) {
-			vkDestroyBuffer(device.get(), *this, nullptr);
+			vkDestroyBuffer(device.get(), *this, &host_allocator::allocation_callbacks());
 			buffer = none;
 		}
 	}

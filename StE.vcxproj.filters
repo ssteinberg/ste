@@ -126,12 +126,6 @@
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

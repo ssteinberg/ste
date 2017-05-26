@@ -525,8 +525,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.cpp" />
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\query\vk_query.cpp" />
-    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\vk\queue\vk_command_buffers.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\log\log.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\scheduling\balanced_thread_pool.cpp" />

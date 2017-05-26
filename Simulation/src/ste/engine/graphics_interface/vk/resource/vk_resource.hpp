@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <vulkan/vulkan.h>
 #include <device_memory_heap.hpp>
 
@@ -13,12 +14,13 @@ namespace gl {
 
 namespace vk {
 
+template <typename host_allocator = vk_host_allocator<>>
 class vk_resource {
 public:
 	using allocation_t = device_memory_heap::allocation_type;
 
 protected:
-	virtual void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) = 0;
+	virtual void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) = 0;
 
 public:
 	virtual VkMemoryRequirements get_memory_requirements() const = 0;
