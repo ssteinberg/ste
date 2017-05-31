@@ -55,12 +55,13 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdWaitEvents(command_buffer, events.size(), events.data(),
-						barrier.get_src_stage(),
-						barrier.get_dst_stage(),
-						memory_barriers.size(), memory_barriers.data(),
-						buffer_barriers.size(), buffer_barriers.data(),
-						image_barriers.size(), image_barriers.data());
+		vkCmdWaitEvents(command_buffer, 
+						static_cast<std::uint32_t>(events.size()), events.data(),
+						static_cast<VkPipelineStageFlags>(barrier.get_src_stage()),
+						static_cast<VkPipelineStageFlags>(barrier.get_dst_stage()),
+						static_cast<std::uint32_t>(memory_barriers.size()), memory_barriers.data(),
+						static_cast<std::uint32_t>(buffer_barriers.size()), buffer_barriers.data(),
+						static_cast<std::uint32_t>(image_barriers.size()),  image_barriers.data());
 	}
 };
 

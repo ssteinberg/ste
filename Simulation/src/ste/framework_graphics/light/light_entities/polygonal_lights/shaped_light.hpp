@@ -24,7 +24,7 @@ protected:
 	shaped_light_points_storage_info storage_info;
 
 protected:
-	shaped_light(LightType type,
+	shaped_light(light_type type,
 				 const rgb &color,
 				 float intensity,
 				 const glm::vec3 &position,

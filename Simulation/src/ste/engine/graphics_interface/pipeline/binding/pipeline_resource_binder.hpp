@@ -112,8 +112,8 @@ auto bind(const array<T> &array) {
 *
 *	@param	ring	Ring buffer to bind
 */
-template <typename T>
-auto bind(const ring_buffer<T> &ring) {
+template <typename T, unsigned C>
+auto bind(const ring_buffer<T, C> &ring) {
 	return gl::bind(ring.get());
 }
 /**

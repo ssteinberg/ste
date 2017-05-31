@@ -9,9 +9,6 @@
 #include <rayleigh_scattering.hpp>
 #include <mie_scattering.hpp>
 
-#include <limits>
-#include <functional>
-
 namespace ste {
 namespace graphics {
 

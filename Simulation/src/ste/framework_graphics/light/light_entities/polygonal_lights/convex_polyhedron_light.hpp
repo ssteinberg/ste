@@ -19,7 +19,7 @@ protected:
 	convex_polyhedron_light(const rgb &color,
 							float intensity,
 							const glm::vec3 &position,
-							shaped_light_points_storage_info storage_info) : shaped_light(LightType::ConvexPolyhedron,
+							shaped_light_points_storage_info storage_info) : shaped_light(light_type::ConvexPolyhedron,
 																						  color,
 																						  intensity,
 																						  position,
