@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_resource.hpp>
 #include <ste_resource_traits.hpp>
 
 #include <device_image.hpp>

@@ -6,8 +6,9 @@
 #include <stdafx.hpp>
 #include <atmospherics_descriptor.hpp>
 
-#include <ring_buffer_old.hpp>
-#include <range.hpp>
+#include <ring_buffer.hpp>
+#include <command_recorder.hpp>
+#include <pipeline_stage.hpp>
 
 namespace ste {
 namespace graphics {
@@ -15,29 +16,29 @@ namespace graphics {
 class atmospherics_buffer {
 private:
 	using descriptor = atmospherics_descriptor;
-	using buffer_type = Core::ring_buffer_old<descriptor, 3>;
+	using buffer_type = gl::ring_buffer<descriptor::descriptor_data, 12>;
 
 private:
 	buffer_type buffer;
-	range<> r{ 0, 0 };
+	std::uint32_t slot;
 
 public:
 	atmospherics_buffer(const descriptor::Properties &p) {
 		update_data(p);
 	}
 
-	void update_data(const descriptor::Properties &p) {
+	auto update_data(const descriptor::Properties &p) {
 		auto d = descriptor(p);
-		range<> r = buffer.commit(d);
+		slot = buffer.commit(d.get());
 
-		r.start /= sizeof(d);
-		r.length /= sizeof(d);
-
-		this->r = r;
+		return slot;
 	}
 
-	void bind_buffer(int idx) const {
-		buffer.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), r.start, r.length);
+	void finish(gl::command_recorder &recorder,
+				gl::pipeline_stage stage) const {
+		buffer.signal(recorder,
+					  slot,
+					  stage);
 	}
 };
 

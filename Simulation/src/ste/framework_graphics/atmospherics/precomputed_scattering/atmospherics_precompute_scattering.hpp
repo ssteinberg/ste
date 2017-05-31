@@ -66,7 +66,7 @@ private:
 	} data;
 
 public:
-	_atmospherics_precompute_scattering_data() {}
+	_atmospherics_precompute_scattering_data() = default;
 	~_atmospherics_precompute_scattering_data() noexcept {}
 
 	static T height_to_lut_idx(const T &h, const T &h_max) {

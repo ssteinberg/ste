@@ -29,6 +29,7 @@ private:
 	mutable atomic_ptr linear_mipmap{ nullptr };
 
 	mutable atomic_ptr linear_anisotropic16{ nullptr };
+	mutable atomic_ptr linear_clamp_anisotropic16{ nullptr };
 	mutable atomic_ptr linear_mipmap_anisotropic16{ nullptr };
 
 	mutable atomic_ptr nearest_clamp{ nullptr };
@@ -71,6 +72,7 @@ public:
 		dealloc(linear_mipmap);
 
 		dealloc(linear_anisotropic16);
+		dealloc(linear_clamp_anisotropic16);
 		dealloc(linear_mipmap_anisotropic16);
 
 		dealloc(nearest_clamp);
@@ -103,6 +105,16 @@ public:
 					*device,
 					sampler_parameter::filtering(sampler_filter::nearest,
 												 sampler_filter::nearest),
+					sampler_parameter::anisotropy(16));
+	}
+	const auto& linear_clamp_anisotropic16_sampler() const {
+		return 	get(linear_clamp_anisotropic16,
+					*device,
+					sampler_parameter::filtering(sampler_filter::nearest,
+												 sampler_filter::nearest),
+					sampler_parameter::address_mode(sampler_address_mode::clamp_to_edge,
+													sampler_address_mode::clamp_to_edge,
+													sampler_address_mode::clamp_to_edge),
 					sampler_parameter::anisotropy(16));
 	}
 	const auto& linear_mipmap_anisotropic16_sampler() const {
