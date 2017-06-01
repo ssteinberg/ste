@@ -8,8 +8,6 @@
 
 #include <stable_vector.hpp>
 
-#include <type_traits>
-
 namespace ste {
 namespace gl {
 
@@ -30,6 +28,10 @@ private:
 	}
 
 public:
+	resource_storage_stable(const ste_context &ctx,
+							const buffer_usage &usage)
+		: Base(ctx, usage)
+	{}
 	virtual ~resource_storage_stable() {}
 };
 

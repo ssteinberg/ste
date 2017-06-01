@@ -4,14 +4,12 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <resource_storage_base.hpp>
 #include <observable_resource.hpp>
 
 #include <type_traits>
-#include <memory>
-
-#include <unordered_set>
-#include <map>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -37,7 +35,7 @@ protected:
 	using storage_type = Storage<descriptor_type>;
 
 private:
-	storage_type stack;
+	storage_type store;
 
 private:
 	/**
@@ -67,10 +65,10 @@ protected:
 	*			At this point a defaultly constructed descriptor is already uploaded.
 	*/
 	template <typename T, typename ... Ts>
-	std::unique_ptr<T> allocate_resource(Ts&&... args) {
+	lib::unique_ptr<T> allocate_resource(Ts&&... args) {
 		static_assert(std::is_base_of<resource_type, T>::value, "T must derive from Core::observable_resource<Descriptor> !");
 
-		auto ptr = std::make_unique<T>(std::forward<Ts>(args)...);
+		auto ptr = lib::allocate_unique<T>(std::forward<Ts>(args)...);
 		ptr->storage_ptr = dynamic_cast<Specialization*>(this);
 		ptr->resource_storage_identifier = allocate_identifier(ptr->get_descriptor());
 		Base::objects.insert(ptr.get());
@@ -92,6 +90,10 @@ protected:
 	}
 
 public:
+	resource_storage(const ste_context &ctx,
+					 const buffer_usage &usage)
+		: store(ctx, usage)
+	{}
 	virtual ~resource_storage() {
 		for (auto &res : Base::objects)
 			erase_resource(res);
@@ -104,7 +106,7 @@ public:
 	void update() {
 		for (auto &res : Base::signalled_objects) {
 			auto idx = index_of(res);
-			stack.overwrite(idx, res->get_descriptor());
+			store.overwrite(idx, res->get_descriptor());
 		}
 
 		Base::signalled_objects.clear();
@@ -116,9 +118,9 @@ public:
 	int index_of(const resource_type *res) const override final { return this->index_of_with_identifier(res->resource_storage_identifier); }
 
 	/**
-	*	@brief	Get SSBO
+	*	@brief	Get underlying buffer
 	*/
-	auto &buffer() const { return stack.get_buffer(); }
+	const auto& buffer() const { return store.get(); }
 
 	/**
 	*	@brief	Total count of active resources in storage
@@ -129,4 +131,4 @@ public:
 }
 }
 
-#include "observable_resource_impl.hpp"
+#include <observable_resource_impl.hpp>

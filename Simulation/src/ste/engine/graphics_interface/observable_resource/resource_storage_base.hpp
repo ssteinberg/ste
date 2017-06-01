@@ -5,11 +5,8 @@
 
 #include <stdafx.hpp>
 
-#include <type_traits>
-#include <memory>
-
-#include <unordered_set>
-#include <map>
+#include <lib/flat_set.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 namespace gl {
@@ -18,7 +15,7 @@ template <typename Descriptor>
 class observable_resource;
 
 template <typename Descriptor>
-class resource_storage_base {
+class resource_storage_base : anchored {
 	friend class observable_resource<Descriptor>;
 
 protected:
@@ -26,8 +23,8 @@ protected:
 	using resource_type = observable_resource<descriptor_type>;
 
 protected:
-	std::unordered_set<const resource_type*> signalled_objects;
-	std::unordered_set<const resource_type*> objects;
+	lib::flat_set<const resource_type*> signalled_objects;
+	lib::flat_set<const resource_type*> objects;
 
 private:
 	/**

@@ -3,8 +3,10 @@
 
 #pragma once
 
-#include "stdafx.hpp"
-#include "resource_storage_base.hpp"
+#include <stdafx.hpp>
+#include <resource_storage_base.hpp>
+
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -26,10 +28,10 @@ class observable_resource {
 public:
 	using resource_descriptor_type = Descriptor;
 	using storage_type = resource_storage_base<resource_descriptor_type>;
-
+	
 private:
 	std::size_t resource_storage_identifier;
-	mutable storage_type *storage_ptr{ nullptr };
+	mutable alias<storage_type> storage_ptr{ nullptr };
 
 public:
 	virtual ~observable_resource() noexcept {
@@ -52,10 +54,10 @@ public:
 	void dealloc();
 
 	auto resource_index_in_storage() const { return is_valid() ? storage_ptr->index_of(this) : -1; }
-	bool is_valid() const { return storage_ptr != nullptr; }
+	bool is_valid() const { return storage_ptr.get() != nullptr; }
 };
 
 }
 }
 
-#include "observable_resource_impl.hpp"
+#include <observable_resource_impl.hpp>

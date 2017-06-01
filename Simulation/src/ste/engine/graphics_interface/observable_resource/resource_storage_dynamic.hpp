@@ -8,7 +8,7 @@
 
 #include <array.hpp>
 
-#include <vector>
+#include <lib/vector.hpp>
 #include <algorithm>
 
 namespace ste {
@@ -20,7 +20,7 @@ class resource_storage_dynamic : public resource_storage<resource_storage_dynami
 
 private:
 	std::size_t resource_counter{ 0 };
-	std::vector<std::size_t> identifiers_order;
+	lib::vector<std::size_t> identifiers_order;
 
 private:
 	int index_of_with_identifier(std::size_t resource_storage_identifier) const override final {
@@ -45,6 +45,10 @@ private:
 	}
 
 public:
+	resource_storage_dynamic(const ste_context &ctx,
+							 const buffer_usage &usage)
+		: Base(ctx, usage)
+	{}
 	virtual ~resource_storage_dynamic() {}
 };
 
