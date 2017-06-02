@@ -63,7 +63,7 @@ public:
 		}
 
 		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t >(0)) };
-		recorder << lll_counter.update_task(zero, 0)();
+		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
 };
 

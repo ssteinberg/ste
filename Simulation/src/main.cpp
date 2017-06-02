@@ -136,8 +136,8 @@ public:
 															 gl::buffer_memory_barrier(s->vertex_buffer,
 																					   gl::access_flags::vertex_attribute_read,
 																					   gl::access_flags::transfer_write)))
-			<< s->vertex_buffer.update_task({ v }, 0)()
-			<< s->ubo.update_task({ data }, 0)()
+			<< s->vertex_buffer.overwrite_cmd(0, v)
+			<< s->ubo.overwrite_cmd(0, data)
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 															 gl::pipeline_stage::vertex_shader,
 															 gl::buffer_memory_barrier(s->ubo,

@@ -6,7 +6,8 @@
 #include <stdafx.hpp>
 #include <light.hpp>
 
-#include <gstack_stable.hpp>
+#include <stable_vector.hpp>
+#include <command_recorder.hpp>
 
 namespace ste {
 namespace graphics {
@@ -17,7 +18,7 @@ class shaped_light : public light {
 public:
 	using shaped_light_point_type = glm::uvec2;
 	struct shaped_light_points_storage_info {
-		Core::gstack_stable<shaped_light_point_type> *storage;
+		gl::stable_vector<shaped_light_point_type> *storage;
 	};
 
 protected:
@@ -37,7 +38,11 @@ protected:
 		descriptor.set_polygonal_light_points(0, 0);
 	}
 
-	void set_points(const glm::vec3 *points, std::size_t size, float surface_area, const glm::vec3 &n) {
+	void set_points(gl::command_recorder &recorder,
+					const glm::vec3 *points, 
+					std::size_t size, 
+					float surface_area, 
+					const glm::vec3 &n) {
 		lib::vector<shaped_light_point_type> points_copy;
 		float r = .0f;
 
@@ -61,32 +66,33 @@ protected:
 		}
 
 		// Add to buffer
-		auto idx = descriptor.get_polygonal_light_buffer_offset();
+		std::uint64_t idx = descriptor.get_polygonal_light_buffer_offset();
 		auto current_count = this->get_points_count();
 		if (current_count > 0) {
 			if (current_count < size) {
 				// Erase old points and insert new
-				storage_info.storage->mark_tombstone(idx, current_count);
-				idx = storage_info.storage->insert(points_copy);
+				storage_info.storage->tombstone(idx, current_count);
+				recorder << storage_info.storage->insert_cmd(points_copy, idx);
 			}
 			else {
 				// Overwrite
 				if (size > 0)
-					storage_info.storage->overwrite(idx, points_copy);
+					recorder << storage_info.storage->overwrite_cmd(idx, points_copy);
 
 				// Erase tail
 				if (current_count > size)
-					storage_info.storage->mark_tombstone(idx + size, current_count - size);
+					storage_info.storage->tombstone(idx + size, current_count - size);
 			}
 		}
 		else {
-			idx = storage_info.storage->insert(points_copy);
+			recorder << storage_info.storage->insert_cmd(points_copy, idx);
 		}
 
 		float sqrt_surface_area = glm::sqrt(surface_area);
 
 		// Update descriptor
-		descriptor.set_polygonal_light_points(size, idx);
+		descriptor.set_polygonal_light_points(static_cast<std::uint8_t>(size), 
+											  static_cast<std::uint32_t>(idx));
 		descriptor.radius = r;
 		update_effective_range(sqrt_surface_area);
 		Base::notify();
@@ -97,7 +103,7 @@ public:
 		auto idx = descriptor.get_polygonal_light_buffer_offset();
 		auto count = this->get_points_count();
 		if (count > 0)
-			storage_info.storage->mark_tombstone(idx, count);
+			storage_info.storage->tombstone(idx, count);
 	}
 
 	int get_points_count() const { return descriptor.get_polygonal_light_point_count(); }

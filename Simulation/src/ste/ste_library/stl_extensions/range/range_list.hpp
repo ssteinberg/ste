@@ -4,7 +4,7 @@
 #pragma once
 
 #include <range.hpp>
-#include <list>
+#include <deque>
 
 #include <initializer_list>
 
@@ -16,10 +16,13 @@ enum class range_list_overlap {
 	partial,
 };
 
-template<typename T>
+template <typename T, class Allocator = std::allocator<T>>
 class range_list_custom {
 private:
-	using list_t = std::list<T>;
+	using list_t = std::deque<T, Allocator>;
+
+public:
+	using value_type = T;
 
 private:
 	list_t list;
@@ -106,8 +109,8 @@ public:
 	}
 
 	/**
-	 *	@brief	Remove range
-	 */
+	*	@brief	Remove range
+	*/
 	void remove(const T &r) {
 		auto rend = r.start + r.length;
 		for (auto it = list.begin(); it != list.end() && it->start < rend;) {
@@ -115,6 +118,12 @@ public:
 			++it;
 			split(split_it, r);
 		}
+	}
+	/**
+	*	@brief	Remove range
+	*/
+	void remove(typename list_t::iterator it) {
+		list.erase(it);
 	}
 
 	/**
@@ -166,7 +175,7 @@ public:
 	auto end() const { return list.end(); }
 };
 
-template <typename T = std::size_t>
+template <typename T = std::size_t, class Allocator = std::allocator<T>>
 using range_list = range_list_custom<range<T>>;
 
 }

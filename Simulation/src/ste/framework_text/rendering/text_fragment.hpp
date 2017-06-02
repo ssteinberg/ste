@@ -59,7 +59,7 @@ private:
 			// Update vertex buffer
 			if (tr->count > static_cast<std::uint32_t>(tr->vertex_buffer.size()))
 				recorder << tr->vertex_buffer.resize_cmd(tr->count);
-			recorder << tr->vertex_buffer.update_task(points, 0)();
+			recorder << tr->vertex_buffer.overwrite_cmd(0, points);
 
 			tr->updated = true;
 		}

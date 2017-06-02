@@ -7,11 +7,12 @@
 #include <resource_storage_base.hpp>
 
 #include <alias.hpp>
+#include <anchored.hpp>
 
 namespace ste {
 namespace gl {
 
-template <typename, typename, template<class> typename>
+template <typename, typename, typename>
 class resource_storage;
 
 /**
@@ -20,8 +21,8 @@ class resource_storage;
  *	@param Descriptor	Descriptor type. Descriptor is a POD that will be uploaded to the GPU by the resource_storage.
  */
 template <typename Descriptor>
-class observable_resource {
-	template <typename, typename, template<class> typename>
+class observable_resource : anchored {
+	template <typename, typename, typename>
 	friend class resource_storage;
 	friend class resource_storage_base<Descriptor>;
 
@@ -48,13 +49,16 @@ protected:
 public:
 	observable_resource() = default;
 
+	observable_resource(const observable_resource&) = delete;
+	observable_resource &operator=(const observable_resource&) = delete;
+
 	/**
 	*	@brief	Deallocate resource. Identical to calling resource's' storage erase_resource().
 	*/
 	void dealloc();
 
 	auto resource_index_in_storage() const { return is_valid() ? storage_ptr->index_of(this) : -1; }
-	bool is_valid() const { return storage_ptr.get() != nullptr; }
+	bool is_valid() const { return storage_ptr != nullptr; }
 };
 
 }

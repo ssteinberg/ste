@@ -22,7 +22,7 @@ struct allocator_delete {
 	allocator_delete(const allocator_delete<U[]>&) = delete;
 	template<
 		typename U,
-		typename = typename std::enable_if<!std::is_array_v<U> && std::is_convertible_v<typename allocator_delete<U>::pointer, pointer>>::type
+		typename = typename std::enable_if<std::is_convertible_v<typename allocator_delete<U>::pointer, pointer>>::type
 	>
 	allocator_delete(const allocator_delete<U>&) noexcept {}
 

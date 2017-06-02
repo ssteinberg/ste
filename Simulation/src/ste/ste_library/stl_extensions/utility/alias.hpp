@@ -26,6 +26,9 @@ public:
 		return *this;
 	}
 
+	bool operator==(const alias<T> &rhs) const { return ptr == rhs.ptr; }
+	bool operator!=(const alias<T> &rhs) const { return ptr != rhs.ptr; }
+
 	auto& get() noexcept {
 		static_assert(is_anchored_v<T>, "T must be anchored"); 
 		return *ptr; 

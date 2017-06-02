@@ -119,7 +119,7 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 																				   gl::access_flags::shader_read,
 																				   gl::access_flags::transfer_write)))
 //		<< gl::cmd_copy_buffer(hdr_bokeh_param_buffer.get(), hdr_bokeh_param_buffer_prev.get())
-		<< s->hdr_bokeh_param_buffer.update_task({ s->parameters_initial }, 0)();
+		<< s->hdr_bokeh_param_buffer.overwrite_cmd(0, s->parameters_initial);
 
 	recorder
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
