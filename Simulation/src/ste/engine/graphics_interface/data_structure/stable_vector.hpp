@@ -47,6 +47,7 @@ private:
 
 public:
 	using value_type = T;
+	static constexpr bool sparse_container = true;
 
 private:
 	buffer_t buffer;
@@ -67,7 +68,7 @@ public:
 		: stable_vector(ctx, usage)
 	{
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, buffer, initial_data);
+		_internal::copy_data_buffer_and_resize(ctx, *this, initial_data);
 	}
 	~stable_vector() noexcept {}
 

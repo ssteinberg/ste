@@ -1,13 +1,14 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <camera.hpp>
+#include <ste_context.hpp>
+#include <command_recorder.hpp>
 
-#include <ring_buffer_old.hpp>
-#include <range.hpp>
+#include <camera.hpp>
+#include <array.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
 
@@ -28,16 +29,21 @@ private:
 		float aspect;
 	};
 
-	using view_ring_buffer_type = Core::ring_buffer_old<view_data, 3>;
-	using proj_ring_buffer_type = Core::ring_buffer_old<proj_data, 1>;
+	using view_buffer_type = gl::array<view_data>;
+	using proj_buffer_type = gl::array<proj_data>;
 
 private:
-	view_ring_buffer_type view_buffer;
-	proj_ring_buffer_type proj_buffer;
-	range<> r{ 0, 0 };
+	view_buffer_type view_buffer;
+	proj_buffer_type proj_buffer;
 
 public:
-	void update_view_data(const camera &c) {
+	transforms_ring_buffers(const ste_context &ctx)
+		: view_buffer(ctx, 1, gl::buffer_usage::storage_buffer),
+		proj_buffer(ctx, 1, gl::buffer_usage::storage_buffer)
+	{}
+
+	void update_view_data(gl::command_recorder &recorder,
+						  const camera<float> &c) {
 		auto p = c.get_position();
 
 		view_data v;
@@ -45,14 +51,11 @@ public:
 		v.inverse_view_transform = glm::inverse(v.view_transform);
 		v.eye_position = glm::vec4{ p.x, p.y, p.z, .0f };
 
-		range<> r = view_buffer.commit(v);
-		r.start /= sizeof(view_data);
-		r.length /= sizeof(view_data);
-
-		this->r = r;
+		recorder << view_buffer.overwrite_cmd(0, v);
 	}
 
-	void update_proj_data(float fovy, float aspect, float fnear, const glm::uvec2 backbuffer_size) {
+	void update_proj_data(gl::command_recorder &recorder,
+						  float fovy, float aspect, float fnear, const glm::uvec2 backbuffer_size) {
 		proj_data p;
 
 		float tanHalfFovy = glm::tan(fovy * .5f);
@@ -64,16 +67,11 @@ public:
 		p.tan_half_fovy = tanHalfFovy;
 		p.aspect = aspect;
 
-		proj_buffer.commit(p);
+		recorder << proj_buffer.overwrite_cmd(0, p);
 	}
 
-	void bind_view_buffer(int idx) const {
-		view_buffer.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), r.start, r.length);
-	}
-
-	void bind_proj_buffer(int idx) const {
-		proj_buffer.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, 1);
-	}
+	auto& get_view_buffer() const { return view_buffer; }
+	auto& get_proj_buffer() const { return proj_buffer; }
 };
 
 }
