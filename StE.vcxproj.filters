@@ -332,9 +332,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\girenderer_loader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

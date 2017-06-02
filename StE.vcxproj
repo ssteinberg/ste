@@ -1066,7 +1066,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\deferred_gbuffer\gbuffer_clearer\gbuffer_clear_dispatch.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\girenderer_loader.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\hdr_dof_postprocess.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_x_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\hdr_dof\steps\hdr_bloom_blur_y_fragment.hpp" />

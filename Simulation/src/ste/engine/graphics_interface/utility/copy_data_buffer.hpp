@@ -25,20 +25,21 @@ namespace gl {
 
 namespace _internal {
 
-template <typename T, class policy>
+template <typename Container>
 void copy_data_buffer(const ste_context &ctx,
-					  device_buffer<T, policy> &buffer,
-					  const lib::vector<T> &data,
+					  Container &gl_container,
+					  const lib::vector<typename Container::value_type> &data,
 					  std::size_t offset = 0) {
+	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible_coherent>;
 
 	// Don't allow copying pass buffer end
-	if (data.size() > buffer.get().get_elements_count() + offset) {
+	if (data.size() > gl_container.get().get_elements_count() + offset) {
 		throw ste_engine_exception("Buffer overflow");
 	}
 
 	auto copy_count = data.size();
-	
+
 	// Select queue
 	auto queue_type = ste_queue_type::data_transfer_queue;
 	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
@@ -66,7 +67,9 @@ void copy_data_buffer(const ste_context &ctx,
 			auto recorder = command_buffer.record();
 			// Copy to live buffer
 			VkBufferCopy range = { 0, offset * sizeof(T), copy_count * sizeof(T) };
-			recorder << cmd_copy_buffer(staging_buffer, buffer, { range });
+			recorder << cmd_copy_buffer(staging_buffer,
+										gl_container,
+										{ range });
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));
@@ -76,16 +79,22 @@ void copy_data_buffer(const ste_context &ctx,
 	(*fence)->get_wait();
 }
 
-template <typename T, int atom_size, class policy>
-void copy_data_buffer(const ste_context &ctx,
-					  device_buffer_sparse<T, atom_size, policy> &buffer,
-					  const lib::vector<T> &data,
-					  std::uint64_t offset = 0) {
+template <typename Container, typename = typename std::enable_if<Container::sparse_container>::type>
+void copy_data_buffer_and_resize(const ste_context &ctx,
+								 Container &gl_container,
+								 const lib::vector<typename Container::value_type> &data,
+								 std::size_t offset = 0) {
+	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible_coherent>;
+
+	// Don't allow copying pass buffer end
+	if (data.size() > gl_container.get().get_elements_count() + offset) {
+		throw ste_engine_exception("Buffer overflow");
+	}
 
 	auto copy_count = data.size();
 
-	// Select queue
+	// Select queue (might need to sparse bind)
 	auto queue_type = ste_queue_type::data_transfer_sparse_queue;
 	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
 	auto& q = ctx.device().select_queue(queue_selector);
@@ -97,7 +106,7 @@ void copy_data_buffer(const ste_context &ctx,
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		std::memcpy(ptr->get_mapped_ptr(), data.data(), copy_count * sizeof(T));
+		std::memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
 	// Create a batch
@@ -107,17 +116,16 @@ void copy_data_buffer(const ste_context &ctx,
 
 	// Enqueue on a transfer queue
 	ctx.device().enqueue(queue_selector, [&]() {
-		// Bind sparse memory
-		typename device_buffer_sparse<T, atom_size, policy>::bind_range_t bind = { offset, copy_count };
-
+		// Record and submit a one-time batch
 		{
-			// Record and submit a one-time batch
 			auto recorder = command_buffer.record();
-
 			// Copy to live buffer
-			VkBufferCopy copy = { 0, offset * sizeof(T), copy_count * sizeof(T) };
-			recorder << buffer.cmd_bind_sparse_memory({}, { bind }, {}, {});
-			recorder << cmd_copy_buffer(staging_buffer, buffer, { copy });
+			VkBufferCopy range = { 0, offset * sizeof(T), copy_count * sizeof(T) };
+			if (gl_container.size() < copy_count + offset)
+				recorder << gl_container.resize_cmd(copy_count + offset);
+			recorder << cmd_copy_buffer(staging_buffer,
+										gl_container,
+										{ range });
 		}
 
 		ste_device_queue::submit_batch(std::move(batch));

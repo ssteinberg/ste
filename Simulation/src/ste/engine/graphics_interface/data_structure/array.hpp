@@ -52,7 +52,7 @@ public:
 		: array(ctx, count, usage)
 	{
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, buffer, initial_data);
+		_internal::copy_data_buffer(ctx, *this, initial_data);
 	}
 	array(const ste_context &ctx,
 		  const lib::vector<T> &initial_data,

@@ -62,6 +62,8 @@ public:
 		locks(generate_array(ctx, std::make_index_sequence<segment_count>()))
 	{
 		ptr = buffer.get_underlying_memory().template mmap<value_type>(0, segment_count);
+		for (auto &l : locks)
+			l.set();
 	}
 	~ring_buffer() noexcept {}
 
@@ -91,7 +93,7 @@ public:
 	/**
 	*	@brief	Unlocks a slot. Must be paired with commit() calls.
 	*	
-	*	@param	recorder			Comand recorder that records a buffer that will be submitted to device
+	*	@param	recorder		Command recorder that records a buffer that will be submitted to device
 	*	@oaram	segment_index	Index of slot. Use commit()'s return value.
 	*	@param	stage			Pipeline stage at which to unlock the slot
 	*/

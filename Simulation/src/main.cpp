@@ -400,16 +400,16 @@ int main()
 
 
 	//	ste_resource<gl::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
-		//	device_pipeline_shader_stage(ctx, lib::string("deferred_compose.frag"));
-		//	device_pipeline_shader_stage(ctx, lib::string("shadow_cubemap.geom"));
-		//	device_pipeline_shader_stage(ctx, lib::string("shadow_directional.geom"));
-		//	device_pipeline_shader_stage(ctx, lib::string("volumetric_scattering_scatter.comp"));
-		//	stage.get();
+	//	device_pipeline_shader_stage(ctx, lib::string("deferred_compose.frag"));
+	//	device_pipeline_shader_stage(ctx, lib::string("shadow_cubemap.geom"));
+	//	device_pipeline_shader_stage(ctx, lib::string("shadow_directional.geom"));
+	//	device_pipeline_shader_stage(ctx, lib::string("volumetric_scattering_scatter.comp"));
+	//	stage.get();
 
 
-		/*
-			*	Main loop
-			*/
+	/*
+	 *	Main loop
+	 */
 	float f = .0f;
 	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {

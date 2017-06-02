@@ -66,7 +66,7 @@ public:
 		host_replica = initial_data;
 
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, buffer, host_replica);
+		_internal::copy_data_buffer_and_resize(ctx, *this, host_replica);
 	}
 	~vector() noexcept {}
 
