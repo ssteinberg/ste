@@ -73,44 +73,6 @@ public:
 	auto ndf_type() const { return fit_data->header.ndf_type; }
 };
 
-struct microfacet_transmission_fit_v3_element {
-	double a1, b1, c1;
-	double a2, b2, c2;
-};
-
-class microfacet_transmission_fit_v3 : public microfacet_transmission_fit<3, microfacet_transmission_fit_v3_element> {
-	using Base = microfacet_transmission_fit<3, microfacet_transmission_fit_v3_element>;
-
-public:
-	using Base::Base;
-
-	gli::texture2d_array create_lut() const override {
-		using gauss_coef_f = struct { float a, b, c; };
-
-		int size = fit_data->header.size;
-
-		gli::texture2d_array lut = gli::texture2d_array(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size, size }, 2);
-
-		auto *lut0 = reinterpret_cast<gauss_coef_f*>(lut[0].data());
-		auto *lut1 = reinterpret_cast<gauss_coef_f*>(lut[1].data());
-
-		for (int y = 0; y < size; ++y) {
-			for (int x = 0; x < size; ++x) {
-				auto offset = x + y * size;
-
-				lut0[offset] = { static_cast<float>(fit_data->data[offset].a1),
-					static_cast<float>(fit_data->data[offset].a2),
-					-static_cast<float>(fit_data->data[offset].b1) };
-				lut1[offset] = { 1.f / static_cast<float>(fit_data->data[offset].c1),
-					1.f / static_cast<float>(fit_data->data[offset].c2),
-					-static_cast<float>(fit_data->data[offset].b2) };
-			}
-		}
-
-		return lut;
-	}
-};
-
 struct microfacet_transmission_fit_v4_element {
 	double a, b, c, d, m;
 };
@@ -122,14 +84,14 @@ public:
 	using Base::Base;
 
 	gli::texture2d_array create_lut() const override {
-		using f3_coef = struct { float a, b, c; };
+		using f4_coef = struct { float a, b, c, d; };
 
 		int size = fit_data->header.size;
 
-		gli::texture2d_array lut = gli::texture2d_array(gli::format::FORMAT_RGB32_SFLOAT_PACK32, glm::ivec2{ size, size }, 2);
+		gli::texture2d_array lut = gli::texture2d_array(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size, size }, 2);
 
-		auto *lut0 = reinterpret_cast<f3_coef*>(lut[0].data());
-		auto *lut1 = reinterpret_cast<f3_coef*>(lut[1].data());
+		auto *lut0 = reinterpret_cast<f4_coef*>(lut[0].data());
+		auto *lut1 = reinterpret_cast<f4_coef*>(lut[1].data());
 
 		for (int y = 0; y < size; ++y) {
 			for (int x = 0; x < size; ++x) {
@@ -137,10 +99,12 @@ public:
 
 				lut0[offset] = { static_cast<float>(fit_data->data[offset].a),
 								 static_cast<float>(fit_data->data[offset].b),
-								 static_cast<float>(fit_data->data[offset].c) };
+								 static_cast<float>(fit_data->data[offset].c),
+								 .0f };
 				lut1[offset] = { static_cast<float>(fit_data->data[offset].d),
 								 static_cast<float>(fit_data->data[offset].m),
-								 .0f };
+								.0f ,
+								.0f };
 			}
 		}
 

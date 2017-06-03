@@ -5,6 +5,8 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <storage.hpp>
+
 #include <light.hpp>
 #include <light_cascade_descriptor.hpp>
 #include <camera.hpp>
@@ -30,7 +32,7 @@ constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;
 constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-class light_storage : public gl::resource_storage_dynamic<light_descriptor> {
+class light_storage : public gl::resource_storage_dynamic<light_descriptor>, public gl::storage<light_storage> {
 	using Base = gl::resource_storage_dynamic<light_descriptor>;
 
 public:
