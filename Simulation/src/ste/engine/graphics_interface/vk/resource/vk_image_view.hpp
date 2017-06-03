@@ -96,7 +96,7 @@ public:
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
-				  std::uint32_t mips = all_mip_levels,
+				  std::uint32_t mips,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,

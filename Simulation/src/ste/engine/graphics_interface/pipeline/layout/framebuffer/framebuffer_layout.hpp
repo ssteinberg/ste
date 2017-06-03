@@ -114,6 +114,12 @@ public:
 				throw framebuffer_layout_multiple_depth_attachments_exception("Up to one depth attachment allowed per framebuffer");
 			}
 
+			// Pad to attachment location
+			if (!is_depth_attachment) {
+				while (color.size() > a.first) color.push_back(VkAttachmentReference{ VK_ATTACHMENT_UNUSED, static_cast<VkImageLayout>(0) });
+				assert(color.size() == a.first);
+			}
+
 			auto vk_attachment_ref = VkAttachmentReference{ 
 				static_cast<std::uint32_t>(vk_attachments.size() - 1),
 				static_cast<VkImageLayout>(attachment.layout)

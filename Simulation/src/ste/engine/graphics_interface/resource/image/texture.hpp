@@ -60,7 +60,7 @@ public:
 	texture &operator=(texture&& o) = default;
 
 	VkImageView get_image_view_handle() const override final { return view.get_image_view_handle(); }
-	const device_image_base& get_image() const override final { return image; }
+	const device_image<dimensions>& get_image() const override final { return image; }
 
 	auto& get() const { return view; }
 };

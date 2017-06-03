@@ -177,9 +177,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1874,9 +1871,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\transforms_ring_buffers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1887,6 +1881,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

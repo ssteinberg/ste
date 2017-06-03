@@ -919,9 +919,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1065,7 +1062,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\deferred_composer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_dispatch.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_bloom_blur_x_fragment.hpp" />

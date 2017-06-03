@@ -7,44 +7,63 @@
 
 #include <signal.hpp>
 
-#include <texture_2d.hpp>
-#include <texture_2d_array.hpp>
-#include <framebuffer_object.hpp>
+#include <ste_resource.hpp>
+#include <image_type.hpp>
+#include <texture.hpp>
+#include <framebuffer.hpp>
 
-#include <lib/unique_ptr.hpp>
+#include <command_recorder.hpp>
+#include <cmd_clear_color_image.hpp>
 
 namespace ste {
 namespace graphics {
 
 class deferred_gbuffer {
 private:
-	lib::unique_ptr<Core::texture_2d_array> gbuffer{ nullptr };
-	lib::unique_ptr<Core::texture_2d> depth_target{ nullptr };
-	lib::unique_ptr<Core::texture_2d> backface_depth_target{ nullptr };
-	lib::unique_ptr<Core::texture_2d> downsampled_depth_target{ nullptr };
-	Core::framebuffer_object fbo;
-	Core::framebuffer_object backface_fbo;
+	alias<const ste_context> ctx;
+
+	ste_resource<gl::texture<gl::image_type::image_2d>> depth_target;
+	ste_resource<gl::texture<gl::image_type::image_2d>> backface_depth_target;
+	ste_resource<gl::texture<gl::image_type::image_2d>> downsampled_depth_target;
+
+	gl::device_image<2> gbuffer;
+	gl::image_view<gl::image_type::image_2d> gbuffer_level_0;
+	gl::image_view<gl::image_type::image_2d> gbuffer_level_1;
+
+	gl::framebuffer fbo;
+	gl::framebuffer backface_fbo;
 
 	glm::ivec2 size;
 	int depth_buffer_levels;
 
-	signal<> depth_target_modified_signal;
+	mutable signal<> depth_target_modified_signal;
+
+private:
+	static gl::framebuffer_layout create_fbo_layout();
+	static gl::framebuffer_layout create_backface_fbo_layout();
 
 public:
-	deferred_gbuffer(glm::ivec2 size, int depth_buffer_levels) : depth_buffer_levels(depth_buffer_levels) {
-		resize(size);
-	}
+	deferred_gbuffer(const ste_context &ctx,
+					 glm::ivec2 size, 
+					 int depth_buffer_levels);
 
 	void resize(glm::ivec2 size);
-	void clear();
 
-	auto* get_gbuffer() const { return gbuffer.get(); }
+	void clear(gl::command_recorder &recorder) {
+		glm::vec4 zero = { 0,0,0,0 };
+
+		recorder << gl::cmd_clear_color_image(gbuffer,
+											  gl::image_layout::transfer_dst_optimal,
+											  zero);
+	}
+
+	auto& get_gbuffer() const { return gbuffer.get(); }
 
 	auto& get_size() const { return size; }
 	
-	auto* get_depth_target() const { return depth_target.get(); }
-	auto* get_backface_depth_target() const { return backface_depth_target.get(); }
-	auto* get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
+	auto& get_depth_target() const { return depth_target.get(); }
+	auto& get_backface_depth_target() const { return backface_depth_target.get(); }
+	auto& get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
 	auto* get_fbo() const { return &fbo; }
 	auto* get_backface_fbo() const { return &backface_fbo; }
 
