@@ -1886,6 +1886,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\image_vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

@@ -1,10 +1,9 @@
-// StE
-// © Shlomi Steinberg, 2015
+//	StE
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <texture_handle.hpp>
 
 namespace ste {
 namespace graphics {
@@ -19,15 +18,21 @@ extern const float material_layer_min_ansio_ratio;
 
 class material_layer_descriptor {
 private:
-	Core::texture_handle roughness_map;
-	Core::texture_handle metallicity_map;
-	Core::texture_handle thickness_map;
+	std::uint32_t roughness_map;
+	std::uint32_t metallicity_map;
+	std::uint32_t thickness_map;
 
-	std::uint32_t packed_albedo{ 0xFFFFFFFF };
 	std::uint32_t next_layer_id{ material_layer_none };
 
+
 	glm::vec3 attenuation_coefficient{ .0f };
+	std::uint32_t _unused0;
+
+	std::uint32_t packed_albedo{ 0xFFFFFFFF };
 	std::uint32_t ior_phase_pack{ 0 };
+
+	std::uint32_t _unused1;
+	std::uint32_t _unused2;
 
 public:
 	material_layer_descriptor() = default;
@@ -41,15 +46,15 @@ public:
 		packed_albedo = glm::packUnorm4x8(c);
 	}
 
-	void set_roughness_map_handle(const Core::texture_handle &handle) {
+	void set_roughness_map_handle(const std::uint32_t &handle) {
 		roughness_map = handle;
 	}
 
-	void set_metallicity_map_handle(const Core::texture_handle &handle) {
+	void set_metallicity_map_handle(const std::uint32_t &handle) {
 		metallicity_map = handle;
 	}
 
-	void set_thickness_map_handle(const Core::texture_handle &handle) {
+	void set_thickness_map_handle(const std::uint32_t &handle) {
 		thickness_map = handle;
 	}
 

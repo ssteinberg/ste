@@ -2,7 +2,6 @@
 #include <common.glsl>
 
 struct material_texture_descriptor {
-	//layout(bindless_sampler) sampler2D sampler_idx;
 	uint sampler_idx;
 };
 
@@ -28,18 +27,20 @@ struct material_descriptor {
 };
 
 struct material_layer_descriptor {
-	//layout(bindless_sampler) sampler2D roughness_map;
-	//layout(bindless_sampler) sampler2D metallicity_map;
-	//layout(bindless_sampler) sampler2D thickness_map;
 	uint roughness_sampler_idx;
 	uint metallicity_sampler_idx;
 	uint thickness_sampler_idx;
-
-	uint packed_albedo;	
+	
 	uint next_layer_id;
 	
 	vec3 attenuation_coefficient;
+	uint _unused0;
+	
+	uint packed_albedo;
 	uint ior_phase_pack;
+	
+	uint _unused1;
+	uint _unused2;
 };
 
 layout(location = 20) uniform sampler2D material_samplers[100000];

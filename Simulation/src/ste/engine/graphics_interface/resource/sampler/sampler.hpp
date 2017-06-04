@@ -69,7 +69,7 @@ private:
 public:
 	/**
 	*	@brief	Sampler ctor.
-	*			Takes as input variadic number of vk_sampler_parameters structure specifing sampler parameters.
+	*			Takes as input variadic number of gl::sampler_parameter::* structures specifing sampler parameters.
 	*
 	*	@param device		Creating device
 	*	@param params		Sampler parameters

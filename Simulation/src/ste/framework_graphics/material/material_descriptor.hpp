@@ -1,10 +1,9 @@
-// StE
-// © Shlomi Steinberg, 2015
+//	StE
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <texture_handle.hpp>
 
 #include <material_layer_descriptor.hpp>
 
@@ -21,10 +20,10 @@ public:
 	static constexpr std::uint32_t material_has_subsurface_scattering_bit = 0x1 << 31;
 
 public:
-	Core::texture_handle cavity_handle;
-	Core::texture_handle normal_handle;
-	Core::texture_handle mask_handle;
-	Core::texture_handle texture_handle;
+	std::uint32_t cavity_handle;
+	std::uint32_t normal_handle;
+	std::uint32_t mask_handle;
+	std::uint32_t texture_handle;
 
 	float emission{ .0f };
 	std::uint32_t packed_emission_color{ 0 };

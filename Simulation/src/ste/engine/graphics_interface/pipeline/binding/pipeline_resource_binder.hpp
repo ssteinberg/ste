@@ -44,12 +44,13 @@ public:
 							 lib::vector<WriteType> &&writes)
 		: array_element(array_element),
 		writes(std::move(writes))
-	{
-	}
+	{}
 	~pipeline_resource_binder() noexcept {}
 
 	pipeline_resource_binder(pipeline_resource_binder&&) = default;
+	pipeline_resource_binder(const pipeline_resource_binder&) = default;
 	pipeline_resource_binder &operator=(pipeline_resource_binder&&) = default;
+	pipeline_resource_binder &operator=(const pipeline_resource_binder&) = default;
 
 	vk::vk_descriptor_set_write_resource writer(const pipeline_binding_layout_interface *binding) const {
 		return vk::vk_descriptor_set_write_resource(binding->vk_descriptor_type(),
@@ -132,7 +133,7 @@ auto bind(const stable_vector<T, a, b> &vec) {
 *	@param	img		Image to bind
 */
 auto inline bind(const pipeline::image &img) {
-	VkImageView v = img.get_image_view().get_image_view_handle();
+	VkImageView v = img.get_image_view_handle();
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(0, {
 		vk::vk_descriptor_set_write_image{ v, static_cast<VkImageLayout>(img.get_layout()) }
 	});
@@ -150,7 +151,7 @@ auto inline bind(std::uint32_t array_element,
 	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &img : images) {
-		VkImageView v = img.get_image_view().get_image_view_handle();
+		VkImageView v = img.get_image_view_handle();
 		writes.push_back({ v, static_cast<VkImageLayout>(img.get_layout()) });
 	}
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>(array_element, std::move(writes));
@@ -163,6 +164,25 @@ auto inline bind(std::uint32_t array_element,
 auto inline bind(const lib::vector<pipeline::image> &images) {
 	assert(images.size());
 	return gl::bind(0, images);
+}
+/**
+*	@brief	Creates a sparse image view binder.
+*			Works like a sequence of bind(array_element, images) calls.
+*
+*	@param	array_element_images_pairs	A vector of pairs of array indices and a vector of images to bind starting at each those indices
+*/
+auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<pipeline::image>>> &array_element_images_pairs) {
+	assert(array_element_images_pairs.size());
+
+	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>> resource_binders;
+	resource_binders.reserve(array_element_images_pairs.size());
+	for (auto &pair : array_element_images_pairs) {
+		auto &images = pair.second;
+		auto array_element = pair.first;
+		resource_binders.push_back(bind(array_element, images));
+	}
+
+	return resource_binders;
 }
 
 /**
@@ -211,6 +231,26 @@ auto inline bind(const lib::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
 	return gl::bind(0, ciss);
 }
+/**
+*	@brief	Creates an combined_image_sampler binder.
+*			Works like a sequence of bind(array_element, ciss) calls.
+*
+*	@param	array_element_ciss_pairs	A vector of pairs of array indices and a vector of combined-image-samplers to 
+*										bind starting at each those indices
+*/
+auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<pipeline::combined_image_sampler>>> &array_element_ciss_pairs) {
+	assert(array_element_ciss_pairs.size());
+
+	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>> resource_binders;
+	resource_binders.reserve(array_element_ciss_pairs.size());
+	for (auto &pair : array_element_ciss_pairs) {
+		auto &ciss = pair.second;
+		auto array_element = pair.first;
+		resource_binders.push_back(bind(array_element, ciss));
+	}
+
+	return resource_binders;
+}
 
 /**
 *	@brief	Creates an sampler binder
@@ -246,6 +286,26 @@ auto inline bind(std::uint32_t array_element,
 auto inline bind(const lib::vector<const sampler*> &samplers) {
 	assert(samplers.size());
 	return gl::bind(0, samplers);
+}
+/**
+*	@brief	Creates an combined_image_sampler binder.
+*			Works like a sequence of bind(array_element, ciss) calls.
+*
+*	@param	array_element_samplers_pairs	A vector of pairs of array indices and a vector of samplers to
+*											bind starting at each those indices
+*/
+auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<const sampler*>>> &array_element_samplers_pairs) {
+	assert(array_element_samplers_pairs.size());
+
+	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, sampler>> resource_binders;
+	resource_binders.reserve(array_element_samplers_pairs.size());
+	for (auto &pair : array_element_samplers_pairs) {
+		auto &samplers = pair.second;
+		auto array_element = pair.first;
+		resource_binders.push_back(bind(array_element, samplers));
+	}
+
+	return resource_binders;
 }
 
 }

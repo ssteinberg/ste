@@ -21,17 +21,27 @@ private:
 
 private:
 	template <typename WriteType, typename T>
-	void bind(const pipeline_resource_binder<WriteType, T> &res) {
+	void bind(lib::vector<pipeline_resource_binder<WriteType, T>> &&resources) {
 		using resource_type = pipeline_resource_binder<WriteType, T>;
 		using resource_underlying_type = typename resource_type::UnderlyingType;
+
+		auto set_idx = binding->set_idx();
+		auto& q = (*queue)[set_idx];
 
 		// Validate
 		binding->validate_layout<resource_underlying_type>();
 
-		// Generate write descriptor, and append to queue
-		auto set_idx = binding->set_idx();
-		auto write = res.writer(binding);
-		(*queue)[set_idx].push_back(write);
+		for (auto &res : resources) {
+			// Generate write descriptors
+			auto write = res.writer(binding);
+			// Append write descriptor to queue
+			q.push_back(write);
+		}
+	}
+
+	template <typename WriteType, typename T>
+	void bind(pipeline_resource_binder<WriteType, T> &&res) {
+		bind<WriteType, T>(lib::vector<pipeline_resource_binder<WriteType, T>>{ std::move(res) });
 	}
 
 public:
@@ -49,8 +59,8 @@ public:
 	*	@brief	Binds a resource
 	*/
 	template <typename WriteType, typename T>
-	void operator=(const pipeline_resource_binder<WriteType, T> &res) {
-		this->bind(res);
+	void operator=(pipeline_resource_binder<WriteType, T> &&res) {
+		this->bind(std::move(res));
 	}
 };
 

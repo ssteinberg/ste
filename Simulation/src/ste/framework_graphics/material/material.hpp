@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015
+//	StE
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -7,15 +7,17 @@
 
 #include <material_descriptor.hpp>
 #include <observable_resource.hpp>
+#include <image_vector.hpp>
 
 #include <material_layer.hpp>
 
-#include <Sampler.hpp>
-#include <texture_2d.hpp>
+#include <sampler.hpp>
+#include <texture.hpp>
 
 #include <rgb.hpp>
 
-#include <lib/unique_ptr.hpp>
+#include <lib/shared_ptr.hpp>
+#include <alias.hpp>
 
 namespace ste {
 namespace graphics {
@@ -23,16 +25,19 @@ namespace graphics {
 /**
  *	@brief	Defines rendering material basic properties
  */
-class material : public Core::observable_resource<material_descriptor> {
-	using Base = Core::observable_resource<material_descriptor>;
+class material : public gl::observable_resource<material_descriptor> {
+	using Base = gl::observable_resource<material_descriptor>;
+	using texture_storage = gl::image_vector<gl::image_type::image_2d>;
 
 private:
-	Core::sampler_mipmapped material_sampler;
+	alias<texture_storage> material_texture_storage;
 
-	lib::shared_ptr<Core::texture_2d> cavity_map{ nullptr };
-	lib::shared_ptr<Core::texture_2d> normal_map{ nullptr };
-	lib::shared_ptr<Core::texture_2d> mask_map{ nullptr };
-	lib::shared_ptr<Core::texture_2d> texture{ nullptr };
+	gl::sampler material_sampler;
+
+	texture_storage::value_type cavity_map{ nullptr };
+	texture_storage::value_type normal_map{ nullptr };
+	texture_storage::value_type mask_map{ nullptr };
+	texture_storage::value_type texture{ nullptr };
 
 	rgb emission{ 0, 0, 0 };
 
@@ -50,7 +55,6 @@ private:
 	material &operator=(const material &m) = delete;
 
 private:
-	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
 	void set_head_layer(material_layer *head_layer);
 
 public:
@@ -61,7 +65,9 @@ public:
 	*
 	* 	@param head_layer	material head layer (top layer) of the layer stack
 	*/
-	explicit material(material_layer *head_layer);
+	explicit material(const ste_context &ctx,
+					  texture_storage &material_texture_storage,
+					  material_layer *head_layer);
 	~material() {
 		cavity_map = nullptr;
 		normal_map = nullptr;
@@ -78,9 +84,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_texture(const lib::shared_ptr<Core::texture_2d> &tex) {
-		texture = tex;
-		descriptor.texture_handle = handle_for_texture(texture.get());
+	void set_texture(gl::texture<gl::image_type::image_2d> &&tex) {
+		texture = material_texture_storage->allocate_slot(std::move(tex));
+		descriptor.texture_handle = texture->get_slot_idx();
 
 		if (descriptor.texture_handle)  descriptor.material_flags |= material_descriptor::material_has_texture_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_texture_bit;
@@ -95,9 +101,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_cavity_map(const lib::shared_ptr<Core::texture_2d> &tex) {
-		cavity_map = tex;
-		descriptor.cavity_handle = handle_for_texture(cavity_map.get());
+	void set_cavity_map(gl::texture<gl::image_type::image_2d> &&tex) {
+		cavity_map = material_texture_storage->allocate_slot(std::move(tex));
+		descriptor.cavity_handle = cavity_map->get_slot_idx();
 
 		if (descriptor.cavity_handle)   descriptor.material_flags |= material_descriptor::material_has_cavity_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_cavity_map_bit;
@@ -110,9 +116,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_normal_map(const lib::shared_ptr<Core::texture_2d> &tex) {
-		normal_map = tex;
-		descriptor.normal_handle = handle_for_texture(normal_map.get());
+	void set_normal_map(gl::texture<gl::image_type::image_2d> &&tex) {
+		normal_map = material_texture_storage->allocate_slot(std::move(tex));
+		descriptor.normal_handle = normal_map->get_slot_idx();
 
 		if (descriptor.normal_handle)	descriptor.material_flags |= material_descriptor::material_has_normal_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_normal_map_bit;
@@ -127,9 +133,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_mask_map(const lib::shared_ptr<Core::texture_2d> &tex) {
-		mask_map = tex;
-		descriptor.mask_handle = handle_for_texture(mask_map.get());
+	void set_mask_map(gl::texture<gl::image_type::image_2d> &&tex) {
+		mask_map = material_texture_storage->allocate_slot(std::move(tex));
+		descriptor.mask_handle = mask_map->get_slot_idx();
 
 		if (descriptor.mask_handle)		descriptor.material_flags |= material_descriptor::material_has_mask_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_mask_map_bit;
