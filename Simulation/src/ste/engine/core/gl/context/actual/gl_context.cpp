@@ -17,7 +17,7 @@
 
 using namespace StE::Core::GL;
 
-namespace _detail {
+namespace StE::Core::GL::_detail {
 
 class ste_context_intializer {
 public:

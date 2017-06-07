@@ -9,6 +9,7 @@
 
 #include "gl_current_context.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 gi_renderer::gi_renderer(const ste_engine_control &ctx,

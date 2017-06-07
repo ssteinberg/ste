@@ -26,7 +26,7 @@ class sop_optimizer;
 
 template <typename GraphType>
 class sequential_ordering_problem {
-	static_assert(StE::is_base_of<GraphType, sop_graph>::value, "GraphType must derive from Algorithm::SOP::sop_graph!");
+//	static_assert(StE::is_base_of<GraphType, sop_graph>::value, "GraphType must derive from Algorithm::SOP::sop_graph!");
 
 	friend class sop_optimizer<GraphType>;
 

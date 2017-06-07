@@ -4,6 +4,7 @@
 
 #include "gl_current_context.hpp"
 
+using namespace StE;
 using namespace StE::Text;
 using namespace StE::Core;
 
@@ -23,8 +24,8 @@ text_manager::text_manager(const ste_engine_control &context,
 
 void text_manager::adjust_line(std::vector<glyph_point> &points, const attributed_wstring &wstr, unsigned line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	if (points.size() - line_start_index) {
-		optional<const Attributes::align*> alignment_attrib = wstr.attrib_of_type(Attributes::align::attrib_type_s(), { line_start_index,points.size() - line_start_index });
-		optional<const Attributes::line_height*> line_height_attrib = wstr.attrib_of_type(Attributes::line_height::attrib_type_s(), { line_start_index,points.size() - line_start_index });
+		auto alignment_attrib = Attributes::align::bind(wstr.attrib_of_type(Attributes::attrib_type::align, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
+		auto line_height_attrib = Attributes::line_height::bind(wstr.attrib_of_type(Attributes::attrib_type::line_height, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
 
 		if (alignment_attrib && alignment_attrib->get() != Attributes::align::alignment::Left) {
 			float line_len = ortho_pos.x - line_start;
@@ -63,11 +64,11 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			continue;
 		}
 
-		optional<const Attributes::font*> font_attrib = wstr.attrib_of_type(Attributes::font::attrib_type_s(), { i,1 });
-		optional<const Attributes::rgb*> color_attrib = wstr.attrib_of_type(Attributes::rgb::attrib_type_s(), { i,1 });
-		optional<const Attributes::size*> size_attrib = wstr.attrib_of_type(Attributes::size::attrib_type_s(), { i,1 });
-		optional<const Attributes::stroke*> stroke_attrib = wstr.attrib_of_type(Attributes::stroke::attrib_type_s(), { i,1 });
-		optional<const Attributes::weight*> weight_attrib = wstr.attrib_of_type(Attributes::weight::attrib_type_s(), { i,1 });
+		auto font_attrib = Attributes::font::bind(wstr.attrib_of_type(Attributes::attrib_type::font, { i,1 }));
+		auto color_attrib = Attributes::rgb::bind(wstr.attrib_of_type(Attributes::attrib_type::color, { i,1 }));
+		auto size_attrib = Attributes::size::bind(wstr.attrib_of_type(Attributes::attrib_type::size, { i,1 }));
+		auto stroke_attrib = Attributes::stroke::bind(wstr.attrib_of_type(Attributes::attrib_type::stroke, { i,1 }));
+		auto weight_attrib = Attributes::weight::bind(wstr.attrib_of_type(Attributes::attrib_type::weight, { i,1 }));
 
 		const font &font = font_attrib ? font_attrib->get() : default_font;
 		int size = size_attrib ? size_attrib->get() : default_size;
@@ -89,7 +90,7 @@ std::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 		p.weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
 
 		if (stroke_attrib) {
-			p.stroke_color = glm::vec4(stroke_attrib->get_color().get()) / 255.0f;
+			p.stroke_color = glm::vec4(stroke_attrib->get_color()) / 255.0f;
 			p.stroke_width = stroke_attrib->get_width();
 			advance += glm::floor(p.stroke_width * .5f);
 		}

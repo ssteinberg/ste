@@ -4,6 +4,7 @@
 
 #include "glsl_program_factory.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 constexpr gli::format dense_voxel_space::space_format_radiance;

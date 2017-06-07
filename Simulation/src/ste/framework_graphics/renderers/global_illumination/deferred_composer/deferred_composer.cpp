@@ -23,6 +23,7 @@
 
 #include "surface_factory.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 namespace StE {

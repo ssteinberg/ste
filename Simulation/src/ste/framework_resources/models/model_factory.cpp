@@ -15,6 +15,7 @@
 #include <string>
 #include <algorithm>
 
+using namespace StE;
 using namespace StE::Resource;
 using namespace StE::Graphics;
 using StE::Core::texture_2d;

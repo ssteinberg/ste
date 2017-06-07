@@ -6,6 +6,7 @@
 #include "attributed_string.hpp"
 #include "attrib.hpp"
 
+#define ZLIB_WINAPI
 #include <libpng16/png.h>
 #include <turbojpeg.h>
 #include <tga.h>

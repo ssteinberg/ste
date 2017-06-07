@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "attributed_string_common.hpp"
+#include <attributed_string_common.hpp>
 
 namespace StE {
 namespace Text {

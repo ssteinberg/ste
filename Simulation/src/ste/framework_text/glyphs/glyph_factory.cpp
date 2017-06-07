@@ -17,6 +17,7 @@
 
 #include <stdexcept>
 
+using namespace StE;
 using namespace StE::Text;
 
 namespace StE {

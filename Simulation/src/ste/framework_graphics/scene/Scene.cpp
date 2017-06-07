@@ -12,6 +12,8 @@
 
 using namespace StE::Graphics;
 
+using namespace StE;
+
 constexpr int scene::shadow_pltt_size;
 constexpr int scene::directional_shadow_pltt_size;
 

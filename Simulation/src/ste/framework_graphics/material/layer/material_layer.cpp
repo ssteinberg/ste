@@ -2,6 +2,7 @@
 #include "stdafx.hpp"
 #include "material_layer.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 material_layer::material_layer() {

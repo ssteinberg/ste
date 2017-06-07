@@ -4,6 +4,7 @@
 
 #include "gpu_task_dispatch_queue.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 void gpu_task::add_dependency(const TaskPtr &task) const {

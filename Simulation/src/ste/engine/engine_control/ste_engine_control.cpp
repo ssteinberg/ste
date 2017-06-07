@@ -24,7 +24,7 @@ using namespace StE;
 
 struct StE::ste_engine_control_impl {
 	float field_of_view{ glm::quarter_pi<float>() };
-	float near_clip{ 0.1 };
+	float near_clip{ 0.1f };
 
 	float fps{ 0 };
 	int frames{ 0 };

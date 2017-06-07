@@ -25,6 +25,7 @@
 #include <vector>
 #include <algorithm>
 
+using namespace StE;
 using namespace StE::Resource;
 using namespace StE::Resource::glsl_loader;
 using namespace StE::Text;

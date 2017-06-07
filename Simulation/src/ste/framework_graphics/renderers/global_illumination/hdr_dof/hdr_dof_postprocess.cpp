@@ -16,6 +16,7 @@
 
 #include "sampler.hpp"
 
+using namespace StE;
 using namespace StE::Graphics;
 
 hdr_dof_postprocess::hdr_dof_postprocess(const ste_engine_control &context,
