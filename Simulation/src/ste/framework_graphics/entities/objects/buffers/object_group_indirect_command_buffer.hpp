@@ -1,33 +1,32 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 
-#include <buffer_usage.hpp>
-#include <indirect_draw_buffer_object.hpp>
+#include <vector.hpp>
+#include <draw_indexed_indirect_command_block.hpp>
 
 namespace ste {
 namespace graphics {
 
 class object_group_indirect_command_buffer {
 private:
-	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
-
-	static constexpr int pages = 8192;
-	using indirect_draw_buffer_type = Core::indirect_draw_buffer_object<Core::indirect_multi_draw_elements_command, usage>;
+	using indirect_draw_buffer_type = gl::vector<gl::draw_indexed_indirect_command_block>;
 
 private:
 	indirect_draw_buffer_type idb;
 
 public:
-	object_group_indirect_command_buffer() : idb(pages * std::max<std::size_t>(65536, indirect_draw_buffer_type::page_size()) / sizeof(Core::indirect_multi_draw_elements_command)) {}
+	object_group_indirect_command_buffer(const ste_context &ctx,
+										 const gl::buffer_usage &usage = static_cast<gl::buffer_usage>(0))
+		: idb(ctx, gl::buffer_usage::indirect_buffer | usage)
+	{}
 
 	auto &buffer() { return idb; }
 	auto &buffer() const { return idb; }
-
-	auto ssbo() const { return Core::buffer_object_cast<Core::shader_storage_buffer<Core::indirect_multi_draw_elements_command, usage>>(buffer()); }
 };
 
 }
