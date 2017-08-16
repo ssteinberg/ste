@@ -30,17 +30,17 @@ private:
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_0;
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_1;
 
-	gl::framebuffer fbo;
-	gl::framebuffer backface_fbo;
+//	gl::framebuffer fbo;
+//	gl::framebuffer backface_fbo;
 
 	glm::ivec2 size;
 	int depth_buffer_levels;
 
-	mutable signal<> depth_target_modified_signal;
+	mutable signal<> gbuffer_resized_signal;
 
-private:
-	static gl::framebuffer_layout create_fbo_layout();
-	static gl::framebuffer_layout create_backface_fbo_layout();
+//private:
+//	static gl::framebuffer_layout create_fbo_layout();
+//	static gl::framebuffer_layout create_backface_fbo_layout();
 
 public:
 	deferred_gbuffer(const ste_context &ctx,
@@ -64,10 +64,13 @@ public:
 	auto& get_depth_target() const { return depth_target.get(); }
 	auto& get_backface_depth_target() const { return backface_depth_target.get(); }
 	auto& get_downsampled_depth_target() const { return downsampled_depth_target.get(); }
-	auto* get_fbo() const { return &fbo; }
-	auto* get_backface_fbo() const { return &backface_fbo; }
+//	auto* get_fbo() const { return &fbo; }
+//	auto* get_backface_fbo() const { return &backface_fbo; }
 
-	auto& get_depth_target_modified_signal() const { return depth_target_modified_signal; }
+	auto& get_gbuffer_level0() const { return gbuffer_level_0; }
+	auto& get_gbuffer_level1() const { return gbuffer_level_1; }
+
+	auto& get_depth_target_modified_signal() const { return gbuffer_resized_signal; }
 };
 
 }

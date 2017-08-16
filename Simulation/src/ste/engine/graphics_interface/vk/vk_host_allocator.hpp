@@ -47,36 +47,36 @@ private:
 	}
 
 public:
-	static void* allocate(void* user_data,
-						  std::size_t bytes,
-						  std::size_t alignment,
-						  VkSystemAllocationScope allocation_scope) {
+	static void* VKAPI_CALL allocate(void* user_data,
+									 std::size_t bytes,
+									 std::size_t alignment,
+									 VkSystemAllocationScope allocation_scope) {
 		return shared_allocator.allocate_aligned(bytes, alignment);
 	}
-	static void* reallocate(void* user_data,
-							void* ptr,
-							std::size_t bytes,
-							std::size_t alignment,
-							VkSystemAllocationScope allocation_scope) {
+	static void* VKAPI_CALL reallocate(void* user_data,
+									   void* ptr,
+									   std::size_t bytes,
+									   std::size_t alignment,
+									   VkSystemAllocationScope allocation_scope) {
 		return shared_allocator.reallocate_aligned(reinterpret_cast<pointer>(ptr), bytes, alignment);
 	}
-	static void free(void *user_data,
-					 void *ptr) {
+	static void VKAPI_CALL free(void *user_data,
+								void *ptr) {
 		shared_allocator.deallocate(reinterpret_cast<pointer>(ptr));
 	}
 
-	static void internal_allocation_notification(void *user_data,
-												 std::size_t bytes,
-												 VkInternalAllocationType allocation_type,
-												 VkSystemAllocationScope allocation_scope) {
+	static void VKAPI_CALL internal_allocation_notification(void *user_data,
+															std::size_t bytes,
+															VkInternalAllocationType allocation_type,
+															VkSystemAllocationScope allocation_scope) {
 #ifdef DEBUG
 		ste_log() << text::attributes::tiny("(VK host allocator) ") << text::attributes::b("+") << " internal " << text::attributes::b(lib::to_string(bytes)) << "bytes --- " << readable_allocation_scope(allocation_scope);
 #endif
 	}
-	static void internal_free_notification(void *user_data,
-										   std::size_t bytes,
-										   VkInternalAllocationType allocation_type,
-										   VkSystemAllocationScope allocation_scope) {
+	static void VKAPI_CALL internal_free_notification(void *user_data,
+													  std::size_t bytes,
+													  VkInternalAllocationType allocation_type,
+													  VkSystemAllocationScope allocation_scope) {
 #ifdef DEBUG
 		ste_log() << text::attributes::tiny("(VK host allocator) ") << text::attributes::b("-") << " internal " << text::attributes::b(lib::to_string(bytes)) << "bytes --- " << readable_allocation_scope(allocation_scope);
 #endif

@@ -12,7 +12,7 @@ namespace ste {
 namespace lib {
 
 template <typename K, typename V, class P = std::less<K>>
-using map = std::map<K, V, P, allocator<std::pair<K, V>>>;
+using map = std::map<K, V, P, allocator<std::pair<const K, V>>>;
 
 }
 }

@@ -26,14 +26,14 @@ class object : public entity_affine {
 	friend class object_group;
 
 public:
-	using signal_type = signal<object*>;
+	using model_change_signal_type = signal<object*>;
 
 private:
-	signal_type model_change_signal;
+	mutable model_change_signal_type model_change_signal;
 	mesh_descriptor md;
 
 protected:
-	const material *mat;
+	const material *mat{ nullptr };
 	lib::unique_ptr<mesh_generic> object_mesh;
 
 public:
@@ -52,7 +52,7 @@ public:
 	auto *get_material() const { return mat; }
 
 public:
-	const signal_type &signal_model_change() const { return model_change_signal; }
+	auto &signal_model_change() const { return model_change_signal; }
 
 	virtual void set_model_transform(const glm::mat4x3 &m) override {
 		Base::set_model_transform(m);

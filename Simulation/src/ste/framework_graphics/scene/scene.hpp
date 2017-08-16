@@ -6,13 +6,13 @@
 #include <stdafx.hpp>
 
 #include <scene_properties.hpp>
-#include <deferred_gbuffer.hpp>
 #include <object_group_indirect_command_buffer.hpp>
 
 #include <object_group.hpp>
 #include <light_storage.hpp>
 
-#include <lib/unique_ptr.hpp>
+#include <command_recorder.hpp>
+#include <cmd_fill_buffer.hpp>
 
 namespace ste {
 namespace graphics {
@@ -49,7 +49,6 @@ private:
 private:
 	object_group objects;
 	scene_properties scene_props;
-//	const deferred_gbuffer *gbuffer{ nullptr };
 
 	mutable gl::array<std::uint32_t> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
@@ -58,7 +57,14 @@ private:
 	mutable shadow_projection_data<directional_shadow_pltt_size> directional_shadow_projection;
 
 public:
-	scene(const ste_context &ctx);
+	scene(const ste_context &ctx) 
+		: objects(ctx),
+		scene_props(ctx),
+		culled_objects_counter(ctx, 1, gl::buffer_usage::storage_buffer),
+		idb(ctx),
+		shadow_projection(ctx),
+		directional_shadow_projection(ctx)
+	{}
 	~scene() noexcept {}
 
 	void update_scene(gl::command_recorder &recorder) {
@@ -72,21 +78,26 @@ public:
 	object_group &get_object_group() { return objects; }
 	const object_group &get_object_group() const { return objects; }
 
-//	void set_target_gbuffer(const deferred_gbuffer *gbuffer) { this->gbuffer = gbuffer; }
-
-	void clear_indirect_command_buffers() const {
-		std::uint32_t zero = 0;
-		idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
-		shadow_projection.idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
-		directional_shadow_projection.idb.buffer().clear(gli::format::FORMAT_R32_UINT_PACK32, &zero, 0, objects.get_draw_buffers().size());
-		culled_objects_counter.clear(gli::format::FORMAT_R32_UINT_PACK32, &zero);
-	}
-
 	auto &get_idb() const { return idb; }
 	auto &get_culled_objects_counter() const { return culled_objects_counter; }
 
 	auto &get_shadow_projection_buffers() const { return shadow_projection; }
 	auto &get_directional_shadow_projection_buffers() const { return directional_shadow_projection; }
+
+	void resize_indirect_command_buffers(gl::command_recorder &recorder,
+										 std::size_t size) const {
+		recorder
+			<< idb->resize_cmd(size)
+			<< shadow_projection->resize_cmd(size)
+			<< directional_shadow_projection->resize_cmd(size);
+	}
+	void clear_indirect_command_buffers(gl::command_recorder &recorder) const {
+		recorder
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(idb), 0u)
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(shadow_projection.idb), 0u)
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(directional_shadow_projection.idb), 0u)
+			<< gl::cmd_fill_buffer(culled_objects_counter.get(), 0u);
+	}
 };
 
 }

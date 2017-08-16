@@ -67,7 +67,7 @@ protected:
 
 		// Add to buffer
 		std::uint64_t idx = descriptor.get_polygonal_light_buffer_offset();
-		auto current_count = this->get_points_count();
+		auto current_count = static_cast<std::size_t>(this->get_points_count());
 		if (current_count > 0) {
 			if (current_count < size) {
 				// Erase old points and insert new
@@ -106,7 +106,7 @@ public:
 			storage_info.storage->tombstone(idx, count);
 	}
 
-	int get_points_count() const { return descriptor.get_polygonal_light_point_count(); }
+	std::uint32_t get_points_count() const { return descriptor.get_polygonal_light_point_count(); }
 
 	void set_position(const glm::vec3 &p) {
 		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };

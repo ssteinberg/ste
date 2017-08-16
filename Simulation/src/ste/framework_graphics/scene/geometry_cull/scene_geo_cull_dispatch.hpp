@@ -4,11 +4,8 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_engine_control.hpp>
-#include <gl_current_context.hpp>
 
-#include <glsl_program.hpp>
-#include <gpu_dispatchable.hpp>
+#include <fragment_compute.hpp>
 
 #include <scene.hpp>
 #include <light_storage.hpp>
@@ -18,31 +15,51 @@
 namespace ste {
 namespace graphics {
 
-class scene_geo_cull_dispatch : public gpu_dispatchable {
-	using Base = gpu_dispatchable;
+class scene_geo_cull_dispatch : public gl::fragment_compute {
+	using Base = gl::fragment_compute;
 
-private:
+	gl::task<gl::cmd_dispatch> dispatch_task;
+
 	const scene *s;
 	const light_storage *ls;
-
-	resource::resource_instance<resource::glsl_program> program;
-
-	mutable std::size_t old_object_group_size{ 0 };
+	std::size_t old_object_group_size{ 0 };
 
 private:
-	void commit_idbs() const;
-
-public:
-	scene_geo_cull_dispatch(const ste_engine_control &ctx,
-							const scene *s,
-							const light_storage *ls) : s(s),
-													   ls(ls),
-													   program(ctx, "scene_geo_cull.comp") {
-		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
+	void commit_idbs(gl::command_recorder &recorder) const {
+		auto size = s->get_object_group().get_draw_buffers().size();
+		if (size != old_object_group_size) {
+			old_object_group_size = size;
+			s->resize_indirect_command_buffers(recorder, size);
+		}
 	}
 
-	void set_context_state() const override final;
-	void dispatch() const override final;
+public:
+	scene_geo_cull_dispatch(const gl::rendering_system &rs,
+							const scene *s,
+							const light_storage *ls)
+		: Base(rs,
+			   "scene_geo_cull.comp"),
+		s(s),
+		ls(ls)
+	{
+		dispatch_task.attach_pipeline(pipeline);
+//		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
+	}
+	~scene_geo_cull_dispatch() noexcept {}
+
+	static const lib::string& name() { return "geo_cull"; }
+
+	void record(gl::command_recorder &recorder) override final {
+		commit_idbs(recorder);
+
+		auto& draw_buffers = s->get_object_group().get_draw_buffers();
+
+		constexpr int jobs = 128;
+		auto size = (draw_buffers.draw_count() + jobs - 1) / jobs;
+
+		s->clear_indirect_command_buffers(recorder);
+		recorder << dispatch_task(size, 1, 1);
+	}
 };
 
 }

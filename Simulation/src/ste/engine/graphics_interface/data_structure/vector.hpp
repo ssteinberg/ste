@@ -83,7 +83,7 @@ public:
 					   const lib::vector<T> &data) {
 		assert(idx + data.size() <= size());
 
-		std::copy(data.begin(), data.end(), host_replica.begin() + idx);
+		std::copy(data.begin(), data.end(), host_replica.begin() + static_cast<int>(idx));
 
 		return _internal::vector_cmd_update<vector<T, minimal_atom_size, max_sparse_size>>(data,
 																						   idx,
@@ -107,7 +107,7 @@ public:
 							 std::uint64_t count = 1) {
 		assert(idx + count <= size());
 
-		host_replica.erase(host_replica.begin() + idx, host_replica.begin() + idx + count);
+		host_replica.erase(host_replica.begin() + idx, host_replica.begin() + static_cast<int>(idx + count));
 
 		return overwrite_cmd(idx,
 							 lib::vector<T>(host_replica.begin() + idx + count, host_replica.end()));
