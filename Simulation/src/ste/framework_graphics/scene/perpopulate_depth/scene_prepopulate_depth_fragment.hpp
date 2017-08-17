@@ -15,8 +15,8 @@ namespace ste {
 namespace graphics {
 
 template <bool front_face>
-class scene_prepopulate_depth_dispatch : public gl::fragment_graphics<scene_prepopulate_depth_dispatch<front_face>> {
-	using Base = gl::fragment_graphics<scene_prepopulate_depth_dispatch<front_face>>;
+class scene_prepopulate_depth_fragment : public gl::fragment_graphics<scene_prepopulate_depth_fragment<front_face>> {
+	using Base = gl::fragment_graphics<scene_prepopulate_depth_fragment<front_face>>;
 
 private:
 	gl::task<gl::cmd_draw_indexed_indirect> draw_task;
@@ -24,7 +24,7 @@ private:
 	const scene *s;
 
 public:
-	scene_prepopulate_depth_dispatch(const gl::rendering_system &rs,
+	scene_prepopulate_depth_fragment(const gl::rendering_system &rs,
 									 const scene *s)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
@@ -36,7 +36,7 @@ public:
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
 		draw_task.attach_indirect_buffer(s->get_idb());
 	}
-	~scene_prepopulate_depth_dispatch() noexcept {}
+	~scene_prepopulate_depth_fragment() noexcept {}
 
 protected:
 	static const lib::string& name() { return "prepopulate_depth"; }
@@ -74,6 +74,9 @@ protected:
 							  sizeof(gl::draw_indexed_indirect_command_std140));
 	}
 };
+
+using scene_prepopulate_depth_front_face_fragment = scene_prepopulate_depth_fragment<true>;
+using scene_prepopulate_depth_back_face_fragment = scene_prepopulate_depth_fragment<false>;
 
 }
 }

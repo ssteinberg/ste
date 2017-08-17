@@ -28,9 +28,9 @@ namespace gl {
 /**
 *	@brief	External binding descriptor
 *	
-*	@param	T		Binding type
-*	@param	set		Set index
-*	@param	bind		Binding index
+*	@param	T				Binding type
+*	@param	set				Set index
+*	@param	bind			Binding index
 *	@param	storage_image	For images only, true for storage image, false for sampled image
 *	@param	push_constant	Declares a push constant
 */
@@ -129,9 +129,9 @@ public:
 	*
 	*	@throws	ste_shader_variable_layout_verification_exception	On different validation failures
 	*/
-	void validate_layout(const ste_shader_stage_binding *binding) const {
-		validator(binding);
-	}
+//	void validate_layout(const ste_shader_stage_binding *binding) const {
+//		validator(binding);
+//	}
 
 	/**
 	*	@brief	Validates the layout of a type, checking its compatibility with the external binding.

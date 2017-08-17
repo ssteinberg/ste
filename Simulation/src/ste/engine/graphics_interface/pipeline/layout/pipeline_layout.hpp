@@ -154,8 +154,7 @@ private:
 				}
 
 				// Set is handled externally
-				auto next_it = it;
-				++next_it;
+				auto next_it = std::next(it);
 				map.erase(it);
 				it = next_it;
 			}

@@ -17,6 +17,8 @@
 
 #include <ste_shader_spirv_reflection_output.hpp>
 
+#include <pipeline_external_binding_set_collection.hpp>
+
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
 #include <istream>

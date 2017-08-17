@@ -47,8 +47,7 @@ private:
 			   const T &splitter) {
 		auto itend = it->start + it->length;
 		auto end = splitter.start + splitter.length;
-		auto next = it;
-		++next;
+		auto next = std::next(it);
 
 		if (end <= it->start)
 			return;

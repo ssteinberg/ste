@@ -536,6 +536,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\scene\scene.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_convert.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_mipmap_generator.cpp" />
@@ -1073,8 +1074,8 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_compute_histogram_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_tonemap_coc_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\transforms_ring_buffers.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\scene_prepopulate_depth_dispatch.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\scene_prepopulate_depth_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_properties.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.hpp" />

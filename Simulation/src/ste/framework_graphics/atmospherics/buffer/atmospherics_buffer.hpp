@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <atmospherics_descriptor.hpp>
 
-#include <ring_buffer.hpp>
+#include <array.hpp>
 #include <command_recorder.hpp>
 #include <pipeline_stage.hpp>
 
@@ -16,7 +16,7 @@ namespace graphics {
 class atmospherics_buffer {
 private:
 	using descriptor = atmospherics_descriptor;
-	using buffer_type = gl::ring_buffer<descriptor::descriptor_data, 12>;
+	using buffer_type = gl::array<descriptor::descriptor_data>;
 
 private:
 	buffer_type buffer;

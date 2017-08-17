@@ -21,8 +21,8 @@
 #include <profiler.hpp>
 
 #include <scene.hpp>
-#include <scene_prepopulate_depth_dispatch.hpp>
-#include <scene_geo_cull_dispatch.hpp>
+#include <scene_prepopulate_depth_fragment.hpp>
+#include <scene_geo_cull_fragment.hpp>
 
 #include <light.hpp>
 #include <light_preprocessor.hpp>
@@ -99,9 +99,9 @@ private:
 	resource::resource_instance<hdr_dof_postprocess> hdr;
 
 	resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
-	resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
-	resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_backface_depth_dispatch;
-	resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
+	resource::resource_instance<scene_prepopulate_depth_fragment> prepopulate_depth_dispatch;
+	resource::resource_instance<scene_prepopulate_depth_fragment> prepopulate_backface_depth_dispatch;
+	resource::resource_instance<scene_geo_cull_fragment> scene_geo_cull;
 
 	resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
 	resource::resource_instance<light_preprocessor> light_preprocess;

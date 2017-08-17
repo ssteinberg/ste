@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -15,7 +15,7 @@
 namespace ste {
 namespace graphics {
 
-class scene_geo_cull_dispatch : public gl::fragment_compute {
+class scene_geo_cull_fragment : public gl::fragment_compute {
 	using Base = gl::fragment_compute;
 
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -34,7 +34,7 @@ private:
 	}
 
 public:
-	scene_geo_cull_dispatch(const gl::rendering_system &rs,
+	scene_geo_cull_fragment(const gl::rendering_system &rs,
 							const scene *s,
 							const light_storage *ls)
 		: Base(rs,
@@ -45,7 +45,7 @@ public:
 		dispatch_task.attach_pipeline(pipeline);
 //		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
 	}
-	~scene_geo_cull_dispatch() noexcept {}
+	~scene_geo_cull_fragment() noexcept {}
 
 	static const lib::string& name() { return "geo_cull"; }
 
