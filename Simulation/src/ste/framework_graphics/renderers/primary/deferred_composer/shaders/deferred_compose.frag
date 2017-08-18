@@ -12,14 +12,6 @@
 
 #include <gbuffer_load.glsl>
 
-layout(std430, binding = 0) restrict readonly buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
-layout(std430, binding = 1) restrict readonly buffer material_layer_data {
-	material_layer_descriptor mat_layer_descriptor[];
-};
-
 layout(std430, binding = 2) restrict readonly buffer light_data {
 	light_descriptor light_buffer[];
 };

@@ -20,10 +20,6 @@ out scene_transform {
 	flat int matIdx;
 } vout;
 
-layout(std430, binding = 14) restrict readonly buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
-
 void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];

@@ -1278,7 +1278,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_tonemap_coc.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\deferred_shading_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\girenderer_transform_buffer.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\mesh_material_common_descriptor_set.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />

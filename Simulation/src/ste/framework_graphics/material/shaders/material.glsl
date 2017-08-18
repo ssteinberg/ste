@@ -43,7 +43,13 @@ struct material_layer_descriptor {
 	uint _unused2;
 };
 
-layout(location = 20) uniform sampler2D material_samplers[100000];
+layout(std430, set=0, binding=1) restrict readonly buffer material_descriptors_binding {
+	material_descriptor mat_descriptor[];
+};
+layout(std430, set=0, binding=2) restrict buffer material_layer_descriptors_binding {
+	material_layer_descriptor mat_layer_descriptor[];
+};
+layout(set=0, binding=3) uniform sampler2D material_samplers[10000];
 
 const int material_none = 0xFFFFFFFF;
 

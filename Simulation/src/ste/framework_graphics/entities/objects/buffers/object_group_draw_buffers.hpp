@@ -39,12 +39,6 @@ public:
 	auto& get_index_buffer() const { return indices; }
 
 	auto draw_count() const { return mesh_data_bo.size(); }
-
-//	void bind_buffers(int idx) const {
-//		get_vao().bind();
-//		get_elements_buffer().bind();
-//		get_mesh_data_buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, size());
-//	}
 };
 
 }

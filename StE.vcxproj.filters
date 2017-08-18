@@ -1992,6 +1992,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\mesh_material_common_descriptor_set.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
   </ItemGroup>
 </Project>

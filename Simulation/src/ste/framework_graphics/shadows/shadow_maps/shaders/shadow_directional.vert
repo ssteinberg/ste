@@ -8,10 +8,6 @@
 
 layout(location = 1) in vec3 vert;
 
-layout(std430, binding = 14) restrict readonly buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
-
 out vs_out {
 	flat int instanceIdx;
 	flat uint drawIdx;

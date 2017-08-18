@@ -56,7 +56,7 @@ public:
 	lib::unique_ptr<ste_shader_stage_variable> variable;
 
 	/**
-	*	@brief	Returns true if the binding references am array and the array length is a specializeable constant.
+	*	@brief	Returns true if the binding references an array and that array's length is a specializeable constant.
 	*/
 	bool is_array_length_specializeable() const {
 		auto array_ptr = dynamic_cast<const ste_shader_stage_variable_array*>(variable.get());

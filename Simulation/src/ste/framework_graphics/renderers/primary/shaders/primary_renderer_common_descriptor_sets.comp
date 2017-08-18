@@ -1,0 +1,9 @@
+
+#type comp
+#version 450
+
+#include <mesh_descriptor.glsl>
+#include <material.glsl>
+
+void main() {
+}

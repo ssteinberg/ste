@@ -33,7 +33,6 @@
 #include <gbuffer_downsample_depth_fragment.hpp>
 
 #include <signal.hpp>
-#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -56,6 +55,9 @@ private:
 	ste_resource<shadowmap_storage> shadows_storage;
 	ste_resource<volumetric_scattering_storage> vol_scat_storage;
 
+	gl::pipeline_external_binding_set_collection common_binding_set_collection;
+
+private:
 	ste_resource<deferred_composer> composer;
 	ste_resource<fxaa_postprocess> fxaa;
 	ste_resource<hdr_dof_postprocess> hdr;
@@ -74,10 +76,14 @@ private:
 	ste_resource<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
 
 private:
-	lib::unique_ptr<gl::pipeline_external_binding_set_collection> common_binding_set_collection;
-
-private:
 	static gl::framebuffer_layout create_fb_layout(const ste_context &ctx);
+	static gl::pipeline_external_binding_set_collection create_common_binding_set_collection(const ste_context &ctx,
+																							 const scene *s);
+
+	/**
+	*	@brief		Updates common descriptor set's bindings
+	*/
+	void update();
 
 public:
 	primary_renderer(const ste_context &ctx,
@@ -88,7 +94,7 @@ public:
 	~primary_renderer() noexcept {}
 
 	const gl::pipeline_external_binding_set_collection* external_binding_sets() const override final {
-		return common_binding_set_collection.get();
+		return &common_binding_set_collection;
 	}
 
 	/*
@@ -103,6 +109,11 @@ public:
 	*	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
 	*/
 	void set_aperture_parameters(float diameter, float focal_length) { hdr.get().set_aperture_parameters(diameter, focal_length); }
+
+	/**
+	*	@brief		Performs rendering and presentation.
+	*/
+	void present() override final;
 };
 
 }
