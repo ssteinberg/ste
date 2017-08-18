@@ -561,6 +561,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage_base.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage_dynamic.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage_stable.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.hpp" />
@@ -1277,6 +1278,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_tonemap_coc.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\deferred_shading_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\girenderer_transform_buffer.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\mesh_material_common_descriptor_set.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />

@@ -13,6 +13,8 @@
 #include <pipeline_external_binding_set.hpp>
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
+#include <pipeline_layout_exceptions.hpp>
+
 #include <lib/flat_map.hpp>
 #include <alias.hpp>
 
@@ -81,7 +83,12 @@ public:
 			layout_ptrs.push_back(&l);
 
 			for(auto &b : l) {
-				name_map[b.name()] = &b;
+				// Check for duplicate names
+				auto ret = name_map.try_emplace(b.name(), &b);
+				if (!ret.second) {
+					// Name already exists
+					throw pipeline_layout_duplicate_variable_name_exception();
+				}
 			}
 		}
 

@@ -29,6 +29,16 @@ struct ste_shader_stage_binding : ste_shader_stage_variable_layout_validator {
 		return vk_descriptor_for_binding(binding_type,
 										 variable->type());
 	}
+
+	/*
+	*	@brief	Checks compatibility between a couple of stage bindings
+	*/
+	bool compatible(const ste_shader_stage_binding &b) const {
+		return
+			this->binding_type == b.binding_type &&
+			this->block_layout == b.block_layout &&
+			this->variable->compatible(*b.variable);
+	}
 };
 
 }

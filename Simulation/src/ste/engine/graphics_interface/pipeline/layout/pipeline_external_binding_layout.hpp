@@ -74,23 +74,10 @@ public:
 */
 class pipeline_external_binding_layout : public pipeline_binding_layout_interface {
 private:
-	using validator_t = std::function<void(const ste_shader_stage_binding*)>;
-
-private:
 	pipeline_binding_stages_collection binding_stages;
-
 	ste_shader_stage_binding binding;
-	validator_t validator;
 
 private:
-	// Type erases the validation
-	template <typename T>
-	static auto create_validator() {
-		return validator_t([](const ste_shader_stage_binding *binding) {
-			binding->validate_layout<T>();
-		});
-	}
-
 	template <pipeline_layout_set_index s, std::uint32_t b, class T, bool si>
 	static auto create_binding(const lib::string &name,
 							   const pipeline_external_binding_descriptor<T, s, b, si> &descriptor) {
@@ -114,24 +101,18 @@ public:
 									 const pipeline_external_binding_descriptor<T, s, b, si> &descriptor)
 		: binding_stages(stages),
 		binding(create_binding(name,
-							   descriptor)),
-		validator(create_validator<T>())
+							   descriptor))
+	{}
+	pipeline_external_binding_layout(const lib::string &name,
+									 pipeline_binding_stages_collection &&stages,
+									 ste_shader_stage_binding &&binding)
+		: binding_stages(std::move(stages)),
+		binding(std::move(binding))
 	{}
 	~pipeline_external_binding_layout() noexcept {}
 
 	pipeline_external_binding_layout(pipeline_external_binding_layout&&) = default;
 	pipeline_external_binding_layout &operator=(pipeline_external_binding_layout&&) = default;
-
-	/**
-	*	@brief	Checks the compatibility of binding the external binding to a shader stage binding.
-	*
-	*	@param	binding		A shader stage binding that does the validation
-	*
-	*	@throws	ste_shader_variable_layout_verification_exception	On different validation failures
-	*/
-//	void validate_layout(const ste_shader_stage_binding *binding) const {
-//		validator(binding);
-//	}
 
 	/**
 	*	@brief	Validates the layout of a type, checking its compatibility with the external binding.

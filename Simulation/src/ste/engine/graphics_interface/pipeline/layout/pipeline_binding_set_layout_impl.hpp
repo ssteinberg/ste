@@ -8,6 +8,8 @@
 #include <vk_descriptor_set_layout.hpp>
 #include <pipeline_layout_set_index.hpp>
 
+#include <pipeline_layout_exceptions.hpp>
+
 #include <allow_type_decay.hpp>
 
 #include <lib/string.hpp>
@@ -66,8 +68,14 @@ public:
 
 		// Create name map
 		for (auto it = begin(); it != end(); ++it) {
-			name_map[access_it<>(it).name()] = it;
 			assert(set_idx == access_it<>(it).set_idx());
+
+			// Check for duplicate names
+			auto ret = name_map.try_emplace(access_it<>(it).name(), it);
+			if (!ret.second) {
+				// Name already exists
+				throw pipeline_layout_duplicate_variable_name_exception();
+			}
 		}
 	}
 	~pipeline_binding_set_layout_impl() noexcept {}

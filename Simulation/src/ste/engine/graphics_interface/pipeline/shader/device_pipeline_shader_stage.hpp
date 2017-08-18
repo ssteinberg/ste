@@ -135,6 +135,12 @@ public:
 	auto &get_stage_attachments() const { return shader->stage_attachments; }
 
 	/**
+	 *	@brief	Releases ownership of the internal shader object. 
+	 *			The pipline shader stage is left in unusable state.
+	 */
+	auto &&shader_object() && { return shader; }
+
+	/**
 	 *	@brief	Provides the shader specialization constant map.
 	 *			For new specializations to take affect, pipeline has to be recreated.
 	 */

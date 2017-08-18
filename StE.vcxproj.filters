@@ -1895,6 +1895,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\scene_prepopulate_depth_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -1989,5 +1992,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\mesh_material_common_descriptor_set.comp" />
   </ItemGroup>
 </Project>
