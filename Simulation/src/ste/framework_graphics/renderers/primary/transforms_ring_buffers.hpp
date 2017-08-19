@@ -8,6 +8,7 @@
 #include <command_recorder.hpp>
 
 #include <camera.hpp>
+#include <camera_projection_reversed_infinite_perspective.hpp>
 #include <array.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
@@ -43,7 +44,7 @@ public:
 	{}
 
 	void update_view_data(gl::command_recorder &recorder,
-						  const camera<float> &c) {
+						  const camera<float, camera_projection_reversed_infinite_perspective> &c) {
 		auto p = c.get_position();
 
 		view_data v;
@@ -55,17 +56,14 @@ public:
 	}
 
 	void update_proj_data(gl::command_recorder &recorder,
-						  float fovy, float aspect, float fnear, const glm::uvec2 backbuffer_size) {
+						  const camera<float, camera_projection_reversed_infinite_perspective> &c,
+						  const glm::uvec2 backbuffer_size) {
 		proj_data p;
 
-		float tanHalfFovy = glm::tan(fovy * .5f);
-		float one_over_tan_half_fovy = 1.f / tanHalfFovy;
-		float one_over_aspect_tan_half_fovy = 1.f / (aspect * tanHalfFovy);
-
-		p.proj_xywz = { one_over_aspect_tan_half_fovy, one_over_tan_half_fovy, fnear, -1.f };
+		p.proj_xywz = c.get_projection_model().projection_xywz();
 		p.backbuffer_size = backbuffer_size;
-		p.tan_half_fovy = tanHalfFovy;
-		p.aspect = aspect;
+		p.tan_half_fovy = c.get_projection_model().tan_fovy_over_two();
+		p.aspect = c.get_projection_model().get_aspect();
 
 		recorder << proj_buffer.overwrite_cmd(0, p);
 	}

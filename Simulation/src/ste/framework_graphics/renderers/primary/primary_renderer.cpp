@@ -32,7 +32,7 @@ gl::pipeline_external_binding_set_collection primary_renderer::create_common_bin
 
 primary_renderer::primary_renderer(const ste_context &ctx,
 								   gl::presentation_engine &presentation,
-								   const camera<float> *cam,
+								   const camera_t *cam,
 								   scene *s,
 								   const atmospherics_properties<double> &atmospherics_prop)
 	: Base(ctx,
@@ -42,7 +42,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	s(s),
 
 	transform_buffers(ctx),
-	atmospheric_buffer(atmospherics_prop),
+	atmospheric_buffer(ctx, atmospherics_prop),
 
 	lll_storage(ctx, ctx.device().get_surface().extent()),
 	shadows_storage(ctx),
@@ -70,13 +70,23 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 {
 }
 
-void primary_renderer::update() {
+void primary_renderer::update(gl::command_recorder &recorder) {
+	// Update material bindings, in materials were mutated
 	common_binding_set_collection["material_samplers"] = s->properties().materials_storage().get_material_texture_storage().binder();
+
+	// Upload new camera and projection transform data
+	transform_buffers.update_view_data(recorder, *this->cam);
+	transform_buffers.update_proj_data(recorder, *this->cam, device().get_surface().extent());
+
+	// Update directional lights' cascades based on projection 
+	s->properties().lights_storage().update_directional_lights_cascades_buffer(recorder,
+																			   *this->cam,
+																			   this->cam->get_projection_model().get_fov(), 
+																			   this->cam->get_projection_model().get_projection_aspect(), 
+																			   this->cam->get_projection_model().get_near_clip_plane());
 }
 
 void primary_renderer::present() {
-	update();
-
 	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
 
 	// Acquire presentation comand batch
@@ -88,9 +98,14 @@ void primary_renderer::present() {
 		{
 			auto recorder = command_buffer.record();
 
+			// Update
+			update(recorder);
+
+			// Attach swap chain framebuffer to last stage, fxaa
 			auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 			fxaa.attach_framebuffer(fb);
 
+			// Render
 			recorder
 				<< hdr
 				<< fxaa

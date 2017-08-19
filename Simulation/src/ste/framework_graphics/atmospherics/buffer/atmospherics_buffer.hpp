@@ -1,14 +1,14 @@
 ﻿// StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <atmospherics_descriptor.hpp>
 
 #include <array.hpp>
 #include <command_recorder.hpp>
-#include <pipeline_stage.hpp>
 
 namespace ste {
 namespace graphics {
@@ -20,25 +20,19 @@ private:
 
 private:
 	buffer_type buffer;
-	std::uint32_t slot;
 
 public:
-	atmospherics_buffer(const descriptor::Properties &p) {
-		update_data(p);
-	}
+	atmospherics_buffer(const ste_context &ctx,
+						const descriptor::Properties &p)
+		: buffer(ctx,
+				 lib::vector<descriptor::descriptor_data>{ descriptor(p).get() },
+				 gl::buffer_usage::storage_buffer)
+	{}
 
-	auto update_data(const descriptor::Properties &p) {
+	void update_data(gl::command_recorder &recorder,
+					 const descriptor::Properties &p) {
 		auto d = descriptor(p);
-		slot = buffer.commit(d.get());
-
-		return slot;
-	}
-
-	void finish(gl::command_recorder &recorder,
-				gl::pipeline_stage stage) const {
-		buffer.signal(recorder,
-					  slot,
-					  stage);
+		recorder << buffer.overwrite_cmd(d.get());
 	}
 };
 

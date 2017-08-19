@@ -9,7 +9,7 @@ namespace ste {
 
 namespace _detail {
 
-inline glm::vec4 dist_and_normal(const glm::vec3 &p0, const glm::vec3 &p1, const glm::vec3 &p2) {
+inline glm::vec4 compute_distance_and_normal(const glm::vec3 &p0, const glm::vec3 &p1, const glm::vec3 &p2) {
 	auto u = p2 - p0;
 	auto v = p1 - p0;
 	auto n = glm::normalize(glm::cross(u, v));
@@ -51,10 +51,10 @@ inline void extract_projection_frustum_planes(float ffar,
 
 	*np = { 0, 0, -1, fnear };
 	*fp = { 0, 0, 1, ffar };
-	*rp = _detail::dist_and_normal(ntr, fbr, ftr);
-	*lp = _detail::dist_and_normal(ntl, ftl, fbl);
-	*tp = _detail::dist_and_normal(ntl, ftr, ftl);
-	*bp = _detail::dist_and_normal(nbl, fbl, fbr);
+	*rp = _detail::compute_distance_and_normal(ntr, fbr, ftr);
+	*lp = _detail::compute_distance_and_normal(ntl, ftl, fbl);
+	*tp = _detail::compute_distance_and_normal(ntl, ftr, ftl);
+	*bp = _detail::compute_distance_and_normal(nbl, fbl, fbr);
 }
 
 }

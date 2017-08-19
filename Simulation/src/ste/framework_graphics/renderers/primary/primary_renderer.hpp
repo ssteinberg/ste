@@ -10,6 +10,7 @@
 #include <pipeline_external_binding_set_collection.hpp>
 
 #include <camera.hpp>
+#include <camera_projection_reversed_infinite_perspective.hpp>
 #include <scene.hpp>
 
 #include <ste_context.hpp>
@@ -40,9 +41,11 @@ namespace graphics {
 class primary_renderer : gl::rendering_presentation_system {
 	using Base = gl::rendering_presentation_system;
 
+	using camera_t = camera<float, camera_projection_reversed_infinite_perspective>;
+
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
-	const camera<float> *cam;
+	const camera_t *cam;
 	scene *s;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
@@ -81,14 +84,14 @@ private:
 																							 const scene *s);
 
 	/**
-	*	@brief		Updates common descriptor set's bindings
+	*	@brief		Updates common descriptor set's bindings and data
 	*/
-	void update();
+	void update(gl::command_recorder &recorder);
 
 public:
 	primary_renderer(const ste_context &ctx,
 					 gl::presentation_engine &presentation,
-					 const camera<float> *cam,
+					 const camera_t *cam,
 					 scene *s,
 					 const atmospherics_properties<double> &atmospherics_prop);
 	~primary_renderer() noexcept {}

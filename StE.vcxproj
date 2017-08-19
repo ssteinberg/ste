@@ -569,6 +569,10 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_write_gbuffer_dispatch.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_model.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_orthographic.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_perspective.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_reversed_infinite_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\fonts\font.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_font_key.hpp" />

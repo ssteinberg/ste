@@ -1898,6 +1898,18 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_reversed_infinite_perspective.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_perspective.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_orthographic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

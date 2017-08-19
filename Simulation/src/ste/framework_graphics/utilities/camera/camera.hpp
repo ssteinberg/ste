@@ -16,7 +16,7 @@ namespace graphics {
 /**
  *	@brief	Simple camera object
  */
-template <typename T>
+template <typename T, template<typename> class projection_model>
 class camera {
 private:
 	using vec3 = glm::tvec3<T>;
@@ -31,14 +31,17 @@ private:
 
 	float camera_pitch_limit;
 
+	projection_model<T> proj;
+
 public:
-	camera()
+	camera(projection_model<T> &&proj)
 		: camera_position({ 0,0,0 }),
 		camera_look_at({ 0,0,-1 }),
 		camera_direction({ 0,0,-1 }),
 		camera_up({ 0,1,0 }),
 		camera_speed(1.f),
-		camera_pitch_limit(glm::half_pi<float>() - .05f)
+		camera_pitch_limit(glm::half_pi<float>() - .05f),
+		proj(std::move(proj))
 	{}
 	camera(const vec3 &position,
 		   const vec3 &direction,
@@ -54,6 +57,11 @@ public:
 	camera(const camera&) = default;
 	camera &operator=(camera&&) = default;
 	camera &operator=(const camera&) = default;
+
+	/*
+	 *	@brief	Returns a reference to the projection model associated with the camera
+	 */
+	auto &get_projection_model() const { return proj; }
 
 	/**
 	 *	@brief	Sets camera speed
