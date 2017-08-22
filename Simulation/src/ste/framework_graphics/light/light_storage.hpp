@@ -147,8 +147,15 @@ public:
 		Base::update(recorder);
 	}
 
+	/**
+	 *	@brief		Updates the directional lights cascades.
+	 *				Should be called every frame where a view transform or a projection change occured.
+	 *				
+	 *	@param	recorder		Command recorder
+	 *	@param	view_transform	Camera's view transform dual-quaternion
+	 */
 	void update_directional_lights_cascades_buffer(gl::command_recorder &recorder,
-												   const camera<float> &cam, 
+												   const glm::dualquat &view_transform,
 												   float projection_near, 
 												   float projection_fovy, 
 												   float projection_aspect);

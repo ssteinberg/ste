@@ -12,6 +12,7 @@
 
 #include <alias.hpp>
 #include <lib/vector.hpp>
+#include <atomic>
 
 namespace ste {
 namespace graphics {
@@ -38,29 +39,21 @@ private:
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_heads;
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_size;
 
-	glm::ivec2 size;
-	bool resize_on_clear{ false };
+	glm::ivec2 extent;
+	std::atomic_flag up_to_date;
 
 	void resize_internal(gl::command_recorder &recorder);
 
 public:
-	linked_light_lists(const ste_context &ctx, glm::ivec2 size);
+	linked_light_lists(const ste_context &ctx,
+					   const glm::ivec2 &extent);
 
-	void resize(glm::ivec2 size) {
-		size = size / lll_image_res_multiplier;
-		if (size.x <= 0 || size.y <= 0 || size == this->size)
-			return;
-
-		resize_on_clear = true;
-		this->size = size;
-	}
-	auto& get_size() const { return size; }
+	void resize(const glm::ivec2 &extent);
+	auto& get_extent() const { return extent; }
 
 	void clear(gl::command_recorder &recorder) {
-		if (resize_on_clear) {
+		if (up_to_date.test_and_set(std::memory_order_acquire))
 			resize_internal(recorder);
-			resize_on_clear = false;
-		}
 
 		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t >(0)) };
 		recorder << lll_counter.overwrite_cmd(0, zero);

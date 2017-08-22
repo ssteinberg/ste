@@ -33,7 +33,7 @@ private:
 		using table_buffer_type = gl::vector<table>;
 
 	public:
-		shadow_projection_data(const ste_context &ctx) 
+		shadow_projection_data(const ste_context &ctx)
 			: idb(ctx, gl::buffer_usage::storage_buffer),
 			proj_id_to_light_id_translation_table(ctx, gl::buffer_usage::storage_buffer) {}
 
@@ -57,7 +57,7 @@ private:
 	mutable shadow_projection_data<directional_shadow_pltt_size> directional_shadow_projection;
 
 public:
-	scene(const ste_context &ctx) 
+	scene(const ste_context &ctx)
 		: objects(ctx),
 		scene_props(ctx),
 		culled_objects_counter(ctx, 1, gl::buffer_usage::storage_buffer),
@@ -68,7 +68,7 @@ public:
 	~scene() noexcept {}
 
 	void update_scene(gl::command_recorder &recorder) {
-		objects.update_dirty_buffers();
+		objects.update_dirty_buffers(recorder);
 		scene_props.update(recorder);
 	}
 
@@ -85,11 +85,10 @@ public:
 	auto &get_directional_shadow_projection_buffers() const { return directional_shadow_projection; }
 
 	void resize_indirect_command_buffers(gl::command_recorder &recorder,
-										 std::size_t size) const {
-		recorder
-			<< idb->resize_cmd(size)
-			<< shadow_projection->resize_cmd(size)
-			<< directional_shadow_projection->resize_cmd(size);
+										 std::size_t size) {
+		recorder << idb->resize_cmd(size);
+		shadow_projection.resize(recorder, size);
+		directional_shadow_projection.resize(recorder, size);
 	}
 	void clear_indirect_command_buffers(gl::command_recorder &recorder) const {
 		recorder

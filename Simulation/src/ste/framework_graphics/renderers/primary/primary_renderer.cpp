@@ -1,8 +1,6 @@
-
+﻿
 #include <stdafx.hpp>
 #include <primary_renderer.hpp>
-
-#include <external_binding_set_collection_from_shader_stages.hpp>
 
 using namespace ste;
 using namespace ste::graphics;
@@ -12,22 +10,6 @@ gl::framebuffer_layout primary_renderer::create_fb_layout(const ste_context &ctx
 	fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
 									gl::image_layout::color_attachment_optimal);
 	return fb_layout;
-}
-
-gl::pipeline_external_binding_set_collection primary_renderer::create_common_binding_set_collection(const ste_context &ctx,
-																									const scene *s) {
-	gl::device_pipeline_shader_stage common_bindings_spirv(ctx, "primary_renderer_common_descriptor_sets.comp");
-	gl::external_binding_set_collection_from_shader_stages external_binding_set_collection_generator(ctx.device(), {});
-	auto set = gl::pipeline_external_binding_set_collection(std::move(external_binding_set_collection_generator).generate());
-
-	// Mesh and material bindings
-	set["mesh_descriptors_binding"] = gl::bind(s->get_object_group().get_draw_buffers().get_mesh_data_buffer());
-	set["material_descriptors_binding"] = gl::bind(s->properties().materials_storage().buffer());
-	set["material_layer_descriptors_binding"] = gl::bind(s->properties().material_layers_storage().buffer());
-
-	// Light bindings
-
-	return set;
 }
 
 primary_renderer::primary_renderer(const ste_context &ctx,
@@ -41,19 +23,16 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	cam(cam),
 	s(s),
 
-	transform_buffers(ctx),
-	atmospheric_buffer(ctx, atmospherics_prop),
-
-	lll_storage(ctx, ctx.device().get_surface().extent()),
-	shadows_storage(ctx),
-	vol_scat_storage(ctx),
-
-	common_binding_set_collection(create_common_binding_set_collection(ctx,
-																	   s)),
+	buffers(ctx,
+			ctx.device().get_surface().extent(),
+			s,
+			atmospherics_prop),
+	framebuffers(ctx,
+				 ctx.device().get_surface().extent()),
 
 	composer(ctx),
-	fxaa(ctx),
-	hdr(ctx),
+	hdr(ctx, ctx.device().get_surface().extent(), framebuffers.fxaa_input_fb.get_layout()),
+	fxaa(ctx, framebuffers.hdr_input_fb.get_layout()),
 
 	downsample_depth(ctx),
 	prepopulate_depth_dispatch(ctx),
@@ -68,22 +47,45 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 
 	vol_scat_scatter(ctx) 
 {
+	// Attach gbuffer's downsampled depth map to the linked-light-list generator
+	lll_gen_dispatch->set_depth_map(buffers.gbuffer->get_downsampled_depth_target());
+	gbuffer_depth_target_connection = make_connection(buffers.gbuffer->get_depth_target_modified_signal(), [this]() {
+		lll_gen_dispatch->set_depth_map(buffers.gbuffer->get_downsampled_depth_target());
+	});
+
+	// Attach a signal to swapchain surface resize signal
+	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
+		// Resize buffers and framebuffers
+		buffers.resize(ctx.device().get_surface().extent());
+		framebuffers.resize(ctx.device().get_surface().extent());
+
+		// Send resize signal to interested fragments
+		hdr.resize(device().get_surface().extent());
+
+		// Reattach resized framebuffers and input images
+		hdr.attach_framebuffer(framebuffers.fxaa_input_fb);
+		hdr.set_input_image(&framebuffers.hdr_input_image.get());
+		fxaa.set_input_image(&framebuffers.fxaa_input_image.get());
+	});
 }
 
 void primary_renderer::update(gl::command_recorder &recorder) {
-	// Update material bindings, in materials were mutated
-	common_binding_set_collection["material_samplers"] = s->properties().materials_storage().get_material_texture_storage().binder();
-
-	// Upload new camera and projection transform data
-	transform_buffers.update_view_data(recorder, *this->cam);
-	transform_buffers.update_proj_data(recorder, *this->cam, device().get_surface().extent());
-
 	// Update directional lights' cascades based on projection 
-	s->properties().lights_storage().update_directional_lights_cascades_buffer(recorder,
-																			   *this->cam,
+	s->properties().lights_storage().update_directional_lights_cascades_buffer(recorder, this->cam->view_transform_dquat(),
 																			   this->cam->get_projection_model().get_fov(), 
 																			   this->cam->get_projection_model().get_projection_aspect(), 
 																			   this->cam->get_projection_model().get_near_clip_plane());
+
+	// Update buffers
+	buffers.update(recorder, 
+				   s, cam);
+
+	// Update atmospheric properties (if needed)
+	if (atmospherics_properties_update) {
+		buffers.update_atmospheric_properties(recorder, 
+											  atmospherics_properties_update.get());
+		atmospherics_properties_update = none;
+	}
 }
 
 void primary_renderer::present() {
@@ -98,14 +100,15 @@ void primary_renderer::present() {
 		{
 			auto recorder = command_buffer.record();
 
-			// Update
-			update(recorder);
-
 			// Attach swap chain framebuffer to last stage, fxaa
 			auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 			fxaa.attach_framebuffer(fb);
 
+			// Update data
+			update(recorder);
+
 			// Render
+			// light_preprocess → scene_geo_cull → shadow_projector → directional_shadow_projector → prepopulate_depth → downsample_depth → lll_gen → scene → prepopulate_depth_backface → volumetric_scattering → composer → hdr → fxaa
 			recorder
 				<< hdr
 				<< fxaa
@@ -121,4 +124,3 @@ void primary_renderer::present() {
 		presentation.get().submit_and_present(std::move(batch));
 	});
 }
-

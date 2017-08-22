@@ -16,12 +16,10 @@
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
 
-#include <atmospherics_buffer.hpp>
-#include <transforms_ring_buffers.hpp>
+#include <primary_renderer_buffers.hpp>
+#include <primary_renderer_framebuffers.hpp>
+
 #include <deferred_composer.hpp>
-#include <linked_light_lists.hpp>
-#include <shadowmap_storage.hpp>
-#include <volumetric_scattering_storage.hpp>
 #include <fxaa_postprocess.hpp>
 #include <hdr_dof_postprocess.hpp>
 #include <scene_prepopulate_depth_fragment.hpp>
@@ -34,11 +32,12 @@
 #include <gbuffer_downsample_depth_fragment.hpp>
 
 #include <signal.hpp>
+#include <optional.hpp>
 
 namespace ste {
 namespace graphics {
 
-class primary_renderer : gl::rendering_presentation_system {
+class primary_renderer : public gl::rendering_presentation_system {
 	using Base = gl::rendering_presentation_system;
 
 	using camera_t = camera<float, camera_projection_reversed_infinite_perspective>;
@@ -49,21 +48,15 @@ private:
 	scene *s;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
+	connection<> gbuffer_depth_target_connection;
 
-private:
-	transforms_ring_buffers transform_buffers;
-	atmospherics_buffer atmospheric_buffer;
-
-	ste_resource<linked_light_lists> lll_storage;
-	ste_resource<shadowmap_storage> shadows_storage;
-	ste_resource<volumetric_scattering_storage> vol_scat_storage;
-
-	gl::pipeline_external_binding_set_collection common_binding_set_collection;
+	primary_renderer_buffers buffers;
+	primary_renderer_framebuffers framebuffers;
 
 private:
 	ste_resource<deferred_composer> composer;
-	ste_resource<fxaa_postprocess> fxaa;
 	ste_resource<hdr_dof_postprocess> hdr;
+	ste_resource<fxaa_postprocess> fxaa;
 
 	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
 	ste_resource<scene_prepopulate_depth_front_face_fragment> prepopulate_depth_dispatch;
@@ -79,13 +72,14 @@ private:
 	ste_resource<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
 
 private:
+	optional<atmospherics_properties<double>> atmospherics_properties_update;
+
+private:
 	static gl::framebuffer_layout create_fb_layout(const ste_context &ctx);
-	static gl::pipeline_external_binding_set_collection create_common_binding_set_collection(const ste_context &ctx,
-																							 const scene *s);
 
 	/**
-	*	@brief		Updates common descriptor set's bindings and data
-	*/
+	 *	@brief		Update buffers
+	 */
 	void update(gl::command_recorder &recorder);
 
 public:
@@ -97,25 +91,25 @@ public:
 	~primary_renderer() noexcept {}
 
 	const gl::pipeline_external_binding_set_collection* external_binding_sets() const override final {
-		return &common_binding_set_collection;
+		return &buffers.common_binding_set_collection;
 	}
 
-	/*
+	/**
 	 *	@brief		Updates atmospheric properties.
 	 */
-	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospheric_buffer.update_data(atmospherics_prop); }
+	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospherics_properties_update = atmospherics_prop; }
 
 	/**
-	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
-	*
-	* 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
-	*	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
-	*/
+	 *	@brief		Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
+	 *
+	 * 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
+	 *	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
+	 */
 	void set_aperture_parameters(float diameter, float focal_length) { hdr.get().set_aperture_parameters(diameter, focal_length); }
 
 	/**
-	*	@brief		Performs rendering and presentation.
-	*/
+	 *	@brief		Performs rendering and presentation.
+	 */
 	void present() override final;
 };
 

@@ -30,10 +30,12 @@ inline glm::quat tbn_to_tangent_frame(const glm::vec3 &t, const glm::vec3 &b, co
 	constexpr float delta = 1e-8f;
 	if (glm::abs(tangent_frame_quat.w) < delta) {
 		float renorm = glm::sqrt(1.f - delta * delta);
+		float step = glm::mix(1.f, -1.f, tangent_frame_quat.w <= .0f);
+
 		tangent_frame_quat.x *= renorm;
 		tangent_frame_quat.y *= renorm;
 		tangent_frame_quat.z *= renorm;
-		tangent_frame_quat.w = (2.f * glm::step(.0f, tangent_frame_quat.w) - 1.f) * delta;
+		tangent_frame_quat.w = step * delta;
 	}
 
 	if (tangent_frame_quat.w < .0f)

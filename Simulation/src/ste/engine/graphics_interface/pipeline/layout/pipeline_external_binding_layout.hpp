@@ -131,6 +131,8 @@ public:
 	std::uint32_t count() const override { return binding.variable->size(); }
 	const pipeline_binding_stages_collection& stage_collection() const override { return binding_stages; }
 
+	auto& get_binding() const { return binding; }
+
 	/**
 	*	@brief	Returns the appropriate VkDescriptorType type.
 	*

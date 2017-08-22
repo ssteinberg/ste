@@ -148,7 +148,7 @@ private:
 				// Find the binding and verify compatibility
 				for (auto &external_binding : external_set_layout) {
 					if (external_binding.bind_idx() == bind_idx) {
-						external_binding.binding.compatible(b.binding);
+						external_binding.get_binding().compatible(*b.binding);
 						break;
 					}
 				}

@@ -87,7 +87,7 @@ public:
 				auto ret = name_map.try_emplace(b.name(), &b);
 				if (!ret.second) {
 					// Name already exists
-					throw pipeline_layout_duplicate_variable_name_exception();
+					throw pipeline_layout_duplicate_variable_name_exception("Variable's name already exists in collection");
 				}
 			}
 		}

@@ -1910,6 +1910,12 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_orthographic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_framebuffers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
