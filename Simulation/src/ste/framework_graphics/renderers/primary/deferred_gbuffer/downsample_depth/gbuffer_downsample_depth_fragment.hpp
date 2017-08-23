@@ -67,6 +67,9 @@ public:
 			attach_handles();
 		});
 	}
+	~gbuffer_downsample_depth_fragment() noexcept {}
+
+	gbuffer_downsample_depth_fragment(gbuffer_downsample_depth_fragment&&) = default;
 
 	static const lib::string& name() { return "gbuffer_downsample_depth"; }
 

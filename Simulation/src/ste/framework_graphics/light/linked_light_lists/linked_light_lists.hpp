@@ -26,7 +26,7 @@ private:
 	using lll_counter_type = gl::stable_vector<lll_counter_element>;
 
 public:
-	static constexpr int lll_image_res_multiplier = 8;
+	static constexpr unsigned lll_image_res_multiplier = 8;
 
 private:
 	alias<const ste_context> ctx;
@@ -39,23 +39,26 @@ private:
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_heads;
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_size;
 
-	glm::ivec2 extent;
+	glm::uvec2 extent;
 	std::atomic_flag up_to_date;
 
 	void resize_internal(gl::command_recorder &recorder);
 
 public:
 	linked_light_lists(const ste_context &ctx,
-					   const glm::ivec2 &extent);
+					   const glm::uvec2 &extent);
+	~linked_light_lists() noexcept {}
 
-	void resize(const glm::ivec2 &extent);
+	linked_light_lists(linked_light_lists&&) = default;
+
+	void resize(const glm::uvec2 &extent);
 	auto& get_extent() const { return extent; }
 
 	void clear(gl::command_recorder &recorder) {
 		if (up_to_date.test_and_set(std::memory_order_acquire))
 			resize_internal(recorder);
 
-		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t >(0)) };
+		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t>(0)) };
 		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
 };

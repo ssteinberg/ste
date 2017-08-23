@@ -20,8 +20,8 @@ class primary_renderer_framebuffers {
 	friend class primary_renderer;
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
-	glm::ivec2 extent;
+	alias<const ste_context> ctx;
+	glm::uvec2 extent;
 
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_input_image;
 	ste_resource<gl::texture<gl::image_type::image_2d>> fxaa_input_image;
@@ -45,7 +45,7 @@ private:
 
 public:
 	primary_renderer_framebuffers(const ste_context &ctx,
-								  const glm::ivec2 &extent) 
+								  const glm::uvec2 &extent) 
 		: ctx(ctx),
 		extent(extent),
 
@@ -67,7 +67,7 @@ public:
 		fxaa_input_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 	}
 
-	void resize(const glm::ivec2 &extent) {
+	void resize(const glm::uvec2 &extent) {
 		if (extent.x <= 0 || extent.y <= 0 || extent == this->extent)
 			return;
 

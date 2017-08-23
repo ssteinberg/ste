@@ -32,7 +32,7 @@ public:
 	void update_data(gl::command_recorder &recorder,
 					 const descriptor::Properties &p) {
 		auto d = descriptor(p);
-		recorder << buffer.overwrite_cmd(d.get());
+		recorder << buffer.overwrite_cmd(0, d.get());
 	}
 };
 

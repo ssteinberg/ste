@@ -49,31 +49,32 @@ private:
 		return set;
 	}
 	static int gbuffer_depth_target_levels() {
-		return glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier)) + 1;
+		return static_cast<int>(glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier))) + 1;
 	}
 
 private:
-	std::reference_wrapper<const ste_context> ctx;
+	alias<const ste_context> ctx;
 
 	connection<> gbuffer_depth_target_connection;
+	connection<> shadows_storage_connection;
 
-	glm::ivec2 extent;
+	glm::uvec2 extent;
 	std::atomic_flag projection_data_up_to_date_flag;
 
 	transforms_ring_buffers transform_buffers;
 	atmospherics_buffer atmospheric_buffer;
 
-	deferred_gbuffer gbuffer;
+	ste_resource<deferred_gbuffer> gbuffer;
 
-	ste_resource<linked_light_lists> lll_storage;
 	ste_resource<shadowmap_storage> shadows_storage;
+	ste_resource<linked_light_lists> lll_storage;
 	ste_resource<volumetric_scattering_storage> vol_scat_storage;
 
 	gl::pipeline_external_binding_set_collection common_binding_set_collection;
 
 public:
 	primary_renderer_buffers(const ste_context &ctx,
-							 const glm::ivec2 &extent,
+							 const glm::uvec2 &extent,
 							 const scene *s,
 							 const atmospherics_properties<double> &atmospherics_prop)
 		: ctx(ctx),
@@ -84,19 +85,20 @@ public:
 
 		gbuffer(ctx, extent, gbuffer_depth_target_levels()),
 
-		lll_storage(ctx, extent),
 		shadows_storage(ctx),
-		vol_scat_storage(ctx),
+		lll_storage(ctx, extent),
+		vol_scat_storage(ctx, extent),
 
 		common_binding_set_collection(create_common_binding_set_collection(ctx,
 																		   s)) 
 	{
 		projection_data_up_to_date_flag.test_and_set(std::memory_order_release);
 
-		// Attach gbuffer's depth map to the scatter fragment
-		vol_scat_storage->set_depth_maps(gbuffer.get_depth_target(), gbuffer.get_downsampled_depth_target());
+		// gbuffer resize signal
 		gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this]() {
-			vol_scat_storage->set_depth_maps(gbuffer.get_depth_target(), gbuffer.get_downsampled_depth_target());
+		});
+		// Shadow storage change signal
+		shadows_storage_connection = make_connection(shadows_storage->get_storage_modified_signal(), [&]() {
 		});
 	}
 	~primary_renderer_buffers() noexcept {}
@@ -104,16 +106,16 @@ public:
 	/**
 	 *	@brief		Resize
 	 */
-	void resize(const glm::ivec2 &extent) {
+	void resize(const glm::uvec2 &extent) {
 		if (extent.x <= 0 || extent.y <= 0 || extent == this->extent)
 			return;
 
 		this->extent = extent;
 
 		// Resize buffers
-		gbuffer.resize(extent);
+		gbuffer->resize(extent);
 		lll_storage->resize(extent);
-		vol_scat_storage.resize(extent);
+		vol_scat_storage->resize(extent);
 
 		// Set resized flag
 		projection_data_up_to_date_flag.clear(std::memory_order_release);
@@ -123,9 +125,9 @@ public:
 	*	@brief		Updates common descriptor set's bindings and data
 	*/
 	void update(gl::command_recorder &recorder,
-				const scene *s,
+				scene *s,
 				const camera_t *cam) {
-		// Update material bindings, in materials were mutated
+		// Update material bindings, if materials were mutated
 		common_binding_set_collection["material_samplers"] = s->properties().materials_storage().get_material_texture_storage().binder();
 
 		// Upload new camera transform data

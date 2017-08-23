@@ -52,6 +52,9 @@ protected:
 public:
 	virtual ~fragment_compute() noexcept {}
 
+	fragment_compute(fragment_compute&&) = default;
+	fragment_compute& operator=(fragment_compute&&) = default;
+
 	// Subclasses are expected to declare:
 	//static const lib::string& name();
 };

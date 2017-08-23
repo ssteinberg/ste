@@ -21,8 +21,8 @@ struct ste_shader_object {
 	const vk::vk_shader<> shader;
 
 	const ste_shader_program_stage stage;
-	const lib::vector<ste_shader_stage_binding> stage_bindings;
-	const lib::vector<ste_shader_stage_attachment> stage_attachments;
+	lib::vector<ste_shader_stage_binding> stage_bindings;
+	lib::vector<ste_shader_stage_attachment> stage_attachments;
 
 	ste_shader_object() = delete;
 	ste_shader_object(const vk::vk_logical_device<> &device,

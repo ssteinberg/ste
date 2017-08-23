@@ -32,6 +32,8 @@ public:
 	}
 	~hdr_compute_minmax_fragment() noexcept {}
 
+	hdr_compute_minmax_fragment(hdr_compute_minmax_fragment&&) = default;
+
 	static const lib::string& name() { return "hdr_compute_minmax"; }
 
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {

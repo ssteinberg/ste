@@ -29,6 +29,8 @@ public:
 	}
 	~hdr_compute_histogram_sums_fragment() noexcept {}
 
+	hdr_compute_histogram_sums_fragment(hdr_compute_histogram_sums_fragment&&) = default;
+
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_sums,
 					  const gl::array<gl::std430<std::uint32_t>> &histogram_bins,
 					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {

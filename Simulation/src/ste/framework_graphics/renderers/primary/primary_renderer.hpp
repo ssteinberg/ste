@@ -24,11 +24,11 @@
 #include <hdr_dof_postprocess.hpp>
 #include <scene_prepopulate_depth_fragment.hpp>
 #include <scene_geo_cull_fragment.hpp>
-#include <linked_light_lists_gen_dispatch.hpp>
-#include <light_preprocessor.hpp>
+#include <linked_light_lists_gen_fragment.hpp>
+#include <light_preprocessor_fragment.hpp>
 #include <shadowmap_projector.hpp>
 #include <directional_shadowmap_projector.hpp>
-#include <volumetric_scattering_scatter_dispatch.hpp>
+#include <volumetric_scattering_scatter_fragment.hpp>
 #include <gbuffer_downsample_depth_fragment.hpp>
 
 #include <signal.hpp>
@@ -48,28 +48,27 @@ private:
 	scene *s;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
-	connection<> gbuffer_depth_target_connection;
 
-	primary_renderer_buffers buffers;
-	primary_renderer_framebuffers framebuffers;
+	ste_resource<primary_renderer_buffers> buffers;
+	ste_resource<primary_renderer_framebuffers> framebuffers;
 
 private:
-	ste_resource<deferred_composer> composer;
-	ste_resource<hdr_dof_postprocess> hdr;
-	ste_resource<fxaa_postprocess> fxaa;
+	deferred_composer composer;
+	hdr_dof_postprocess hdr;
+	fxaa_postprocess fxaa;
 
-	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
-	ste_resource<scene_prepopulate_depth_front_face_fragment> prepopulate_depth_dispatch;
-	ste_resource<scene_prepopulate_depth_back_face_fragment> prepopulate_backface_depth_dispatch;
-	ste_resource<scene_geo_cull_fragment> scene_geo_cull;
+	gbuffer_downsample_depth_fragment downsample_depth;
+	scene_prepopulate_depth_front_face_fragment prepopulate_depth;
+	scene_prepopulate_depth_back_face_fragment prepopulate_backface_depth;
+	scene_geo_cull_fragment scene_geo_cull;
 
-	ste_resource<linked_light_lists_gen_dispatch> lll_gen_dispatch;
-	ste_resource<light_preprocessor> light_preprocess;
+	linked_light_lists_gen_fragment lll_gen;
+	light_preprocessor_fragment light_preprocess;
 
-	ste_resource<shadowmap_projector> shadows_projector;
-	ste_resource<directional_shadowmap_projector> directional_shadows_projector;
+	shadowmap_projector shadows_projector;
+	directional_shadowmap_projector directional_shadows_projector;
 
-	ste_resource<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
+	volumetric_scattering_scatter_fragment vol_scat_scatter;
 
 private:
 	optional<atmospherics_properties<double>> atmospherics_properties_update;
@@ -91,7 +90,7 @@ public:
 	~primary_renderer() noexcept {}
 
 	const gl::pipeline_external_binding_set_collection* external_binding_sets() const override final {
-		return &buffers.common_binding_set_collection;
+		return &buffers->common_binding_set_collection;
 	}
 
 	/**
@@ -105,12 +104,14 @@ public:
 	 * 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
 	 *	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
 	 */
-	void set_aperture_parameters(float diameter, float focal_length) { hdr.get().set_aperture_parameters(diameter, focal_length); }
+	void set_aperture_parameters(float diameter, float focal_length) { hdr.set_aperture_parameters(diameter, focal_length); }
 
+protected:
 	/**
 	 *	@brief		Performs rendering and presentation.
 	 */
 	void present() override final;
+	void render() override final {}
 };
 
 }

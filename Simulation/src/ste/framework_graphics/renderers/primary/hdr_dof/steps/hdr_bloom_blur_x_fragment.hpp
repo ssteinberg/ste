@@ -28,6 +28,8 @@ public:
 	}
 	~hdr_bloom_blur_x_fragment() noexcept {}
 
+	hdr_bloom_blur_x_fragment(hdr_bloom_blur_x_fragment&&) = default;
+
 	static const lib::string& name() { return "hdr_bloom_blur_x"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,

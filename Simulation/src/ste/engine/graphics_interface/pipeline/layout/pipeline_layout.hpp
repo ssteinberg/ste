@@ -397,7 +397,8 @@ public:
 
 		if (external_binding_sets != nullptr) {
 			// Add external set layouts to pipeline layout
-			for (auto &es : external_binding_sets->get_layouts()) {
+			auto& external_layouts = external_binding_sets->get_layouts();
+			for (auto &es : external_layouts) {
 				set_layout_ptrs.push_back(&es.get());
 			}
 		}

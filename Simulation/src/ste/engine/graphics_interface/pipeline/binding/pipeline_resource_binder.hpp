@@ -19,6 +19,7 @@
 #include <image_layout.hpp>
 
 #include <array.hpp>
+#include <vector.hpp>
 #include <ring_buffer.hpp>
 #include <stable_vector.hpp>
 
@@ -100,31 +101,42 @@ auto bind(const device_buffer_sparse<T, s, a> &buffer,
 }
 
 /**
-*	@brief	Buffe binder helper. Binds an array.
+*	@brief	Buffer binder helper. Binds an array.
 *
 *	@param	array	Array to bind
 */
 template <typename T>
 auto bind(const array<T> &array) {
-	return gl::bind(array.get());
+	return bind(array.get());
 }
 /**
-*	@brief	Buffe binder helper. Binds a Ring buffer.
+*	@brief	Buffer binder helper. Binds a vector.
+*
+*	@param	vec		Vector to bind
+*/
+template <typename T, std::uint64_t a, std::uint64_t b>
+auto bind(const vector<T, a, b> &vec) {
+	return bind(vec.get(),
+				0, vec.size());
+}
+/**
+*	@brief	Buffer binder helper. Binds a Ring buffer.
 *
 *	@param	ring	Ring buffer to bind
 */
 template <typename T, unsigned C>
 auto bind(const ring_buffer<T, C> &ring) {
-	return gl::bind(ring.get());
+	return bind(ring.get());
 }
 /**
-*	@brief	Buffe binder helper. Binds a stable vector.
+*	@brief	Buffer binder helper. Binds a stable vector.
 *
 *	@param	vec		Stable vector to bind
 */
 template <typename T, std::uint64_t a, std::uint64_t b>
 auto bind(const stable_vector<T, a, b> &vec) {
-	return gl::bind(vec.get());
+	return bind(vec.get(),
+				0, vec.size());
 }
 
 /**
@@ -163,7 +175,7 @@ auto inline bind(std::uint32_t array_element,
 */
 auto inline bind(const lib::vector<pipeline::image> &images) {
 	assert(images.size());
-	return gl::bind(0, images);
+	return bind(0, images);
 }
 /**
 *	@brief	Creates a sparse image view binder.
@@ -229,7 +241,7 @@ auto inline bind(std::uint32_t array_element,
 */
 auto inline bind(const lib::vector<pipeline::combined_image_sampler> &ciss) {
 	assert(ciss.size());
-	return gl::bind(0, ciss);
+	return bind(0, ciss);
 }
 /**
 *	@brief	Creates an combined_image_sampler binder.
@@ -285,7 +297,7 @@ auto inline bind(std::uint32_t array_element,
 */
 auto inline bind(const lib::vector<const sampler*> &samplers) {
 	assert(samplers.size());
-	return gl::bind(0, samplers);
+	return bind(0, samplers);
 }
 /**
 *	@brief	Creates an combined_image_sampler binder.

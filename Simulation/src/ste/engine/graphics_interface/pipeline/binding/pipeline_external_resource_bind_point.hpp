@@ -59,6 +59,14 @@ public:
 	*	@brief	Binds a resource
 	*/
 	template <typename WriteType, typename T>
+	void operator=(lib::vector<pipeline_resource_binder<WriteType, T>> &&resources) {
+		this->bind(std::move(resources));
+	}
+
+	/**
+	*	@brief	Binds a resource
+	*/
+	template <typename WriteType, typename T>
 	void operator=(pipeline_resource_binder<WriteType, T> &&res) {
 		this->bind(std::move(res));
 	}

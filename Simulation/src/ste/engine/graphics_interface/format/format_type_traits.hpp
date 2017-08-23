@@ -78,6 +78,11 @@ template<> struct _format_for_type<glm::u16vec4, true> { static constexpr format
 template<> struct _format_for_type<glm::tvec4<half_float::half>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
 template<> struct _format_for_type<glm::vec4, false> { static constexpr format value = format::r32g32b32a32_sfloat; };
 template<> struct _format_for_type<glm::f64vec4, false> { static constexpr format value = format::r64g64b64a64_sfloat; };
+template<> struct _format_for_type<glm::tquat<half_float::half, glm::precision::lowp>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
+template<> struct _format_for_type<glm::tquat<half_float::half, glm::precision::mediump>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
+template<> struct _format_for_type<glm::tquat<half_float::half, glm::precision::highp>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
+template<> struct _format_for_type<glm::quat, false> { static constexpr format value = format::r32g32b32a32_sfloat; };
+template<> struct _format_for_type<glm::f64quat, false> { static constexpr format value = format::r64g64b64a64_sfloat; };
 }
 template<typename T, bool normalized = false>
 struct format_for_type {

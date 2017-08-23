@@ -49,6 +49,11 @@ public:
 	using value_type = T;
 	static constexpr bool sparse_container = true;
 
+	using insert_cmd_t = _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>;
+	using resize_cmd_t = _internal::vector_cmd_resize<stable_vector<T, minimal_atom_size, max_sparse_size>>;
+	using unbind_cmd_t = _internal::vector_cmd_unbind<stable_vector<T, minimal_atom_size, max_sparse_size>>;
+	using update_cmd_t = _internal::vector_cmd_update<stable_vector<T, minimal_atom_size, max_sparse_size>>;
+
 private:
 	buffer_t buffer;
 	std::uint64_t elements{ 0 };
@@ -109,13 +114,13 @@ public:
 			tombstone_range t(location, data.size());
 			tombstones.remove(t);
 
-			return _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>(data,
-																									  location,
-																									  this);
+			return insert_cmd_t(data,
+								location,
+								this);
 		}
 
 		location = elements++;
-		return _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>(data, location, this);
+		return insert_cmd_t(data, location, this);
 	}
 	/**
 	*	@brief	Returns a device command that will insert data into the vector in an empty slot.
@@ -135,13 +140,13 @@ public:
 	*	@param	idx		Slot index to overwrite
 	*	@param	data	New data to overwrite
 	*/
-	auto overwrite_cmd(std::uint64_t idx, 
+	auto overwrite_cmd(std::uint64_t idx,
 					   const lib::vector<T> &data) {
 		assert(idx + data.size() <= size());
 
-		return _internal::vector_cmd_update<stable_vector<T, minimal_atom_size, max_sparse_size>>(data,
-																								  idx,
-																								  this);
+		return update_cmd_t(data,
+							idx,
+							this);
 	}
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
@@ -164,7 +169,7 @@ public:
 		auto location = elements;
 		elements += data.size();
 
-		return _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>(data, location, this);
+		return insert_cmd_t(data, location, this);
 	}
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
@@ -185,7 +190,7 @@ public:
 		assert(count_to_pop <= elements);
 		elements -= count_to_pop;
 
-		return _internal::vector_cmd_unbind<stable_vector<T, minimal_atom_size, max_sparse_size>>(elements, count_to_pop, this);
+		return unbind_cmd_t(elements, count_to_pop, this);
 	}
 
 	/**
@@ -198,9 +203,9 @@ public:
 		auto old_size = elements;
 		elements = new_size;
 
-		return _internal::vector_cmd_resize<stable_vector<T, minimal_atom_size, max_sparse_size>>(old_size,
-																								  new_size,
-																								  this);
+		return resize_cmd_t(old_size,
+							new_size,
+							this);
 	}
 
 	auto size() const { return elements; }

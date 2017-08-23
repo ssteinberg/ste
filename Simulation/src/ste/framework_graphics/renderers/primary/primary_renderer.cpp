@@ -19,6 +19,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 								   const atmospherics_properties<double> &atmospherics_prop)
 	: Base(ctx,
 		   create_fb_layout(ctx)), 
+
 	presentation(presentation),
 	cam(cam),
 	s(s),
@@ -30,59 +31,66 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	framebuffers(ctx,
 				 ctx.device().get_surface().extent()),
 
-	composer(ctx),
-	hdr(ctx, ctx.device().get_surface().extent(), framebuffers.fxaa_input_fb.get_layout()),
-	fxaa(ctx, framebuffers.hdr_input_fb.get_layout()),
+	composer(*this),
+	hdr(*this, 
+		ctx.device().get_surface().extent(),
+		gl::framebuffer_layout(framebuffers->fxaa_input_fb.get_layout())),
+	fxaa(*this, 
+		 gl::framebuffer_layout(framebuffers->hdr_input_fb.get_layout())),
 
-	downsample_depth(ctx),
-	prepopulate_depth_dispatch(ctx),
-	prepopulate_backface_depth_dispatch(ctx),
-	scene_geo_cull(ctx),
+	downsample_depth(*this,
+					 &buffers->gbuffer.get()),
+	prepopulate_depth(*this,
+					  s),
+	prepopulate_backface_depth(*this,
+							   s),
+	scene_geo_cull(*this,
+				   s, &s->properties().lights_storage()),
 
-	lll_gen_dispatch(ctx),
-	light_preprocess(ctx),
+	lll_gen(*this,
+			&buffers->lll_storage.get()),
+	light_preprocess(*this,
+					 &s->properties().lights_storage()),
 
-	shadows_projector(ctx),
-	directional_shadows_projector(ctx),
+	shadows_projector(*this,
+					  s),
+	directional_shadows_projector(*this,
+								  s),
 
-	vol_scat_scatter(ctx) 
+	vol_scat_scatter(*this,
+					 &buffers->vol_scat_storage.get(),
+					 &s->properties().lights_storage()) 
 {
-	// Attach gbuffer's downsampled depth map to the linked-light-list generator
-	lll_gen_dispatch->set_depth_map(buffers.gbuffer->get_downsampled_depth_target());
-	gbuffer_depth_target_connection = make_connection(buffers.gbuffer->get_depth_target_modified_signal(), [this]() {
-		lll_gen_dispatch->set_depth_map(buffers.gbuffer->get_downsampled_depth_target());
-	});
-
 	// Attach a signal to swapchain surface resize signal
 	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
 		// Resize buffers and framebuffers
-		buffers.resize(ctx.device().get_surface().extent());
-		framebuffers.resize(ctx.device().get_surface().extent());
+		buffers->resize(ctx.device().get_surface().extent());
+		framebuffers->resize(ctx.device().get_surface().extent());
 
 		// Send resize signal to interested fragments
 		hdr.resize(device().get_surface().extent());
 
 		// Reattach resized framebuffers and input images
-		hdr.attach_framebuffer(framebuffers.fxaa_input_fb);
-		hdr.set_input_image(&framebuffers.hdr_input_image.get());
-		fxaa.set_input_image(&framebuffers.fxaa_input_image.get());
+		hdr.attach_framebuffer(framebuffers->fxaa_input_fb);
+		hdr.set_input_image(&framebuffers->hdr_input_image.get());
+		fxaa.set_input_image(&framebuffers->fxaa_input_image.get());
 	});
 }
 
 void primary_renderer::update(gl::command_recorder &recorder) {
 	// Update directional lights' cascades based on projection 
 	s->properties().lights_storage().update_directional_lights_cascades_buffer(recorder, this->cam->view_transform_dquat(),
-																			   this->cam->get_projection_model().get_fov(), 
-																			   this->cam->get_projection_model().get_projection_aspect(), 
+																			   this->cam->get_projection_model().get_fovy(),
+																			   this->cam->get_projection_model().get_aspect(),
 																			   this->cam->get_projection_model().get_near_clip_plane());
 
 	// Update buffers
-	buffers.update(recorder, 
+	buffers->update(recorder, 
 				   s, cam);
 
 	// Update atmospheric properties (if needed)
 	if (atmospherics_properties_update) {
-		buffers.update_atmospheric_properties(recorder, 
+		buffers->update_atmospheric_properties(recorder, 
 											  atmospherics_properties_update.get());
 		atmospherics_properties_update = none;
 	}

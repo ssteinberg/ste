@@ -32,7 +32,8 @@ public:
 	{}
 
 	lib::unique_ptr<material_layer> allocate_layer() {
-		return Base::allocate_resource<material_layer>();
+		return Base::allocate_resource<material_layer>(ctx.get(),
+													   material_texture_storage.get());
 	}
 	void erase_layer(const material_layer *layer) {
 		erase_resource(layer);

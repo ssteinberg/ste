@@ -16,7 +16,6 @@
 #include <lib/string.hpp>
 
 #include <type_traits>
-#include <initializer_list>
 
 namespace ste {
 namespace gl {
@@ -52,7 +51,7 @@ public:
 					// Name exists
 					if (it->second.binding != binding) {
 						// Incompatible
-						throw pipeline_layout_incompatible_binding_exception();
+						throw pipeline_layout_incompatible_binding_exception("Incompatible bindings with identical name");
 					}
 					it->second.stages.insert(stages);
 				}
@@ -77,15 +76,19 @@ public:
 			auto it = binding_layouts.lower_bound(set_idx);
 			if (it != binding_layouts.end() && it->first == set_idx)
 				it->second.emplace_back(std::move(binding_layout));
-			else
+			else {
+				lib::vector<pipeline_external_binding_layout> v;
+				v.emplace_back(std::move(binding_layout));
+
 				binding_layouts.emplace_hint(it,
-											 lib::vector<pipeline_external_binding_layout>{ std::move(binding_layout) });
+											 it->first, std::move(v));
+			}
 		}
 
 		// Create the external binding set layout for each set
 		for (auto &&set_binding_layouts : binding_layouts)
 			layouts.emplace_back(device.get(),
-								 std::move(set_binding_layouts));
+								 std::move(set_binding_layouts.second));
 	}
 
 	auto generate() && {

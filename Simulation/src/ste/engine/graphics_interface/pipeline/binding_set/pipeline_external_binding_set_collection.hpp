@@ -24,7 +24,7 @@ namespace gl {
 class pipeline_external_binding_set_collection {
 private:
 	using layout_t = pipeline_external_binding_set_layout;
-	using set_layouts_t = lib::vector<pipeline_external_binding_set_layout>;
+	using set_layouts_t = lib::vector<layout_t>;
 	
 	using collection_t = lib::flat_map<pipeline_layout_set_index, pipeline_external_binding_set>;
 	using name_binding_map_t = lib::flat_map<lib::string, const pipeline_external_binding_layout*>;
@@ -111,7 +111,7 @@ public:
 	*	@brief	Creates a resource binder for a given variable name
 	*/
 	auto operator[](const lib::string &resource_name) {
-		const pipeline_external_binding_layout *bind = nullptr;
+		const pipeline_external_binding_layout *bind;
 
 		auto var_it = name_map.find(resource_name);
 		if (var_it != name_map.end()) {

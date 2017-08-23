@@ -570,7 +570,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_framebuffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_write_gbuffer_dispatch.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_write_gbuffer_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_model.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_orthographic.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_perspective.hpp" />
@@ -909,10 +909,10 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_dispatch.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp" />
@@ -936,14 +936,11 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_dispatch.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
@@ -952,7 +949,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.cpp">
@@ -1035,8 +1032,8 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_dispatch.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_storage.hpp" />
@@ -1091,7 +1088,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_timeline.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profileable.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_dispatch.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\models\model_factory.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_io.hpp" />

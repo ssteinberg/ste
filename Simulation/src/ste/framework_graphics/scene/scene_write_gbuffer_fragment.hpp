@@ -15,8 +15,8 @@
 namespace ste {
 namespace graphics {
 
-class scene_write_gbuffer_dispatch : public gl::fragment_graphics<scene_write_gbuffer_dispatch> {
-	using Base = gl::fragment_graphics<scene_write_gbuffer_dispatch>;
+class scene_write_gbuffer_fragment : public gl::fragment_graphics<scene_write_gbuffer_fragment> {
+	using Base = gl::fragment_graphics<scene_write_gbuffer_fragment>;
 
 private:
 	gl::task<gl::cmd_draw_indexed_indirect> draw_task;
@@ -25,7 +25,7 @@ private:
 	const deferred_gbuffer *gbuffer;
 
 public:
-	scene_write_gbuffer_dispatch(const gl::rendering_system &rs,
+	scene_write_gbuffer_fragment(const gl::rendering_system &rs,
 								 const scene *s,
 								 const deferred_gbuffer *gbuffer)
 		: Base(rs,
@@ -39,7 +39,7 @@ public:
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
 		draw_task.attach_indirect_buffer(s->get_idb());
 	}
-	~scene_write_gbuffer_dispatch() noexcept {}
+	~scene_write_gbuffer_fragment() noexcept {}
 
 protected:
 	static const lib::string& name() { return "scene"; }
@@ -73,8 +73,10 @@ protected:
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		recorder << draw_task(s->get_object_group().get_draw_buffers().draw_count(), 
-							  sizeof(gl::draw_indexed_indirect_command_std140));
+		auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
+		auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
+							  static_cast<std::uint32_t>(stride));
 	}
 };
 

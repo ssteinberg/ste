@@ -26,7 +26,7 @@ using namespace ste::graphics;
 //}
 
 deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
-								   const glm::ivec2 &extent,
+								   const glm::uvec2 &extent,
 								   int depth_buffer_levels)
 	: ctx(ctx),
 	depth_target(ctx,
@@ -43,7 +43,7 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 							 resource::surface_factory::image_empty_2d<gl::format::r32g32_sfloat>(ctx,
 																								  gl::image_usage::sampled | gl::image_usage::color_attachment,
 																								  gl::image_layout::color_attachment_optimal,
-																								  extent / 2, 1, depth_buffer_levels - 1)),
+																								  extent / 2u, 1, depth_buffer_levels - 1)),
 	gbuffer(resource::surface_factory::image_empty_2d<gl::format::r32g32b32a32_sfloat>(ctx,
 																					   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																					   gl::image_layout::color_attachment_optimal,
@@ -61,7 +61,7 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 //	backface_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(backface_depth_target.get());
 }
 
-void deferred_gbuffer::resize(const glm::ivec2 &extent) {
+void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 	if (extent.x <= 0 || extent.y <= 0 || extent == this->extent)
 		return;
 
@@ -81,7 +81,7 @@ void deferred_gbuffer::resize(const glm::ivec2 &extent) {
 																				   resource::surface_factory::image_empty_2d<gl::format::r32g32_sfloat>(ctx,
 																																						gl::image_usage::sampled | gl::image_usage::color_attachment,
 																																						gl::image_layout::color_attachment_optimal,
-																																						extent / 2, 1, depth_buffer_levels - 1));
+																																						extent / 2u, 1, depth_buffer_levels - 1));
 	gbuffer = resource::surface_factory::image_empty_2d<gl::format::r32g32b32a32_sfloat>(ctx,
 																						 gl::image_usage::sampled | gl::image_usage::color_attachment,
 																						 gl::image_layout::color_attachment_optimal,

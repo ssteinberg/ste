@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <rendering_system.hpp>
 
 #include <material_lut_storage.hpp>
 #include <atmospherics_lut_storage.hpp>
@@ -35,6 +36,8 @@ public:
 		draw_task.attach_pipeline(pipeline);
 	}
 	~deferred_composer() noexcept {}
+
+	deferred_composer(deferred_composer&&) = default;
 
 	static const lib::string& name() { return "deferred_composer"; }
 

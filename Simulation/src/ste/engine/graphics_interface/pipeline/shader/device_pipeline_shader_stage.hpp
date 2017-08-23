@@ -138,7 +138,7 @@ public:
 	 *	@brief	Releases ownership of the internal shader object. 
 	 *			The pipline shader stage is left in unusable state.
 	 */
-	auto &&shader_object() && { return shader; }
+	auto &&shader_object() && { return std::move(shader); }
 
 	/**
 	 *	@brief	Provides the shader specialization constant map.

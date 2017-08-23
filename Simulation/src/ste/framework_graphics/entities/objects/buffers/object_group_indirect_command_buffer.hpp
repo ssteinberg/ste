@@ -14,7 +14,7 @@
 namespace ste {
 namespace graphics {
 
-class object_group_indirect_command_buffer : public allow_type_decay<object_group_indirect_command_buffer, gl::vector<gl::draw_indexed_indirect_command_block>> {
+class object_group_indirect_command_buffer : public allow_type_decay<object_group_indirect_command_buffer, gl::vector<gl::draw_indexed_indirect_command_block>, false> {
 private:
 	using indirect_draw_buffer_type = gl::vector<gl::draw_indexed_indirect_command_block>;
 

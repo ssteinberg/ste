@@ -32,6 +32,8 @@ public:
 	}
 	~hdr_compute_histogram_fragment() noexcept {}
 
+	hdr_compute_histogram_fragment(hdr_compute_histogram_fragment&&) = default;
+
 	static const lib::string& name() { return "hdr_compute_histogram"; }
 
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_data, 

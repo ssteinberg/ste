@@ -41,7 +41,7 @@ private:
 		table_buffer_type proj_id_to_light_id_translation_table;
 
 		void resize(gl::command_recorder &recorder, std::size_t size) {
-			recorder << idb.buffer().resize_cmd(size);
+			recorder << idb.get().resize_cmd(size);
 			recorder << proj_id_to_light_id_translation_table.resize_cmd(size);
 		}
 	};
@@ -92,9 +92,9 @@ public:
 	}
 	void clear_indirect_command_buffers(gl::command_recorder &recorder) const {
 		recorder
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(idb), 0u)
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(shadow_projection.idb), 0u)
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(directional_shadow_projection.idb), 0u)
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(idb.get().get()), 0u)
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(shadow_projection.idb.get().get()), 0u)
+			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(directional_shadow_projection.idb.get().get()), 0u)
 			<< gl::cmd_fill_buffer(culled_objects_counter.get(), 0u);
 	}
 };

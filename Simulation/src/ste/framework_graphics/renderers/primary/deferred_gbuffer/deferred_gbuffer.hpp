@@ -31,16 +31,19 @@ private:
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_1;
 
 	int depth_buffer_levels;
-	glm::ivec2 extent;
+	glm::uvec2 extent;
 
 	mutable signal<> gbuffer_resized_signal;
 
 public:
 	deferred_gbuffer(const ste_context &ctx,
-					 const glm::ivec2 &extent,
+					 const glm::uvec2 &extent,
 					 int depth_buffer_levels);
+	~deferred_gbuffer() noexcept {}
 
-	void resize(const glm::ivec2 &extent);
+	deferred_gbuffer(deferred_gbuffer&&) = default;
+
+	void resize(const glm::uvec2 &extent);
 
 	void clear(gl::command_recorder &recorder) {
 		glm::vec4 zero = { 0,0,0,0 };

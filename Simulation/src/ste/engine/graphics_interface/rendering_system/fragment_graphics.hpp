@@ -112,6 +112,9 @@ protected:
 public:
 	virtual ~fragment_graphics() noexcept {}
 
+	fragment_graphics(fragment_graphics&&) = default;
+	fragment_graphics& operator=(fragment_graphics&&) = default;
+
 	// Subclasses are expected to declare:
 	//static const lib::string& name();
 };

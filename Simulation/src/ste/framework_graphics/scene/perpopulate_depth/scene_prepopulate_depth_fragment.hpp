@@ -4,10 +4,10 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <fragment_graphics.hpp>
 
 #include <cmd_draw_indexed_indirect.hpp>
 
-#include <fragment_graphics.hpp>
 #include <scene.hpp>
 #include <object_vertex_data.hpp>
 
@@ -38,18 +38,15 @@ public:
 	}
 	~scene_prepopulate_depth_fragment() noexcept {}
 
-protected:
+	scene_prepopulate_depth_fragment(scene_prepopulate_depth_fragment&&) = default;
+
 	static const lib::string& name() { return "prepopulate_depth"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
 		gl::framebuffer_layout fb_layout;
-		if (front_face)
-			fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
-																				gl::image_layout::depth_stencil_attachment_optimal);
-		else
-			fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
-																				 gl::image_layout::depth_stencil_attachment_optimal);
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
+																			gl::image_layout::depth_stencil_attachment_optimal);
 		auditor.set_framebuffer_layout(fb_layout);
 
 		gl::device_pipeline_graphics_configurations config;
@@ -70,8 +67,10 @@ protected:
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		recorder << draw_task(s->get_object_group().get_draw_buffers().draw_count(),
-							  sizeof(gl::draw_indexed_indirect_command_std140));
+		auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
+		auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
+							  static_cast<std::uint32_t>(stride));
 	}
 };
 

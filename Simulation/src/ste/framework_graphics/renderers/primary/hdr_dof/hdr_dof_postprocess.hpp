@@ -64,6 +64,10 @@ public:
 	hdr_dof_postprocess(gl::rendering_system &rs,
 						const glm::u32vec2 &extent,
 						gl::framebuffer_layout &&fb_layout);
+	~hdr_dof_postprocess() noexcept {}
+
+	hdr_dof_postprocess(hdr_dof_postprocess&&o) = default;
+
 
 	static const lib::string& name() { return "hdr"; }
 

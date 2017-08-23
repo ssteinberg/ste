@@ -139,7 +139,7 @@ public:
 	/**
 	*	@brief	Get underlying buffer
 	*/
-	const auto& buffer() const { return store.get(); }
+	const auto& buffer() const { return store; }
 
 	/**
 	*	@brief	Total count of active resources in storage
