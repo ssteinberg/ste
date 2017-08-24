@@ -8,10 +8,12 @@
 #include <quaternion.glsl>
 #include <dual_quaternion.glsl>
 
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 #include <light_transport.glsl>
 #include <atmospherics.glsl>
+
+#include <linearly_transformed_cosines.glsl>
 
 const int max_active_lights_per_frame = 24;
 const int max_active_directional_lights_per_frame = 4;
@@ -38,6 +40,21 @@ struct light_descriptor {
 	vec3 transformed_position;
 
 	float _unused;
+};
+
+layout(std430, set=2, binding=6) restrict buffer light_binding {
+	light_descriptor light_buffer[];
+};
+
+layout(std430, set=2, binding=7) restrict buffer light_list_counter_binding {
+	uint ll_counter;
+};
+layout(std430, set=2, binding=8) restrict buffer light_list_binding {
+	uint ll[];
+};
+
+layout(std430, set=2, binding=11) restrict readonly buffer shaped_lights_points_binding {
+	ltc_element ltc_points[];
 };
 
 /*

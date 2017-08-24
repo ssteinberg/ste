@@ -18,7 +18,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 								   scene *s,
 								   const atmospherics_properties<double> &atmospherics_prop)
 	: Base(ctx,
-		   create_fb_layout(ctx)), 
+		   create_fb_layout(ctx)),
 
 	presentation(presentation),
 	cam(cam),
@@ -32,10 +32,10 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 				 ctx.device().get_surface().extent()),
 
 	composer(*this),
-	hdr(*this, 
+	hdr(*this,
 		ctx.device().get_surface().extent(),
 		gl::framebuffer_layout(framebuffers->fxaa_input_fb.get_layout())),
-	fxaa(*this, 
+	fxaa(*this,
 		 gl::framebuffer_layout(framebuffers->hdr_input_fb.get_layout())),
 
 	downsample_depth(*this,
@@ -47,8 +47,8 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	scene_geo_cull(*this,
 				   s, &s->properties().lights_storage()),
 
-	lll_gen(*this,
-			&buffers->lll_storage.get()),
+	linked_light_list_generator(*this,
+								&buffers->linked_light_list_storage.get()),
 	light_preprocess(*this,
 					 &s->properties().lights_storage()),
 
@@ -57,9 +57,9 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	directional_shadows_projector(*this,
 								  s),
 
-	vol_scat_scatter(*this,
-					 &buffers->vol_scat_storage.get(),
-					 &s->properties().lights_storage()) 
+	volumetric_scatterer(*this,
+						 &buffers->vol_scat_storage.get(),
+						 &s->properties().lights_storage())
 {
 	// Attach a signal to swapchain surface resize signal
 	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
@@ -85,13 +85,13 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 																			   this->cam->get_projection_model().get_near_clip_plane());
 
 	// Update buffers
-	buffers->update(recorder, 
-				   s, cam);
+	buffers->update(recorder,
+					s, cam);
 
 	// Update atmospheric properties (if needed)
 	if (atmospherics_properties_update) {
-		buffers->update_atmospheric_properties(recorder, 
-											  atmospherics_properties_update.get());
+		buffers->update_atmospheric_properties(recorder,
+											   atmospherics_properties_update.get());
 		atmospherics_properties_update = none;
 	}
 }

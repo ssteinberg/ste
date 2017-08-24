@@ -5,7 +5,7 @@
 #include <chromaticity.glsl>
 #include <hdr_common.glsl>
 
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 layout(binding = 0) uniform sampler2D hdr;
 layout(binding = 1) uniform sampler1D hdr_vision_properties_texture;

@@ -4,7 +4,7 @@
 #extension GL_ARB_shader_draw_parameters : require
 
 #include <mesh_descriptor.glsl>
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 #include <quaternion.glsl>
 #include <tangent_frame.glsl>
 

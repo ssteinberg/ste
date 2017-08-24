@@ -4,35 +4,16 @@
 
 #include <chromaticity.glsl>
 
-#include <material.glsl>
 #include <light.glsl>
 #include <light_cascades.glsl>
 #include <linked_light_lists.glsl>
 #include <linearly_transformed_cosines.glsl>
 
-#include <gbuffer_load.glsl>
+#include <gbuffer.glsl>
+#include <shadow.glsl>
 
-layout(std430, binding = 2) restrict readonly buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
-	ltc_element ltc_points[];
-};
-
-layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
-layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
-layout(std430, binding = 11) restrict readonly buffer lll_data {
-	lll_element lll_buffer[];
-};
-
-#include <linked_light_lists_load.glsl>
-
-
-layout(location = 3) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(location = 4) uniform samplerCubeArray shadow_maps;
-layout(location = 5) uniform sampler2DArrayShadow directional_shadow_depth_maps;
-layout(location = 6) uniform sampler2DArray directional_shadow_maps;
+#include <material.glsl>
+#include <material_evaluate.glsl>
 
 layout(location = 7) uniform sampler2D microfacet_refraction_fit_lut;
 layout(location = 8) uniform sampler2DArray microfacet_transmission_fit_lut;
@@ -47,11 +28,6 @@ layout(location = 13) uniform sampler3D atmospheric_scattering_lut;
 layout(location = 14) uniform sampler3D atmospheric_mie0_scattering_lut;
 layout(location = 15) uniform sampler3D atmospheric_ambient_lut;
 
-layout(binding = 0) uniform sampler2D back_face_depth;
-layout(binding = 1) uniform sampler2D front_face_depth;
-layout(binding = 2) uniform sampler2DArray gbuffer;
-
-#include <material_evaluate.glsl>
 #include <deferred_shading.glsl>
 
 out vec4 frag_color;

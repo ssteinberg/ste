@@ -29,13 +29,16 @@ class external_binding_set_collection_from_shader_stages {
 		ste_shader_stage_binding binding;
 	};
 
+public:
+	using shader_stages_input_vector_t = std::vector<std::pair<pipeline_binding_stages_collection, device_pipeline_shader_stage>>;
+
 private:
 	std::reference_wrapper<const ste_device> device;
 	lib::vector<pipeline_external_binding_set_layout> layouts;
 
 public:
 	external_binding_set_collection_from_shader_stages(const ste_device &device,
-													   std::vector<std::pair<pipeline_binding_stages_collection, device_pipeline_shader_stage>> &&shader_stages) : device(device)
+													   shader_stages_input_vector_t &&shader_stages) : device(device)
 	{
 		lib::flat_map<lib::string, pipeline_external_binding_set_layout_descriptor> bindings_map;
 		for (auto &&stage_shader : shader_stages) {

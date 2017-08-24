@@ -1,7 +1,7 @@
 
 #include <gbuffer.glsl>
 #include <pack.glsl>
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 g_buffer_element gbuffer_encode(float depth,
 								vec2 UV,

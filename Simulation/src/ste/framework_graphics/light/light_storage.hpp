@@ -38,6 +38,8 @@ class light_storage : public gl::resource_storage_dynamic<light_descriptor>, pub
 public:
 	using shaped_light_point = shaped_light::shaped_light_point_type;
 
+	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
+
 private:
 	using lights_ll_type = gl::device_buffer_sparse<std::uint32_t>;
 	using directional_lights_cascades_type = gl::array<light_cascades_descriptor>;
@@ -62,7 +64,7 @@ public:
 	light_storage(const ste_context &ctx)
 		: Base(ctx, gl::buffer_usage::storage_buffer),
 		active_lights_ll_counter(ctx, 1, gl::buffer_usage::storage_buffer),
-		active_lights_ll(ctx, 64 * 1024 * 1024, gl::buffer_usage::storage_buffer),
+		active_lights_ll(ctx, max_ll_buffer_size, gl::buffer_usage::storage_buffer),
 		directional_lights_cascades_buffer(ctx, max_active_directional_lights_per_frame, gl::buffer_usage::storage_buffer),
 		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer)
 	{
@@ -163,8 +165,8 @@ public:
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
 
-	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_buffer.get(); }
-	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage.get(); }
+	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_buffer; }
+	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage; }
 
 	auto& get_cascade_depths_array() const { return cascades_depths; }
 };

@@ -16,7 +16,7 @@
 namespace ste {
 namespace graphics {
 
-class transforms_ring_buffers {
+class renderer_transform_buffers {
 private:
 	struct view_data {
 		glm::dualquat view_transform;
@@ -38,7 +38,7 @@ private:
 	proj_buffer_type proj_buffer;
 
 public:
-	transforms_ring_buffers(const ste_context &ctx)
+	renderer_transform_buffers(const ste_context &ctx)
 		: view_buffer(ctx, 1, gl::buffer_usage::storage_buffer),
 		proj_buffer(ctx, 1, gl::buffer_usage::storage_buffer)
 	{}

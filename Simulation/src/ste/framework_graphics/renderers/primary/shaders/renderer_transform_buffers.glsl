@@ -15,11 +15,11 @@ struct proj_transform_buffer_struct {
 	float aspect;
 };
 
-layout(std430, binding = 20) restrict readonly buffer view_transform_buffer_data {
+layout(std430, set=2, binding=0) restrict readonly buffer view_transform_buffer_binding {
 	view_transform_buffer_struct view_transform_buffer;
 };
 
-layout(std430, binding = 21) restrict readonly buffer proj_transform_buffer_data {
+layout(std430, set=2, binding=1) restrict readonly buffer proj_transform_buffer_binding {
 	proj_transform_buffer_struct proj_transform_buffer;
 };
 

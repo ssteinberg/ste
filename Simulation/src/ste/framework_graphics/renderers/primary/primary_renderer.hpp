@@ -62,13 +62,13 @@ private:
 	scene_prepopulate_depth_back_face_fragment prepopulate_backface_depth;
 	scene_geo_cull_fragment scene_geo_cull;
 
-	linked_light_lists_gen_fragment lll_gen;
+	linked_light_lists_gen_fragment linked_light_list_generator;
 	light_preprocessor_fragment light_preprocess;
 
 	shadowmap_projector shadows_projector;
 	directional_shadowmap_projector directional_shadows_projector;
 
-	volumetric_scattering_scatter_fragment vol_scat_scatter;
+	volumetric_scattering_scatter_fragment volumetric_scatterer;
 
 private:
 	optional<atmospherics_properties<double>> atmospherics_properties_update;

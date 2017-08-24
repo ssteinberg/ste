@@ -48,8 +48,12 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 																					   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																					   gl::image_layout::color_attachment_optimal,
 																					   extent, 2).get()),
-	gbuffer_level_0(gbuffer, gbuffer.get_format(), 0, 1),
-	gbuffer_level_1(gbuffer, gbuffer.get_format(), 1, 1),
+	gbuffer_level_0(gbuffer.get_image(), 
+					gbuffer->get_format(), 
+					0, 1),
+	gbuffer_level_1(gbuffer.get_image(), 
+					gbuffer->get_format(), 
+					1, 1),
 //	fbo(ctx, create_fbo_layout(), extent),
 //	backface_fbo(ctx, create_backface_fbo_layout(), extent),
 	extent(extent),
@@ -86,8 +90,12 @@ void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 																						 gl::image_usage::sampled | gl::image_usage::color_attachment,
 																						 gl::image_layout::color_attachment_optimal,
 																						 extent, 2).get();
-	gbuffer_level_0 = gl::image_view<gl::image_type::image_2d>(gbuffer, gbuffer.get_format(), 0, 1);
-	gbuffer_level_1 = gl::image_view<gl::image_type::image_2d>(gbuffer, gbuffer.get_format(), 1, 1);
+	gbuffer_level_0 = gl::image_view<gl::image_type::image_2d>(gbuffer.get_image(), 
+															   gbuffer->get_format(), 
+															   0, 1);
+	gbuffer_level_1 = gl::image_view<gl::image_type::image_2d>(gbuffer.get_image(), 
+															   gbuffer->get_format(), 
+															   1, 1);
 
 //	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
 //	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);

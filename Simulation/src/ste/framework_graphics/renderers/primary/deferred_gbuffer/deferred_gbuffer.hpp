@@ -26,7 +26,7 @@ private:
 	ste_resource<gl::texture<gl::image_type::image_2d>> backface_depth_target;
 	ste_resource<gl::texture<gl::image_type::image_2d>> downsampled_depth_target;
 
-	gl::device_image<2> gbuffer;
+	gl::texture<gl::image_type::image_2d_array> gbuffer;
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_0;
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_1;
 
@@ -48,7 +48,7 @@ public:
 	void clear(gl::command_recorder &recorder) {
 		glm::vec4 zero = { 0,0,0,0 };
 
-		recorder << gl::cmd_clear_color_image(gbuffer,
+		recorder << gl::cmd_clear_color_image(gbuffer.get_image(),
 											  gl::image_layout::transfer_dst_optimal,
 											  zero);
 	}

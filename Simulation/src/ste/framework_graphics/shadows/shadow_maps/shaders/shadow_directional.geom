@@ -17,11 +17,7 @@ in vs_out {
 	flat uint drawIdx;
 } vin[];
 
-layout(std430, binding = 2) restrict readonly buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-layout(std430, binding = 8) restrict readonly buffer d_drawid_to_lightid_ttl_data {
+layout(std430, set=0, binding=0) restrict readonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl ttl[];
 };
 

@@ -5,6 +5,7 @@
 #include <chromaticity.glsl>
 #include <material.glsl>
 
+#include <gbuffer.glsl>
 #include <shadow.glsl>
 #include <light.glsl>
 #include <light_cascades.glsl>
@@ -16,7 +17,7 @@
 #include <volumetric_scattering.glsl>
 
 #include <project.glsl>
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 #include <cosine_distribution_integration.glsl>
 
@@ -74,8 +75,8 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord) {
 
 	vec3 rgb = vec3(.0f);
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint lll_start = imageLoad(lll_heads, lll_coords).x;
-	uint lll_length = imageLoad(lll_size, lll_coords).x;
+	uint lll_start = imageLoad(linked_light_list_heads, lll_coords).x;
+	uint lll_length = imageLoad(linked_light_list_size, lll_coords).x;
 	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 		uint light_idx = uint(lll_parse_light_idx(lll_p));
@@ -183,7 +184,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 
 	// Calculate perceived object thickness in camera space (used for subsurface scattering)
 	bool has_geometry;
-	float thickness = get_thickness(coord, back_face_depth, front_face_depth, has_geometry);
+	float thickness = get_thickness(coord, backface_depth_map, depth_map, has_geometry);
 	
 	// If no geometry is present, calculate atmopsheric scattering and that's it
 	if (!has_geometry) {
@@ -228,8 +229,8 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 
 	// Iterate lights in the linked-light-list structure
 	ivec2 lll_coords = coord / lll_image_res_multiplier;
-	uint lll_start = imageLoad(lll_heads, lll_coords).x;
-	uint lll_length = imageLoad(lll_size, lll_coords).x;
+	uint lll_start = imageLoad(linked_light_list_heads, lll_coords).x;
+	uint lll_length = imageLoad(linked_light_list_size, lll_coords).x;
 	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 
@@ -269,6 +270,10 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 													head_layer,
 													frag,
 													light,
+													ltc_ggx_fit,
+													ltc_ggx_amplitude,
+													microfacet_refraction_fit_lut,
+													microfacet_transmission_fit_lut,
 													frag_info.uv, frag_info.duvdx, frag_info.duvdy,
 													thickness,
 													occlusion,

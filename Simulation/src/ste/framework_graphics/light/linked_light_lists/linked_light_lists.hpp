@@ -61,6 +61,14 @@ public:
 		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t>(0)) };
 		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
+
+	auto& linked_light_lists_buffer() const { return lll; }
+	auto& linked_light_lists_counter_buffer() const { return lll_counter; }
+
+	auto& linked_light_lists_heads_map() const { return *lll_heads; }
+	auto& linked_light_lists_size_map() const { return *lll_size; }
+	auto& linked_light_lists_low_detail_heads_map() const { return *lll_low_detail_heads; }
+	auto& linked_light_lists_low_detail_size_map() const { return *lll_low_detail_size; }
 };
 
 }

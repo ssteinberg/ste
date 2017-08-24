@@ -1850,9 +1850,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\transforms_ring_buffers.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1913,6 +1910,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\renderer_transform_buffers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -1935,7 +1935,6 @@
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
     <None Include="Simulation\src\ste\framework_graphics\light\shaders\light.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\entities\objects\shaders\mesh_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_transform.vert" />
@@ -1991,7 +1990,6 @@
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxels.glsl" />
     <None Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\pipeline_push_constants_layout.hpp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\deferred_shading_common.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\girenderer_transform_buffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\shaders\deferred_compose.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\shaders\deferred_shading.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\bokeh_bilateral_blur.frag" />
@@ -2005,8 +2003,8 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_tonemap_coc.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\shaders\gbuffer_downsample_depth.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_store.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_load.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\renderer_transform_buffers.glsl" />
   </ItemGroup>
 </Project>

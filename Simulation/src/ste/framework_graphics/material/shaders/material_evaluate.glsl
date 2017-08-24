@@ -22,6 +22,8 @@ const float air_ior = 1.0002772f;
 
 vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descriptor,
 									  light_descriptor ld,
+									  sampler2D ltc_ggx_fit,
+									  sampler2D ltc_ggx_amplitude,
 									  float l_dist,
 									  vec3 wp,
 									  vec3 wn,
@@ -32,7 +34,7 @@ vec3 material_evaluate_layer_radiance(material_layer_unpacked_descriptor descrip
 									  float refractive_ratio,
 									  vec3 irradiance,
 									  vec3 albedo,
-									  vec3 diffused_light) {	
+									  vec3 diffused_light) {
 	// Specular color
 	vec3 specular_tint = vec3(1);
 	vec3 c_spec = mix(specular_tint, albedo, descriptor.metallic);
@@ -146,6 +148,10 @@ float material_attenuation_through_layer(float transmittance,
 vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descriptor,
 									   fragment_shading_parameters frag,
 									   light_shading_parameters light,
+									   sampler2D ltc_ggx_fit,
+									   sampler2D ltc_ggx_amplitude,
+									   sampler2D microfacet_refraction_fit_lut,
+									   sampler2DArray microfacet_transmission_fit_lut,
 									   float occlusion,
 									   float external_medium_ior) {		
 	// Compute sine and cosine of critical angle
@@ -182,6 +188,8 @@ vec3 material_evaluate_radiance_simple(material_layer_unpacked_descriptor descri
 	// Evaluate layer BRDF
 	vec3 rgb = material_evaluate_layer_radiance(descriptor,
 												light.ld,
+												ltc_ggx_fit,
+												ltc_ggx_amplitude,
 												light.l_dist,
 												frag.world_position,
 												frag.world_normal,
@@ -217,6 +225,10 @@ vec3 material_evaluate_radiance(material_descriptor md,
 								material_layer_descriptor layer,
 								fragment_shading_parameters frag,
 								light_shading_parameters light,
+								sampler2D ltc_ggx_fit,
+								sampler2D ltc_ggx_amplitude,
+								sampler2D microfacet_refraction_fit_lut,
+								sampler2DArray microfacet_transmission_fit_lut,
 								vec2 uv, vec2 duvdx, vec2 duvdy,
 								float object_thickness,
 								float occlusion,
@@ -230,6 +242,10 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		return material_evaluate_radiance_simple(descriptor,
 												 frag,
 												 light,
+												 ltc_ggx_fit,
+												 ltc_ggx_amplitude,
+												 microfacet_refraction_fit_lut,
+												 microfacet_transmission_fit_lut,
 												 occlusion,
 												 external_medium_ior);
 	}
@@ -310,6 +326,8 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		// Evaluate layer BRDF
 		rgb += attenuation * material_evaluate_layer_radiance(descriptor,
 															  light.ld,
+															  ltc_ggx_fit,
+															  ltc_ggx_amplitude,
 															  light.l_dist,
 															  frag.world_position,
 															  frag.world_normal,

@@ -27,9 +27,18 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 	d.next_layer_id = l.next_layer_id;
 	d.attenuation_coefficient = l.attenuation_coefficient;
 	
-	d.roughness = textureGrad(material_samplers[l.roughness_sampler_idx], uv, duvdx, duvdy).x;
-	d.metallic = textureGrad(material_samplers[l.metallicity_sampler_idx], uv, duvdx, duvdy).x;
-	d.thickness = textureGrad(material_samplers[l.thickness_sampler_idx], uv, duvdx, duvdy).x;
+	d.roughness = textureGrad(sampler2D(material_textures[l.roughness_sampler_idx], material_sampler), 
+							  uv, 
+							  duvdx, 
+							  duvdy).x;
+	d.metallic =  textureGrad(sampler2D(material_textures[l.metallicity_sampler_idx], material_sampler), 
+							  uv, 
+							  duvdx, 
+							  duvdy).x;
+	d.thickness = textureGrad(sampler2D(material_textures[l.thickness_sampler_idx], material_sampler), 
+							  uv, 
+							  duvdx, 
+							  duvdy).x;
 
 	vec2 ior_phase_pack = unpackUnorm2x16(l.ior_phase_pack);
 	d.ior = mix(material_layer_min_ior, material_layer_max_ior, ior_phase_pack.x);
