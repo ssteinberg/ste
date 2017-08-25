@@ -96,7 +96,7 @@ public:
 	/**
 	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.
 	*/
-	virtual const pipeline_external_binding_set_collection* external_binding_sets() const { return nullptr; }
+	virtual pipeline_external_binding_set_collection* external_binding_sets() const { return nullptr; }
 };
 
 }

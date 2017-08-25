@@ -30,9 +30,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\light_storage.cpp">
@@ -150,9 +144,6 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\deferred_composer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,13 +165,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor_fragment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_fragment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_fragment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_fragment.cpp">
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_external_binding_set_collection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

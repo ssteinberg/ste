@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -59,7 +59,7 @@ public:
 	device_pipeline_compute(ctor,
 							const ste_context &ctx,
 							lib::unique_ptr<pipeline_layout> &&layout,
-							optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
+							optional<std::reference_wrapper<pipeline_external_binding_set_collection>> external_binding_sets)
 		: Base(ctx,
 			   std::move(layout),
 			   external_binding_sets),

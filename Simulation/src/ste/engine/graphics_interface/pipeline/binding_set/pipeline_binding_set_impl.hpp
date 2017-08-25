@@ -14,6 +14,7 @@
 #include <ultimate.hpp>
 #include <range_list.hpp>
 #include <alias.hpp>
+#include <lib/flat_map.hpp>
 
 namespace ste {
 namespace gl {
@@ -39,6 +40,14 @@ private:
 	binding_to_written_descriptors_range_map written_descriptors;
 
 private:
+	template <typename T = typename Layout::binding_layout_t>
+	auto &dereference_binding_layout(const T &binding_layout) {
+		if constexpr (std::is_pointer_v<T>)
+			return *binding_layout;
+		else
+			return binding_layout;
+	}
+
 	/**
 	 *	@brief	Creates the resource copy information to copy bindings from another binding sets.
 	 */
@@ -53,10 +62,10 @@ private:
 		copies.reserve(binds_to_copy * 5);
 
 		// Create copy descriptors
-		for (const pipeline_binding_layout_interface *dst : dst_bindings) {
+		for (const typename Layout::binding_layout_t &dst : dst_bindings) {
 			// Read binding properties
-			auto &name = dst->name();
-			auto bind_idx = dst->bind_idx();
+			auto &name = dereference_binding_layout(dst).name();
+			auto bind_idx = dereference_binding_layout(dst).bind_idx();
 
 			// Read range list of copyable descriptors at the source's binding index
 			auto it = o.written_descriptors.find(bind_idx);
@@ -71,8 +80,8 @@ private:
 			const pipeline_binding_layout_interface* src = &src_bindings[name];
 
 			// Verify
-			if (dst->vk_descriptor_type() != src->vk_descriptor_type() ||
-				dst->stage_collection() != src->stage_collection()) {
+			if (dereference_binding_layout(dst).vk_descriptor_type() != src->vk_descriptor_type() ||
+				dereference_binding_layout(dst).stage_collection() != src->stage_collection()) {
 				assert(false && "Verification failed");
 				return {};
 			}
@@ -80,7 +89,7 @@ private:
 			// Generate copy descriptors
 			for (auto &r : src_ranges) {
 				auto max_count = std::min(src->count(),
-										  dst->count());
+										  dereference_binding_layout(dst).count());
 
 				auto start = r.start;
 				if (start >= max_count)

@@ -29,6 +29,7 @@
 
 #include <alias.hpp>
 #include <anchored.hpp>
+#include <connection.hpp>
 
 namespace ste {
 namespace gl {
@@ -80,10 +81,14 @@ private:
 
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
+	// And connections
+	pipeline_external_binding_set_collection::signal_set_invalidated_t::connection_type external_binding_set_invalidated_connection;
+	pipeline_external_binding_set_collection::signal_specialization_change_t::connection_type external_binding_set_constant_specialized_connection;
 
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
 	lib::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
+
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 
@@ -131,7 +136,7 @@ private:
 		}
 	}
 
-	void erase_variables_provided_by_external_binding_sets(variable_map_t &map) {
+	void erase_sets_provided_by_external_binding_sets(variable_map_t &map) {
 		auto &external_sets = external_binding_sets->get_sets();
 
 		for (auto it = map.begin(); it != map.end();) {
@@ -139,18 +144,32 @@ private:
 			auto set_idx = b.set_idx();
 			auto bind_idx = b.bind_idx();
 
-			// If variable exists in external_binding_sets, validate compatibility and ignore the binding,
+			if (b.binding->binding_type == ste_shader_stage_binding_type::push_constant)
+				continue;
+
+			// If variable belongs to a set provided by external_binding_sets, validate compatibility and ignore the binding,
 			// it is handled externally
 			auto external_it = external_sets.find(set_idx);
 			if (external_it != external_sets.end()) {
 				const pipeline_external_binding_set_layout &external_set_layout = external_it->second.get_layout();
 
-				// Find the binding and verify compatibility
+				// Find the binding
+				bool found = false;
 				for (auto &external_binding : external_set_layout) {
 					if (external_binding.bind_idx() == bind_idx) {
-						external_binding.get_binding().compatible(*b.binding);
+						// Verify
+						if (!external_binding.get_binding().compatible(*b.binding)) {
+							throw pipeline_layout_variable_incompatible_with_external_set_exception("Variable is incompatible with external binding set");
+						}
+
+						found = true;
 						break;
 					}
+				}
+
+				if (!found) {
+					// Not found in external binding set
+					throw pipeline_layout_variable_not_found_in_external_set_exception("Variable bound to external set but not found in external binding sets");
 				}
 
 				// Set is handled externally
@@ -177,7 +196,7 @@ private:
 				continue;
 			}
 
-			// Also individually populate and map push and specialization constants
+			// Also individually map specialization constants
 			if (b.second.binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 				spec_variables_map[name] = &val;
 			}
@@ -230,6 +249,27 @@ private:
 		layout_invalidated_flag = true;
 	}
 
+	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
+		const auto& map = specializations[stage];
+		const auto it = this->external_binding_sets->specializations.find(stage);
+		if (it == this->external_binding_sets->specializations.end()) {
+			// External binding set does not have any specializations for the stage
+			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			return;
+		}
+
+		const auto &external_map = it->second;
+
+		// Combine specialization maps
+		vk::vk_shader<>::spec_map spec;
+		for (auto &s : map)
+			spec.emplace(s);
+		for (auto &s : external_map)
+			spec.emplace(s);
+		
+		stages[stage]->set_specializations(std::move(spec));
+	}
+
 	template <typename T>
 	void specialize_constant_impl(const lib::string &name,
 								  const optional<lib::string> &data = none,
@@ -266,7 +306,7 @@ private:
 				map[b.bind_idx] = data.get();
 			else
 				map.erase(b.bind_idx);
-			stages[s]->set_specializations(map);
+			update_shader_stage_specialization_map(s);
 		}
 
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
@@ -325,7 +365,7 @@ public:
 				for (auto &a : attachments) {
 					// Create new attachment layout descriptor and add to map
 					const auto& name = a.variable->name();
-					pipeline_attachment_layout attachment = { &a };
+					const pipeline_attachment_layout attachment = { &a };
 
 					add_attachment(attachments_map,
 								   name,
@@ -339,7 +379,22 @@ public:
 			// Verify and erase variables that are handled externally
 			if (external_binding_sets) {
 				this->external_binding_sets = &external_binding_sets.get().get();
-				erase_variables_provided_by_external_binding_sets(all_variables);
+				erase_sets_provided_by_external_binding_sets(all_variables);
+
+				// Connect to external binding set's signals
+				external_binding_set_invalidated_connection = make_connection(external_binding_sets.get().get().get_signal_set_invalidated(),
+																			  [this](auto, const lib::vector<pipeline_layout_set_index> &sets_indices) {
+					// External binding set was invalidated, add to set recreation queue and invalidate layout.
+					for (auto &set_idx : sets_indices)
+						set_layouts_modified_queue.insert(set_idx);
+					invalidate_layout();
+				});
+				external_binding_set_constant_specialized_connection = make_connection(external_binding_sets.get().get().get_signal_specialization_change(),
+																					   [this](auto, const pipeline_binding_stages_collection &stages) {
+					// External binding set's constant was specialized, update specialization map
+					for (auto &s : stages)
+						update_shader_stage_specialization_map(s);
+				});
 			}
 
 			// Then create variables' layouts
@@ -385,8 +440,24 @@ public:
 	}
 
 	/**
+	 *	@brief	Recreates a specific set layout.
+	 *			Returns the old set.
+	 *
+	 *	@throws	pipeline_layout_exception	If set index not found
+	 */
+	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
+		auto it = bindings_set_layouts.find(set_idx);
+		if (it == bindings_set_layouts.end()) {
+			// Not found
+			throw pipeline_layout_exception("Set not found");
+		}
+
+		return it->second.recreate(ctx.get().device());
+	}
+
+	/**
 	*	@brief	Recreates the pipeline layout and resets flag
-	*	
+	*
 	*	@return	Returns the old layout object
 	*/
 	lib::unique_ptr<vk::vk_pipeline_layout<>> recreate_layout() {
@@ -399,7 +470,7 @@ public:
 			// Add external set layouts to pipeline layout
 			auto& external_layouts = external_binding_sets->get_layouts();
 			for (auto &es : external_layouts) {
-				set_layout_ptrs.push_back(&es.get());
+				set_layout_ptrs.push_back(&es.second.get());
 			}
 		}
 
@@ -419,55 +490,20 @@ public:
 	}
 
 	/**
-	*	@brief	Recreates invalidated set layout and resets flags
-	*	
-	*	@param	old_layouts	If non-null, old set layouts will be moved to this vector.
-	*
-	*	@return	Vector of modified set indices
-	*/
-	auto recreate_invalidated_set_layouts(lib::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
-		lib::vector<pipeline_layout_set_index> modified_set_indices;
-
-		if (set_layouts_modified_queue.empty())
-			return modified_set_indices;
-
-		if (old_layouts)
-			old_layouts->reserve(set_layouts_modified_queue.size());
-
-		for (auto &set_idx : set_layouts_modified_queue) {
-			auto set_layout_it = bindings_set_layouts.find(set_idx);
-			if (set_layout_it == bindings_set_layouts.end()) {
-				// Set not found, can not be.
-				assert(false);
-				continue;
-			}
-
-			// Recreate set based on same bindings
-			// (only possible change is modified array length of a binding)
-			auto bindings = set_layout_it->second.get_bindings();
-			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
-														  std::move(bindings));
-
-			if (old_layouts)
-				old_layouts->push_back(std::move(set_layout_it->second));
-
-			// Replace set with new one
-			set_layout_it->second = std::move(set_layout);
-
-			modified_set_indices.push_back(set_idx);
-		}
-
-		// Erase queue
-		set_layouts_modified_queue.clear();
-
-		return modified_set_indices;
-	}
-
-	/**
 	*	@brief	Returns the status of the layout invalid flag.
 	*/
 	auto is_layout_invalidated() {
 		return layout_invalidated_flag;
+	}
+
+	/**
+	 *	@brief	Returns a copy of the queue of modified set indices, and clears the queue.
+	 */
+	auto get_modified_sets_queue() {
+		auto v = set_layouts_modified_queue;
+		set_layouts_modified_queue.clear();
+
+		return v;
 	}
 
 	/**
@@ -494,7 +530,6 @@ public:
 	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
 
 	auto& set_layouts() const { return bindings_set_layouts; }
-	auto& modified_set_layouts() const { return set_layouts_modified_queue; }
 
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return *push_constants_layout; }

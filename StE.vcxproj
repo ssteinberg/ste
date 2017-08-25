@@ -521,6 +521,7 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\queue\ste_device_queue.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\ste_device.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface.cpp" />
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\pipeline_external_binding_set_collection.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\device_pipeline_shader_stage.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\shader\spirv_reflection\ste_shader_spirv_reflection.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.cpp" />
@@ -908,9 +909,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists_gen_fragment.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\preprocessor\light_preprocessor_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -923,9 +921,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\deferred_composer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -935,20 +930,10 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_fragment.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.cpp" />
-    <ClCompile Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\scatter\volumetric_scattering_scatter_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\volumetric_scattering_storage.cpp">
