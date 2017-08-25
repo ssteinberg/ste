@@ -170,7 +170,7 @@ public:
 		if (optional_push_constant) {
 			// Found push constant
 			auto bp = lib::allocate_unique<pipeline_push_constant_bind_point>(layout->push_constants_layout.get(),
-																		  optional_push_constant.get());
+																			  optional_push_constant.get());
 			return pipeline_bind_point(std::move(bp));
 		}
 
@@ -187,15 +187,15 @@ public:
 		// Create the binder
 		if (bind->binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 			auto bp = lib::allocate_unique<pipeline_specialization_constant_bind_point>(bind->binding->variable.get(),
-																					layout.get(),
-																					resource_name);
+																						layout.get(),
+																						resource_name);
 			return pipeline_bind_point(std::move(bp));
 		}
 		if (bind->binding->binding_type == ste_shader_stage_binding_type::storage ||
 			bind->binding->binding_type == ste_shader_stage_binding_type::uniform) {
 			auto bp = lib::allocate_unique<pipeline_resource_bind_point>(&binding_queue,
-																	 layout.get(),
-																	 bind);
+																		 layout.get(),
+																		 bind);
 			return pipeline_bind_point(std::move(bp));
 		}
 

@@ -98,6 +98,7 @@ public:
 		lib::vector<pipeline_binding_set> ret_old_sets;
 
 		lib::vector<const layout_t*> layouts;
+		layouts.reserve(set_indices.size());
 		auto &pipeline_layout_map = layout.get().set_layouts();
 		for (auto &set_idx : set_indices) {
 			// Define layout for new set

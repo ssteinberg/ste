@@ -131,7 +131,7 @@ private:
 		}
 	}
 
-	void erase_variables_provided_by_external_binding_sets(variable_map_t &map) {
+	void erase_sets_provided_by_external_binding_sets(variable_map_t &map) {
 		auto &external_sets = external_binding_sets->get_sets();
 
 		for (auto it = map.begin(); it != map.end();) {
@@ -139,18 +139,32 @@ private:
 			auto set_idx = b.set_idx();
 			auto bind_idx = b.bind_idx();
 
-			// If variable exists in external_binding_sets, validate compatibility and ignore the binding,
+			if (b.binding->binding_type == ste_shader_stage_binding_type::push_constant)
+				continue;
+
+			// If variable belongs to a set provided by external_binding_sets, validate compatibility and ignore the binding,
 			// it is handled externally
 			auto external_it = external_sets.find(set_idx);
 			if (external_it != external_sets.end()) {
 				const pipeline_external_binding_set_layout &external_set_layout = external_it->second.get_layout();
 
-				// Find the binding and verify compatibility
+				// Find the binding
+				bool found = false;
 				for (auto &external_binding : external_set_layout) {
 					if (external_binding.bind_idx() == bind_idx) {
-						external_binding.get_binding().compatible(*b.binding);
+						// Verify
+						if (!external_binding.get_binding().compatible(*b.binding)) {
+							throw pipeline_layout_variable_incompatible_with_external_set_exception("Variable is incompatible with external binding set");
+						}
+
+						found = true;
 						break;
 					}
+				}
+
+				if (!found) {
+					// Not found in external binding set
+					throw pipeline_layout_variable_not_found_in_external_set_exception("Variable bound to external set but not found in external binding sets");
 				}
 
 				// Set is handled externally
@@ -177,7 +191,7 @@ private:
 				continue;
 			}
 
-			// Also individually populate and map push and specialization constants
+			// Also individually map specialization constants
 			if (b.second.binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 				spec_variables_map[name] = &val;
 			}
@@ -339,7 +353,7 @@ public:
 			// Verify and erase variables that are handled externally
 			if (external_binding_sets) {
 				this->external_binding_sets = &external_binding_sets.get().get();
-				erase_variables_provided_by_external_binding_sets(all_variables);
+				erase_sets_provided_by_external_binding_sets(all_variables);
 			}
 
 			// Then create variables' layouts

@@ -26,7 +26,8 @@ namespace _internal {
 template <typename BindingLayout>
 class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout<>> {
 public:
-	using bindings_vec_t = lib::vector<BindingLayout>;
+	using binding_layout_t = BindingLayout;
+	using bindings_vec_t = lib::vector<binding_layout_t>;
 	using name_bindings_map_t = lib::flat_map<lib::string, typename bindings_vec_t::const_iterator>;
 
 private:
@@ -37,12 +38,12 @@ private:
 	vk::vk_descriptor_set_layout<> vk_layout;
 
 private:
-	template <typename T = BindingLayout>
+	template <typename T = binding_layout_t>
 	auto &access_it(typename bindings_vec_t::const_iterator it,
 					std::enable_if_t<std::is_pointer_v<T>>* = nullptr) const {
 		return **it;
 	}
-	template <typename T = BindingLayout>
+	template <typename T = binding_layout_t>
 	auto &access_it(typename bindings_vec_t::const_iterator it,
 					std::enable_if_t<!std::is_pointer_v<T>>* = nullptr) const {
 		return *it;
