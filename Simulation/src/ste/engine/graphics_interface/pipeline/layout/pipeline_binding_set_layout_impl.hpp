@@ -85,6 +85,17 @@ public:
 	pipeline_binding_set_layout_impl &operator=(pipeline_binding_set_layout_impl&&) = default;
 
 	/**
+	 *	@brief	Recreates the layout.
+	 *			Returns old layout handle.
+	 */
+	auto recreate(const vk::vk_logical_device<> &device) {
+		auto old = std::move(vk_layout);
+		vk_layout = generate_vk_layout(device);
+
+		return old;
+	}
+
+	/**
 	*	@brief	Checks existance of a variable name
 	*/
 	bool exists(const lib::string &name) const {

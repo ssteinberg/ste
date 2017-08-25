@@ -26,11 +26,11 @@ private:
 
 private:
 	collection_t sets;
-	alias<const pipeline_layout> layout;
+	alias<pipeline_layout> layout;
 	alias<pipeline_binding_set_pool> pool;
 
 public:
-	pipeline_binding_set_collection(const pipeline_layout& layout,
+	pipeline_binding_set_collection(pipeline_layout& layout,
 									pipeline_binding_set_pool &pool)
 		: layout(layout),
 		pool(pool)
@@ -66,7 +66,7 @@ public:
 	*
 	*	@throws	device_pipeline_incompatible_binding_sets_exception		If the above assumption is violated
 	*/
-	pipeline_binding_set_collection(const pipeline_layout& layout,
+	pipeline_binding_set_collection(pipeline_layout& layout,
 									pipeline_binding_set_pool &pool,
 									const pipeline_binding_set_collection &o)
 		: pipeline_binding_set_collection(layout,
@@ -92,32 +92,41 @@ public:
 	/**
 	 *	@brief	Rebuilds the required sets
 	 *	
-	 *	#return	Returns the old sets
+	 *	@param	device			Creating device
+	 *	@param	set_indices		Indices of sets to recreate
+	 *	@param	old_layouts		If non-null, old set layouts will be moved to this vector.
+	 *	
+	 *	@return	Returns the old sets
 	 */
-	auto recreate_sets(const lib::vector<pipeline_layout_set_index> &set_indices) {
+	auto recreate_sets(const vk::vk_logical_device<> &device,
+					   const lib::flat_set<pipeline_layout_set_index> &set_indices,
+					   lib::vector<vk::vk_descriptor_set_layout<>> *old_layouts = nullptr) {
 		lib::vector<pipeline_binding_set> ret_old_sets;
 
 		lib::vector<const layout_t*> layouts;
 		layouts.reserve(set_indices.size());
-		auto &pipeline_layout_map = layout.get().set_layouts();
 		for (auto &set_idx : set_indices) {
-			// Define layout for new set
-			auto l_it = pipeline_layout_map.find(set_idx);
-			if (l_it == pipeline_layout_map.end()) {
+			auto l_it = layout.get().set_layouts().find(set_idx);
+			if (l_it == layout.get().set_layouts().end()) {
 				// Layout not found.
 				assert(false);
 				return ret_old_sets;
 			}
-			auto *layout = &l_it->second;
 
-			layouts.push_back(layout);
+			// Recreate layout
+			auto old_layout = layout.get().recreate_set_layout(set_idx);
+			// Store old
+			if (old_layouts)
+				old_layouts->push_back(std::move(old_layout));
+
+			layouts.push_back(&l_it->second);
 		}
 
 		// Allocate the new sets
 		lib::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
 		ret_old_sets.reserve(new_sets.size());
 		for (std::size_t i = 0; i<new_sets.size(); ++i) {
-			auto &set_idx = set_indices[i];
+			pipeline_layout_set_index set_idx = *(set_indices.begin() + i);
 			auto &new_set = new_sets[i];
 
 			// Find old set

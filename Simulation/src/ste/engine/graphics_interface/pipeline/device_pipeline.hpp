@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -83,7 +83,7 @@ protected:
 	pipeline_binding_set_collection binding_sets;
 
 	// External binding sets
-	const pipeline_external_binding_set_collection *external_binding_sets;
+	pipeline_external_binding_set_collection *external_binding_sets;
 
 	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
 
@@ -93,9 +93,17 @@ private:
 		device_pipeline_resources_marked_for_deletion old_resources;
 
 		// Update sets, as needed
-		auto recreated_indices = layout->recreate_invalidated_set_layouts(&old_resources.binding_set_layouts);
-		if (recreated_indices.size()) {
-			old_resources.binding_sets = binding_sets.recreate_sets(recreated_indices);
+		auto recreate_indices = layout->get_modified_sets_queue();
+		if (recreate_indices.size()) {
+			old_resources.binding_sets = binding_sets.recreate_sets(ctx.get().device(), 
+																	recreate_indices,
+																	&old_resources.binding_set_layouts);
+			if (external_binding_sets) {
+				// And external set too, if needed
+				old_resources.external_binding_sets = external_binding_sets->recreate_sets(ctx.get().device(),
+																						   recreate_indices,
+																						   &old_resources.binding_set_layouts);
+			}
 		}
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
@@ -144,7 +152,7 @@ protected:
 
 	device_pipeline(const ste_context &ctx,
 					lib::unique_ptr<pipeline_layout> &&layout,
-					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
+					optional<std::reference_wrapper<pipeline_external_binding_set_collection>> external_binding_sets)
 		: ctx(ctx),
 		layout(std::move(layout)),
 		binding_sets(*this->layout,

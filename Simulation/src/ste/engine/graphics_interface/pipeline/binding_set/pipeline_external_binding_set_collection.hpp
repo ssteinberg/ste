@@ -29,7 +29,8 @@ class pipeline_external_binding_set_collection {
 
 private:
 	using layout_t = pipeline_external_binding_set_layout;
-	using set_layouts_t = lib::vector<layout_t>;
+	using set_layouts_input_vector_t = lib::vector<layout_t>;
+	using set_layouts_t = lib::flat_map<pipeline_layout_set_index, layout_t>;
 	
 	using collection_t = lib::flat_map<pipeline_layout_set_index, pipeline_external_binding_set>;
 	using name_binding_map_t = lib::flat_map<lib::string, const pipeline_external_binding_layout*>;
@@ -158,21 +159,28 @@ private:
 	}
 
 public:
-	pipeline_external_binding_set_collection(set_layouts_t &&layouts,
+	pipeline_external_binding_set_collection(set_layouts_input_vector_t &&input_layouts,
 											 pipeline_binding_set_pool &pool)
-		: layouts(std::move(layouts)),
-		pool(pool)
+		: pool(pool)
 	{
 		lib::vector<pipeline_layout_set_index> indices;
 		lib::vector<const layout_t*> layout_ptrs;
-		indices.reserve(this->layouts.size());
-		layout_ptrs.reserve(this->layouts.size());
+		indices.reserve(input_layouts.size());
+		layout_ptrs.reserve(input_layouts.size());
 
-		for (auto &l : this->layouts) {
-			indices.push_back(l.get_set_index());
-			layout_ptrs.push_back(&l);
+		for (auto &l : input_layouts) {
+			auto set_idx = l.get_set_index();
+			auto layout_insertion_result = layouts.emplace(set_idx, std::move(l));
+			if (!layout_insertion_result.second) {
+				// Set index already exists
+				throw pipeline_layout_external_set_duplicate_set_index("External binding set layouts contain multiple layouts with identical set index");
+			}
 
-			for(auto &b : l) {
+			auto &layout = layout_insertion_result.first->second;
+			indices.push_back(set_idx);
+			layout_ptrs.push_back(&layout);
+
+			for(auto &b : layout) {
 				if (b.get_binding().binding_type == ste_shader_stage_binding_type::push_constant) {
 					throw pipeline_layout_push_constant_in_external_set_exception("External binding sets can not containt push constants");
 				}
@@ -213,32 +221,44 @@ public:
 	pipeline_external_binding_set_collection &operator=(pipeline_external_binding_set_collection&&) = default;
 
 	/**
-	*	@brief	Rebuilds the required sets
+	*	@brief	Rebuilds the required sets and their layouts
+	 *	
+	 *	@param	device			Creating device
+	 *	@param	set_indices		Indices of sets to recreate
+	 *	@param	old_layouts		If non-null, old set layouts will be moved to this vector.
 	*
-	*	#return	Returns the old sets
+	*	@return	Returns the old sets
 	*/
-	auto recreate_sets(const lib::vector<pipeline_layout_set_index> &set_indices) {
+	auto recreate_sets(const vk::vk_logical_device<> &device,
+					   const lib::flat_set<pipeline_layout_set_index> &set_indices,
+					   lib::vector<vk::vk_descriptor_set_layout<>> *old_layouts = nullptr) {
 		lib::vector<pipeline_external_binding_set> ret_old_sets;
-
 		lib::vector<const layout_t*> layout_ptrs;
 		layout_ptrs.reserve(set_indices.size());
+
+		// Recreate layouts
 		for (auto &set_idx : set_indices) {
-			// Define layout for new set
-			auto l_it = sets.find(set_idx);
-			if (l_it == sets.end()) {
+			auto l_it = layouts.find(set_idx);
+			if (l_it == layouts.end()) {
 				// Layout not found.
 				assert(false);
 				return ret_old_sets;
 			}
-			auto& s = l_it->second;
-			layout_ptrs.push_back(&s.get_layout());
+
+			// Recreate layout
+			auto old_layout = l_it->second.recreate(device);
+			// Store old
+			if (old_layouts)
+				old_layouts->push_back(std::move(old_layout));
+
+			layout_ptrs.push_back(&l_it->second);
 		}
 
 		// Allocate the new sets
 		lib::vector<pipeline_external_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layout_ptrs);
 		ret_old_sets.reserve(new_sets.size());
 		for (std::size_t i = 0; i<new_sets.size(); ++i) {
-			auto &set_idx = set_indices[i];
+			pipeline_layout_set_index set_idx = *(set_indices.begin() + i);
 			auto &new_set = new_sets[i];
 
 			// Find old set

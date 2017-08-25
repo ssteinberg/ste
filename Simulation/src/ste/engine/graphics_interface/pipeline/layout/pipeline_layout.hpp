@@ -84,6 +84,9 @@ private:
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
 	lib::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
+	// Thhe same regarding external set layouts.
+	lib::flat_set<pipeline_layout_set_index> external_set_layouts_modified_queue;
+
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 
@@ -354,6 +357,9 @@ public:
 			if (external_binding_sets) {
 				this->external_binding_sets = &external_binding_sets.get().get();
 				erase_sets_provided_by_external_binding_sets(all_variables);
+
+				// Take specializations from the external binding set
+				specializations = this->external_binding_sets->specializations;
 			}
 
 			// Then create variables' layouts
@@ -399,6 +405,22 @@ public:
 	}
 
 	/**
+	 *	@brief	Recreates a specific set layout.
+	 *			Returns the old set.
+	 *			
+	 *	@throws	pipeline_layout_exception	If set index not found
+	 */
+	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
+		auto it = bindings_set_layouts.find(set_idx);
+		if (it == bindings_set_layouts.end()) {
+			// Not found
+			throw pipeline_layout_exception("Set not found");
+		}
+
+		return it->second.recreate(ctx.get().device());
+	}
+
+	/**
 	*	@brief	Recreates the pipeline layout and resets flag
 	*	
 	*	@return	Returns the old layout object
@@ -413,7 +435,7 @@ public:
 			// Add external set layouts to pipeline layout
 			auto& external_layouts = external_binding_sets->get_layouts();
 			for (auto &es : external_layouts) {
-				set_layout_ptrs.push_back(&es.get());
+				set_layout_ptrs.push_back(&es.second.get());
 			}
 		}
 
@@ -433,55 +455,20 @@ public:
 	}
 
 	/**
-	*	@brief	Recreates invalidated set layout and resets flags
-	*	
-	*	@param	old_layouts	If non-null, old set layouts will be moved to this vector.
-	*
-	*	@return	Vector of modified set indices
-	*/
-	auto recreate_invalidated_set_layouts(lib::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
-		lib::vector<pipeline_layout_set_index> modified_set_indices;
-
-		if (set_layouts_modified_queue.empty())
-			return modified_set_indices;
-
-		if (old_layouts)
-			old_layouts->reserve(set_layouts_modified_queue.size());
-
-		for (auto &set_idx : set_layouts_modified_queue) {
-			auto set_layout_it = bindings_set_layouts.find(set_idx);
-			if (set_layout_it == bindings_set_layouts.end()) {
-				// Set not found, can not be.
-				assert(false);
-				continue;
-			}
-
-			// Recreate set based on same bindings
-			// (only possible change is modified array length of a binding)
-			auto bindings = set_layout_it->second.get_bindings();
-			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
-														  std::move(bindings));
-
-			if (old_layouts)
-				old_layouts->push_back(std::move(set_layout_it->second));
-
-			// Replace set with new one
-			set_layout_it->second = std::move(set_layout);
-
-			modified_set_indices.push_back(set_idx);
-		}
-
-		// Erase queue
-		set_layouts_modified_queue.clear();
-
-		return modified_set_indices;
-	}
-
-	/**
 	*	@brief	Returns the status of the layout invalid flag.
 	*/
 	auto is_layout_invalidated() {
 		return layout_invalidated_flag;
+	}
+
+	/**
+	 *	@brief	Returns a copy of the queue of modified set indices, and clears the queue.
+	 */
+	auto get_modified_sets_queue() {
+		auto v = set_layouts_modified_queue;
+		set_layouts_modified_queue.clear();
+
+		return v;
 	}
 
 	/**
@@ -508,7 +495,6 @@ public:
 	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
 
 	auto& set_layouts() const { return bindings_set_layouts; }
-	auto& modified_set_layouts() const { return set_layouts_modified_queue; }
 
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return *push_constants_layout; }
