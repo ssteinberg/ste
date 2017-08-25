@@ -29,6 +29,7 @@
 
 #include <alias.hpp>
 #include <anchored.hpp>
+#include <connection.hpp>
 
 namespace ste {
 namespace gl {
@@ -80,12 +81,13 @@ private:
 
 	// External binding sets
 	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
+	// And connections
+	pipeline_external_binding_set_collection::signal_set_invalidated_t::connection_type external_binding_set_invalidated_connection;
+	pipeline_external_binding_set_collection::signal_specialization_change_t::connection_type external_binding_set_constant_specialized_connection;
 
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
 	lib::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
-	// Thhe same regarding external set layouts.
-	lib::flat_set<pipeline_layout_set_index> external_set_layouts_modified_queue;
 
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
@@ -247,6 +249,27 @@ private:
 		layout_invalidated_flag = true;
 	}
 
+	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
+		const auto& map = specializations[stage];
+		const auto it = this->external_binding_sets->specializations.find(stage);
+		if (it == this->external_binding_sets->specializations.end()) {
+			// External binding set does not have any specializations for the stage
+			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			return;
+		}
+
+		const auto &external_map = it->second;
+
+		// Combine specialization maps
+		vk::vk_shader<>::spec_map spec;
+		for (auto &s : map)
+			spec.emplace(s);
+		for (auto &s : external_map)
+			spec.emplace(s);
+		
+		stages[stage]->set_specializations(std::move(spec));
+	}
+
 	template <typename T>
 	void specialize_constant_impl(const lib::string &name,
 								  const optional<lib::string> &data = none,
@@ -283,7 +306,7 @@ private:
 				map[b.bind_idx] = data.get();
 			else
 				map.erase(b.bind_idx);
-			stages[s]->set_specializations(map);
+			update_shader_stage_specialization_map(s);
 		}
 
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
@@ -342,7 +365,7 @@ public:
 				for (auto &a : attachments) {
 					// Create new attachment layout descriptor and add to map
 					const auto& name = a.variable->name();
-					pipeline_attachment_layout attachment = { &a };
+					const pipeline_attachment_layout attachment = { &a };
 
 					add_attachment(attachments_map,
 								   name,
@@ -358,8 +381,20 @@ public:
 				this->external_binding_sets = &external_binding_sets.get().get();
 				erase_sets_provided_by_external_binding_sets(all_variables);
 
-				// Take specializations from the external binding set
-				specializations = this->external_binding_sets->specializations;
+				// Connect to external binding set's signals
+				external_binding_set_invalidated_connection = make_connection(external_binding_sets.get().get().get_signal_set_invalidated(),
+																			  [this](auto, const lib::vector<pipeline_layout_set_index> &sets_indices) {
+					// External binding set was invalidated, add to set recreation queue and invalidate layout.
+					for (auto &set_idx : sets_indices)
+						set_layouts_modified_queue.insert(set_idx);
+					invalidate_layout();
+				});
+				external_binding_set_constant_specialized_connection = make_connection(external_binding_sets.get().get().get_signal_specialization_change(),
+																					   [this](auto, const pipeline_binding_stages_collection &stages) {
+					// External binding set's constant was specialized, update specialization map
+					for (auto &s : stages)
+						update_shader_stage_specialization_map(s);
+				});
 			}
 
 			// Then create variables' layouts
@@ -407,7 +442,7 @@ public:
 	/**
 	 *	@brief	Recreates a specific set layout.
 	 *			Returns the old set.
-	 *			
+	 *
 	 *	@throws	pipeline_layout_exception	If set index not found
 	 */
 	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
@@ -422,7 +457,7 @@ public:
 
 	/**
 	*	@brief	Recreates the pipeline layout and resets flag
-	*	
+	*
 	*	@return	Returns the old layout object
 	*/
 	lib::unique_ptr<vk::vk_pipeline_layout<>> recreate_layout() {

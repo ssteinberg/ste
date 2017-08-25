@@ -40,6 +40,10 @@ private:
 
 	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_external_binding_set_collection>;
 
+public:
+	using signal_specialization_change_t = signal<const pipeline_external_binding_set_collection*, const pipeline_binding_stages_collection&>;
+	using signal_set_invalidated_t = signal<const pipeline_external_binding_set_collection*, const lib::vector<pipeline_layout_set_index>&>;
+
 private:
 	collection_t sets;
 	set_layouts_t layouts;
@@ -50,8 +54,8 @@ private:
 	name_binding_map_t spec_variables_map;
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 	spec_map_t specializations;
-	mutable signal<pipeline_external_binding_set_collection*> signal_specialization_change;
-	mutable signal<pipeline_external_binding_set_collection*, const lib::vector<pipeline_layout_set_index>&> signal_set_invalidated;
+	mutable signal_specialization_change_t signal_specialization_change;
+	mutable signal_set_invalidated_t signal_set_invalidated;
 
 	pipeline_resource_binding_queue binding_queue;
 
@@ -121,7 +125,7 @@ private:
 		}
 
 		// Signal specialization constant change
-		signal_specialization_change.emit(this);
+		signal_specialization_change.emit(this, it->second->stage_collection());
 
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
 		auto dependant_arrays_it = spec_to_dependant_array_variables_map.find(var);
@@ -239,11 +243,8 @@ public:
 		// Recreate layouts
 		for (auto &set_idx : set_indices) {
 			auto l_it = layouts.find(set_idx);
-			if (l_it == layouts.end()) {
-				// Layout not found.
-				assert(false);
-				return ret_old_sets;
-			}
+			if (l_it == layouts.end())
+				continue;
 
 			// Recreate layout
 			auto old_layout = l_it->second.recreate(device);

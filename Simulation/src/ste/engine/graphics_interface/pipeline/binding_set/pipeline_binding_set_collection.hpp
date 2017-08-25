@@ -107,11 +107,8 @@ public:
 		layouts.reserve(set_indices.size());
 		for (auto &set_idx : set_indices) {
 			auto l_it = layout.get().set_layouts().find(set_idx);
-			if (l_it == layout.get().set_layouts().end()) {
-				// Layout not found.
-				assert(false);
-				return ret_old_sets;
-			}
+			if (l_it == layout.get().set_layouts().end())
+				continue;
 
 			// Recreate layout
 			auto old_layout = layout.get().recreate_set_layout(set_idx);
