@@ -31,7 +31,7 @@ template <
 >
 class device_buffer_sparse : 
 	public device_buffer_base,
-	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk::vk_buffer_sparse, false>
+	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk::vk_buffer_sparse<>, false>
 {
 private:
 	struct ctor {};
@@ -42,7 +42,7 @@ public:
 	using bind_range_t = range<std::uint64_t>;
 
 private:
-	using resource_t = vk::vk_buffer_sparse;
+	using resource_t = vk::vk_buffer_sparse<>;
 	using atom_t = device_memory_heap::allocation_type;
 	using bind_map_t = lib::vector<atom_t>;
 
@@ -110,7 +110,7 @@ public:
 	{}
 	~device_buffer_sparse() noexcept {}
 
-	const vk::vk_buffer& get_buffer_handle() const override final { return *this; }
+	const vk::vk_buffer<>& get_buffer_handle() const override final { return *this; }
 
 	device_buffer_sparse(device_buffer_sparse &&) = default;
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
@@ -131,8 +131,8 @@ public:
 										const lib::vector<bind_range_t> &bind_regions,
 										const lib::vector<const semaphore*> &wait_semaphores,
 										const lib::vector<const semaphore*> &signal_semaphores,
-										const vk::vk_fence *fence = nullptr) {
-		return host_command([=](const vk::vk_queue &queue) {
+										const vk::vk_fence<> *fence = nullptr) {
+		return host_command([=](const vk::vk_queue<> &queue) {
 			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
 			auto size = atom_size();
 

@@ -31,6 +31,7 @@
 #include <fragment_graphics.hpp>
 
 #include <hdr_dof_postprocess.hpp>
+#include <fxaa_postprocess.hpp>
 
 using namespace ste;
 
@@ -79,7 +80,7 @@ class simple_fragment : public gl::fragment_graphics<simple_fragment> {
 	using Base = gl::fragment_graphics<simple_fragment>;
 
 	std::reference_wrapper<const ste_context> ctx;
-	gl::storage_shared_ptr<simple_storage> s;
+	gl::rendering_system::storage_ptr<simple_storage> s;
 	gl::task<gl::cmd_draw_indexed> draw_task;
 
 	float f{ 0.f };
@@ -135,8 +136,8 @@ public:
 															 gl::buffer_memory_barrier(s->vertex_buffer,
 																					   gl::access_flags::vertex_attribute_read,
 																					   gl::access_flags::transfer_write)))
-			<< s->vertex_buffer.update_task({ v }, 0)()
-			<< s->ubo.update_task({ data }, 0)()
+			<< s->vertex_buffer.overwrite_cmd(0, v)
+			<< s->ubo.overwrite_cmd(0, data)
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 															 gl::pipeline_stage::vertex_shader,
 															 gl::buffer_memory_barrier(s->ubo,
@@ -155,13 +156,17 @@ class simple_renderer : public gl::rendering_presentation_system {
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 
-	gl::framebuffer hdr_fb;
+	gl::framebuffer hdr_fb, fxaa_fb;
 	graphics::hdr_dof_postprocess hdr;
+	graphics::fxaa_postprocess fxaa;
 
 	simple_fragment frag1;
 	text::text_fragment text_frag;
 
-	const gl::texture<gl::image_type::image_2d> *hdr_input_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_input_image;
+	ste_resource<gl::texture<gl::image_type::image_2d>> fxaa_input_image;
+
+	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
 private:
 	static auto create_fb_layout(const ste_context &ctx) {
@@ -171,10 +176,17 @@ private:
 		return fb_layout;
 	}
 
+	static auto create_fxaa_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::ignore_store(gl::format::r8g8b8a8_unorm,
+										gl::image_layout::shader_read_only_optimal);
+		return fb_layout;
+	}
+
 	static auto create_hdr_fb_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
-		fb_layout[0] = gl::clear_store(graphics::hdr_dof_postprocess::input_image_format(),
-									   gl::image_layout::color_attachment_optimal);
+		fb_layout[0] = gl::clear_store(gl::format::r16g16b16a16_sfloat,
+									   gl::image_layout::shader_read_only_optimal);
 		return fb_layout;
 	}
 
@@ -186,13 +198,57 @@ public:
 			   create_fb_layout(ctx)),
 		presentation(presentation),
 		hdr_fb(ctx, create_hdr_fb_layout(ctx), device().get_surface().extent()),
-		hdr(*this, gl::framebuffer_layout(presentation_framebuffer_layout())),
+		fxaa_fb(ctx, create_fxaa_layout(ctx), device().get_surface().extent()),
+		hdr(*this, device().get_surface().extent(), gl::framebuffer_layout(fxaa_fb.get_layout())),
+		fxaa(*this, gl::framebuffer_layout(presentation_framebuffer_layout())),
 		frag1(*this, gl::framebuffer_layout(hdr_fb.get_layout())),
 		text_frag(tm.create_fragment()),
-		hdr_input_image(&hdr.acquire_input_image(gl::pipeline_stage::fragment_shader, gl::image_layout::color_attachment_optimal))
+		hdr_input_image(ctx,
+						resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
+																								   gl::image_usage::sampled | gl::image_usage::color_attachment,
+																								   gl::image_layout::shader_read_only_optimal,
+																								   device().get_surface().extent())),
+		fxaa_input_image(ctx,
+						 resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
+																							   gl::image_layout::shader_read_only_optimal,
+																							   device().get_surface().extent()))
 	{
 		hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
 		frag1.set_framebuffer(hdr_fb);
+
+		fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
+		hdr.attach_framebuffer(fxaa_fb);
+
+		hdr.set_input_image(&hdr_input_image.get());
+		fxaa.set_input_image(&fxaa_input_image.get());
+
+		resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
+			hdr_fb = gl::framebuffer(ctx, create_hdr_fb_layout(ctx), device().get_surface().extent());
+			fxaa_fb = gl::framebuffer(ctx, create_fxaa_layout(ctx), device().get_surface().extent());
+
+			hdr_input_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx,
+																				  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
+																																							 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																							 gl::image_layout::shader_read_only_optimal,
+																																							 device().get_surface().extent()));
+			fxaa_input_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx,
+																				   resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																																						 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																						 gl::image_layout::shader_read_only_optimal,
+																																						 device().get_surface().extent()));
+
+			hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
+			frag1.set_framebuffer(hdr_fb);
+
+			fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
+			hdr.attach_framebuffer(fxaa_fb);
+
+			hdr.set_input_image(&hdr_input_image.get());
+			fxaa.set_input_image(&fxaa_input_image.get());
+
+			hdr.resize(device().get_surface().extent());
+		});
 	}
 	~simple_renderer() noexcept {}
 
@@ -222,24 +278,19 @@ public:
 				}
 
 				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
-				hdr.attach_framebuffer(fb);
+				fxaa.attach_framebuffer(fb);
 				text_frag.manager().attach_framebuffer(fb);
 
 				recorder
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
-																	 gl::pipeline_stage::fragment_shader,
-																	 gl::image_layout_transform_barrier(*hdr_input_image,
-																										gl::image_layout::shader_read_only_optimal,
-																										gl::image_layout::color_attachment_optimal)))
 					<< frag1
 					<< hdr
-
+					<< fxaa
 					<< text_frag
 
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
 																	 gl::pipeline_stage::bottom_of_pipe,
 																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																										gl::image_layout::color_attachment_optimal, 
+																										gl::image_layout::color_attachment_optimal,
 																										gl::image_layout::present_src_khr)));
 			}
 
@@ -348,7 +399,7 @@ int main()
 	simple_renderer r(ctx, presentation, text_manager);
 
 
-//	ste_resource<gl::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
+	//	ste_resource<gl::device_pipeline_shader_stage> stage(ste_resource_dont_defer(), ctx, lib::string("fxaa.frag"));
 	//	device_pipeline_shader_stage(ctx, lib::string("deferred_compose.frag"));
 	//	device_pipeline_shader_stage(ctx, lib::string("shadow_cubemap.geom"));
 	//	device_pipeline_shader_stage(ctx, lib::string("shadow_directional.geom"));
@@ -357,8 +408,8 @@ int main()
 
 
 	/*
-		*	Main loop
-		*/
+	 *	Main loop
+	 */
 	float f = .0f;
 	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {

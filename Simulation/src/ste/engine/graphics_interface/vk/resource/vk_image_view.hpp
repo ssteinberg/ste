@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_image.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
@@ -19,14 +20,15 @@
 #include <optional.hpp>
 #include <limits>
 #include <alias.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-template <image_type type>
-class vk_image_view {
+template <image_type type, typename host_allocator = vk_host_allocator<>>
+class vk_image_view : public allow_type_decay<vk_image_view<type, host_allocator>, VkImageView> {
 private:
 	static constexpr int ctor_array_layers_multiplier = image_is_cubemap<type>::value ? 6 : 1;
 
@@ -37,11 +39,11 @@ public:
 
 private:
 	optional<VkImageView> view;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	VkFormat image_format;
 
 protected:
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t base_mip,
 				  std::uint32_t mips,
@@ -70,7 +72,7 @@ protected:
 		create_info.components = swizzle;
 		create_info.subresourceRange = range;
 
-		vk_result res = vkCreateImageView(device.get(), &create_info, nullptr, &view);
+		vk_result res = vkCreateImageView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -90,11 +92,11 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
-				  std::uint32_t mips = all_mip_levels,
+				  std::uint32_t mips,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
@@ -115,7 +117,7 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t mips = all_mip_levels,
@@ -135,7 +137,7 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
@@ -157,7 +159,7 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
@@ -184,7 +186,7 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
@@ -206,7 +208,7 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
 				  std::uint32_t layers,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
@@ -223,7 +225,7 @@ public:
 	*	@param parent		Parent image object
 	*	@param swizzle		View component swizzling
 	*/
-	vk_image_view(const vk::vk_image &parent,
+	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  const image_view_swizzle &swizzle = image_view_swizzle())
 		: vk_image_view(parent,
 						parent.get_format(),
@@ -237,21 +239,27 @@ public:
 	~vk_image_view() noexcept { destroy_view(); }
 
 	vk_image_view(vk_image_view &&) = default;
-	vk_image_view& operator=(vk_image_view &&) = default;
+	vk_image_view& operator=(vk_image_view &&o) noexcept {
+		destroy_view();
+
+		view = std::move(o.view);
+		device = std::move(o.device);
+		image_format = o.image_format;
+
+		return *this;
+	}
 	vk_image_view(const vk_image_view &) = delete;
 	vk_image_view& operator=(const vk_image_view &) = delete;
 
 	void destroy_view() {
 		if (view) {
-			vkDestroyImageView(device.get(), *this, nullptr);
+			vkDestroyImageView(device.get(), *this, &host_allocator::allocation_callbacks());
 			view = none;
 		}
 	}
 
-	auto& get_view() const { return view.get(); }
+	auto& get() const { return view.get(); }
 	auto& get_format() const { return image_format; }
-
-	operator VkImageView() const { return get_view(); }
 };
 
 }

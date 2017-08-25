@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015
+//	StE
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -7,13 +7,15 @@
 
 #include <material_layer_descriptor.hpp>
 #include <observable_resource.hpp>
+#include <image_vector.hpp>
 
-#include <texture_2d.hpp>
-#include <Sampler.hpp>
+#include <texture.hpp>
+#include <sampler.hpp>
+#include <surface_factory.hpp>
 
 #include <rgb.hpp>
 
-#include <lib/unique_ptr.hpp>
+#include <alias.hpp>
 #include <limits>
 
 namespace ste {
@@ -22,18 +24,22 @@ namespace graphics {
 /**
  *	@brief	Defines rendering material layer
  */
-class material_layer : public Core::observable_resource<material_layer_descriptor> {
-	using Base = Core::observable_resource<material_layer_descriptor>;
+class material_layer : public gl::observable_resource<material_layer_descriptor> {
+	using Base = gl::observable_resource<material_layer_descriptor>;
+	using texture_storage = gl::image_vector<gl::image_type::image_2d>;
 
 private:
-	Core::sampler_mipmapped material_sampler;
+	alias<const ste_context> ctx;
+	alias<texture_storage> material_texture_storage;
+
+	gl::sampler material_sampler;
 
 	rgb albedo;
 	
-	lib::shared_ptr<Core::texture_2d> roughness_map{ nullptr };
-	lib::shared_ptr<Core::texture_2d> metallicity_map{ nullptr };
-	lib::shared_ptr<Core::texture_2d> thickness_map{ nullptr };
-	//lib::shared_ptr<Core::texture_2d> anisotropy_map{ nullptr };
+	texture_storage::value_type roughness_map{ nullptr };
+	texture_storage::value_type metallicity_map{ nullptr };
+	texture_storage::value_type thickness_map{ nullptr };
+	//texture_storage::value_type anisotropy_map{ nullptr };
 
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
@@ -51,17 +57,16 @@ private:
 	material_layer &operator=(const material_layer &m) = delete;
 
 private:
-	Core::texture_handle handle_for_texture(const Core::texture_2d *t) const;
-
-	template <lib::shared_ptr<Core::texture_2d> material_layer::*map>
-	void write_scalar_map(float scalar) {
-		if (this->*map == nullptr || (this->*map)->get_size() != glm::ivec2{ 1, 1 }) {
-			auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
-			*reinterpret_cast<float*>(surface.data()) = scalar;
-			this->*map = lib::allocate_shared<ste::Core::texture_2d>(surface, false);
-		}
-		else
-			(this->*map)->clear(&scalar);
+	auto create_scalar_map(float scalar) {
+		auto surface = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32, { 1, 1 }, 1);
+		*reinterpret_cast<float*>(surface.data()) = scalar;
+	
+		auto image = resource::surface_factory::image_from_surface_2d<gl::format::r32_sfloat>(ctx,
+																							  std::move(surface),
+																							  gl::image_usage::sampled,
+																							  gl::image_layout::shader_read_only_optimal,
+																							  false);
+		return gl::texture<gl::image_type::image_2d>(std::move(image).get());
 	}
 
 public:
@@ -76,7 +81,8 @@ public:
 	}
 
 public:
-	material_layer();
+	material_layer(const ste_context &ctx,
+				   texture_storage &material_texture_storage);
 
 	/**
 	*	@brief	Set material albedo
@@ -101,8 +107,8 @@ public:
 	* 	@param r	Roughness - range: [0,1]
 	*/
 	void set_roughness(float r) {
-		write_scalar_map<&material_layer::roughness_map>(r);
-		descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
+		roughness_map = material_texture_storage->allocate_slot(create_scalar_map(r));
+		descriptor.set_roughness_map_handle(roughness_map->get_slot_idx());
 
 		Base::notify();
 	}
@@ -113,9 +119,9 @@ public:
 	*
 	* 	@param map	Roughness map
 	*/
-	void set_roughness(const lib::shared_ptr<Core::texture_2d> &map) {
-		this->roughness_map = map;
-		descriptor.set_roughness_map_handle(handle_for_texture(roughness_map.get()));
+	void set_roughness(gl::texture<gl::image_type::image_2d> &&map) {
+		roughness_map = material_texture_storage->allocate_slot(std::move(map));
+		descriptor.set_roughness_map_handle(roughness_map->get_slot_idx());
 
 		Base::notify();
 	}
@@ -128,8 +134,8 @@ public:
 	* 	@param a	Anisotropy - range: [0,1] (May take negative values which invert X, Y anisotropy)
 	*/
 //	void set_anisotropy(float a) {
-//		write_scalar_map<&material_layer::anisotropy_map>(a);
-//		descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
+//		anisotropy_map = material_texture_storage->allocate_slot(create_scalar_map(a));
+//		descriptor.set_anisotropy_map_handle(anisotropy_map->get_slot_idx());
 //
 //		Base::notify();
 //	}
@@ -140,9 +146,9 @@ public:
 	*
 	* 	@param map	Anisotropy map
 	*/
-//	void set_anisotropy(const lib::shared_ptr<Core::texture_2d> &map) {
-//		this->anisotropy_map = map;
-//		descriptor.set_anisotropy_map_handle(handle_for_texture(anisotropy_map.get()));
+//	void set_anisotropy(gl::texture<gl::image_type::image_2d> &&map) {
+//		anisotropy_map = material_texture_storage->allocate_slot(std::move(map));
+//		descriptor.set_anisotropy_map_handle(anisotropy_map->get_slot_idx());
 //
 //		Base::notify();
 //	}
@@ -155,8 +161,8 @@ public:
 * 	@param m	Metallicity - range: [0,1]
 */
 	void set_metallic(float m) {
-		write_scalar_map<&material_layer::metallicity_map>(m);
-		descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
+		metallicity_map = material_texture_storage->allocate_slot(create_scalar_map(m));
+		descriptor.set_metallicity_map_handle(metallicity_map->get_slot_idx());
 
 		Base::notify();
 	}
@@ -167,9 +173,9 @@ public:
 	*
 	* 	@param map	Metallicity map
 	*/
-	void set_metallic(const lib::shared_ptr<Core::texture_2d> &map) {
-		metallicity_map = map;
-		descriptor.set_metallicity_map_handle(handle_for_texture(metallicity_map.get()));
+	void set_metallic(gl::texture<gl::image_type::image_2d> &&map) {
+		metallicity_map = material_texture_storage->allocate_slot(std::move(map));
+		descriptor.set_metallicity_map_handle(metallicity_map->get_slot_idx());
 		Base::notify();
 	}
 
@@ -229,8 +235,8 @@ public:
 	* 	@param t	Thickness in standard units	- range: (0,material_layer_max_thickness)
 	*/
 	void set_layer_thickness(float t) {
-		write_scalar_map<&material_layer::thickness_map>(t);
-		descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
+		thickness_map = material_texture_storage->allocate_slot(create_scalar_map(t));
+		descriptor.set_thickness_map_handle(thickness_map->get_slot_idx());
 
 		Base::notify();
 	}
@@ -241,9 +247,9 @@ public:
 	*
 	* 	@param map	Thickness map in standard units	- range: (0,material_layer_max_thickness)
 	*/
-	void set_layer_thickness(const lib::shared_ptr<Core::texture_2d> &map) {
-		thickness_map = map;
-		descriptor.set_thickness_map_handle(handle_for_texture(thickness_map.get()));
+	void set_layer_thickness(gl::texture<gl::image_type::image_2d> &&map) {
+		thickness_map = material_texture_storage->allocate_slot(std::move(map));
+		descriptor.set_thickness_map_handle(thickness_map->get_slot_idx());
 		Base::notify();
 	}
 	
@@ -274,6 +280,10 @@ public:
 	auto get_index_of_refraction() const { return index_of_refraction; }
 	auto get_attenuation_coefficient() const { return attenuation_coefficient; }
 	float get_scattering_phase_parameter() const { return phase_g; }
+
+	auto *get_roughness_map() const { return roughness_map.get(); }
+	auto *get_metallicity_map() const { return metallicity_map.get(); }
+	auto *get_thickness_map() const { return thickness_map.get(); }
 
 	auto *get_next_layer() const { return next_layer; }
 

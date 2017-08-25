@@ -14,6 +14,7 @@ namespace gl {
 namespace vk {
 
 class vk_descriptor_set_copy_resources {
+	template <typename>
 	friend class vk_descriptor_set;
 
 private:

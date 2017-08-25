@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_image.hpp>
 #include <image_type.hpp>
 
@@ -14,8 +15,9 @@ namespace gl {
 
 namespace vk {
 
-class vk_swapchain_image : public vk_image {
-	using Base = vk_image;
+template <typename host_allocator = vk_host_allocator<>>
+class vk_swapchain_image : public vk_image<host_allocator> {
+	using Base = vk_image<host_allocator>;
 	static constexpr int swapchain_image_mips = 1;
 
 public:
@@ -27,7 +29,7 @@ private:
 	using Base::bind_resource_underlying_memory;
 
 public:
-	vk_swapchain_image(const vk_logical_device &device,
+	vk_swapchain_image(const vk_logical_device<host_allocator> &device,
 					   const VkImage &image,
 					   const VkFormat &image_format,
 					   const extent_type &size,

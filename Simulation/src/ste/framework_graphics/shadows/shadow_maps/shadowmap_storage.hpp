@@ -1,77 +1,110 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_engine_control.hpp>
+#include <ste_context.hpp>
+#include <ste_resource.hpp>
 
-#include <signal.hpp>
-
-#include <framebuffer_object.hpp>
-
-#include <texture_cube_map_array.hpp>
-#include <texture_2d_array.hpp>
+#include <texture.hpp>
 #include <sampler.hpp>
+#include <framebuffer.hpp>
 
 #include <light_storage.hpp>
 #include <light_cascade_descriptor.hpp>
+
+#include <surface_factory.hpp>
+#include <signal.hpp>
 
 namespace ste {
 namespace graphics {
 
 class shadowmap_storage {
-	static constexpr unsigned default_map_size = 1024;
-	static constexpr unsigned default_directional_map_size = 2048;
+private:
+	alias<const ste_context> ctx;
+	
+	unsigned cube_size;
+	unsigned directional_map_size;
+
+	ste_resource<gl::texture<gl::image_type::image_cubemap_array>> shadow_depth_cube_maps;
+	ste_resource<gl::texture<gl::image_type::image_2d_array>> directional_shadow_maps;
+	gl::sampler shadow_depth_sampler;
+
+	gl::framebuffer shadow_depth_cube_map_fbo;
+	gl::framebuffer directional_shadow_maps_fbo;
+
+	mutable signal<> storage_modified_signal;
 
 private:
-	glm::uvec2 cube_size;
-	lib::unique_ptr<Core::texture_cube_map_array> shadow_depth_cube_maps;
-	Core::framebuffer_object shadow_depth_cube_map_fbo;
-
-	glm::uvec2 directional_map_size;
-	lib::unique_ptr<Core::texture_2d_array> directional_shadow_maps;
-	Core::framebuffer_object directional_shadow_maps_fbo;
-
-	Core::sampler shadow_depth_sampler;
-
-	signal<> storage_modified_signal;
+	static auto create_shadow_fb_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
+																			 gl::image_layout::depth_stencil_attachment_optimal);
+		return fb_layout;
+	}
 
 public:
-	shadowmap_storage(const ste_engine_control &ctx,
-					  const glm::uvec2 &directional_map_size = glm::uvec2(default_directional_map_size),
-					  const glm::uvec2 &cube_size = glm::uvec2(default_map_size)) : cube_size(cube_size),
-																					directional_map_size(directional_map_size),
-																					shadow_depth_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
-																										 Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge) {
-		set_cube_count(max_active_lights_per_frame);
-		set_directional_maps_count(max_active_directional_lights_per_frame);
+	shadowmap_storage(const ste_context &ctx,
+					  unsigned cube_size = 1024, 
+					  unsigned directional_map_size = 2048)
+		: ctx(ctx),
+		cube_size(cube_size),
+		directional_map_size(directional_map_size),
 
-		shadow_depth_sampler.set_compare_mode(Core::texture_compare_mode::CompareToTextureDepth);
-		shadow_depth_sampler.set_compare_func(Core::texture_compare_func::Greater);
+		shadow_depth_cube_maps(ctx,
+							   resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
+																								 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																								 gl::image_layout::shader_read_only_optimal,
+																								 glm::uvec3{ cube_size, cube_size, max_active_lights_per_frame * 6 })),
+		directional_shadow_maps(ctx,
+								resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
+																								  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																								  gl::image_layout::shader_read_only_optimal,
+																								  glm::uvec3{ directional_map_size, directional_map_size, max_active_directional_lights_per_frame * directional_light_cascades })),
+		shadow_depth_sampler(ctx.device(),
+							 gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear, gl::sampler_mipmap_mode::linear),
+							 gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_edge, gl::sampler_address_mode::clamp_to_edge),
+							 gl::sampler_parameter::depth_compare(gl::compare_op::greater)),
+		shadow_depth_cube_map_fbo(ctx, create_shadow_fb_layout(ctx), glm::uvec2{ cube_size, cube_size }),
+		directional_shadow_maps_fbo(ctx, create_shadow_fb_layout(ctx), glm::uvec2{ directional_map_size, directional_map_size })
+	{
+		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
+		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);
 	}
+	~shadowmap_storage() noexcept {}
+
+	shadowmap_storage(shadowmap_storage&&) = default;
 
 	void set_cube_count(std::size_t size) {
-		shadow_depth_cube_maps = lib::allocate_unique<Core::texture_cube_map_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ cube_size.x, cube_size.y, size * 6 });
-		shadow_depth_cube_map_fbo.depth_binding_point() = *shadow_depth_cube_maps;
+		shadow_depth_cube_maps = ste_resource<gl::texture<gl::image_type::image_cubemap_array>>(ctx.get(),
+																								resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx.get(),
+																																								  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																								  gl::image_layout::shader_read_only_optimal,
+																																								  glm::uvec3{ cube_size, cube_size, size * 6 }));
+		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
 
 		storage_modified_signal.emit();
 	}
-	auto get_cube_count() const { return shadow_depth_cube_maps->get_layers(); }
+	auto get_cube_count() const { return shadow_depth_cube_maps->get_image().get_layers(); }
 
 	void set_directional_maps_count(std::size_t size) {
-		directional_shadow_maps = lib::allocate_unique<Core::texture_2d_array>(gli::format::FORMAT_D32_SFLOAT_PACK32, glm::ivec3{ directional_map_size.x, directional_map_size.y, size * directional_light_cascades });
-		directional_shadow_maps_fbo.depth_binding_point() = *directional_shadow_maps;
+		directional_shadow_maps = ste_resource<gl::texture<gl::image_type::image_2d_array>>(ctx.get(),
+																							resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx.get(),
+																																							  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																							  gl::image_layout::shader_read_only_optimal,
+																																							  glm::uvec3{ directional_map_size, directional_map_size, size * directional_light_cascades }));
+		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);;
 
 		storage_modified_signal.emit();
 	}
-	auto get_directional_maps_count() const { return directional_shadow_maps->get_layers() / directional_light_cascades; }
+	auto get_directional_maps_count() const { return directional_shadow_maps->get_image().get_layers() / directional_light_cascades; }
 
-	auto* get_cube_fbo() const { return &shadow_depth_cube_map_fbo; }
-	auto* get_cubemaps() const { return shadow_depth_cube_maps.get(); }
+	auto& get_cube_fbo() const { return shadow_depth_cube_map_fbo; }
+	auto& get_cubemaps() const { return *shadow_depth_cube_maps; }
 
-	auto* get_directional_maps_fbo() const { return &directional_shadow_maps_fbo; }
-	auto* get_directional_maps() const { return directional_shadow_maps.get(); }
+	auto& get_directional_maps_fbo() const { return directional_shadow_maps_fbo; }
+	auto& get_directional_maps() const { return *directional_shadow_maps; }
 
 	auto& get_shadow_sampler() const { return shadow_depth_sampler; }
 

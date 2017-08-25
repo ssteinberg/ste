@@ -66,7 +66,7 @@ private:
 	} data;
 
 public:
-	_atmospherics_precompute_scattering_data() {}
+	_atmospherics_precompute_scattering_data() = default;
 	~_atmospherics_precompute_scattering_data() noexcept {}
 
 	static T height_to_lut_idx(const T &h, const T &h_max) {
@@ -156,7 +156,7 @@ private:
 
 		for (int y = 0; y < lut_data_t::optical_length_size; ++y) {
 			for (int x = 0; x < lut_data_t::optical_length_size; ++x) {
-				*lut = (*data->optical_length_lut(lut_idx))[x][y];
+				*lut = static_cast<float>((*data->optical_length_lut(lut_idx))[x][y]);
 				++lut;
 			}
 		}
@@ -180,10 +180,10 @@ public:
 	}
 
 	gli::texture3d create_scatter_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGB32_SFLOAT_PACK32,
+		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
 										  glm::ivec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
 
-		auto *lut = reinterpret_cast<glm::vec3*>(lut_texture.data());
+		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
 		for (int z = 0; z < lut_data_t::scatter_size2; ++z)
 			for (int y = 0; y < lut_data_t::scatter_size1; ++y)
@@ -192,7 +192,8 @@ public:
 
 					*lut = { static_cast<float>(v.x),
 						static_cast<float>(v.y),
-						static_cast<float>(v.z)
+						static_cast<float>(v.z),
+						.0f
 					};
 					++lut;
 				}
@@ -201,10 +202,10 @@ public:
 	}
 
 	gli::texture3d create_mie0_scatter_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGB32_SFLOAT_PACK32,
+		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
 										  glm::ivec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
 
-		auto *lut = reinterpret_cast<glm::vec3*>(lut_texture.data());
+		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
 		for (int z = 0; z < lut_data_t::scatter_size2; ++z)
 			for (int y = 0; y < lut_data_t::scatter_size1; ++y)
@@ -213,7 +214,8 @@ public:
 
 					*lut = { static_cast<float>(v.x),
 						static_cast<float>(v.y),
-						static_cast<float>(v.z)
+						static_cast<float>(v.z),
+						.0f
 					};
 					++lut;
 				}
@@ -222,10 +224,10 @@ public:
 	}
 
 	gli::texture3d create_ambient_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGB32_SFLOAT_PACK32,
+		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
 										  glm::ivec3{ lut_data_t::ambient_size_0, lut_data_t::ambient_size_1, lut_data_t::ambient_size_2 });
 
-		auto *lut = reinterpret_cast<glm::vec3*>(lut_texture.data());
+		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
 		for (int z = 0; z < lut_data_t::ambient_size_2; ++z)
 			for (int y = 0; y < lut_data_t::ambient_size_1; ++y)
@@ -234,7 +236,8 @@ public:
 
 					*lut = { static_cast<float>(v.x),
 						static_cast<float>(v.y),
-						static_cast<float>(v.z)
+						static_cast<float>(v.z),
+						.0f
 					};
 					++lut;
 				}

@@ -13,6 +13,7 @@ namespace gl {
 namespace vk {
 
 class vk_render_pass_subpass_descriptor {
+	template <typename>
 	friend class vk_render_pass;
 
 private:

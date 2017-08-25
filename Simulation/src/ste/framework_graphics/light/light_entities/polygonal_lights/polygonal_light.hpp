@@ -16,7 +16,7 @@ class polygonal_light : public shaped_light {
 	using Base = shaped_light;
 
 protected:
-	polygonal_light(LightType type, 
+	polygonal_light(light_type type, 
 					const rgb &color,
 					float intensity,
 					const glm::vec3 &position, 
@@ -62,7 +62,7 @@ public:
 	polygonal_light_onesided(const rgb &color,
 							 float intensity,
 							 const glm::vec3 &position,
-							 shaped_light_points_storage_info storage_info) : polygonal_light(LightType::PolygonOnesided,
+							 shaped_light_points_storage_info storage_info) : polygonal_light(light_type::PolygonOnesided,
 																							  color, intensity, position,
 																							  storage_info) {}
 	virtual ~polygonal_light_onesided() noexcept {}
@@ -73,7 +73,7 @@ public:
 	polygonal_light_twosided(const rgb &color,
 							 float intensity,
 							 const glm::vec3 &position,
-							 shaped_light_points_storage_info storage_info) : polygonal_light(LightType::PolygonTwosided,
+							 shaped_light_points_storage_info storage_info) : polygonal_light(light_type::PolygonTwosided,
 																							  color, intensity, position,
 																							  storage_info) {}
 	virtual ~polygonal_light_twosided() noexcept {}

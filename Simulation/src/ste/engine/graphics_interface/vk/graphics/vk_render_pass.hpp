@@ -13,6 +13,7 @@
 #include <vk_render_pass_subpass_descriptor.hpp>
 #include <vk_render_pass_subpass_dependency.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
@@ -24,13 +25,14 @@ namespace gl {
 
 namespace vk {
 
-class vk_render_pass : public allow_type_decay<vk_render_pass, VkRenderPass> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_render_pass : public allow_type_decay<vk_render_pass<host_allocator>, VkRenderPass> {
 private:
 	optional<VkRenderPass> render_pass;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_render_pass(const vk_logical_device &device,
+	vk_render_pass(const vk_logical_device<host_allocator> &device,
 				   const lib::vector<vk_render_pass_attachment> &attachments,
 				   const lib::vector<vk_render_pass_subpass_descriptor> &subpasses,
 				   const lib::vector<vk_render_pass_subpass_dependency> &subpass_dependencies = {}) : device(device) {
@@ -76,7 +78,7 @@ public:
 		create_info.pDependencies = dependency_descriptors.data();
 
 		VkRenderPass renderpass;
-		vk_result res = vkCreateRenderPass(device, &create_info, nullptr, &renderpass);
+		vk_result res = vkCreateRenderPass(device, &create_info, &host_allocator::allocation_callbacks(), &renderpass);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -86,13 +88,20 @@ public:
 	~vk_render_pass() noexcept { destroy_render_pass(); }
 
 	vk_render_pass(vk_render_pass &&) = default;
-	vk_render_pass &operator=(vk_render_pass &&) = default;
+	vk_render_pass &operator=(vk_render_pass &&o) noexcept {
+		destroy_render_pass();
+
+		render_pass = std::move(o.render_pass);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_render_pass(const vk_render_pass &) = delete;
 	vk_render_pass &operator=(const vk_render_pass &) = delete;
 
 	void destroy_render_pass() {
 		if (render_pass) {
-			vkDestroyRenderPass(device.get(), *this, nullptr);
+			vkDestroyRenderPass(device.get(), *this, &host_allocator::allocation_callbacks());
 			render_pass = none;
 		}
 	}

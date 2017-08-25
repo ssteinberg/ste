@@ -4,12 +4,13 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
 #include <vk_mapped_memory_range.hpp>
 
-#include <functional>
 #include <lib/vector.hpp>
 
 namespace ste {
@@ -17,13 +18,18 @@ namespace gl {
 
 namespace vk {
 
-template <typename T>
+template <typename>
+class vk_device_memory;
+
+template <typename T, typename host_allocator = vk_host_allocator<>>
 class vk_mmap {
+	friend class vk_device_memory<host_allocator>;
+
 private:
 	using map_pointer = T*;
 
 private:
-	vk_device_memory &memory;
+	vk_device_memory<host_allocator> &memory;
 	map_pointer ptr;
 	std::uint64_t offset;
 	std::uint64_t count;
@@ -49,7 +55,7 @@ private:
 	}
 
 public:
-	vk_mmap(vk_device_memory &memory, std::uint64_t offset, std::uint64_t count, map_pointer ptr)
+	vk_mmap(vk_device_memory<host_allocator> &memory, std::uint64_t offset, std::uint64_t count, map_pointer ptr)
 		: memory(memory), ptr(ptr), offset(offset), count(count) {}
 	~vk_mmap() noexcept { munmap(); }
 

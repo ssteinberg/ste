@@ -45,7 +45,7 @@ struct layout_element_asserter_impl {};
 template <std::size_t base_alignment, typename T>
 struct layout_element_asserter_impl<base_alignment, T, false> {
 	static_assert(matrix_rows_count<T>::value != 3,
-				  "Matrix columns must be 2 or 4 component vectors.");
+				  "Matrix/vector columns must be 2 or 4 component vectors.");
 	static_assert(!std::is_array_v<T> || 
 				  block_layout_type_base_alignment<T>::value == sizeof(std::remove_all_extents_t<T>),
 				  "Arrays in block layout must be manually aligned.");

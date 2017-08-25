@@ -23,11 +23,21 @@ struct ste_shader_stage_binding : ste_shader_stage_variable_layout_validator {
 	*	@brief	Returns the appropriate VkDescriptorType type.
 	*
 	*	@throws	ste_shader_binding_incompatible_type	If variable type isn't a block or image/combined_image_sampler/sampler
-	*	@throws	ste_shader_binding_specialization_or_push_constant_exception	If variable isn't binding_type isn't storage or uniform
+	*	@throws	ste_shader_binding_specialization_or_push_constant_exception	If binding_type isn't storage or uniform
 	*/
 	operator VkDescriptorType() const {
 		return vk_descriptor_for_binding(binding_type,
 										 variable->type());
+	}
+
+	/*
+	*	@brief	Checks compatibility between a couple of stage bindings
+	*/
+	bool compatible(const ste_shader_stage_binding &b) const {
+		return
+			this->binding_type == b.binding_type &&
+			this->block_layout == b.block_layout &&
+			this->variable->compatible(*b.variable);
 	}
 };
 

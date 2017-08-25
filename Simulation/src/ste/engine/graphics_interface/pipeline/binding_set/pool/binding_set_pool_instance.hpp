@@ -33,7 +33,7 @@ public:
 private:
 	std::atomic<long> ref_counter{ 0 };
 
-	vk::vk_descriptor_pool vk_pool;
+	vk::vk_descriptor_pool<> vk_pool;
 	std::uint32_t allocated_sets{ 0 };
 
 	alias<Pool> parent;
@@ -63,7 +63,7 @@ private:
 
 public:
 	binding_set_pool_instance(ctor,
-							  const vk::vk_logical_device &device,
+							  const vk::vk_logical_device<> &device,
 							  std::uint32_t max_sets,
 							  const lib::vector<const pipeline_binding_layout_interface*> &pool_bindings,
 							  alias<Pool> parent,
@@ -84,7 +84,7 @@ public:
 	 */
 	template <typename Layout>
 	auto allocate(const lib::vector<const Layout*> &layouts) {
-		lib::vector<const vk::vk_descriptor_set_layout*> layouts_of_acquired_bindings_ptrs;
+		lib::vector<const vk::vk_descriptor_set_layout<>*> layouts_of_acquired_bindings_ptrs;
 		layouts_of_acquired_bindings_ptrs.reserve(layouts.size());
 		for (std::size_t i = 0; i < layouts.size(); ++i) {
 			auto &l = *layouts[i];
@@ -92,7 +92,7 @@ public:
 		}
 
 		// Allocate
-		lib::vector<vk::vk_descriptor_set> sets = vk_pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
+		lib::vector<vk::vk_descriptor_set<>> sets = vk_pool.allocate_descriptor_sets(layouts_of_acquired_bindings_ptrs);
 
 		// Sets allocated successfully
 		allocated_sets += static_cast<std::uint32_t>(layouts.size());

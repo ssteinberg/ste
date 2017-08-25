@@ -13,40 +13,18 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include <linked_light_lists.glsl>
 #include <linearly_transformed_cosines.glsl>
 
-#include <girenderer_transform_buffer.glsl>
+#include <gbuffer.glsl>
+#include <shadow.glsl>
+
+#include <renderer_transform_buffers.glsl>
 #include <project.glsl>
 #include <fast_rand.glsl>
 
-layout(std430, binding = 2) restrict readonly buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-layout(r8ui,  binding = 5) restrict readonly uniform uimage2D lll_size;
-layout(r32ui, binding = 6) restrict readonly uniform uimage2D lll_heads;
-layout(std430, binding = 11) restrict readonly buffer lll_data {
-	lll_element lll_buffer[];
-};
-
-layout(std430, binding = 8) restrict readonly buffer shaped_lights_points_data {
-	ltc_element ltc_points[];
-};
-
-layout(rgba16f, binding = 7) restrict uniform image3D volume;
-
-#include <linked_light_lists_load.glsl>
 #include <cosine_distribution_integration.glsl>
 
-layout(location = 0) uniform samplerCubeArrayShadow shadow_depth_maps;
-layout(location = 1) uniform sampler2DArrayShadow directional_shadow_depth_maps;
-uniform samplerCubeArray shadow_maps;
-uniform sampler2DArray directional_shadow_maps;
+layout(rgba16f, set=0, location=0) restrict uniform image3D volume;
 
-layout(location = 2) uniform sampler2DArray atmospheric_optical_length_lut;
-
-layout(location = 3) uniform sampler2D downsampled_depth_map;
-layout(location = 4) uniform sampler2D depth_map;
-
-#include <shadow.glsl>
+layout(set=0, location=1) uniform sampler2DArray atmospheric_optical_length_lut;
 
 const float samples = 2.f;
 
@@ -267,8 +245,8 @@ void main() {
 	float effective_tiles_end = min(volumetric_scattering_tile_for_depth(depth_buffer_d_min) + 1.f, float(volumetric_scattering_depth_tiles));
 	
 	// Loop through per-pixel linked-light-list
-	uint lll_start = imageLoad(lll_heads, slice_coords).x;
-	uint lll_length = imageLoad(lll_size, slice_coords).x;
+	uint lll_start = imageLoad(linked_light_list_heads, slice_coords).x;
+	uint lll_length = imageLoad(linked_light_list_size, slice_coords).x;
 	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 			

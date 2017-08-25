@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -28,7 +28,7 @@ protected:
 
 private:
 	static auto create_compute_pipeline(const ste_context &ctx,
-										const pipeline_external_binding_set_collection* external_binding_sets_collection,
+										pipeline_external_binding_set_collection* external_binding_sets_collection,
 										device_pipeline_shader_stage &shader_stage) {
 		// Compute pipeline auditor
 		pipeline_auditor_compute auditor(shader_stage);
@@ -36,7 +36,7 @@ private:
 		// Create pipeline
 		return external_binding_sets_collection ?
 			auditor.pipeline(ctx,
-							 *external_binding_sets_collection) :
+							 std::ref(*external_binding_sets_collection)) :
 			auditor.pipeline(ctx);
 	}
 
@@ -51,6 +51,9 @@ protected:
 
 public:
 	virtual ~fragment_compute() noexcept {}
+
+	fragment_compute(fragment_compute&&) = default;
+	fragment_compute& operator=(fragment_compute&&) = default;
 
 	// Subclasses are expected to declare:
 	//static const lib::string& name();

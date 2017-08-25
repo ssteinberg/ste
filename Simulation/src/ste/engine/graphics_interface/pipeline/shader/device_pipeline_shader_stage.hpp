@@ -17,6 +17,8 @@
 
 #include <ste_shader_spirv_reflection_output.hpp>
 
+#include <pipeline_external_binding_set_collection.hpp>
+
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
 #include <istream>
@@ -28,7 +30,7 @@ namespace gl {
 
 class device_pipeline_shader_stage 
 	: ste_resource_deferred_create_trait, 
-	public allow_type_decay<device_pipeline_shader_stage, vk::vk_shader>
+	public allow_type_decay<device_pipeline_shader_stage, vk::vk_shader<>>
 {
 public:
 	using specializations_changed_signal_t = signal<const device_pipeline_shader_stage*>;
@@ -37,7 +39,7 @@ private:
 	lib::string name;
 	lib::unique_ptr<const ste_shader_object> shader;
 
-	vk::vk_shader::spec_map specializations;
+	vk::vk_shader<>::spec_map specializations;
 
 private:
 	static void verify_blob_header_sanity(const ste_shader_blob_header &header) {
@@ -133,10 +135,16 @@ public:
 	auto &get_stage_attachments() const { return shader->stage_attachments; }
 
 	/**
+	 *	@brief	Releases ownership of the internal shader object. 
+	 *			The pipline shader stage is left in unusable state.
+	 */
+	auto &&shader_object() && { return std::move(shader); }
+
+	/**
 	 *	@brief	Provides the shader specialization constant map.
 	 *			For new specializations to take affect, pipeline has to be recreated.
 	 */
-	void set_specializations(const vk::vk_shader::spec_map &specializations) {
+	void set_specializations(const vk::vk_shader<>::spec_map &specializations) {
 		this->specializations = specializations;
 	}
 
@@ -151,7 +159,7 @@ public:
 	*	@brief	Retrieve the Vulkan pipeline shader stage descriptor for the shader module
 	*/
 	auto pipeline_stage_descriptor() const {
-		vk::vk_shader_stage_descriptor desc;
+		vk::vk_shader_stage_descriptor<> desc;
 		desc.stage = static_cast<VkShaderStageFlagBits>(vk_shader_stage_flag());
 		desc.shader = &get();
 		desc.specializations = &specializations;

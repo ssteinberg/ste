@@ -15,13 +15,13 @@ namespace gl {
 
 class cmd_push_constants : public command {
 private:
-	const vk::vk_pipeline_layout *layout;
+	const vk::vk_pipeline_layout<> *layout;
 	stage_flag stage;
 	std::uint32_t offset;
 	lib::string data;
 
 public:
-	cmd_push_constants(const vk::vk_pipeline_layout *layout,
+	cmd_push_constants(const vk::vk_pipeline_layout<> *layout,
 					   stage_flag stage,
 					   std::uint32_t offset,
 					   lib::string data)

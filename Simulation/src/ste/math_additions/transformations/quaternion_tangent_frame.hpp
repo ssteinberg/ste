@@ -27,13 +27,15 @@ inline glm::quat tbn_to_tangent_frame(const glm::vec3 &t, const glm::vec3 &b, co
 	float reflection = det >= .0f ? 1.f : -1.f;
 
 	// w represents reflection => can't encode w as zero
-	constexpr float delta = .0000001f;
+	constexpr float delta = 1e-8f;
 	if (glm::abs(tangent_frame_quat.w) < delta) {
 		float renorm = glm::sqrt(1.f - delta * delta);
+		float step = glm::mix(1.f, -1.f, tangent_frame_quat.w <= .0f);
+
 		tangent_frame_quat.x *= renorm;
 		tangent_frame_quat.y *= renorm;
 		tangent_frame_quat.z *= renorm;
-		tangent_frame_quat.w = tangent_frame_quat.w > .0f ? delta : -delta;
+		tangent_frame_quat.w = step * delta;
 	}
 
 	if (tangent_frame_quat.w < .0f)

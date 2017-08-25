@@ -13,8 +13,8 @@ using namespace ste::gl;
 
 ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface::acquire_swapchain_image_impl(
 	std::uint64_t timeout_ns,
-	const vk::vk_semaphore *presentation_image_ready_semaphore,
-	const vk::vk_fence *presentation_image_ready_fence) const
+	const vk::vk_semaphore<> *presentation_image_ready_semaphore,
+	const vk::vk_fence<> *presentation_image_ready_fence) const
 {
 	acquire_next_image_return_t ret;
 	vk::vk_result res;
@@ -72,11 +72,11 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	lib::vector<swap_chain_image_t> images;
 	images.reserve(swapchain_vk_image_objects.size());
 	for (auto& img : swapchain_vk_image_objects) {
-		auto image = vk::vk_swapchain_image(*presentation_device,
-											img,
-											format,
-											vk::vk_swapchain_image::extent_type(size),
-											layers);
+		auto image = vk::vk_swapchain_image<>(*presentation_device,
+											  img,
+											  format,
+											  vk::vk_swapchain_image<>::extent_type(size),
+											  layers);
 		auto view = swap_chain_image_view_t(image);
 
 		auto swapchain_image = device_swapchain_image(std::move(image));
@@ -238,17 +238,17 @@ void ste_presentation_surface::create_swap_chain() {
 	auto present_mode = get_surface_presentation_mode();
 
 	// Create the swap-chain
-	this->swap_chain = lib::allocate_unique<vk::vk_swapchain>(*presentation_device,
-														  presentation_surface,
-														  swap_chain_image_count,
-														  format.format,
-														  format.colorSpace,
-														  size,
-														  layers,
-														  transform,
-														  composite,
-														  present_mode,
-														  this->swap_chain.get());
+	this->swap_chain = lib::allocate_unique<vk::vk_swapchain<>>(*presentation_device,
+																presentation_surface,
+																swap_chain_image_count,
+																format.format,
+																format.colorSpace,
+																size,
+																layers,
+																transform,
+																composite,
+																present_mode,
+																this->swap_chain.get());
 
 	// And acquire the chain's presentation images
 	acquire_swap_chain_images();
@@ -265,7 +265,7 @@ void ste_presentation_surface::connect_signals() {
 }
 
 void ste_presentation_surface::present(std::uint32_t image_index,
-									   const vk::vk_queue &presentation_queue,
+									   const vk::vk_queue<> &presentation_queue,
 									   const semaphore &wait_semaphore) {
 	VkSwapchainKHR swapchain = *swap_chain;
 

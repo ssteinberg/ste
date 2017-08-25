@@ -5,6 +5,9 @@
 
 #include <stdafx.hpp>
 
+namespace ste {
+namespace graphics {
+
 constexpr std::uint32_t light_type_directional_bit = 1 << 0;
 constexpr std::uint32_t light_type_shape_bit = 1 << 1;
 constexpr std::uint32_t light_type_two_sided_bit = 1 << 2;
@@ -15,7 +18,7 @@ constexpr std::uint32_t light_shape_quad = (1 & 7) << 4;
 constexpr std::uint32_t light_shape_polygon = (2 & 7) << 4;
 constexpr std::uint32_t light_shape_convex_polyhedron = (3 & 7) << 4;
 
-enum class LightType : std::uint32_t {
+enum class light_type : std::uint32_t {
 	Point = 0x0,
 	Direction = light_type_directional_bit,
 
@@ -29,3 +32,6 @@ enum class LightType : std::uint32_t {
 	PolygonTwosided = light_type_shape_bit | light_shape_polygon | light_type_two_sided_bit,
 	ConvexPolyhedron = light_type_shape_bit | light_shape_convex_polyhedron | light_type_two_sided_bit,
 };
+
+}
+}

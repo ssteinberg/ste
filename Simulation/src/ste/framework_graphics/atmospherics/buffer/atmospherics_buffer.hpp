@@ -1,13 +1,14 @@
 ﻿// StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <atmospherics_descriptor.hpp>
 
-#include <ring_buffer_old.hpp>
-#include <range.hpp>
+#include <array.hpp>
+#include <command_recorder.hpp>
 
 namespace ste {
 namespace graphics {
@@ -15,29 +16,23 @@ namespace graphics {
 class atmospherics_buffer {
 private:
 	using descriptor = atmospherics_descriptor;
-	using buffer_type = Core::ring_buffer_old<descriptor, 3>;
+	using buffer_type = gl::array<descriptor::descriptor_data>;
 
 private:
 	buffer_type buffer;
-	range<> r{ 0, 0 };
 
 public:
-	atmospherics_buffer(const descriptor::Properties &p) {
-		update_data(p);
-	}
+	atmospherics_buffer(const ste_context &ctx,
+						const descriptor::Properties &p)
+		: buffer(ctx,
+				 lib::vector<descriptor::descriptor_data>{ descriptor(p).get() },
+				 gl::buffer_usage::storage_buffer)
+	{}
 
-	void update_data(const descriptor::Properties &p) {
+	void update_data(gl::command_recorder &recorder,
+					 const descriptor::Properties &p) {
 		auto d = descriptor(p);
-		range<> r = buffer.commit(d);
-
-		r.start /= sizeof(d);
-		r.length /= sizeof(d);
-
-		this->r = r;
-	}
-
-	void bind_buffer(int idx) const {
-		buffer.get_buffer().bind_range(Core::shader_storage_layout_binding(idx), r.start, r.length);
+		recorder << buffer.overwrite_cmd(0, d.get());
 	}
 };
 

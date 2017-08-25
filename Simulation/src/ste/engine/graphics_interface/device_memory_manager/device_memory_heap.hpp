@@ -32,7 +32,7 @@ private:
 	const allocator_t *owner;
 	std::uint32_t memory_type;
 
-	vk::vk_device_memory memory;
+	vk::vk_device_memory<> memory;
 
 	blocks_list_t blocks;
 	size_type total_used_size{ 0 };
@@ -50,7 +50,7 @@ public:
 public:
 	device_memory_heap(const allocator_t *owner,
 					   std::uint32_t memory_type,
-					   vk::vk_device_memory &&m)
+					   vk::vk_device_memory<> &&m)
 		: owner(owner), memory_type(memory_type), memory(std::move(m))
 	{}
 

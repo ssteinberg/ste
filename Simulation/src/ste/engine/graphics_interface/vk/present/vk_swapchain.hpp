@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_handle.hpp>
 
 #include <vk_logical_device.hpp>
@@ -21,11 +22,12 @@ namespace gl {
 
 namespace vk {
 
-class vk_swapchain : public allow_type_decay<vk_swapchain, VkSwapchainKHR> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_swapchain : public allow_type_decay<vk_swapchain<host_allocator>, VkSwapchainKHR> {
 private:
 	VkSwapchainCreateInfoKHR swapchain_create_info;
 	optional<VkSwapchainKHR> swapchain;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
 	/**
@@ -46,8 +48,8 @@ public:
 	*
 	*	@return Returns a struct with a pointer to the pair swap_chain_image_t and a 'sub_optimal' flag.
 	*/
-	vk_swapchain(const vk_logical_device &device,
-				 const vk_surface &surface,
+	vk_swapchain(const vk_logical_device<host_allocator> &device,
+				 const vk_surface<host_allocator> &surface,
 				 std::uint32_t min_image_count,
 				 const VkFormat &image_format,
 				 const VkColorSpaceKHR &image_colorspace,
@@ -79,26 +81,34 @@ public:
 		swapchain_create_info.clipped = VK_TRUE;
 		swapchain_create_info.oldSwapchain = old_chain ? 
 			static_cast<VkSwapchainKHR>(*old_chain) : 
-			vk::vk_null_handle;
+			vk_null_handle;
 
-		vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, nullptr, &swapchain);
+		vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, &host_allocator::allocation_callbacks(), &swapchain);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
 		this->swapchain = swapchain;
-		swapchain_create_info.oldSwapchain = vk::vk_null_handle;
+		swapchain_create_info.oldSwapchain = vk_null_handle;
 	}
 	~vk_swapchain() noexcept { destroy_swapchain(); }
 
 	vk_swapchain(vk_swapchain &&) = default;
-	vk_swapchain& operator=(vk_swapchain &&) = default;
+	vk_swapchain& operator=(vk_swapchain &&o) noexcept {
+		destroy_swapchain();
+
+		swapchain = std::move(o.swapchain);
+		device = std::move(o.device);
+		swapchain_create_info = std::move(o.swapchain_create_info);
+
+		return *this;
+	}
 	vk_swapchain(const vk_swapchain &) = delete;
 	vk_swapchain& operator=(const vk_swapchain &) = delete;
 
 	void destroy_swapchain() {
 		if (swapchain) {
-			vkDestroySwapchainKHR(device.get(), swapchain.get(), nullptr);
+			vkDestroySwapchainKHR(device.get(), swapchain.get(), &host_allocator::allocation_callbacks());
 			swapchain = none;
 		}
 	}

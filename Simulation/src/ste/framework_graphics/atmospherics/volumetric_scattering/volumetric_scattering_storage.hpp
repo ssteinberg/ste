@@ -1,18 +1,16 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 
-#include <signal.hpp>
-
-#include <texture_2d.hpp>
-#include <texture_3d.hpp>
-#include <sampler.hpp>
-
+#include <texture.hpp>
+#include <surface_factory.hpp>
 #include <linked_light_lists.hpp>
 
+#include <signal.hpp>
+#include <alias.hpp>
 #include <lib/unique_ptr.hpp>
 
 namespace ste {
@@ -24,54 +22,56 @@ private:
 	static constexpr int depth_tiles = 256;
 
 private:
-	Core::texture_2d *depth_map{ nullptr };
-	Core::texture_2d *downsampled_depth_map{ nullptr };
-	lib::unique_ptr<Core::texture_3d> volume{ nullptr };
+	alias<const ste_context> ctx;
 
-	Core::sampler volume_sampler;
-	Core::sampler_mipmapped depth_sampler;
-
-	glm::ivec3 size;
+	glm::uvec3 extent;
+	ste_resource<gl::texture<gl::image_type::image_3d>> volume;
 
 	signal<> storage_modified_signal;
 
 public:
-	volumetric_scattering_storage(glm::ivec2 size) : volume_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
-																	Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge, 16),
-													 depth_sampler(Core::texture_filtering::Nearest, Core::texture_filtering::Nearest, Core::texture_filtering::Nearest,
-																   Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge) {
-		volume_sampler.set_wrap_r(Core::texture_wrap_mode::ClampToEdge);
+	volumetric_scattering_storage(const ste_context &ctx,
+								  const glm::uvec2 &framebuffer_extent)
+		: ctx(ctx),
+		extent(glm::uvec3{ framebuffer_extent.x / tile_size, framebuffer_extent.y / tile_size, depth_tiles }),
+		volume(ctx, resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx,
+																							   gl::image_usage::sampled | gl::image_usage::storage,
+																							   gl::image_layout::transfer_dst_optimal,
+																							   extent))
+		//		volume_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
+		//																	Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge, 16),
+		//													 depth_sampler(Core::texture_filtering::Nearest, Core::texture_filtering::Nearest, Core::texture_filtering::Nearest,
+		//																   Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge) {
+		//		volume_sampler.set_wrap_r(Core::texture_wrap_mode::ClampToEdge);
 
-		resize(size);
-	}
+	{}
+	~volumetric_scattering_storage() noexcept {}
 
-	void resize(glm::ivec2 s) {
-		if (s.x <= 0 || s.y <= 0)
+	volumetric_scattering_storage(volumetric_scattering_storage&&) = default;
+
+	void resize(const glm::uvec2 &s) {
+		auto tiles = glm::uvec3{ s.x / tile_size,
+								 s.y / tile_size,
+								 depth_tiles };
+
+		if (tiles.x <= 0 || tiles.y <= 0 || tiles == extent)
 			return;
 
-		size = glm::ivec3{ s.x / tile_size,
-						   s.y / tile_size,
-						   depth_tiles };
-
-		volume = lib::allocate_unique<Core::texture_3d>(gli::format::FORMAT_RGBA16_SFLOAT_PACK16, size);
+		extent = tiles;
+		volume = ste_resource<gl::texture<gl::image_type::image_3d>>(ctx.get(),
+																	 resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+																																				gl::image_usage::sampled | gl::image_usage::storage,
+																																				gl::image_layout::transfer_dst_optimal,
+																																				extent));
 
 		storage_modified_signal.emit();
 	}
 
-	void set_depth_maps(Core::texture_2d *dm, Core::texture_2d *downsampled_dm) {
-		depth_map = dm;
-		downsampled_depth_map = downsampled_dm;
-		storage_modified_signal.emit();
-	}
-
-	auto& get_size() const { return size; }
-
-	auto* get_volume_texture() const { return volume.get(); }
-	auto* get_depth_map() const { return depth_map; }
-	auto* get_downsampled_depth_map() const { return downsampled_depth_map; }
-
-	auto& get_volume_sampler() const { return volume_sampler; }
-	auto& get_depth_sampler() const { return depth_sampler; }
+	auto& get_tiles_extent() const { return extent; }
+	auto& get_volume_texture() const { return *volume; }
+	//
+	//	auto& get_volume_sampler() const { return volume_sampler; }
+	//	auto& get_depth_sampler() const { return depth_sampler; }
 
 	auto& get_storage_modified_signal() const { return storage_modified_signal; }
 };

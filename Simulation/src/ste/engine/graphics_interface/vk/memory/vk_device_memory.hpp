@@ -6,9 +6,11 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_physical_device_descriptor.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_memory_exception.hpp>
+#include <vk_mmap.hpp>
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
@@ -18,9 +20,6 @@
 
 namespace ste {
 namespace gl {
-
-template <typename T>
-class vk_mmap;
 
 namespace vk {
 
@@ -34,8 +33,8 @@ public:
 						std::function<void()> &&f) : unmapper(std::move(f)) {}
 	~vk_mmap_type_eraser() noexcept { unmapper(); }
 
-	template <typename T>
-	static auto create(const vk_mmap<T> *m) {
+	template <typename T, typename A>
+	static auto create(const vk_mmap<T, A> *m) {
 		return lib::allocate_unique<vk_mmap_type_eraser>(ctor(), [m]() {
 			m->munmap();
 		});
@@ -47,16 +46,17 @@ public:
 	vk_mmap_type_eraser&operator=(const vk_mmap_type_eraser &) = delete;
 };
 
-class vk_device_memory : public allow_type_decay<vk_device_memory, VkDeviceMemory> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_device_memory : public allow_type_decay<vk_device_memory<host_allocator>, VkDeviceMemory> {
 private:
 	optional<VkDeviceMemory> memory;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	std::uint64_t size;
 
 	lib::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
 
 public:
-	vk_device_memory(const vk_logical_device &device, std::uint64_t size, int memory_type_index)
+	vk_device_memory(const vk_logical_device<host_allocator> &device, std::uint64_t size, int memory_type_index)
 		: device(device), size(size)
 	{
 		VkDeviceMemory memory;
@@ -66,7 +66,7 @@ public:
 		info.pNext = nullptr;
 		info.allocationSize = size;
 		info.memoryTypeIndex = memory_type_index;
-		vk_result res = vkAllocateMemory(device, &info, nullptr, &memory);
+		vk_result res = vkAllocateMemory(device, &info, &host_allocator::allocation_callbacks(), &memory);
 		if (!res) {
 			throw vk_memory_allocation_failed_exception(res);
 		}
@@ -76,7 +76,7 @@ public:
 	~vk_device_memory() noexcept { free(); }
 
 	vk_device_memory(vk_device_memory &&) = default;
-	vk_device_memory &operator=(vk_device_memory &&) = default;
+	vk_device_memory &operator=(vk_device_memory &&) = delete;
 	vk_device_memory(const vk_device_memory &) = delete;
 	vk_device_memory &operator=(const vk_device_memory &) = delete;
 
@@ -84,7 +84,7 @@ public:
 		if (memory) {
 			munmap();
 
-			vkFreeMemory(device.get(), *this, nullptr);
+			vkFreeMemory(device.get(), *this, &host_allocator::allocation_callbacks());
 			memory = none;
 		}
 	}
@@ -118,7 +118,7 @@ public:
 	*	@param	count	Mapped region size expressed in count of elements of type T
 	*/
 	template <typename T>
-	lib::unique_ptr<vk_mmap<T>> mmap(std::uint64_t offset, std::uint64_t count) {
+	auto mmap(std::uint64_t offset, std::uint64_t count) {
 		munmap();
 
 		void *pdata = nullptr;
@@ -127,10 +127,10 @@ public:
 			throw vk_exception(res);
 		}
 
-		auto mmap = lib::allocate_unique<vk_mmap<T>>(*this, offset, count, reinterpret_cast<T*>(pdata));
+		auto mmap = lib::allocate_unique<vk_mmap<T, host_allocator>>(*this, offset, count, reinterpret_cast<T*>(pdata));
 		mapped_memory = vk_mmap_type_eraser::create<T>(mmap.get());
 
-		return std::move(mmap);
+		return mmap;
 	}
 	/**
 	*	@brief	Unmap the previously mmaped region. If no region is mapped, call will silently fail.
@@ -161,5 +161,3 @@ public:
 
 }
 }
-
-#include <vk_mmap.hpp>

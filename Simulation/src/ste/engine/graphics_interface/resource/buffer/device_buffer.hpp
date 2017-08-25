@@ -18,7 +18,7 @@ namespace gl {
 template <typename T, class allocation_policy = device_resource_allocation_policy_device>
 class device_buffer
 	: public device_buffer_base,
-	public device_resource<vk::vk_buffer_dense, allocation_policy>
+	public device_resource<vk::vk_buffer_dense<>, allocation_policy>
 {
 public:
 	device_buffer(const ste_context &ctx,
@@ -31,7 +31,7 @@ public:
 	{}
 	~device_buffer() noexcept {}
 	
-	const vk::vk_buffer& get_buffer_handle() const override final { return *this; }
+	const vk::vk_buffer<>& get_buffer_handle() const override final { return *this; }
 
 	device_buffer(device_buffer&&) = default;
 	device_buffer &operator=(device_buffer&&) = default;

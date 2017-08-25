@@ -29,7 +29,7 @@ namespace gl {
 /**
 *	@brief	A pipeline framebuffer object
 */
-class framebuffer : public allow_type_decay<framebuffer, vk::vk_framebuffer> {
+class framebuffer : public allow_type_decay<framebuffer, vk::vk_framebuffer<>> {
 public:
 	using attachment_map_t = lib::flat_map<pipeline_layout_attachment_location, framebuffer_attachment>;
 
@@ -42,8 +42,8 @@ private:
 	glm::u32vec2 fb_extent;
 	depth_range depth;
 
-	vk::vk_render_pass compatible_renderpass;
-	optional<vk::vk_framebuffer> fb;
+	vk::vk_render_pass<> compatible_renderpass;
+	optional<vk::vk_framebuffer<>> fb;
 	optional<lib::vector<VkClearValue>> clear_values;
 
 private:
@@ -129,10 +129,10 @@ private:
 		}
 
 		// Create Vulkan framebuffer
-		return vk::vk_framebuffer(ctx.get().device(),
-								  compatible_renderpass,
-								  image_view_handles,
-								  fb_extent);
+		return vk::vk_framebuffer<>(ctx.get().device(),
+									compatible_renderpass,
+									image_view_handles,
+									fb_extent);
 	}
 
 private:

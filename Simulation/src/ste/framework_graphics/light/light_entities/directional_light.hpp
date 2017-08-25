@@ -18,7 +18,7 @@ public:
 					  float distance, 
 					  float radius, 
 					  const glm::vec3 &direction) : light(color, intensity, radius) {
-		descriptor.type = LightType::Direction;
+		descriptor.type = light_type::Direction;
 		descriptor.position = decltype(descriptor.position){ direction.x, direction.y, direction.z };
 		descriptor.effective_range_or_directional_distance = distance;
 		descriptor.polygonal_light_points_and_offset_or_cascade_idx = 0xFFFFFFFF;

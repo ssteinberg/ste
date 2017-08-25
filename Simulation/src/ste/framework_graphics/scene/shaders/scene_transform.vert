@@ -4,7 +4,7 @@
 #extension GL_ARB_shader_draw_parameters : require
 
 #include <mesh_descriptor.glsl>
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 #include <quaternion.glsl>
 #include <tangent_frame.glsl>
 
@@ -19,10 +19,6 @@ out scene_transform {
 	vec2 frag_texcoords;
 	flat int matIdx;
 } vout;
-
-layout(std430, binding = 14) restrict readonly buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
 
 void main() {
 	uint draw_id = gl_BaseInstanceARB;

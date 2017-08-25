@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -41,9 +41,9 @@ private:
 	pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor vertex_input_descriptor;
 	framebuffer_layout fb_layout;
 
-	optional<vk::vk_render_pass> device_renderpass;
+	optional<vk::vk_render_pass<>> device_renderpass;
 	framebuffer* attached_framebuffer{ nullptr };
-	optional<vk::vk_pipeline_graphics> graphics_pipeline;
+	optional<vk::vk_pipeline_graphics<>> graphics_pipeline;
 
 private:
 	void invalidate_pipeline() {
@@ -128,11 +128,11 @@ protected:
 		recorder << cmd_end_render_pass();
 	}
 
-	optional<vk::vk_pipeline> recreate_pipeline() override final {
+	optional<vk::vk_pipeline<>> recreate_pipeline() override final {
 		// Slice old pipeline, if any, storing the old vk::vk_pipeline object.
-		optional<vk::vk_pipeline> old_pipeline;
+		optional<vk::vk_pipeline<>> old_pipeline;
 		if (graphics_pipeline) {
-			vk::vk_pipeline &old_pipeline_object = graphics_pipeline.get();
+			vk::vk_pipeline<> &old_pipeline_object = graphics_pipeline.get();
 			old_pipeline = std::move(old_pipeline_object);
 		}
 
@@ -162,7 +162,7 @@ public:
 							 const pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor &vertex_input_descriptor,
 							 const framebuffer_layout &fb_layout,
 							 lib::unique_ptr<pipeline_layout> &&layout,
-							 optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
+							 optional<std::reference_wrapper<pipeline_external_binding_set_collection>> external_binding_sets)
 		: Base(ctx,
 			   std::move(layout),
 			   external_binding_sets),

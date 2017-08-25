@@ -17,16 +17,16 @@ namespace gl {
 class cmd_bind_descriptor_sets : public command {
 private:
 	VkPipelineBindPoint bind_point;
-	std::reference_wrapper<const vk::vk_pipeline_layout> pipeline_layout;
+	std::reference_wrapper<const vk::vk_pipeline_layout<>> pipeline_layout;
 	std::uint32_t first_set_bind_index;
 	lib::vector<VkDescriptorSet> sets;
 	lib::vector<std::uint32_t> dynamic_offsets;
 
 public:
 	cmd_bind_descriptor_sets(VkPipelineBindPoint bind_point,
-							 const vk::vk_pipeline_layout &pipeline_layout,
+							 const vk::vk_pipeline_layout<> &pipeline_layout,
 							 std::uint32_t first_set_bind_index,
-							 const lib::vector<const vk::vk_descriptor_set*> &sets,
+							 const lib::vector<const vk::vk_descriptor_set<>*> &sets,
 							 const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: bind_point(bind_point),
 		pipeline_layout(pipeline_layout),
@@ -55,9 +55,9 @@ private:
 
 class cmd_bind_descriptor_sets_compute : public cmd_bind_descriptor_sets {
 public:
-	cmd_bind_descriptor_sets_compute(const vk::vk_pipeline_layout &pipeline_layout,
+	cmd_bind_descriptor_sets_compute(const vk::vk_pipeline_layout<> &pipeline_layout,
 									 std::uint32_t first_set_bind_index,
-									 const lib::vector<const vk::vk_descriptor_set*> &sets,
+									 const lib::vector<const vk::vk_descriptor_set<>*> &sets,
 									 const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_COMPUTE,
 								   pipeline_layout,
@@ -69,9 +69,9 @@ public:
 
 class cmd_bind_descriptor_sets_graphics : public cmd_bind_descriptor_sets {
 public:
-	cmd_bind_descriptor_sets_graphics(const vk::vk_pipeline_layout &pipeline_layout,
+	cmd_bind_descriptor_sets_graphics(const vk::vk_pipeline_layout<> &pipeline_layout,
 									  std::uint32_t first_set_bind_index,
-									  const lib::vector<const vk::vk_descriptor_set*> &sets,
+									  const lib::vector<const vk::vk_descriptor_set<>*> &sets,
 									  const lib::vector<std::uint32_t> &dynamic_offsets = {})
 		: cmd_bind_descriptor_sets(VK_PIPELINE_BIND_POINT_GRAPHICS,
 								   pipeline_layout,

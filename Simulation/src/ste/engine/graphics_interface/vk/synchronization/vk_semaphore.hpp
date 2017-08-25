@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_host_allocator.hpp>
 #include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
@@ -18,20 +19,21 @@ namespace gl {
 
 namespace vk {
 
-class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device &>, public allow_type_decay<vk_semaphore, VkSemaphore> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device<host_allocator> &>, public allow_type_decay<vk_semaphore<host_allocator>, VkSemaphore> {
 private:
 	optional<VkSemaphore> semaphore;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_semaphore(const vk_logical_device &device) : device(device) {
+	vk_semaphore(const vk_logical_device<host_allocator> &device) : device(device) {
 		VkSemaphoreCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 
 		VkSemaphore semaphore;
-		vk_result res = vkCreateSemaphore(device, &create_info, nullptr, &semaphore);
+		vk_result res = vkCreateSemaphore(device, &create_info, &host_allocator::allocation_callbacks(), &semaphore);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -43,13 +45,20 @@ public:
 	}
 
 	vk_semaphore(vk_semaphore &&) = default;
-	vk_semaphore &operator=(vk_semaphore &&) = default;
+	vk_semaphore &operator=(vk_semaphore &&o) noexcept {
+		destroy_semaphore();
+
+		semaphore = std::move(o.semaphore);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_semaphore(const vk_semaphore &) = delete;
 	vk_semaphore &operator=(const vk_semaphore &) = delete;
 
 	void destroy_semaphore() {
 		if (semaphore) {
-			vkDestroySemaphore(device.get(), *this, nullptr);
+			vkDestroySemaphore(device.get(), *this, &host_allocator::allocation_callbacks());
 			semaphore = none;
 		}
 	}

@@ -20,7 +20,7 @@ struct device_resource_memory_allocator {
 				  "allocation_policy must be derived from device_resource_allocation_policy");
 
 	auto operator()(const ste_gl_device_memory_allocator &allocator,
-					vk::vk_resource &resource) const {
+					vk::vk_resource<> &resource) const {
 		auto memory_requirements = resource.get_memory_requirements();
 		auto allocation = allocator.allocate_device_memory_for_resource(memory_requirements,
 																		allocation_policy().required_flags(),

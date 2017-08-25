@@ -10,6 +10,7 @@
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
 #include <vk_shader.hpp>
+#include <vk_host_allocator.hpp>
 #include <vk_shader_stage_descriptor.hpp>
 
 #include <vk_pipeline_layout.hpp>
@@ -20,16 +21,16 @@ namespace gl {
 
 namespace vk {
 
-class vk_pipeline_compute : public vk_pipeline {
-
+template <typename host_allocator = vk_host_allocator<>>
+class vk_pipeline_compute : public vk_pipeline<host_allocator> {
 public:
-	vk_pipeline_compute(const vk_logical_device &device,
-						const vk_shader_stage_descriptor &shader_stage_descriptor,
-						const vk_pipeline_layout &layout,
-						const vk_pipeline_cache *cache = nullptr) : vk_pipeline(device) {
+	vk_pipeline_compute(const vk_logical_device<host_allocator> &device,
+						const vk_shader_stage_descriptor<host_allocator> &shader_stage_descriptor,
+						const vk_pipeline_layout<host_allocator> &layout,
+						const vk_pipeline_cache<host_allocator> *cache = nullptr) : vk_pipeline(device) {
 		assert(shader_stage_descriptor.stage == VK_SHADER_STAGE_COMPUTE_BIT && "shader_stage_descriptor must be a compute shader");
 
-		vk_shader::shader_stage_info_t stage_info;
+		typename vk_shader<host_allocator>::shader_stage_info_t stage_info;
 		shader_stage_descriptor.shader->shader_stage_create_info(VK_SHADER_STAGE_COMPUTE_BIT,
 																 stage_info,
 																 *shader_stage_descriptor.specializations);
@@ -40,15 +41,15 @@ public:
 		create_info.flags = 0;
 		create_info.stage = stage_info.stage_info;
 		create_info.layout = layout;
-		create_info.basePipelineHandle = vk::vk_null_handle;
+		create_info.basePipelineHandle = vk_null_handle;
 		create_info.basePipelineIndex = 0;
 
 		VkPipeline pipeline;
 		vk_result res = vkCreateComputePipelines(device,
-												 cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk::vk_null_handle,
+												 cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
 												 1,
 												 &create_info,
-												 nullptr,
+												 &host_allocator::allocation_callbacks(),
 												 &pipeline);
 		if (!res) {
 			throw vk_exception(res);

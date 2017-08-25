@@ -7,18 +7,16 @@
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
 #include <copy_data_buffer.hpp>
+#include <vector_common.hpp>
 
 #include <buffer_usage.hpp>
-#include <buffer_view.hpp>
 #include <device_buffer.hpp>
 #include <device_resource_allocation_policy.hpp>
 
 #include <task.hpp>
-#include <cmd_update_buffer.hpp>
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
-#include <functional>
 #include <lib/blob.hpp>
 
 namespace ste {
@@ -32,6 +30,11 @@ private:
 	using buffer_t = device_buffer<T, device_resource_allocation_policy_device>;
 
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
+
+public:
+	using value_type = T;
+
+	using update_cmd_t = _internal::vector_cmd_update<array<T>>;
 
 private:
 	buffer_t buffer;
@@ -51,7 +54,7 @@ public:
 		: array(ctx, count, usage)
 	{
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, buffer, initial_data);
+		_internal::copy_data_buffer(ctx, *this, initial_data);
 	}
 	array(const ste_context &ctx,
 		  const lib::vector<T> &initial_data,
@@ -63,26 +66,30 @@ public:
 	array(array &&o) = default;
 	array &operator=(array&&) = default;
 
+
 	/**
-	*	@brief	Returns a device command that will copy data to the array.
+	*	@brief	Returns a device command that will overwrite slot at index idx with data.
 	*
-	*	@param	data	Data to copy
-	*	@param	offset	Array offset to copy to
+	*	@param	idx		Slot index to overwrite
+	*	@param	data	New data to overwrite
 	*/
-	auto update_task(const lib::vector<T> &data,
-					 std::uint64_t offset) {
-		assert(data.size() + offset <= size() && "Out-of-bounds");
+	auto overwrite_cmd(std::uint64_t idx,
+					   const lib::vector<T> &data) {
+		assert(idx + data.size() <= size());
 
-		// Store copy of data
-		lib::blob bin(data);
-
-		// Create the task
-		auto t = task<cmd_update_buffer>();
-		t.attach_dst_buffer_view(buffer_view(buffer,
-											 offset,
-											 data.size()));
-
-		return std::bind(std::move(t), std::move(bin));
+		return update_cmd_t(data,
+							idx,
+							this);
+	}
+	/**
+	*	@brief	Returns a device command that will overwrite slot at index idx with data.
+	*
+	*	@param	idx		Slot index to overwrite
+	*	@param	data	New data to overwrite
+	*/
+	auto overwrite_cmd(std::uint64_t idx,
+					   const T &data) {
+		return overwrite_cmd(idx, lib::vector<T>{ data });
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

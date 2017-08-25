@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_handle.hpp>
 
 #include <vk_logical_device.hpp>
@@ -16,14 +17,15 @@
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
-#include <functional>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_queue {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_queue : public allow_type_decay<vk_queue<host_allocator>, VkQueue> {
 public:
 	using wait_semaphore_t = std::pair<VkSemaphore, VkPipelineStageFlags>;
 
@@ -32,7 +34,7 @@ private:
 	ste_queue_family queue_family;
 
 public:
-	vk_queue(const vk_logical_device &device, const ste_queue_family &queue_family, std::uint32_t queue_index)
+	vk_queue(const vk_logical_device<host_allocator> &device, const ste_queue_family &queue_family, std::uint32_t queue_index)
 		: queue_family(queue_family)
 	{
 		VkQueue q;
@@ -69,7 +71,7 @@ public:
 	void submit(const lib::vector<vk_command_buffer> &command_buffers,
 				const lib::vector<wait_semaphore_t> &wait_semaphores,
 				const lib::vector<VkSemaphore> &signal_semaphores,
-				const vk_fence *fence = nullptr) const {
+				const vk_fence<host_allocator> *fence = nullptr) const {
 		lib::vector<VkCommandBuffer> cb;
 		lib::vector<VkSemaphore> wait;
 		lib::vector<VkPipelineStageFlags> stages;
@@ -103,7 +105,7 @@ public:
 
 		vk_result res = vkQueueSubmit(*this,
 									  1, &info,
-									  fence != nullptr ? static_cast<VkFence>(*fence) : vk::vk_null_handle);
+									  fence != nullptr ? static_cast<VkFence>(*fence) : vk_null_handle);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -116,14 +118,12 @@ public:
 	*	@param	fence				Optional fence, to be signaled when the commands have completed execution
 	*/
 	void submit(const vk_command_buffer &command_buffer,
-				const vk_fence *fence = nullptr) const {
+				const vk_fence<host_allocator> *fence = nullptr) const {
 		return submit({ command_buffer }, {}, {}, fence);
 	}
 
-	auto& get_queue() const { return queue.get(); }
+	auto& get() const { return queue.get(); }
 	auto get_queue_family_index() const { return queue_family; }
-
-	operator VkQueue() const { return get_queue(); }
 };
 
 }

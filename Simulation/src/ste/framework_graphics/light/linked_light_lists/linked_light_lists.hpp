@@ -1,67 +1,74 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 
-#include <resource_old.hpp>
+#include <texture.hpp>
+#include <stable_vector.hpp>
+#include <command_recorder.hpp>
 
-#include <texture_2d.hpp>
-
-#include <buffer_usage.hpp>
-#include <shader_storage_buffer.hpp>
-#include <atomic_counter_buffer_object.hpp>
-
-#include <gl_current_context.hpp>
-
-#include <lib/unique_ptr.hpp>
-#include <limits>
+#include <alias.hpp>
+#include <lib/vector.hpp>
+#include <atomic>
 
 namespace ste {
 namespace graphics {
 
 class linked_light_lists {
 private:
-	struct lll_element {
-		glm::uvec2 data;
-	};
+	using lll_element = gl::std430<glm::uvec2>;
+	using lll_type = gl::stable_vector<lll_element>;
 
-	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
-	static constexpr std::size_t virt_size = 2147483648 / 2;
-
-	using lll_type = Core::shader_storage_buffer<lll_element, usage>;
+	using lll_counter_element = gl::std430<std::uint32_t>;
+	using lll_counter_type = gl::stable_vector<lll_counter_element>;
 
 public:
-	static constexpr int lll_image_res_multiplier = 8;
+	static constexpr unsigned lll_image_res_multiplier = 8;
 
 private:
+	alias<const ste_context> ctx;
+
 	lll_type lll;
-	Core::shader_storage_buffer<std::uint32_t> lll_counter;
-	lib::unique_ptr<Core::texture_2d> lll_heads;
-	lib::unique_ptr<Core::texture_2d> lll_low_detail_heads;
-	lib::unique_ptr<Core::texture_2d> lll_size;
-	lib::unique_ptr<Core::texture_2d> lll_low_detail_size;
+	lll_counter_type lll_counter;
 
-	glm::ivec2 size;
+	ste_resource<gl::texture<gl::image_type::image_2d>> lll_heads;
+	ste_resource<gl::texture<gl::image_type::image_2d>> lll_size;
+	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_heads;
+	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_size;
 
-	static std::size_t virtual_lll_size() {
-		return (virt_size / lll_type::page_size() / sizeof(lll_element) + 1) * lll_type::page_size();
-	}
+	glm::uvec2 extent;
+	std::atomic_flag up_to_date;
+
+	void resize_internal(gl::command_recorder &recorder);
 
 public:
-	linked_light_lists(glm::ivec2 size) : lll(virtual_lll_size()), lll_counter(1) { resize(size); }
+	linked_light_lists(const ste_context &ctx,
+					   const glm::uvec2 &extent);
+	~linked_light_lists() noexcept {}
 
-	void resize(glm::ivec2 size);
-	auto& get_size() const { return size; }
+	linked_light_lists(linked_light_lists&&) = default;
 
-	void clear() {
-		std::uint32_t zero = 0;
-		lll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
+	void resize(const glm::uvec2 &extent);
+	auto& get_extent() const { return extent; }
+
+	void clear(gl::command_recorder &recorder) {
+		if (up_to_date.test_and_set(std::memory_order_acquire))
+			resize_internal(recorder);
+
+		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t>(0)) };
+		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
 
-	void bind_readwrite_lll_buffers() const;
-	void bind_lll_buffer(bool low_detail = false) const;
+	auto& linked_light_lists_buffer() const { return lll; }
+	auto& linked_light_lists_counter_buffer() const { return lll_counter; }
+
+	auto& linked_light_lists_heads_map() const { return *lll_heads; }
+	auto& linked_light_lists_size_map() const { return *lll_size; }
+	auto& linked_light_lists_low_detail_heads_map() const { return *lll_low_detail_heads; }
+	auto& linked_light_lists_low_detail_size_map() const { return *lll_low_detail_size; }
 };
 
 }

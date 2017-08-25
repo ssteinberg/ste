@@ -17,7 +17,7 @@ public:
 				 float intensity,
 				 const glm::vec3 &position,
 				 float radius) : light(color, intensity, radius) {
-		descriptor.type = LightType::Sphere;
+		descriptor.type = light_type::Sphere;
 		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
 	}
 	virtual ~sphere_light() noexcept {}

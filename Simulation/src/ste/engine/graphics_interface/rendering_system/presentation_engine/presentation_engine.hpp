@@ -227,10 +227,10 @@ public:
 		// Allocate batch and pass it next presentation image information
 		using batch_t = device_queue_presentation_batch<UserData>;
 		auto batch = queue.template allocate_batch_custom<batch_t>(batch_t::batch_ctor(),
-																	next_image.second,
-																	&next_image.first.semaphores,
-																	next_image.first.fence_ptr,
-																	std::forward<UserDataArgs>(user_data_args)...);
+																   next_image.second,
+																   &next_image.first.semaphores,
+																   next_image.first.fence_ptr,
+																   std::forward<UserDataArgs>(user_data_args)...);
 
 		return batch;
 	}

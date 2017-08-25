@@ -27,7 +27,7 @@ private:
 	friend instance_t;
 
 private:
-	alias<const vk::vk_logical_device> device;
+	alias<const vk::vk_logical_device<>> device;
 
 	pools_t pools;
 	std::atomic<pool_key> key_counter{ 0 };
@@ -64,7 +64,7 @@ private:
 	}
 
 public:
-	pipeline_binding_set_pool(const vk::vk_logical_device &device)
+	pipeline_binding_set_pool(const vk::vk_logical_device<> &device)
 		: device(device)
 	{}
 	~pipeline_binding_set_pool() noexcept {}

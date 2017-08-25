@@ -15,6 +15,7 @@
 #include <vk_device_memory.hpp>
 
 #include <format.hpp>
+#include <vk_host_allocator.hpp>
 #include <format_rtti.hpp>
 
 #include <optional.hpp>
@@ -26,11 +27,12 @@ namespace gl {
 
 namespace vk {
 
-class vk_image : public vk_resource, public allow_type_decay<vk_image, VkImage> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_image : public vk_resource<host_allocator>, public allow_type_decay<vk_image<host_allocator>, VkImage> {
 protected:
 	using extent_type = glm::u32vec3;
 
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	optional<VkImage> image;
 
 	VkFormat image_format;
@@ -56,14 +58,14 @@ private:
 	}
 
 protected:
-	void bind_resource_underlying_memory(const vk_device_memory &memory, std::uint64_t offset) override {
+	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
 		vk_result res = vkBindImageMemory(this->device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 
-	vk_image(const vk_logical_device &device,
+	vk_image(const vk_logical_device<host_allocator> &device,
 			 VkImage image,
 			 const VkFormat &image_format,
 			 const extent_type &extent,
@@ -77,7 +79,7 @@ protected:
 	{}
 
 public:
-	vk_image(const vk_logical_device &device,
+	vk_image(const vk_logical_device<host_allocator> &device,
 			 const image_initial_layout &layout,
 			 const VkFormat &image_format,
 			 int dimensions,
@@ -122,7 +124,7 @@ public:
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
-		vk_result res = vkCreateImage(device.get(), &create_info, nullptr, &image);
+		vk_result res = vkCreateImage(device.get(), &create_info, &host_allocator::allocation_callbacks(), &image);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -132,13 +134,28 @@ public:
 	virtual ~vk_image() noexcept { destroy_image(); }
 
 	vk_image(vk_image &&) = default;
-	vk_image& operator=(vk_image &&) = default;
+	vk_image& operator=(vk_image &&o) noexcept {
+		destroy_image();
+
+		image = std::move(o.image);
+		device = std::move(o.device);
+
+		image_format = o.image_format;
+		extent = o.extent;
+		mips = o.mips;
+		layers = o.layers;
+
+		usage = o.usage;
+		sparse = o.sparse;
+
+		return *this;
+	}
 	vk_image(const vk_image &) = delete;
 	vk_image& operator=(const vk_image &) = delete;
 
 	void destroy_image() {
 		if (this->image) {
-			vkDestroyImage(this->device.get(), *this, nullptr);
+			vkDestroyImage(this->device.get(), *this, &host_allocator::allocation_callbacks());
 			this->image = none;
 		}
 	}

@@ -19,7 +19,7 @@ public:
 
 	virtual format get_format() const = 0;
 	virtual const glm::u32vec3& get_extent() const = 0;
-	virtual const vk::vk_image& get_image_handle() const = 0;
+	virtual const vk::vk_image<>& get_image_handle() const = 0;
 
 	device_image_base(device_image_base&&) = default;
 	device_image_base &operator=(device_image_base&&) = default;

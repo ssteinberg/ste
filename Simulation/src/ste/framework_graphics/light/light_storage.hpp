@@ -1,11 +1,15 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
+#include <storage.hpp>
+
 #include <light.hpp>
 #include <light_cascade_descriptor.hpp>
+#include <camera.hpp>
 
 #include <directional_light.hpp>
 #include <virtual_light.hpp>
@@ -13,17 +17,13 @@
 #include <shaped_light.hpp>
 
 #include <resource_storage_dynamic.hpp>
-#include <gstack_stable.hpp>
-
-#include <shader_storage_buffer.hpp>
-#include <atomic_counter_buffer_object.hpp>
-#include <uniform_buffer_object.hpp>
-
-#include <Camera.hpp>
+#include <array.hpp>
+#include <stable_vector.hpp>
 
 #include <array>
 #include <lib/unique_ptr.hpp>
 #include <type_traits>
+#include <optional.hpp>
 
 namespace ste {
 namespace graphics {
@@ -32,22 +32,21 @@ constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;
 constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-class light_storage : public Core::resource_storage_dynamic<light_descriptor> {
-	using Base = Core::resource_storage_dynamic<light_descriptor>;
+class light_storage : public gl::resource_storage_dynamic<light_descriptor>, public gl::storage<light_storage> {
+	using Base = gl::resource_storage_dynamic<light_descriptor>;
 
 public:
 	using shaped_light_point = shaped_light::shaped_light_point_type;
 
-private:
-	static constexpr Core::BufferUsage::buffer_usage usage = static_cast<Core::BufferUsage::buffer_usage>(Core::BufferUsage::BufferUsageSparse);
-	static constexpr std::size_t pages = 1024;
-
-	using lights_ll_type = Core::shader_storage_buffer<std::uint32_t, usage>;
-	using directional_lights_cascades_type = Core::uniform_buffer_object<light_cascades_descriptor, Core::BufferUsage::BufferUsageDynamic>;
-	using shaped_lights_points_storage_type = Core::gstack_stable<shaped_light_point>;
+	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
 
 private:
-	Core::atomic_counter_buffer_object<> active_lights_ll_counter;
+	using lights_ll_type = gl::device_buffer_sparse<std::uint32_t>;
+	using directional_lights_cascades_type = gl::array<light_cascades_descriptor>;
+	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
+
+private:
+	gl::array<std::uint32_t> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
 	directional_lights_cascades_type directional_lights_cascades_buffer;
@@ -56,13 +55,19 @@ private:
 	std::array<directional_light*, directional_light_cascades> active_directional_lights;
 	std::array<float, directional_light_cascades> cascades_depths;
 
+	optional<std::uint64_t> active_lights_ll_resize;
+
 private:
 	void build_cascade_depth_array();
 
 public:
-	light_storage() : active_lights_ll_counter(1),
-					  active_lights_ll(pages * std::max<std::size_t>(65536, lights_ll_type::page_size()) / 2),
-					  directional_lights_cascades_buffer(max_active_directional_lights_per_frame) {
+	light_storage(const ste_context &ctx)
+		: Base(ctx, gl::buffer_usage::storage_buffer),
+		active_lights_ll_counter(ctx, 1, gl::buffer_usage::storage_buffer),
+		active_lights_ll(ctx, max_ll_buffer_size, gl::buffer_usage::storage_buffer),
+		directional_lights_cascades_buffer(ctx, max_active_directional_lights_per_frame, gl::buffer_usage::storage_buffer),
+		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer)
+	{
 		build_cascade_depth_array();
 
 		for (auto &val : active_directional_lights)
@@ -72,7 +77,7 @@ public:
 	template <typename ... Ts>
 	auto allocate_virtual_light(Ts&&... args) {
 		auto res = Base::allocate_resource<virtual_light>(std::forward<Ts>(args)...);
-		active_lights_ll.commit_range(0, Base::size());
+		active_lights_ll_resize = Base::size();
 
 		return std::move(res);
 	}
@@ -80,7 +85,7 @@ public:
 	template <typename ... Ts>
 	auto allocate_sphere_light(Ts&&... args) {
 		auto res = Base::allocate_resource<sphere_light>(std::forward<Ts>(args)...);
-		active_lights_ll.commit_range(0, Base::size());
+		active_lights_ll_resize = Base::size();
 
 		return std::move(res);
 	}
@@ -95,7 +100,7 @@ public:
 		}
 
 		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
-		active_lights_ll.commit_range(0, Base::size());
+		active_lights_ll_resize = Base::size();
 
 		active_directional_lights[cascade_idx] = res.get();
 		res->set_cascade_idx(cascade_idx);
@@ -111,7 +116,7 @@ public:
 		shaped_light::shaped_light_points_storage_info info{ &shaped_lights_points_storage };
 
 		auto res = Base::allocate_resource<Light>(std::forward<Ts>(args)..., info);
-		active_lights_ll.commit_range(0, Base::size());
+		active_lights_ll_resize = Base::size();
 
 		return std::move(res);
 	}
@@ -130,19 +135,38 @@ public:
 		erase_resource(l);
 	}
 
-	void clear_active_ll() {
+	void clear_active_ll(gl::command_recorder &recorder) {
 		std::uint32_t zero = 0;
-		active_lights_ll_counter.clear(gli::FORMAT_R32_UINT_PACK32, &zero);
+		recorder << active_lights_ll_counter.overwrite_cmd(0, zero);
 	}
 
-	void update_directional_lights_cascades_buffer(const camera &cam, float projection_near, float projection_fovy, float projection_aspect);
+	void update(gl::command_recorder &recorder) override final {
+		if (active_lights_ll_resize) {
+			recorder << active_lights_ll.cmd_bind_sparse_memory({}, { range<std::uint64_t>(0, active_lights_ll_resize.get()) }, {}, {});
+			active_lights_ll_resize = none;
+		}
 
-	void bind_lights_buffer(int idx) const { Base::buffer().bind_range(Core::shader_storage_layout_binding(idx), 0, Base::size()); }
+		Base::update(recorder);
+	}
+
+	/**
+	 *	@brief		Updates the directional lights cascades.
+	 *				Should be called every frame where a view transform or a projection change occured.
+	 *				
+	 *	@param	recorder		Command recorder
+	 *	@param	view_transform	Camera's view transform dual-quaternion
+	 */
+	void update_directional_lights_cascades_buffer(gl::command_recorder &recorder,
+												   const glm::dualquat &view_transform,
+												   float projection_near, 
+												   float projection_fovy, 
+												   float projection_aspect);
+
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
 	auto& get_active_ll() const { return active_lights_ll; }
 
 	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_buffer; }
-	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage.get_buffer(); }
+	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage; }
 
 	auto& get_cascade_depths_array() const { return cascades_depths; }
 };

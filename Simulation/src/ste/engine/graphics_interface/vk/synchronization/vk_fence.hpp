@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <vulkan/vulkan.h>
+#include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
 
 #include <ste_resource_pool_traits.hpp>
@@ -16,19 +17,21 @@
 #include <lib/vector.hpp>
 #include <limits>
 #include <alias.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
 
 namespace vk {
 
-class vk_fence : public ste_resource_pool_resetable_trait<const vk_logical_device &, bool> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_fence : public allow_type_decay<vk_fence<host_allocator>, VkFence>, public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, bool> {
 private:
 	optional<VkFence> fence;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_fence(const vk_logical_device &device,
+	vk_fence(const vk_logical_device<host_allocator> &device,
 			 bool signaled = false) : device(device) {
 		VkFenceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -36,7 +39,7 @@ public:
 		create_info.flags = signaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
 
 		VkFence fence;
-		vk_result res = vkCreateFence(device, &create_info, nullptr, &fence);
+		vk_result res = vkCreateFence(device, &create_info, &host_allocator::allocation_callbacks(), &fence);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -48,13 +51,20 @@ public:
 	}
 
 	vk_fence(vk_fence &&) = default;
-	vk_fence &operator=(vk_fence &&) = default;
+	vk_fence &operator=(vk_fence &&o) noexcept {
+		destroy_fence();
+
+		fence = std::move(o.fence);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_fence(const vk_fence &) = delete;
 	vk_fence &operator=(const vk_fence &) = delete;
 
 	void destroy_fence() {
 		if (fence) {
-			vkDestroyFence(device.get(), *this, nullptr);
+			vkDestroyFence(device.get(), *this, &host_allocator::allocation_callbacks());
 			fence = none;
 		}
 	}
@@ -98,9 +108,7 @@ public:
 	}
 
 	auto& get_creating_device() const { return device.get(); }
-	auto& get_fence() const { return fence.get(); }
-
-	operator VkFence() const { return get_fence(); }
+	auto& get() const { return fence.get(); }
 };
 
 /**
@@ -111,8 +119,8 @@ public:
 *
 *	@return	Returns true if signaled, false on timeout.
 */
-template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
-bool inline vk_fence_wait_all(const lib::vector<std::reference_wrapper<const vk_fence>> &fences,
+template <typename host_allocator = vk_host_allocator<>, class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
+bool inline vk_fence_wait_all(const lib::vector<std::reference_wrapper<const vk_fence<host_allocator>>> &fences,
 							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 
@@ -136,8 +144,8 @@ bool inline vk_fence_wait_all(const lib::vector<std::reference_wrapper<const vk_
 *
 *	@return	Returns true if signaled, false on timeout.
 */
-template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
-bool inline vk_fence_wait_any(const lib::vector<std::reference_wrapper<const vk_fence>> &fences,
+template <typename host_allocator = vk_host_allocator<>, class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
+bool inline vk_fence_wait_any(const lib::vector<std::reference_wrapper<const vk_fence<host_allocator>>> &fences,
 							  const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())) {
 	assert(fences.size());
 

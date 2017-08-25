@@ -9,6 +9,7 @@
 #include <vk_logical_device.hpp>
 #include <vk_descriptor_set_layout_binding.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/vector.hpp>
@@ -20,13 +21,14 @@ namespace gl {
 
 namespace vk {
 
-class vk_descriptor_set_layout : public allow_type_decay<vk_descriptor_set_layout, VkDescriptorSetLayout> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_descriptor_set_layout : public allow_type_decay<vk_descriptor_set_layout<host_allocator>, VkDescriptorSetLayout> {
 private:
 	optional<VkDescriptorSetLayout> layout;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_descriptor_set_layout(const vk_logical_device &device,
+	vk_descriptor_set_layout(const vk_logical_device<host_allocator> &device,
 							 const lib::vector<vk_descriptor_set_layout_binding> &bindings) : device(device) {
 		lib::vector<VkDescriptorSetLayoutBinding> binding_descriptors;
 		binding_descriptors.reserve(bindings.size());
@@ -41,7 +43,7 @@ public:
 		create_info.pBindings = binding_descriptors.data();
 
 		VkDescriptorSetLayout layout;
-		vk_result res = vkCreateDescriptorSetLayout(device, &create_info, nullptr, &layout);
+		vk_result res = vkCreateDescriptorSetLayout(device, &create_info, &host_allocator::allocation_callbacks(), &layout);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -53,13 +55,20 @@ public:
 	}
 
 	vk_descriptor_set_layout(vk_descriptor_set_layout &&) = default;
-	vk_descriptor_set_layout &operator=(vk_descriptor_set_layout &&) = default;
+	vk_descriptor_set_layout &operator=(vk_descriptor_set_layout &&o) noexcept {
+		destroy_descriptor_set_layout();
+
+		layout = std::move(o.layout);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_descriptor_set_layout(const vk_descriptor_set_layout &) = delete;
 	vk_descriptor_set_layout &operator=(const vk_descriptor_set_layout &) = delete;
 
 	void destroy_descriptor_set_layout() {
 		if (layout) {
-			vkDestroyDescriptorSetLayout(device.get(), *this, nullptr);
+			vkDestroyDescriptorSetLayout(device.get(), *this, &host_allocator::allocation_callbacks());
 			layout = none;
 		}
 	}

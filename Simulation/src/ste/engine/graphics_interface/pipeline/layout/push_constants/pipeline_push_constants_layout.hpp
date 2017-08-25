@@ -40,11 +40,11 @@ private:
 	// Update push constants command
 	class pipeline_push_constants_layout_cmd_push_constants : public command {
 		const pipeline_push_constants_layout *p;
-		const vk::vk_pipeline_layout *pipeline_layout;
+		const vk::vk_pipeline_layout<> *pipeline_layout;
 
 	public:
 		pipeline_push_constants_layout_cmd_push_constants(const pipeline_push_constants_layout *p,
-														  const vk::vk_pipeline_layout *pipeline_layout)
+														  const vk::vk_pipeline_layout<> *pipeline_layout)
 			: p(p), pipeline_layout(pipeline_layout)
 		{}
 		virtual ~pipeline_push_constants_layout_cmd_push_constants() noexcept {}
@@ -240,7 +240,7 @@ public:
 	/**
 	 *	@brief	Command to push constants
 	 */
-	auto cmd_push(const vk::vk_pipeline_layout *pipeline_layout) const {
+	auto cmd_push(const vk::vk_pipeline_layout<> *pipeline_layout) const {
 		return pipeline_push_constants_layout_cmd_push_constants(this, pipeline_layout);
 	}
 

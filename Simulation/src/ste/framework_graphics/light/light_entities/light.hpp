@@ -16,9 +16,9 @@
 namespace ste {
 namespace graphics {
 
-class light : public Core::observable_resource<light_descriptor>,
+class light : public gl::observable_resource<light_descriptor>,
 			  public entity {
-	using Base = Core::observable_resource<light_descriptor>;
+	using Base = gl::observable_resource<light_descriptor>;
 
 	static constexpr float light_minimal_luminance_multiplier = 1e-6f;
 

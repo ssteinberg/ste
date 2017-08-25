@@ -11,7 +11,7 @@ void ste_device_pipeline_cache::read_origin() {
 	// Create origin from stored data in the non-volatile cache
 	auto optional = non_volatile_cache->get<lib::string>(lib::string(non_volatile_cache_key_prefix) + device_name);
 	lib::string origin_data = optional ? optional.get() : lib::string();
-	origin = lib::allocate_unique<vk::vk_pipeline_cache>(device.get(), origin_data);
+	origin = lib::allocate_unique<vk::vk_pipeline_cache<>>(device.get(), origin_data);
 }
 
 void ste_device_pipeline_cache::store_all_caches() {

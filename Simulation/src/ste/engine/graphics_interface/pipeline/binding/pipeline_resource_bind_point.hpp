@@ -30,37 +30,28 @@ protected:
 	auto& get_binding() const { return *binding->binding; }
 
 private:
-	void populate_bound_resources(const lib::vector<vk::vk_descriptor_set_write_buffer> &writes,
-								  std::uint32_t array_element,
-								  stage_flag stages) {
-		//! WIP
-	}
-	void populate_bound_resources(const lib::vector<vk::vk_descriptor_set_write_image> &writes,
-								  std::uint32_t array_element,
-								  stage_flag stages) {
-		//! WIP
-	}
-
 	template <typename WriteType, typename T>
-	void bind(const pipeline_resource_binder<WriteType, T> &res) {
+	void bind(lib::vector<pipeline_resource_binder<WriteType, T>> &&resources) {
 		using resource_type = pipeline_resource_binder<WriteType, T>;
 		using resource_underlying_type = typename resource_type::UnderlyingType;
+
+		auto set_idx = binding->set_idx();
+		auto& q = (*queue)[set_idx];
 
 		// Validate
 		get_binding().validate_layout<resource_underlying_type>();
 
-		// Generate write descriptor
-		auto write = res.writer(binding);
-		// Append write descriptor to queue
-		auto set_idx = binding->set_idx();
-		(*queue)[set_idx].push_back(write);
+		for (auto &res : resources) {
+			// Generate write descriptors
+			auto write = res.writer(binding);
+			// Append write descriptor to queue
+			q.push_back(write);
+		}
+	}
 
-		// Insert resources into bound resources map
-		auto array_element = write.get_array_element();
-		stage_flag stages = binding->stages;
-		populate_bound_resources(res.get_writes(),
-								 array_element,
-								 stages);
+	template <typename WriteType, typename T>
+	void bind(pipeline_resource_binder<WriteType, T> &&res) {
+		bind<WriteType, T>(lib::vector<pipeline_resource_binder<WriteType, T>>{ std::move(res) });
 	}
 
 public:
@@ -87,8 +78,16 @@ public:
 	*	@brief	Binds a resource
 	*/
 	template <typename WriteType, typename T>
-	void operator=(const pipeline_resource_binder<WriteType, T> &res) {
-		this->bind(res);
+	void operator=(lib::vector<pipeline_resource_binder<WriteType, T>> &&resources) {
+		this->bind(std::move(resources));
+	}
+
+	/**
+	*	@brief	Binds a resource
+	*/
+	template <typename WriteType, typename T>
+	void operator=(pipeline_resource_binder<WriteType, T> &&res) {
+		this->bind(std::move(res));
 	}
 };
 

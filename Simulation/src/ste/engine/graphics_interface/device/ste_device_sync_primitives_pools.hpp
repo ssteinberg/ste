@@ -30,7 +30,7 @@ private:
 	semaphore_pool_t semaphore_pool;
 
 public:
-	ste_device_sync_primitives_pools(const vk::vk_logical_device &device)
+	ste_device_sync_primitives_pools(const vk::vk_logical_device<> &device)
 		: fence_pool(device),
 		shared_fence_pool(device),
 		event_pool(device),

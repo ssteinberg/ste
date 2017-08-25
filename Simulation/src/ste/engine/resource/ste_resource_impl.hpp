@@ -284,8 +284,8 @@ private:
 		{
 			ste_resource_creator<T> creator;
 			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
-														  &ste_resource_creator<T>::template operator() < const ste_context & > ,
-														  std::move(pack)));
+															  &ste_resource_creator<T>::template operator() < const ste_context & > ,
+															  std::move(pack)));
 			return std::move(res_ptr);
 		});
 	}
@@ -314,8 +314,8 @@ private:
 		{
 			ste_resource_creator<T> creator;
 			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
-														  &ste_resource_creator<T>::template operator() < const ste_context &, Params... > ,
-														  std::move(pack)));
+															  &ste_resource_creator<T>::template operator() < const ste_context &, Params... > ,
+															  std::move(pack)));
 			return std::move(res_ptr);
 		});
 	}
@@ -329,8 +329,8 @@ private:
 		{
 			ste_resource_creator<T> creator;
 			auto res_ptr = lib::allocate_unique<T>(tuple_call(&creator,
-														  &ste_resource_creator<T>::template operator() < Params... > ,
-														  std::move(pack)));
+															  &ste_resource_creator<T>::template operator() < Params... > ,
+															  std::move(pack)));
 			return std::move(res_ptr);
 		});
 	}

@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 
+#include <vk_host_allocator.hpp>
 #include <optional.hpp>
 
 #include <lib/string.hpp>
@@ -19,10 +20,11 @@ namespace gl {
 
 namespace vk {
 
-class vk_shader : public allow_type_decay<vk_shader, VkShaderModule> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_shader : public allow_type_decay<vk_shader<host_allocator>, VkShaderModule> {
 private:
 	optional<VkShaderModule> module;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 public:
 	struct shader_stage_info_t {
@@ -42,7 +44,7 @@ public:
 	using spec_map = lib::unordered_map<std::uint32_t, lib::string>;
 
 public:
-	vk_shader(const vk_logical_device &device, const lib::string &code) : device(device) {
+	vk_shader(const vk_logical_device<host_allocator> &device, const lib::string &code) : device(device) {
 		VkShaderModuleCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		create_info.pNext = nullptr;
@@ -51,7 +53,7 @@ public:
 		create_info.pCode = reinterpret_cast<const std::uint32_t*>(code.data());
 
 		VkShaderModule shader_module;
-		vk_result res = vkCreateShaderModule(device, &create_info, nullptr, &shader_module);
+		vk_result res = vkCreateShaderModule(device, &create_info, &host_allocator::allocation_callbacks(), &shader_module);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -63,13 +65,20 @@ public:
 	}
 
 	vk_shader(vk_shader &&) = default;
-	vk_shader &operator=(vk_shader &&) = default;
+	vk_shader &operator=(vk_shader &&o) noexcept {
+		destroy_shader_module();
+
+		module = std::move(o.module);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_shader(const vk_shader &) = delete;
 	vk_shader &operator=(const vk_shader &) = delete;
 
 	void destroy_shader_module() {
 		if (module) {
-			vkDestroyShaderModule(device.get(), *this, nullptr);
+			vkDestroyShaderModule(device.get(), *this, &host_allocator::allocation_callbacks());
 			module = none;
 		}
 	}

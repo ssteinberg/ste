@@ -1,9 +1,10 @@
 ﻿// StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <atmospherics_properties.hpp>
+#include <std430.hpp>
 
 namespace ste {
 namespace graphics {
@@ -20,23 +21,21 @@ struct atmospherics_descriptor_padder<T, 0> {};
 class atmospherics_descriptor {
 public:
 	using Properties = atmospherics_properties<double>;
+	struct descriptor_data : gl::std430<glm::vec4, glm::vec4, float, float, float, float, float, float, float, float> {
+		auto& center_radius() { return get<0>(); }
 
-private:
-	struct descriptor_data {
-		glm::vec4 center_radius;
+		auto& scattering_coefficients() { return get<1>(); }
+		auto& mie_absorption_coefficient() { return get<2>(); }
+		auto& phase() { return get<3>(); }
 
-		glm::vec4 scattering_coefficients;
-		float mie_absorption_coefficient;
-		float phase;
+		auto& Hm() { return get<4>(); }
+		auto& Hr() { return get<5>(); }
 
-		float Hm;
-		float Hr;
+		auto& minus_one_over_Hm() { return get<6>(); }
+		auto& minus_one_over_Hr() { return get<7>(); }
 
-		float minus_one_over_Hm;
-		float minus_one_over_Hr;
-
-		float Hm_max;
-		float Hr_max;
+		auto& Hm_max() { return get<8>(); }
+		auto& Hr_max() { return get<9>(); }
 	};
 
 private:
@@ -52,25 +51,25 @@ private:
 
 protected:
 	void set_properties(const Properties &p) {
-		data.center_radius = { p.center.x, p.center.y, p.center.z, p.radius };
+		data.center_radius() = { p.center.x, p.center.y, p.center.z, p.radius };
 
 		auto scatter = p.ro0 * glm::dvec4{
 			p.rayleigh_scattering_coefficient.x,
 			p.rayleigh_scattering_coefficient.y,
 			p.rayleigh_scattering_coefficient.z,
 			p.mie_scattering_coefficient };
-		data.scattering_coefficients = scatter;
-		data.mie_absorption_coefficient = p.ro0 * p.mie_absorption_coefficient;
-		data.phase = p.phase;
+		data.scattering_coefficients() = scatter;
+		data.mie_absorption_coefficient() = static_cast<float>(p.ro0 * p.mie_absorption_coefficient);
+		data.phase() = static_cast<float>(p.phase);
 
-		data.Hm = p.scale_height_aerosols();
-		data.Hr = p.scale_height();
+		data.Hm() = static_cast<float>(p.scale_height_aerosols());
+		data.Hr() = static_cast<float>(p.scale_height());
 
-		data.minus_one_over_Hm = -1.f / data.Hm;
-		data.minus_one_over_Hr = -1.f / data.Hr;
+		data.minus_one_over_Hm() = static_cast<float>(-1.f / data.Hm());
+		data.minus_one_over_Hr() = static_cast<float>(-1.f / data.Hr());
 
-		data.Hm_max = p.max_height(data.Hm);
-		data.Hr_max = p.max_height(data.Hr);
+		data.Hm_max() = static_cast<float>(p.max_height(data.Hm()));
+		data.Hr_max() = static_cast<float>(p.max_height(data.Hr()));
 	}
 
 public:
@@ -86,6 +85,8 @@ public:
 		set_properties(p);
 		return *this;
 	}
+
+	const auto& get() const { return data; }
 };
 
 }

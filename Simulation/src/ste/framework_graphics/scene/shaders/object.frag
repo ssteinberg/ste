@@ -8,10 +8,6 @@
 layout(location = 0) out vec4 gbuffer0;
 layout(location = 1) out vec4 gbuffer1;
 
-layout(std430, binding = 13) restrict readonly buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
 in scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <vk_logical_device.hpp>
 
 #include <vk_sampler.hpp>
 #include <sampler_parameter.hpp>
@@ -35,9 +36,9 @@ struct params_chain_extracter<Param> {
 
 }
 
-class sampler : public allow_type_decay<sampler, vk::vk_sampler> {
+class sampler : public allow_type_decay<sampler, vk::vk_sampler<>> {
 private:
-	vk::vk_sampler s;
+	vk::vk_sampler<> s;
 
 private:
 	static auto default_sampler_info() {
@@ -69,13 +70,13 @@ private:
 public:
 	/**
 	*	@brief	Sampler ctor.
-	*			Takes as input variadic number of vk_sampler_parameters structure specifing sampler parameters.
+	*			Takes as input variadic number of gl::sampler_parameter::* structures specifing sampler parameters.
 	*
 	*	@param device		Creating device
 	*	@param params		Sampler parameters
 	*/
-	template <typename Device, typename... Params>
-	sampler(const Device &device,
+	template <typename... Params>
+	sampler(const vk::vk_logical_device<> &device,
 			Params&& ... params)
 		: s(device,
 			sampler_info(std::forward<Params>(params)...))
@@ -86,8 +87,7 @@ public:
 	*	@param device		Creating device
 	*	@param unnormalized	Unnomralized sampler parameters
 	*/
-	template <typename Device>
-	sampler(const Device &device,
+	sampler(const vk::vk_logical_device<> &device,
 			const sampler_parameter::unnormalized &unnormalized)
 		: s(device,
 			sampler_info_unnormalized(unnormalized))

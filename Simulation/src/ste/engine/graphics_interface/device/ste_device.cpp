@@ -6,28 +6,7 @@
 using namespace ste;
 using namespace ste::gl;
 
-vk::vk_logical_device ste_device::create_vk_virtual_device(const vk::vk_physical_device_descriptor &physical_device,
-														   const VkPhysicalDeviceFeatures &requested_features,
-														   const ste_queue_descriptors &queue_descriptors,
-														   lib::vector<const char*> device_extensions) {
-	if (queue_descriptors.size() == 0) {
-		throw ste_device_creation_exception("queue_descriptors is empty");
-	}
-
-	// Add required extensions
-	device_extensions.push_back("VK_KHR_swapchain");
-
-	// Request queues based on supplied protocol
-	auto queues_create_info = queue_descriptors.create_device_queue_create_info();
-
-	// Create logical device
-	return vk::vk_logical_device(physical_device,
-								 requested_features,
-								 queues_create_info->create_info,
-								 device_extensions);
-}
-
-ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device &device,
+ste_device::queues_t ste_device::create_queues(const vk::vk_logical_device<> &device,
 											   const ste_queue_descriptors &queue_descriptors,
 											   ste_device_sync_primitives_pools *sync_primitives_pools) {
 	queues_t q(queue_descriptors.size());

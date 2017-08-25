@@ -13,7 +13,7 @@ class quad_light : public shaped_light {
 	using Base = shaped_light;
 
 protected:
-	quad_light(LightType type,
+	quad_light(light_type type,
 			   const rgb &color,
 			   float intensity,
 			   const glm::vec3 &position,
@@ -43,7 +43,7 @@ public:
 	quad_light_onesided(const rgb &color,
 						float intensity,
 						const glm::vec3 &position,
-						shaped_light_points_storage_info storage_info) : quad_light(LightType::QuadOnesided,
+						shaped_light_points_storage_info storage_info) : quad_light(light_type::QuadOnesided,
 																					color, intensity, position,
 																					storage_info) {}
 	virtual ~quad_light_onesided() noexcept {}
@@ -54,7 +54,7 @@ public:
 	quad_light_twosided(const rgb &color,
 						float intensity,
 						const glm::vec3 &position,
-						shaped_light_points_storage_info storage_info) : quad_light(LightType::QuadTwosided,
+						shaped_light_points_storage_info storage_info) : quad_light(light_type::QuadTwosided,
 																					color, intensity, position,
 																					storage_info) {}
 	virtual ~quad_light_twosided() noexcept {}

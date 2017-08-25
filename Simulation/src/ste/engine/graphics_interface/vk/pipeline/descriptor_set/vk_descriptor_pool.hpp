@@ -10,6 +10,7 @@
 #include <vk_descriptor_set_layout_binding.hpp>
 #include <vk_descriptor_set.hpp>
 #include <vk_descriptor_set_layout.hpp>
+#include <vk_host_allocator.hpp>
 
 #include <lib/vector.hpp>
 #include <lib/unordered_map.hpp>
@@ -21,14 +22,15 @@ namespace gl {
 
 namespace vk {
 
-class vk_descriptor_pool : public allow_type_decay<vk_descriptor_pool, VkDescriptorPool> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_descriptor_pool : public allow_type_decay<vk_descriptor_pool<host_allocator>, VkDescriptorPool> {
 private:
 	optional<VkDescriptorPool> pool;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 	bool allow_free_individual_sets;
 
 public:
-	vk_descriptor_pool(const vk_logical_device &device,
+	vk_descriptor_pool(const vk_logical_device<host_allocator> &device,
 					   std::uint32_t max_sets,
 					   const lib::vector<vk_descriptor_set_layout_binding> &set_layout_bindings,
 					   bool allow_free_individual_sets = false) : device(device), allow_free_individual_sets(allow_free_individual_sets) {
@@ -60,7 +62,7 @@ public:
 		create_info.pPoolSizes = set_sizes.data();
 
 		VkDescriptorPool pool;
-		vk_result res = vkCreateDescriptorPool(device, &create_info, nullptr, &pool);
+		vk_result res = vkCreateDescriptorPool(device, &create_info, &host_allocator::allocation_callbacks(), &pool);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -72,18 +74,26 @@ public:
 	}
 
 	vk_descriptor_pool(vk_descriptor_pool &&) = default;
-	vk_descriptor_pool &operator=(vk_descriptor_pool &&) = default;
+	vk_descriptor_pool &operator=(vk_descriptor_pool &&o) noexcept {
+		destroy_pool();
+
+		pool = std::move(o.pool);
+		device = std::move(o.device);
+		allow_free_individual_sets = o.allow_free_individual_sets;
+
+		return *this;
+	}
 	vk_descriptor_pool(const vk_descriptor_pool &) = delete;
 	vk_descriptor_pool &operator=(const vk_descriptor_pool &) = delete;
 
 	void destroy_pool() {
 		if (pool) {
-			vkDestroyDescriptorPool(device.get(), *this, nullptr);
+			vkDestroyDescriptorPool(device.get(), *this, &host_allocator::allocation_callbacks());
 			pool = none;
 		}
 	}
 
-	auto allocate_descriptor_sets(const lib::vector<const vk_descriptor_set_layout*> &set_layouts) const {
+	auto allocate_descriptor_sets(const lib::vector<const vk_descriptor_set_layout<host_allocator>*> &set_layouts) const {
 		lib::vector<VkDescriptorSetLayout> set_layout_descriptors;
 		set_layout_descriptors.reserve(set_layouts.size());
 		for (auto &s : set_layouts)
@@ -103,18 +113,18 @@ public:
 			throw vk_exception(res);
 		}
 
-		lib::vector<vk_descriptor_set> descriptor_sets;
+		lib::vector<vk_descriptor_set<host_allocator>> descriptor_sets;
 		descriptor_sets.reserve(sets.size());
 		for (auto &s : sets)
-			descriptor_sets.push_back(vk_descriptor_set(device,
-														s,
-														*this,
-														allows_freeing_individual_sets()));
+			descriptor_sets.emplace_back(vk_descriptor_set<host_allocator>(device,
+																		   s,
+																		   *this,
+																		   allows_freeing_individual_sets()));
 
 		return descriptor_sets;
 	}
 
-	vk_descriptor_set allocate_descriptor_set(const vk_descriptor_set_layout &layout) const {
+	vk_descriptor_set<host_allocator> allocate_descriptor_set(const vk_descriptor_set_layout<host_allocator> &layout) const {
 		auto sets = allocate_descriptor_sets({ &layout });
 		return std::move(sets.front());
 	}

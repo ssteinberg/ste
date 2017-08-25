@@ -32,7 +32,7 @@ private:
 	vk::vk_image_view<type> view;
 
 public:
-	image_view(const vk::vk_image &image)
+	image_view(const vk::vk_image<> &image)
 		: view(image)
 	{}
 	image_view(const device_image_base &image)

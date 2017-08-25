@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 
 #include <ste_glfw_handle.hpp>
+
 #include <vk_instance.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
@@ -21,8 +22,8 @@ namespace gl {
 
 class ste_gl_context {
 private:
-	vk::vk_instance vk;
-	lib::unique_ptr<vk::vk_debug_report_callback> debug_report_handle;
+	vk::vk_instance<> vk;
+	lib::unique_ptr<vk::vk_debug_report_callback<>> debug_report_handle;
 
 private:
 	static auto vk_instance_validation_layers() {
@@ -47,8 +48,8 @@ private:
 			instance_extensions.push_back("VK_EXT_debug_report");
 		}
 
-		auto instance = vk::vk_instance(app_name, app_version,
-										instance_extensions, instance_layers);
+		auto instance = vk::vk_instance<>(app_name, app_version,
+										  instance_extensions, instance_layers);
 		return instance;
 	}
 
@@ -59,16 +60,16 @@ private:
 
 	template <typename DebugCallback>
 	void setup_vk_debug_callback() {
-		debug_report_handle = lib::allocate_unique<vk::vk_debug_report_callback>(vk,
-																			 this,
-																			 [](VkDebugReportFlagsEXT        flags,
-																				VkDebugReportObjectTypeEXT   objectType,
-																				uint64_t                     object,
-																				size_t                       location,
-																				int32_t                      messageCode,
-																				const char*                  pLayerPrefix,
-																				const char*                  pMessage,
-																				void*                        pUserData) -> VkBool32 {
+		debug_report_handle = lib::allocate_unique<vk::vk_debug_report_callback<>>(vk,
+																				   this,
+																				   [](VkDebugReportFlagsEXT        flags,
+																					  VkDebugReportObjectTypeEXT   objectType,
+																					  uint64_t                     object,
+																					  size_t                       location,
+																					  int32_t                      messageCode,
+																					  const char*                  pLayerPrefix,
+																					  const char*                  pMessage,
+																					  void*                        pUserData) -> VkBool32 {
 			auto ptr = reinterpret_cast<const ste_gl_context*>(pUserData);
 			DebugCallback()(flags, objectType, object, location, messageCode, pLayerPrefix, pMessage, ptr);
 			return VK_FALSE;
@@ -153,11 +154,11 @@ public:
 public:
 	template <typename DebugCallback = ste_gl_debug_callback>
 	ste_gl_context(const ste_gl_context_creation_parameters &parameters)
-		: vk(create_vk_instance(parameters.client_name, 
-								parameters.client_version, 
+		: vk(create_vk_instance(parameters.client_name,
+								parameters.client_version,
 								should_create_debug_context(parameters),
-								parameters.additional_instance_extensions, 
-								parameters.additional_instance_layers)) 
+								parameters.additional_instance_extensions,
+								parameters.additional_instance_layers))
 	{
 		if (should_create_debug_context(parameters)) {
 			setup_vk_debug_callback<DebugCallback>();

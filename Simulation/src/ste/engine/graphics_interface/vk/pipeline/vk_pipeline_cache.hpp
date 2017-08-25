@@ -12,6 +12,7 @@
 #include <vk_exception.hpp>
 
 #include <optional.hpp>
+#include <vk_host_allocator.hpp>
 
 #include <lib/string.hpp>
 #include <istream>
@@ -23,7 +24,8 @@ namespace gl {
 
 namespace vk {
 
-class vk_pipeline_cache : public allow_type_decay<vk_pipeline_cache, VkPipelineCache> {
+template <typename host_allocator = vk_host_allocator<>>
+class vk_pipeline_cache : public allow_type_decay<vk_pipeline_cache<host_allocator>, VkPipelineCache> {
 private:
 	static constexpr std::uint32_t header_magic_and_version = 0xCAC8E001;
 	static constexpr int header_uuid_size = VK_UUID_SIZE;
@@ -39,7 +41,7 @@ private:
 
 private:
 	optional<VkPipelineCache> cache;
-	alias<const vk_logical_device> device;
+	alias<const vk_logical_device<host_allocator>> device;
 
 private:
 	static optional<lib::string> read_stream(const vk_physical_device_descriptor &device_descriptor, std::istream &input_stream) {
@@ -78,7 +80,7 @@ private:
 
 	void create(const VkPipelineCacheCreateInfo &create_info) {
 		VkPipelineCache pipeline_cache;
-		vk_result res = vkCreatePipelineCache(device.get(), &create_info, nullptr, &pipeline_cache);
+		vk_result res = vkCreatePipelineCache(device.get(), &create_info, &host_allocator::allocation_callbacks(), &pipeline_cache);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -87,7 +89,7 @@ private:
 	}
 
 public:
-	vk_pipeline_cache(const vk_logical_device &device,
+	vk_pipeline_cache(const vk_logical_device<host_allocator> &device,
 					  const lib::string &initial_data) : device(device) {
 		VkPipelineCacheCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
@@ -98,7 +100,7 @@ public:
 
 		create(create_info);
 	}
-	vk_pipeline_cache(const vk_logical_device &device, std::istream &input_stream) : device(device) {
+	vk_pipeline_cache(const vk_logical_device<host_allocator> &device, std::istream &input_stream) : device(device) {
 		auto data = read_stream(device.get_physical_device_descriptor(), input_stream);
 
 		VkPipelineCacheCreateInfo create_info = {};
@@ -110,7 +112,7 @@ public:
 
 		create(create_info);
 	}
-	vk_pipeline_cache(const vk_logical_device &device,
+	vk_pipeline_cache(const vk_logical_device<host_allocator> &device,
 					  const lib::vector<std::reference_wrapper<const vk_pipeline_cache>> &src) : vk_pipeline_cache(device) {
 		assert(src.size() && "Must provide at least a single source cache");
 
@@ -122,19 +124,26 @@ public:
 							  static_cast<std::uint32_t>(ids.size()),
 							  &ids[0]);
 	}
-	vk_pipeline_cache(const vk_logical_device &device) : vk_pipeline_cache(device, lib::string()) {}
+	vk_pipeline_cache(const vk_logical_device<host_allocator> &device) : vk_pipeline_cache(device, lib::string()) {}
 	~vk_pipeline_cache() noexcept {
 		destroy_pipeline_cache();
 	}
 
 	vk_pipeline_cache(vk_pipeline_cache &&) = default;
-	vk_pipeline_cache &operator=(vk_pipeline_cache &&) = default;
+	vk_pipeline_cache &operator=(vk_pipeline_cache &&o) noexcept {
+		destroy_pipeline_cache();
+
+		cache = std::move(o.cache);
+		device = std::move(o.device);
+
+		return *this;
+	}
 	vk_pipeline_cache(const vk_pipeline_cache &) = delete;
 	vk_pipeline_cache &operator=(const vk_pipeline_cache &) = delete;
 
 	void destroy_pipeline_cache() {
 		if (cache) {
-			vkDestroyPipelineCache(device.get(), *this, nullptr);
+			vkDestroyPipelineCache(device.get(), *this, &host_allocator::allocation_callbacks());
 			cache = none;
 		}
 	}

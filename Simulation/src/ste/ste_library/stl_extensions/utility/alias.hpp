@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -25,6 +25,9 @@ public:
 		ptr = p;
 		return *this;
 	}
+
+	bool operator==(const alias<T> &rhs) const { return ptr == rhs.ptr; }
+	bool operator!=(const alias<T> &rhs) const { return ptr != rhs.ptr; }
 
 	auto& get() noexcept {
 		static_assert(is_anchored_v<T>, "T must be anchored"); 

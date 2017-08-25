@@ -12,7 +12,7 @@ namespace _detail {
 
 template <typename F, typename ... Params>
 struct function_wrapper_type_erasure_impl : functor<Params...> {
-	static_assert(std::is_callable_v<F(Params...)>, "F not a valid functor accepting Params...");
+	static_assert(std::is_invocable_v<F(Params...)>, "F not a valid functor accepting Params...");
 
 	F f;
 	function_wrapper_type_erasure_impl(F &&f) : f(std::move(f)) {}

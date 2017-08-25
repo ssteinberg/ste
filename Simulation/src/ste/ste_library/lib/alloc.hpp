@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -23,8 +23,9 @@ struct alloc_impl<Allocator, false> {
 	using pointer = typename allocator::pointer;
 	using const_pointer = typename allocator::const_pointer;
 
-	template <typename... Args>
-	static pointer ctor(pointer ptr, Args&&... args) {
+	template <typename Checker = U, typename... Args>
+	static std::enable_if_t<!std::is_abstract_v<Checker>, pointer> ctor(pointer ptr,
+																		Args&&... args) {
 		::new (ptr) U(std::forward<Args>(args)...);
 		return ptr;
 	}
@@ -36,8 +37,8 @@ struct alloc_impl<Allocator, false> {
 		p->~U();
 	}
 
-	template <typename... Args>
-	static pointer make(Args&&... args) {
+	template <typename Checker = U, typename... Args>
+	static std::enable_if_t<!std::is_abstract_v<Checker>, pointer> make(Args&&... args) {
 		pointer ptr = allocator().allocate(1);
 		return ctor(ptr, std::forward<Args>(args)...);
 	}
@@ -74,8 +75,10 @@ struct alloc_impl<Allocator, true> {
 		return array_length_size() + sizeof(D) * n;
 	}
 
-	template <typename... Args>
-	static pointer ctor(pointer ptr, size_type n, Args&&... args) {
+	template <typename Checker = value_type, typename... Args>
+	static std::enable_if_t<!std::is_abstract_v<Checker>, pointer> ctor(pointer ptr, 
+																		size_type n,
+																		Args&&... args) {
 		*reinterpret_cast<length_type*>(ptr) = static_cast<length_type>(n);
 
 		reinterpret_cast<byte*&>(ptr) += array_length_size();
@@ -91,12 +94,13 @@ struct alloc_impl<Allocator, true> {
 		auto n = *reinterpret_cast<const length_type*>(reinterpret_cast<const byte*>(ptr) - array_length_size());
 
 		auto p = const_cast<pointer>(ptr);
-		for (auto i = n; i-->0;)
+		for (auto i = n; i-- > 0;)
 			ptr[i].~value_type();
 	}
 
-	template <typename... Args>
-	static pointer make(size_type n, Args&&... args) {
+	template <typename Checker = value_type, typename... Args>
+	static std::enable_if_t<!std::is_abstract_v<Checker>, pointer> make(size_type n, 
+																		Args&&... args) {
 		auto ptr = reinterpret_cast<pointer>(allocator().allocate(allocation_size_bytes(n)));
 		return ctor(ptr, n, std::forward<Args>(args)...);
 	}

@@ -10,6 +10,7 @@
 #include <copy_data_buffer.hpp>
 
 #include <array.hpp>
+#include <vector.hpp>
 #include <stable_vector.hpp>
 
 namespace ste {
@@ -22,7 +23,7 @@ auto fill(array<T> &dst,
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
 		_internal::copy_data_buffer(dst->parent_context(),
-									dst.get(),
+									dst,
 									data,
 									offset);
 	});
@@ -36,10 +37,25 @@ auto fill(stable_vector<T, minimal_atom_size, max_sparse_size> &dst,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
-		_internal::copy_data_buffer(dst->parent_context(),
-									dst.get(),
-									data,
-									offset);
+		_internal::copy_data_buffer_and_resize(dst->parent_context(),
+											   dst,
+											   data,
+											   offset);
+	});
+
+	return make_job(std::move(future));
+}
+
+template <typename T, std::uint64_t minimal_atom_size, std::uint64_t max_sparse_size>
+auto fill(vector<T, minimal_atom_size, max_sparse_size> &dst,
+		  lib::vector<T> &&data,
+		  std::size_t offset = 0) {
+	const auto &ctx = dst->parent_context();
+	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
+		_internal::copy_data_buffer_and_resize(dst->parent_context(),
+											   dst,
+											   data,
+											   offset);
 	});
 
 	return make_job(std::move(future));
