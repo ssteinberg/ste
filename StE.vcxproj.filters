@@ -162,9 +162,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

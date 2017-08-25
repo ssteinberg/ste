@@ -34,12 +34,12 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	composer(*this),
 	hdr(*this,
 		ctx.device().get_surface().extent(),
-		gl::framebuffer_layout(framebuffers->fxaa_input_fb.get_layout())),
+		gl::framebuffer_layout(framebuffers.fxaa_input_fb.get_layout())),
 	fxaa(*this,
-		 gl::framebuffer_layout(framebuffers->hdr_input_fb.get_layout())),
+		 gl::framebuffer_layout(framebuffers.hdr_input_fb.get_layout())),
 
 	downsample_depth(*this,
-					 &buffers->gbuffer.get()),
+					 &buffers.gbuffer.get()),
 	prepopulate_depth(*this,
 					  s),
 	prepopulate_backface_depth(*this,
@@ -48,7 +48,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 				   s, &s->properties().lights_storage()),
 
 	linked_light_list_generator(*this,
-								&buffers->linked_light_list_storage.get()),
+								&buffers.linked_light_list_storage.get()),
 	light_preprocess(*this,
 					 &s->properties().lights_storage()),
 
@@ -58,22 +58,22 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 								  s),
 
 	volumetric_scatterer(*this,
-						 &buffers->vol_scat_storage.get(),
+						 &buffers.vol_scat_storage.get(),
 						 &s->properties().lights_storage())
 {
 	// Attach a signal to swapchain surface resize signal
 	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
 		// Resize buffers and framebuffers
-		buffers->resize(ctx.device().get_surface().extent());
-		framebuffers->resize(ctx.device().get_surface().extent());
+		buffers.resize(ctx.device().get_surface().extent());
+		framebuffers.resize(ctx.device().get_surface().extent());
 
 		// Send resize signal to interested fragments
 		hdr.resize(device().get_surface().extent());
 
 		// Reattach resized framebuffers and input images
-		hdr.attach_framebuffer(framebuffers->fxaa_input_fb);
-		hdr.set_input_image(&framebuffers->hdr_input_image.get());
-		fxaa.set_input_image(&framebuffers->fxaa_input_image.get());
+		hdr.attach_framebuffer(framebuffers.fxaa_input_fb);
+		hdr.set_input_image(&framebuffers.hdr_input_image.get());
+		fxaa.set_input_image(&framebuffers.fxaa_input_image.get());
 	});
 }
 
@@ -85,13 +85,13 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 																			   this->cam->get_projection_model().get_near_clip_plane());
 
 	// Update buffers
-	buffers->update(recorder,
-					s, cam);
+	buffers.update(recorder,
+				   s, cam);
 
 	// Update atmospheric properties (if needed)
 	if (atmospherics_properties_update) {
-		buffers->update_atmospheric_properties(recorder,
-											   atmospherics_properties_update.get());
+		buffers.update_atmospheric_properties(recorder,
+											  atmospherics_properties_update.get());
 		atmospherics_properties_update = none;
 	}
 }

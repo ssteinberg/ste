@@ -126,7 +126,7 @@ private:
 	ste_resource<linked_light_lists> linked_light_list_storage;
 	ste_resource<volumetric_scattering_storage> vol_scat_storage;
 
-	gl::pipeline_external_binding_set_collection common_binding_set_collection;
+	mutable gl::pipeline_external_binding_set_collection common_binding_set_collection;
 
 public:
 	primary_renderer_buffers(const ste_context &ctx,
@@ -188,8 +188,7 @@ public:
 				scene *s,
 				const camera_t *cam) {
 		// Update material bindings, if materials were mutated
-		// TODO
-//		common_binding_set_collection["material_textures_count"] = s->properties().materials_storage().get_material_texture_storage().size();
+		common_binding_set_collection["material_textures_count"] = s->properties().materials_storage().get_material_texture_storage().size();
 		common_binding_set_collection["material_textures"] = s->properties().materials_storage().get_material_texture_storage().binder();
 
 		// Upload new camera transform data

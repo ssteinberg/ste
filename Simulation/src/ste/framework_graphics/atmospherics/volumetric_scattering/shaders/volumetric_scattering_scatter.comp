@@ -245,8 +245,8 @@ void main() {
 	float effective_tiles_end = min(volumetric_scattering_tile_for_depth(depth_buffer_d_min) + 1.f, float(volumetric_scattering_depth_tiles));
 	
 	// Loop through per-pixel linked-light-list
-	uint lll_start = imageLoad(linked_light_list_heads, slice_coords).x;
-	uint lll_length = imageLoad(linked_light_list_size, slice_coords).x;
+	uint lll_start = imageLoad(linked_light_list_low_detail_heads, slice_coords).x;
+	uint lll_length = imageLoad(linked_light_list_low_detail_size, slice_coords).x;
 	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 			

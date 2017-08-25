@@ -537,7 +537,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.cpp" />
-    <ClCompile Include="Simulation\src\ste\framework_graphics\scene\scene.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_convert.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\surface_mipmap_generator.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_text\fonts\font.cpp" />
