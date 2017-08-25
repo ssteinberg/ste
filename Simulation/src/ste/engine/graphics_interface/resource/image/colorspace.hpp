@@ -25,18 +25,5 @@ enum class colorspace : std::uint32_t {
 	pass_through = VK_COLOR_SPACE_PASS_THROUGH_EXT,
 };
 
-constexpr auto operator|(const colorspace &lhs, const colorspace &rhs) {
-	using T = std::underlying_type_t<colorspace>;
-	return static_cast<colorspace>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const colorspace &lhs, const colorspace &rhs) {
-	using T = std::underlying_type_t<colorspace>;
-	return static_cast<colorspace>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const colorspace &lhs, const colorspace &rhs) {
-	using T = std::underlying_type_t<colorspace>;
-	return static_cast<colorspace>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

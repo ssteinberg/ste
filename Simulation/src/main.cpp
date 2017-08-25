@@ -128,7 +128,7 @@ public:
 		simple_storage::uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
 
 		recorder
-			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader | gl::pipeline_stage::vertex_input,
 															 gl::pipeline_stage::transfer,
 															 gl::buffer_memory_barrier(s->ubo,
 																					   gl::access_flags::uniform_read,
@@ -139,7 +139,7 @@ public:
 			<< s->vertex_buffer.overwrite_cmd(0, v)
 			<< s->ubo.overwrite_cmd(0, data)
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-															 gl::pipeline_stage::vertex_shader,
+															 gl::pipeline_stage::vertex_shader | gl::pipeline_stage::vertex_input,
 															 gl::buffer_memory_barrier(s->ubo,
 																					   gl::access_flags::transfer_write,
 																					   gl::access_flags::uniform_read),
@@ -312,6 +312,7 @@ auto requested_device_features() {
 	requested_features.shaderImageGatherExtended = VK_TRUE;
 	requested_features.sparseBinding = VK_TRUE;
 	requested_features.sparseResidencyBuffer = VK_TRUE;
+	requested_features.tessellationShader = VK_TRUE;
 
 	return requested_features;
 }

@@ -170,12 +170,12 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					auto recorder = command_buffer.record();
 
 					// Move to transfer layouts
-					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe,
-													pipeline_stage::top_of_pipe,
+					auto barrier = pipeline_barrier(pipeline_stage::top_of_pipe | pipeline_stage::host,
+													pipeline_stage::transfer,
 													image_memory_barrier(staging_image,
 																		 m == 0 ? image_layout::preinitialized : image_layout::transfer_src_optimal,
 																		 image_layout::transfer_src_optimal,
-																		 access_flags::host_write,
+																		 m == 0 ? access_flags::none : access_flags::host_write,
 																		 access_flags::transfer_read),
 													image_memory_barrier(image,
 																		 m == 0 ? image_layout::undefined : image_layout::transfer_dst_optimal,
@@ -195,12 +195,13 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 			f.get();
 
 			// Transfer ownership
+			pipeline_stage pipeline_stages_for_final_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(final_layout));
 			auto queue_transfer_future = queue_transfer(ctx,
 														image,
 														q,
 														ctx.device().select_queue(final_queue_selector),
 														image_layout::transfer_dst_optimal, pipeline_stage::transfer,
-														final_layout, pipeline_stage::all_commands);
+														final_layout, pipeline_stages_for_final_layout);
 			// Wait for completion
 			(*fence)->get_wait();
 			queue_transfer_future.get();

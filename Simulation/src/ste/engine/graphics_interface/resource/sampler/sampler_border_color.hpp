@@ -18,18 +18,5 @@ enum class sampler_border_color : std::uint32_t {
 	opaque_white_int = VK_BORDER_COLOR_INT_OPAQUE_WHITE,
 };
 
-constexpr auto operator|(const sampler_border_color &lhs, const sampler_border_color &rhs) {
-	using T = std::underlying_type_t<sampler_border_color>;
-	return static_cast<sampler_border_color>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const sampler_border_color &lhs, const sampler_border_color &rhs) {
-	using T = std::underlying_type_t<sampler_border_color>;
-	return static_cast<sampler_border_color>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const sampler_border_color &lhs, const sampler_border_color &rhs) {
-	using T = std::underlying_type_t<sampler_border_color>;
-	return static_cast<sampler_border_color>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

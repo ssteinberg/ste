@@ -15,18 +15,5 @@ enum class sampler_filter : std::uint32_t {
 	cubic_img = VK_FILTER_CUBIC_IMG,
 };
 
-constexpr auto operator|(const sampler_filter &lhs, const sampler_filter &rhs) {
-	using T = std::underlying_type_t<sampler_filter>;
-	return static_cast<sampler_filter>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const sampler_filter &lhs, const sampler_filter &rhs) {
-	using T = std::underlying_type_t<sampler_filter>;
-	return static_cast<sampler_filter>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const sampler_filter &lhs, const sampler_filter &rhs) {
-	using T = std::underlying_type_t<sampler_filter>;
-	return static_cast<sampler_filter>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

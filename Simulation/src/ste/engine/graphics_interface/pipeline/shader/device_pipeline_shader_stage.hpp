@@ -144,8 +144,8 @@ public:
 	 *	@brief	Provides the shader specialization constant map.
 	 *			For new specializations to take affect, pipeline has to be recreated.
 	 */
-	void set_specializations(const vk::vk_shader<>::spec_map &specializations) {
-		this->specializations = specializations;
+	void set_specializations(vk::vk_shader<>::spec_map &&specializations) {
+		this->specializations = std::move(specializations);
 	}
 
 	/**

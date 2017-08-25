@@ -23,18 +23,5 @@ enum class primitive_topology : std::uint32_t {
 	patch_list = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST,
 };
 
-constexpr auto operator|(const primitive_topology &lhs, const primitive_topology &rhs) {
-	using T = std::underlying_type_t<primitive_topology>;
-	return static_cast<primitive_topology>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const primitive_topology &lhs, const primitive_topology &rhs) {
-	using T = std::underlying_type_t<primitive_topology>;
-	return static_cast<primitive_topology>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const primitive_topology &lhs, const primitive_topology &rhs) {
-	using T = std::underlying_type_t<primitive_topology>;
-	return static_cast<primitive_topology>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }
