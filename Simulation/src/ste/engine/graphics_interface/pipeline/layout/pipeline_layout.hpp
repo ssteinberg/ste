@@ -55,7 +55,7 @@ private:
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
+	using spec_map_t = lib::flat_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
 
 	using binding_sets_layout_map_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
 
@@ -249,8 +249,17 @@ private:
 		layout_invalidated_flag = true;
 	}
 
+	/**
+	 *	@brief	Updates the specialization map of an attached shader stage
+	 */
 	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
 		const auto& map = specializations[stage];
+		if (!this->external_binding_sets) {
+			// No external binding set attached
+			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			return;
+		}
+
 		const auto it = this->external_binding_sets->specializations.find(stage);
 		if (it == this->external_binding_sets->specializations.end()) {
 			// External binding set does not have any specializations for the stage
@@ -270,6 +279,9 @@ private:
 		stages[stage]->set_specializations(std::move(spec));
 	}
 
+	/**
+	 *	@brief	Specializes a constant
+	 */
 	template <typename T>
 	void specialize_constant_impl(const lib::string &name,
 								  const optional<lib::string> &data = none,
@@ -320,6 +332,33 @@ private:
 				invalidate_layout();
 			}
 		}
+	}
+
+	/**
+	 *	@brief	Attaches an external binding set to the layout
+	 */
+	void attach_external_binding_set_collection(const pipeline_external_binding_set_collection &external_binding_sets) {
+		this->external_binding_sets = &external_binding_sets;
+
+		// Update specializations
+		for (auto &spec : external_binding_sets.specializations) {
+			update_shader_stage_specialization_map(spec.first);
+		}
+
+		// Connect to external binding set's signals
+		external_binding_set_invalidated_connection = make_connection(external_binding_sets.get_signal_set_invalidated(),
+																	  [this](auto, const auto &sets_indices) {
+			// External binding set was invalidated, add to set recreation queue and invalidate layout.
+			for (auto &set_idx : sets_indices)
+				set_layouts_modified_queue.insert(set_idx);
+			invalidate_layout();
+		});
+		external_binding_set_constant_specialized_connection = make_connection(external_binding_sets.get_signal_specialization_change(),
+																			   [this](auto, const auto &stages) {
+			// External binding set's constant was specialized, update specialization map
+			for (auto &s : stages)
+				update_shader_stage_specialization_map(s);
+		});
 	}
 
 public:
@@ -378,23 +417,8 @@ public:
 
 			// Verify and erase variables that are handled externally
 			if (external_binding_sets) {
-				this->external_binding_sets = &external_binding_sets.get().get();
 				erase_sets_provided_by_external_binding_sets(all_variables);
-
-				// Connect to external binding set's signals
-				external_binding_set_invalidated_connection = make_connection(external_binding_sets.get().get().get_signal_set_invalidated(),
-																			  [this](auto, const lib::vector<pipeline_layout_set_index> &sets_indices) {
-					// External binding set was invalidated, add to set recreation queue and invalidate layout.
-					for (auto &set_idx : sets_indices)
-						set_layouts_modified_queue.insert(set_idx);
-					invalidate_layout();
-				});
-				external_binding_set_constant_specialized_connection = make_connection(external_binding_sets.get().get().get_signal_specialization_change(),
-																					   [this](auto, const pipeline_binding_stages_collection &stages) {
-					// External binding set's constant was specialized, update specialization map
-					for (auto &s : stages)
-						update_shader_stage_specialization_map(s);
-				});
+				attach_external_binding_set_collection(external_binding_sets.get().get());
 			}
 
 			// Then create variables' layouts

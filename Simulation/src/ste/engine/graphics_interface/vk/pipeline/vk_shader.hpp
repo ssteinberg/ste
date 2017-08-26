@@ -12,6 +12,7 @@
 #include <optional.hpp>
 
 #include <lib/string.hpp>
+#include <lib/flat_map.hpp>
 #include <allow_type_decay.hpp>
 #include <alias.hpp>
 
@@ -41,7 +42,7 @@ public:
 		shader_stage_info_t &operator=(const shader_stage_info_t&) = delete;
 	};
 
-	using spec_map = lib::unordered_map<std::uint32_t, lib::string>;
+	using spec_map = lib::flat_map<std::uint32_t, lib::string>;
 
 public:
 	vk_shader(const vk_logical_device<host_allocator> &device, const lib::string &code) : device(device) {

@@ -36,7 +36,7 @@ private:
 	using name_binding_map_t = lib::flat_map<lib::string, const pipeline_external_binding_layout*>;
 
 	using spec_to_dependant_array_variables_map_t = lib::flat_map<const ste_shader_stage_variable*, lib::vector<pipeline_layout_set_index>>;
-	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
+	using spec_map_t = lib::flat_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
 
 	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_external_binding_set_collection>;
 
