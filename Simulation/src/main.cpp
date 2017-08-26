@@ -115,7 +115,7 @@ public:
 
 	static const lib::string& name() { return "simple_fragment"; }
 
-	void set_framebuffer(gl::framebuffer &fb) {
+	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
 	}
 
@@ -215,7 +215,7 @@ public:
 																							   device().get_surface().extent()))
 	{
 		hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
-		frag1.set_framebuffer(hdr_fb);
+		frag1.attach_framebuffer(hdr_fb);
 
 		fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 		hdr.attach_framebuffer(fxaa_fb);
@@ -239,7 +239,7 @@ public:
 																																						 device().get_surface().extent()));
 
 			hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
-			frag1.set_framebuffer(hdr_fb);
+			frag1.attach_framebuffer(hdr_fb);
 
 			fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 			hdr.attach_framebuffer(fxaa_fb);
