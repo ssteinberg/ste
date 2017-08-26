@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 #include <device_pipeline_exceptions.hpp>
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 
 #include <pipeline_external_binding_layout.hpp>
 #include <pipeline_resource_binding_queue.hpp>
@@ -22,7 +22,7 @@ private:
 	lib::string name;
 	const pipeline_external_binding_layout *binding;
 
-	pipeline_external_binding_set_collection *external_binding_set_collection;
+	pipeline_external_binding_set *external_binding_set_collection;
 
 private:
 	template <typename WriteType, typename T>
@@ -69,7 +69,7 @@ public:
 	pipeline_external_resource_bind_point(pipeline_resource_binding_queue *q,
 										  const lib::string &name,
 										  const pipeline_external_binding_layout *binding,
-										  pipeline_external_binding_set_collection *external_binding_set_collection)
+										  pipeline_external_binding_set *external_binding_set_collection)
 		: queue(q), 
 		name(name), 
 		binding(binding),

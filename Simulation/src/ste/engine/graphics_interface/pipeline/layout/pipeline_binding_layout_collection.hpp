@@ -43,6 +43,8 @@ public:
 	auto begin() { return set.begin(); }
 	auto end() { return set.end(); }
 
+	auto size() const { return set.size(); }
+
 private:
 	friend bool operator<=(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);
 	friend bool operator<(const pipeline_binding_layout_collection &lhs, const pipeline_binding_layout_collection &rhs);

@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 #include <pipeline_auditor.hpp>
 #include <pipeline_layout.hpp>
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 
 #include <device_pipeline_shader_stage.hpp>
 #include <pipeline_layout_exceptions.hpp>
@@ -122,21 +122,21 @@ public:
 	*	@brief	Generates a pipeline from the specifications recorded to the auditor.
 	*
 	*	@param	ctx				Context
-	*	@param	external_binding_sets	A list of binding set layouts that are assumed to be created and bound by an external system.
+	*	@param	external_binding_set	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
 	auto pipeline(const ste_context &ctx,
-				  optional<std::reference_wrapper<pipeline_external_binding_set_collection>> external_binding_sets) const {
+				  optional<std::reference_wrapper<pipeline_external_binding_set>> external_binding_set) const {
 		auto layout = lib::allocate_unique<pipeline_layout>(ctx,
 															stages(),
-															external_binding_sets);
+															external_binding_set);
 		return device_pipeline_graphics(device_pipeline_graphics::ctor(),
 										ctx,
 										pipeline_settings,
 										vertex_input_descriptors.get_vk_descriptors(),
 										fb_layout,
 										std::move(layout),
-										external_binding_sets);
+										external_binding_set);
 	}
 	/**
 	*	@brief	See pipeline().
