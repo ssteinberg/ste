@@ -32,7 +32,7 @@ public:
 
 private:
 	bindings_vec_t bindings;
-	pipeline_layout_set_index set_idx{ 0 };
+	pipeline_layout_set_index set_idx;
 	name_bindings_map_t name_map;
 
 	vk::vk_descriptor_set_layout<> vk_layout;
@@ -60,13 +60,12 @@ private:
 
 public:
 	pipeline_binding_set_layout_impl(const vk::vk_logical_device<> &device,
-									 bindings_vec_t &&bindings)
+									 bindings_vec_t &&bindings,
+									 pipeline_layout_set_index set_idx)
 		: bindings(std::move(bindings)),
+		set_idx(set_idx),
 		vk_layout(generate_vk_layout(device))
 	{
-		assert(this->bindings.size());
-		set_idx = access_it<>(this->bindings.begin()).set_idx();
-
 		// Create name map
 		for (auto it = begin(); it != end(); ++it) {
 			assert(set_idx == access_it<>(it).set_idx());

@@ -44,9 +44,9 @@ private:
 	private:
 		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
 			// Bind external binding sets
-			if (pipeline->external_binding_sets != nullptr)
-				recorder << pipeline->external_binding_sets->cmd_bind(pipeline->get_pipeline_vk_bind_point(),
-																	  &pipeline->layout->get());
+			if (pipeline->external_binding_set != nullptr)
+				recorder << pipeline->external_binding_set->cmd_bind(pipeline->get_pipeline_vk_bind_point(),
+																	 &pipeline->layout->get());
 			// Bind pipeline's binding sets
 			recorder << pipeline->binding_sets.cmd_bind(pipeline->get_pipeline_vk_bind_point());
 
@@ -83,7 +83,7 @@ protected:
 	pipeline_binding_set_collection binding_sets;
 
 	// External binding sets
-	pipeline_external_binding_set_collection *external_binding_sets;
+	pipeline_external_binding_set *external_binding_set;
 
 	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
 
@@ -98,12 +98,14 @@ private:
 			old_resources.binding_sets = binding_sets.recreate_sets(ctx.get().device(), 
 																	recreate_indices,
 																	&old_resources.binding_set_layouts);
-			if (external_binding_sets) {
-				// And external set too, if needed
-				old_resources.external_binding_sets = external_binding_sets->recreate_sets(ctx.get().device(),
-																						   recreate_indices,
-																						   &old_resources.binding_set_layouts);
-			}
+			// TODO
+//			if (external_binding_set && 
+//				recreate_indices.find(external_binding_set->set_idx()) != recreate_indices.end()) {
+//				// And external set too, if needed
+//				old_resources.external_binding_set = external_binding_set->recreate_set(ctx.get().device(),
+//																						   recreate_indices,
+//																						   &old_resources.binding_set_layouts);
+//			}
 		}
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
@@ -152,12 +154,12 @@ protected:
 
 	device_pipeline(const ste_context &ctx,
 					lib::unique_ptr<pipeline_layout> &&layout,
-					optional<std::reference_wrapper<pipeline_external_binding_set_collection>> external_binding_sets)
+					optional<std::reference_wrapper<pipeline_external_binding_set>> external_binding_set)
 		: ctx(ctx),
 		layout(std::move(layout)),
 		binding_sets(*this->layout,
 					 ctx.device().binding_set_pool()),
-		external_binding_sets(external_binding_sets ? &external_binding_sets.get().get() : nullptr)
+		external_binding_set(external_binding_set ? &external_binding_set.get().get() : nullptr)
 	{}
 
 public:

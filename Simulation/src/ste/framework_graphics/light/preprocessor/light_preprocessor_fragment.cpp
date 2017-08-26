@@ -8,6 +8,7 @@ using namespace ste;
 using namespace ste::graphics;
 
 void light_preprocessor_fragment::set_projection_planes() const {
+	// TODO
 	glm::vec4 np;
 	glm::vec4 fp;
 	glm::vec4 rp;
@@ -28,20 +29,3 @@ void light_preprocessor_fragment::set_projection_planes() const {
 //	light_preprocess_cull_lights_program.get().set_uniform("tp", tp);
 //	light_preprocess_cull_lights_program.get().set_uniform("bp", bp);
 }
-//
-//void light_preprocessor::set_context_state() const {
-//	ls->bind_lights_buffer(2);
-//	4_atomic_idx = ls->get_active_ll_counter();
-//	5_storage_idx = ls->get_active_ll();
-//
-//	light_preprocess_cull_lights_program.get().bind();
-//}
-//
-//void light_preprocessor::dispatch() const {
-//	constexpr int jobs = 128;
-//	auto size = (ls->size() + jobs - 1) / jobs;
-//
-//	ls->clear_active_ll();
-//	gl::gl_current_context::get()->memory_barrier(GL_SHADER_STORAGE_BARRIER_BIT);
-//	Core::gl::gl_current_context::get()->dispatch_compute(size, 1, 1);
-//}

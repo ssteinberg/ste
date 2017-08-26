@@ -23,18 +23,5 @@ enum class pipeline_dynamic_state : std::uint32_t {
 	discard_rectangle_ext = VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT,
 };
 
-constexpr auto operator|(const pipeline_dynamic_state &lhs, const pipeline_dynamic_state &rhs) {
-	using T = std::underlying_type_t<pipeline_dynamic_state>;
-	return static_cast<pipeline_dynamic_state>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const pipeline_dynamic_state &lhs, const pipeline_dynamic_state &rhs) {
-	using T = std::underlying_type_t<pipeline_dynamic_state>;
-	return static_cast<pipeline_dynamic_state>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const pipeline_dynamic_state &lhs, const pipeline_dynamic_state &rhs) {
-	using T = std::underlying_type_t<pipeline_dynamic_state>;
-	return static_cast<pipeline_dynamic_state>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

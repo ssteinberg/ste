@@ -4,17 +4,15 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 
 #include <rendering_presentation_system.hpp>
 #include <presentation_engine.hpp>
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 
 #include <camera.hpp>
 #include <camera_projection_reversed_infinite_perspective.hpp>
 #include <scene.hpp>
-
-#include <ste_context.hpp>
-#include <ste_resource.hpp>
 
 #include <primary_renderer_buffers.hpp>
 #include <primary_renderer_framebuffers.hpp>
@@ -49,8 +47,8 @@ private:
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
-	ste_resource<primary_renderer_buffers> buffers;
-	ste_resource<primary_renderer_framebuffers> framebuffers;
+	primary_renderer_buffers buffers;
+	primary_renderer_framebuffers framebuffers;
 
 private:
 	deferred_composer composer;
@@ -89,8 +87,8 @@ public:
 					 const atmospherics_properties<double> &atmospherics_prop);
 	~primary_renderer() noexcept {}
 
-	const gl::pipeline_external_binding_set_collection* external_binding_sets() const override final {
-		return &buffers->common_binding_set_collection;
+	gl::pipeline_external_binding_set* external_binding_set() const override final {
+		return &buffers.common_binding_set_collection;
 	}
 
 	/**

@@ -31,18 +31,5 @@ enum class blend_factor : std::uint32_t {
 	one_minus_src1_alpha = VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA,
 };
 
-constexpr auto operator|(const blend_factor &lhs, const blend_factor &rhs) {
-	using T = std::underlying_type_t<blend_factor>;
-	return static_cast<blend_factor>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const blend_factor &lhs, const blend_factor &rhs) {
-	using T = std::underlying_type_t<blend_factor>;
-	return static_cast<blend_factor>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const blend_factor &lhs, const blend_factor &rhs) {
-	using T = std::underlying_type_t<blend_factor>;
-	return static_cast<blend_factor>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

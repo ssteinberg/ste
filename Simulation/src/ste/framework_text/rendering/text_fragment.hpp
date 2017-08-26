@@ -88,7 +88,7 @@ public:
 		if (updated) {
 			// Add pipeline barrier in case text was updated
 			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																	  gl::pipeline_stage::vertex_shader,
+																	  gl::pipeline_stage::vertex_input,
 																	  gl::buffer_memory_barrier(*vertex_buffer,
 																								gl::access_flags::transfer_write,
 																								gl::access_flags::vertex_attribute_read)));

@@ -19,18 +19,5 @@ enum class compare_op : std::uint32_t {
 	always = VK_COMPARE_OP_ALWAYS,
 };
 
-constexpr auto operator|(const compare_op &lhs, const compare_op &rhs) {
-	using T = std::underlying_type_t<compare_op>;
-	return static_cast<compare_op>(static_cast<T>(lhs) | static_cast<T>(rhs));
-}
-constexpr auto operator&(const compare_op &lhs, const compare_op &rhs) {
-	using T = std::underlying_type_t<compare_op>;
-	return static_cast<compare_op>(static_cast<T>(lhs) & static_cast<T>(rhs));
-}
-constexpr auto operator^(const compare_op &lhs, const compare_op &rhs) {
-	using T = std::underlying_type_t<compare_op>;
-	return static_cast<compare_op>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
-}
-
 }
 }

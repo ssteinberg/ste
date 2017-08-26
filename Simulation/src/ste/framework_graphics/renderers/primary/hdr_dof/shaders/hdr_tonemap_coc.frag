@@ -5,10 +5,8 @@
 #include <chromaticity.glsl>
 #include <hdr_common.glsl>
 
-#include <renderer_transform_buffers.glsl>
-
 layout(binding = 0) uniform sampler2D hdr;
-layout(binding = 1) uniform sampler1D hdr_vision_properties_texture;
+layout(binding = 1) uniform sampler2D hdr_vision_properties_texture;
 
 layout(std430, binding = 2) restrict readonly buffer histogram_sums {
 	uint histogram[bins];
@@ -54,7 +52,7 @@ void main() {
 	float x = hdr_texel.z;
 
 	float vision_properties_coord = (x - min_luminance) / (vision_properties_max_lum - min_luminance);
-	vec4 vision_properties = texture(hdr_vision_properties_texture, vision_properties_coord);
+	vec4 vision_properties = texture(hdr_vision_properties_texture, vec2(vision_properties_coord, 0.5f));
 	float scotopic = vision_properties.x;
 	float mesopic = vision_properties.y;
 	float monochr = vision_properties.z;

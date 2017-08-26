@@ -93,7 +93,7 @@ auto inline queue_transfer(const ste_context &ctx,
 	using semaphore_t = ste_device_sync_primitives_pools::semaphore_pool_t::resource_t;
 	using user_data_t = lib::shared_ptr<semaphore_t>;
 	auto user_data = lib::allocate_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
-	auto release_acquire_boundary = lib::allocate_shared<boundary<void>>();
+	const auto release_acquire_boundary = lib::allocate_shared<boundary<void>>();
 
 	src_queue.enqueue([=, &image]() {
 		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
@@ -108,7 +108,7 @@ auto inline queue_transfer(const ste_context &ctx,
 																		  src_access,
 																		  src_family,
 																		  src_layout,
-																		  dst_access,
+																		  access_flags::none,
 																		  dst_family,
 																		  dst_layout));
 			recorder << cmd_pipeline_barrier(barrier);
@@ -128,7 +128,7 @@ auto inline queue_transfer(const ste_context &ctx,
 			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(image,
-																		  src_access,
+																		  access_flags::none,
 																		  src_family,
 																		  dst_layout,
 																		  dst_access,
@@ -180,11 +180,10 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
 								   image_layout src_layout,
-								   access_flags src_access,
 								   image_layout dst_layout,
 								   access_flags dst_access) {
 	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
-	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
+	const ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
 	auto future = dst_queue.enqueue([=, &image]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
@@ -195,7 +194,7 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											stage,
 											queue_release_acquire_barrier(image,
-																		  src_access,
+																		  access_flags::none,
 																		  0,
 																		  src_layout,
 																		  dst_access,
@@ -229,8 +228,9 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								  image,
 								  dst_queue_selector,
 								  stage,
-								  src_layout, access_flags_for_image_layout(src_layout),
-								  dst_layout, access_flags_for_image_layout(dst_layout));
+								  src_layout, 
+								  dst_layout, 
+								  access_flags_for_image_layout(dst_layout));
 }
 
 }
