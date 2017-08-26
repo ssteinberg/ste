@@ -8,7 +8,7 @@
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
 
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 #include <external_binding_set_collection_from_shader_stages.hpp>
 #include <device_pipeline_shader_stage.hpp>
 #include <scene.hpp>
@@ -32,7 +32,7 @@ class primary_renderer_buffers {
 	using camera_t = camera<float, camera_projection_reversed_infinite_perspective>;
 
 private:
-	static gl::pipeline_external_binding_set_collection create_common_binding_set_collection(const ste_context &ctx,
+	static gl::pipeline_external_binding_set create_common_binding_set_collection(const ste_context &ctx,
 																							 const renderer_transform_buffers &transform_buffers,
 																							 const linked_light_lists &linked_light_list_storage,
 																							 const deferred_gbuffer &gbuffer,
@@ -51,7 +51,7 @@ private:
 
 			v.emplace_back(stages, std::move(common_bindings_spirv));
 		}
-		gl::pipeline_external_binding_set_collection set{ 
+		gl::pipeline_external_binding_set set{ 
 			gl::external_binding_set_collection_from_shader_stages(ctx.device(),
 																   std::move(v)).generate() 
 		};
@@ -126,7 +126,7 @@ private:
 	ste_resource<linked_light_lists> linked_light_list_storage;
 	ste_resource<volumetric_scattering_storage> vol_scat_storage;
 
-	mutable gl::pipeline_external_binding_set_collection common_binding_set_collection;
+	mutable gl::pipeline_external_binding_set common_binding_set_collection;
 
 public:
 	primary_renderer_buffers(const ste_context &ctx,

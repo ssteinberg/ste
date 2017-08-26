@@ -8,7 +8,7 @@
 
 #include <rendering_presentation_system.hpp>
 #include <presentation_engine.hpp>
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 
 #include <camera.hpp>
 #include <camera_projection_reversed_infinite_perspective.hpp>
@@ -87,7 +87,7 @@ public:
 					 const atmospherics_properties<double> &atmospherics_prop);
 	~primary_renderer() noexcept {}
 
-	gl::pipeline_external_binding_set_collection* external_binding_sets() const override final {
+	gl::pipeline_external_binding_set* external_binding_set() const override final {
 		return &buffers.common_binding_set_collection;
 	}
 

@@ -28,7 +28,7 @@ protected:
 
 private:
 	static auto create_compute_pipeline(const ste_context &ctx,
-										pipeline_external_binding_set_collection* external_binding_sets_collection,
+										pipeline_external_binding_set* external_binding_sets_collection,
 										device_pipeline_shader_stage &shader_stage) {
 		// Compute pipeline auditor
 		pipeline_auditor_compute auditor(shader_stage);
@@ -45,7 +45,7 @@ protected:
 					 const lib::string &shader_stage_name)
 		: shader_stage(rs.get_creating_context(), shader_stage_name),
 		pipeline(create_compute_pipeline(rs.get_creating_context(),
-										 rs.external_binding_sets(),
+										 rs.external_binding_set(),
 										 this->shader_stage))
 	{}
 

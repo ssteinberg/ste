@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 #include <ste_resource_traits.hpp>
 
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 
 #include <storage.hpp>
 
@@ -96,7 +96,7 @@ public:
 	/**
 	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.
 	*/
-	virtual pipeline_external_binding_set_collection* external_binding_sets() const { return nullptr; }
+	virtual pipeline_external_binding_set* external_binding_set() const { return nullptr; }
 };
 
 }
