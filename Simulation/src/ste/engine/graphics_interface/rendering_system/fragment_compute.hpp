@@ -28,7 +28,7 @@ protected:
 
 private:
 	static auto create_compute_pipeline(const ste_context &ctx,
-										pipeline_external_binding_set* external_binding_sets_collection,
+										const pipeline_external_binding_set* external_binding_sets_collection,
 										device_pipeline_shader_stage &shader_stage) {
 		// Compute pipeline auditor
 		pipeline_auditor_compute auditor(shader_stage);

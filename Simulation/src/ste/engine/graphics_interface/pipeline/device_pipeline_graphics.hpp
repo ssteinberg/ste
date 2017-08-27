@@ -162,7 +162,7 @@ public:
 							 const pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor &vertex_input_descriptor,
 							 const framebuffer_layout &fb_layout,
 							 lib::unique_ptr<pipeline_layout> &&layout,
-							 optional<std::reference_wrapper<pipeline_external_binding_set>> external_binding_set)
+							 optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
 		: Base(ctx,
 			   std::move(layout),
 			   external_binding_set),

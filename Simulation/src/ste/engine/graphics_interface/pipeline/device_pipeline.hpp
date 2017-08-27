@@ -83,29 +83,33 @@ protected:
 	pipeline_binding_set_collection binding_sets;
 
 	// External binding sets
-	pipeline_external_binding_set *external_binding_set;
+	const pipeline_external_binding_set *external_binding_set;
 
 	pipeline_layout::set_layout_modified_signal_t::connection_type set_modified_connection;
 
 private:
 	void prebind_update() {
+		// Sanity check. Make sure the external binding set was updated. This is the external binding set's owner responsibility.
+		if (external_binding_set &&
+			(external_binding_set->has_pending_writes() || external_binding_set->is_invalidated())) {
+			throw pipeline_layout_exception("External binding set not updated and/or has pending writes");
+		}
+
 		// Store old resources, and delete them in a controlled manner without disrupting current submitted commands.
 		device_pipeline_resources_marked_for_deletion old_resources;
 
 		// Update sets, as needed
-		auto recreate_indices = layout->get_modified_sets_queue();
+		auto recreate_indices = layout->read_and_clear_modified_sets_queue();
 		if (recreate_indices.size()) {
+			// Recreate set layouts
+			for (auto &set_idx : recreate_indices) {
+				auto old_set_layout = layout->recreate_set_layout(set_idx);
+				old_resources.binding_set_layouts.push_back(std::move(old_set_layout));
+			}
+
+			// Recreate sets
 			old_resources.binding_sets = binding_sets.recreate_sets(ctx.get().device(), 
-																	recreate_indices,
-																	&old_resources.binding_set_layouts);
-			// TODO
-//			if (external_binding_set && 
-//				recreate_indices.find(external_binding_set->set_idx()) != recreate_indices.end()) {
-//				// And external set too, if needed
-//				old_resources.external_binding_set = external_binding_set->recreate_set(ctx.get().device(),
-//																						   recreate_indices,
-//																						   &old_resources.binding_set_layouts);
-//			}
+																	recreate_indices);
 		}
 
 		// Recreate pipeline if pipeline layout was invalidated for any reason
@@ -154,7 +158,7 @@ protected:
 
 	device_pipeline(const ste_context &ctx,
 					lib::unique_ptr<pipeline_layout> &&layout,
-					optional<std::reference_wrapper<pipeline_external_binding_set>> external_binding_set)
+					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
 		: ctx(ctx),
 		layout(std::move(layout)),
 		binding_sets(*this->layout,

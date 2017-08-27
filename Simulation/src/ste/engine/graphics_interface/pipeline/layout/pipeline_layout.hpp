@@ -30,6 +30,7 @@
 #include <alias.hpp>
 #include <anchored.hpp>
 #include <connection.hpp>
+#include <atomic_pod.hpp>
 
 namespace ste {
 namespace gl {
@@ -93,7 +94,7 @@ private:
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 
 	// If for any reason pipeline layout has changed, mark it and let device_pipeline recreate the pipeline when applicable.
-	bool layout_invalidated_flag{ false };
+	atomic_pod<bool> layout_invalidated_flag{ false };
 
 private:
 	static void update_variable(variable_map_t &map,
@@ -261,13 +262,14 @@ private:
 	*/
 	void invalidate_set_layout(const pipeline_layout_set_index &index) {
 		set_layouts_modified_queue.insert(index);
+		std::atomic_thread_fence(std::memory_order_release);
 	}
 
 	/**
 	*	@brief	Flags the pipeline layout invalid
 	*/
 	void invalidate_layout() {
-		layout_invalidated_flag = true;
+		layout_invalidated_flag.get().store(true, std::memory_order_release);
 	}
 
 	/**
@@ -370,6 +372,8 @@ private:
 		external_binding_set_invalidated_connection = make_connection(external_binding_set.get_signal_set_invalidated(), [this](auto) {
 			// External binding set was invalidated, add to set recreation queue and invalidate layout.
 			set_layouts_modified_queue.insert(this->external_binding_set->set_idx());
+			std::atomic_thread_fence(std::memory_order_release);
+
 			invalidate_layout();
 		});
 		external_binding_set_constant_specialized_connection = make_connection(external_binding_set.get_signal_specialization_change(),
@@ -489,9 +493,10 @@ public:
 	 *	@throws	pipeline_layout_exception	If set index not found
 	 */
 	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
-		if (bindings_set_layouts.size() <= set_idx)
+		if (bindings_set_layouts.size() <= set_idx) {
 			// Not found
 			throw pipeline_layout_exception("Set does not exist");
+		}
 
 		return bindings_set_layouts[set_idx].recreate(ctx.get().device());
 	}
@@ -525,26 +530,29 @@ public:
 		// Save old layout
 		auto old_layout = std::move(layout);
 
-		// Create pipeline layout and raise layout invalidated flag
+		// Create pipeline layout
 		layout = lib::allocate_unique<vk::vk_pipeline_layout<>>(ctx.get().device(),
 																set_layout_ptrs,
 																push_constant_layouts);
-		layout_invalidated_flag = false;
+		// Erase invalid flag
+		layout_invalidated_flag.get().store(false, std::memory_order_relaxed);
 
 		return old_layout;
 	}
 
 	/**
-	*	@brief	Returns the status of the layout invalid flag.
+	*	@brief	Returns the status of the layout invalid flag
 	*/
-	auto is_layout_invalidated() {
-		return layout_invalidated_flag;
+	auto is_layout_invalidated() const {
+		return layout_invalidated_flag.get().load(std::memory_order_acquire);
 	}
 
 	/**
 	 *	@brief	Returns a copy of the queue of modified set indices, and clears the queue.
 	 */
-	auto get_modified_sets_queue() {
+	auto read_and_clear_modified_sets_queue() {
+		std::atomic_thread_fence(std::memory_order_acquire);
+
 		auto v = set_layouts_modified_queue;
 		set_layouts_modified_queue.clear();
 
@@ -571,8 +579,6 @@ public:
 	}
 
 	auto& get() const { return *layout; }
-
-	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
 
 	auto& set_layouts() const { return bindings_set_layouts; }
 

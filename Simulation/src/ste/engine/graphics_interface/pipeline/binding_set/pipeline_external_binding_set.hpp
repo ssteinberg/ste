@@ -20,6 +20,7 @@
 #include <lib/unique_ptr.hpp>
 #include <alias.hpp>
 #include <signal.hpp>
+#include <atomic_pod.hpp>
 
 namespace ste {
 namespace gl {
@@ -57,6 +58,7 @@ private:
 	mutable signal_specialization_change_t signal_specialization_change;
 	mutable signal_set_invalidated_t signal_set_invalidated;
 
+	atomic_pod<bool> set_invalidated_flag{ false };
 	pipeline_resource_binding_queue binding_queue;
 
 private:
@@ -119,6 +121,7 @@ private:
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
 		if (spec_dependant_array_variables.find(var) != spec_dependant_array_variables.end()) {
 			// Signal set invalidation, the set should be recreated.
+			set_invalidated_flag.get().store(true, std::memory_order_release);
 			signal_set_invalidated.emit(this);
 		}
 	}
@@ -197,32 +200,33 @@ public:
 	pipeline_external_binding_set &operator=(pipeline_external_binding_set&&) = default;
 
 	/**
-	*	@brief	Rebuilds the set and layout
+	 *	@brief	Rebuilds the set and layout
 	 *
 	 *	@param	device			Creating device
-	 *	@param	old_layouts		If non-null, old set layout will be pushed into this vector.
-	*
-	*	@return	Returns the old set
-	*/
+	 *	@param	old_layouts		If non-null, old set layouts will be moved and pushed back into this vector.
+	 *
+	 *	@return	Returns the old set
+	 */
 	auto recreate_set(const vk::vk_logical_device<> &device,
 					  lib::vector<vk::vk_descriptor_set_layout<>> *old_layouts = nullptr) {
-		lib::vector<const layout_t*> layout_ptrs;
 
-		// Recreate layout
+		// Recreate layout and store old
 		auto old_layout = layout.recreate(device);
-
-		// Store old
-		auto old_set = std::move(*set);
 		if (old_layouts)
 			old_layouts->push_back(std::move(old_layout));
 
-		layout_ptrs.push_back(&layout);
+		// Store old set
+		auto old_set = std::move(*set);
 
 		// Allocate the new set
+		const lib::vector<const layout_t*> layout_ptrs = { &layout };
 		*set = std::move(pool.get().allocate_binding_sets<layout_t>(layout_ptrs)[0]);
 
 		// Copy bindings from old set
 		set->copy(old_set);
+
+		// Erase invalid flag
+		set_invalidated_flag.get().store(false, std::memory_order_relaxed);
 
 
 		return old_set;
@@ -233,26 +237,12 @@ public:
 	*/
 	pipeline_external_resource_bind_point operator[](const lib::string &resource_name);
 
-	auto set_idx() const { return set_index; }
-	auto& get_set() const { return *set; }
-	auto& get_layout() const { return layout; }
-
 	/**
 	 *	@brief	Updates resource writes
 	 */
 	void update() {
 		write_binding_queue();
 	}
-
-	/**
-	 *	@brief	Returns the specialization constant modified signal
-	 */
-	auto& get_signal_specialization_change() const { return signal_specialization_change; }
-
-	/**
-	 *	@brief	Returns the set invalidated signal
-	 */
-	auto& get_signal_set_invalidated() const { return signal_set_invalidated; }
 
 	/**
 	*	@brief	Binds the binding set collection
@@ -263,6 +253,30 @@ public:
 						  bind_point,
 						  layout);
 	}
+
+	/**
+	*	@brief	Returns the status of the set invalid flag.
+	*/
+	auto is_invalidated() const {return set_invalidated_flag.get().load(std::memory_order_acquire); }
+
+	/**
+	 *	@brief	Checks if the binding queue has unwritten resources
+	 */
+	auto has_pending_writes() const { return binding_queue.empty(); }
+
+	auto set_idx() const { return set_index; }
+	auto& get_set() const { return *set; }
+	auto& get_layout() const { return layout; }
+
+	/**
+	 *	@brief	Returns the specialization constant modified signal
+	 */
+	auto& get_signal_specialization_change() const { return signal_specialization_change; }
+
+	/**
+	 *	@brief	Returns the set invalidated signal
+	 */
+	auto& get_signal_set_invalidated() const { return signal_set_invalidated; }
 };
 
 }

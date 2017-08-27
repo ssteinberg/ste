@@ -37,7 +37,7 @@ private:
 	template <typename RenderingSystem, typename... Names>
 	static auto create_graphics_pipeline(const RenderingSystem &rs,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
-										 pipeline_external_binding_set* external_binding_sets_collection,
+										 const pipeline_external_binding_set* external_binding_sets_collection,
 										 optional<framebuffer_layout> &&fb_layout,
 										 lib::vector<device_pipeline_shader_stage> &out_shader_stages,
 										 Names&&... shader_stages_names) {
