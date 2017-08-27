@@ -126,7 +126,7 @@ public:
 	*									The pipeline will only check compatibility with the provided shader stages.
 	*/
 	auto pipeline(const ste_context &ctx,
-				  optional<std::reference_wrapper<pipeline_external_binding_set>> external_binding_set) const {
+				  optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set) const {
 		auto layout = lib::allocate_unique<pipeline_layout>(ctx,
 															stages(),
 															external_binding_set);

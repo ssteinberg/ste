@@ -33,7 +33,7 @@ public:
 	using shader_stages_input_vector_t = std::vector<std::pair<pipeline_binding_stages_collection, device_pipeline_shader_stage>>;
 
 private:
-	std::reference_wrapper<const ste_device> device;
+	alias<const ste_device> device;
 	optional<pipeline_external_binding_set_layout> layout;
 
 public:

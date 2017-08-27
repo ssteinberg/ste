@@ -87,7 +87,7 @@ public:
 					 const atmospherics_properties<double> &atmospherics_prop);
 	~primary_renderer() noexcept {}
 
-	gl::pipeline_external_binding_set* external_binding_set() const override final {
+	const gl::pipeline_external_binding_set* external_binding_set() const override final {
 		return &buffers.common_binding_set_collection;
 	}
 

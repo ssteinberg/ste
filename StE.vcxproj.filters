@@ -174,6 +174,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\command\pipeline_external_binding_set_cmd_bind.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1902,6 +1905,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\command\pipeline_external_binding_set_cmd_bind.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\atomic\atomic_pod.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

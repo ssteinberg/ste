@@ -25,11 +25,11 @@ private:
 
 private:
 	collection_t sets;
-	alias<pipeline_layout> layout;
+	alias<const pipeline_layout> layout;
 	alias<pipeline_binding_set_pool> pool;
 
 public:
-	pipeline_binding_set_collection(pipeline_layout& layout,
+	pipeline_binding_set_collection(const pipeline_layout& layout,
 									pipeline_binding_set_pool &pool)
 		: layout(layout),
 		pool(pool)
@@ -56,7 +56,7 @@ public:
 	*
 	*	@throws	device_pipeline_incompatible_binding_sets_exception		If the above assumption is violated
 	*/
-	pipeline_binding_set_collection(pipeline_layout& layout,
+	pipeline_binding_set_collection(const pipeline_layout& layout,
 									pipeline_binding_set_pool &pool,
 									const pipeline_binding_set_collection &o)
 		: pipeline_binding_set_collection(layout,
@@ -83,26 +83,20 @@ public:
 	 *	
 	 *	@param	device			Creating device
 	 *	@param	set_indices		Indices of sets to recreate
-	 *	@param	old_layouts		If non-null, old set layouts will be moved to this vector.
 	 *	
 	 *	@return	Returns the old sets
 	 */
 	auto recreate_sets(const vk::vk_logical_device<> &device,
-					   const lib::flat_set<pipeline_layout_set_index> &set_indices,
-					   lib::vector<vk::vk_descriptor_set_layout<>> *old_layouts = nullptr) {
+					   const lib::flat_set<pipeline_layout_set_index> &set_indices) {
 		lib::vector<pipeline_binding_set> ret_old_sets;
 
 		lib::vector<const layout_t*> layouts;
 		layouts.reserve(set_indices.size());
 		for (auto &set_idx : set_indices) {
-			if (layout.get().set_layouts().size() <= set_idx)
-				continue;
-
-			// Recreate layout
-			auto old_layout = layout.get().recreate_set_layout(set_idx);
-			// Store old
-			if (old_layouts)
-				old_layouts->push_back(std::move(old_layout));
+			if (layout.get().set_layouts().size() <= set_idx) {
+				// Not found
+				throw pipeline_layout_exception("Set does not exist");
+			}
 
 			layouts.push_back(&layout.get().set_layouts()[set_idx]);
 		}

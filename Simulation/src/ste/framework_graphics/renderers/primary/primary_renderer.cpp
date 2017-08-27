@@ -94,6 +94,9 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 											  atmospherics_properties_update.get());
 		atmospherics_properties_update = none;
 	}
+
+	// Update common binding set
+	buffers.update_common_binding_set();
 }
 
 void primary_renderer::present() {
