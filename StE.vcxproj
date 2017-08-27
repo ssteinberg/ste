@@ -572,6 +572,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_camera.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_framebuffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_write_gbuffer_fragment.hpp" />

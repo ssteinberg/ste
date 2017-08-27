@@ -13,7 +13,7 @@ layout(local_size_x = 128) in;
 #include <atmospherics.glsl>
 #include <light.glsl>
 
-uniform clip_planes {
+layout(push_constant) uniform clip_planes {
 	vec4 np, rp, lp, tp, bp;
 };
 

@@ -77,13 +77,8 @@ public:
 	*	@brief	Unprojects a screen position, given with depth value and normalized screen coordinates, into eye space.
 	*/
 	glm::tvec3<T> unproject_screen_position(const T &depth, const glm::tvec2<T> &norm_frag_coords) const final override {
-		auto t = norm_frag_coords * static_cast<T>(2);
-		t -= glm::tvec2<T>(1);
-
 		float z = unproject_depth(depth);
-		glm::tvec2<T> xy = (t * z) / glm::tvec2<T>(proj_xywz.x, proj_xywz.y);
-
-		return glm::tvec3<T>(-xy.x, -xy.y, z);
+		return unproject_screen_position_with_z(z, norm_frag_coords);
 	}
 
 	/*

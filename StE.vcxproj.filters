@@ -1910,6 +1910,9 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\atomic\atomic_pod.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

@@ -50,7 +50,8 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	linked_light_list_generator(*this,
 								&buffers.linked_light_list_storage.get()),
 	light_preprocess(*this,
-					 &s->properties().lights_storage()),
+					 &s->properties().lights_storage(),
+					 *cam),
 
 	shadows_projector(*this,
 					  s),
@@ -61,8 +62,8 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 						 &buffers.vol_scat_storage.get(),
 						 &s->properties().lights_storage())
 {
-	// Attach a signal to swapchain surface resize signal
-	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](const gl::ste_device*) {
+	// Attach a connection to swapchain's surface resize signal
+	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](auto) {
 		// Resize buffers and framebuffers
 		buffers.resize(ctx.device().get_surface().extent());
 		framebuffers.resize(ctx.device().get_surface().extent());
@@ -74,6 +75,14 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		hdr.attach_framebuffer(framebuffers.fxaa_input_fb);
 		hdr.set_input_image(&framebuffers.hdr_input_image.get());
 		fxaa.set_input_image(&framebuffers.fxaa_input_image.get());
+	});
+
+	// Attach a connection to camera's projection change signal
+	camera_projection_change_signal = make_connection(cam->get_projection_change_signal(), [this](auto, auto) {
+		// Update buffers and fragments that rely on projection data
+		buffers.invalidate_projection_buffer();
+
+		light_preprocess.update_projection_planes(*this->cam);
 	});
 }
 
