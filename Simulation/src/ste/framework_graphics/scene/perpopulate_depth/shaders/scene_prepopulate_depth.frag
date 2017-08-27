@@ -4,10 +4,6 @@
 
 #include <material.glsl>
 
-layout(std430, binding = 13) restrict readonly buffer material_data {
-	material_descriptor mat_descriptor[];
-};
-
 in scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;

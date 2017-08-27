@@ -1,0 +1,18 @@
+
+#type compute
+#version 450
+
+#include <renderer_transform_buffers.glsl>
+
+#include <mesh_descriptor.glsl>
+#include <material.glsl>
+
+#include <light.glsl>
+#include <linked_light_lists.glsl>
+
+#include <gbuffer.glsl>
+
+#include <shadow.glsl>
+
+void main() {
+}

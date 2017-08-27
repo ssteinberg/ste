@@ -21,13 +21,13 @@
 #include <profiler.hpp>
 
 #include <scene.hpp>
-#include <scene_prepopulate_depth_dispatch.hpp>
-#include <scene_geo_cull_dispatch.hpp>
+#include <scene_prepopulate_depth_fragment.hpp>
+#include <scene_geo_cull_fragment.hpp>
 
 #include <light.hpp>
-#include <light_preprocessor.hpp>
+#include <light_preprocessor_fragment.hpp>
 #include <linked_light_lists.hpp>
-#include <linked_light_lists_gen_dispatch.hpp>
+#include <linked_light_lists_gen_fragment.hpp>
 
 #include <hdr_dof_postprocess.hpp>
 
@@ -38,7 +38,7 @@
 #include <directional_shadowmap_projector.hpp>
 
 #include <volumetric_scattering_storage.hpp>
-#include <volumetric_scattering_scatter_dispatch.hpp>
+#include <volumetric_scattering_scatter_fragment.hpp>
 
 #include <deferred_composer.hpp>
 
@@ -99,17 +99,17 @@ private:
 	resource::resource_instance<hdr_dof_postprocess> hdr;
 
 	resource::resource_instance<gbuffer_downsample_depth_dispatch> downsample_depth;
-	resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_depth_dispatch;
-	resource::resource_instance<scene_prepopulate_depth_dispatch> prepopulate_backface_depth_dispatch;
-	resource::resource_instance<scene_geo_cull_dispatch> scene_geo_cull;
+	resource::resource_instance<scene_prepopulate_depth_fragment> prepopulate_depth_dispatch;
+	resource::resource_instance<scene_prepopulate_depth_fragment> prepopulate_backface_depth_dispatch;
+	resource::resource_instance<scene_geo_cull_fragment> scene_geo_cull;
 
-	resource::resource_instance<linked_light_lists_gen_dispatch> lll_gen_dispatch;
-	resource::resource_instance<light_preprocessor> light_preprocess;
+	resource::resource_instance<linked_light_lists_gen_fragment> lll_gen_dispatch;
+	resource::resource_instance<light_preprocessor_fragment> light_preprocess;
 
 	resource::resource_instance<shadowmap_projector> shadows_projector;
 	resource::resource_instance<directional_shadowmap_projector> directional_shadows_projector;	
 
-	resource::resource_instance<volumetric_scattering_scatter_dispatch> vol_scat_scatter;
+	resource::resource_instance<volumetric_scattering_scatter_fragment> vol_scat_scatter;
 
 	lib::shared_ptr<const gpu_task> scene_task,
 									composer_task,

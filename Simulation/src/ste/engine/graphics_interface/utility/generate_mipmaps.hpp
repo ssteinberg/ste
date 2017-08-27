@@ -63,11 +63,16 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 
 			// Record and submit a one-time batch
 			{
+				pipeline_stage pipeline_stages_for_initial_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(initial_layout));
+				pipeline_stage pipeline_stages_for_final_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(final_layout));
+
 				auto recorder = command_buffer.record();
 
 				for (; m < mip_levels; ++m) {
+					pipeline_stage src_stage = m == start_level ? pipeline_stage::bottom_of_pipe : pipeline_stage::transfer;
+
 					// Move to transfer layouts
-					auto barrier = pipeline_barrier(m == start_level ? pipeline_stage::bottom_of_pipe : pipeline_stage::transfer,
+					auto barrier = pipeline_barrier(src_stage | pipeline_stages_for_initial_layout,
 													pipeline_stage::transfer,
 													image_memory_barrier(image,
 																		 initial_layout,
@@ -117,8 +122,8 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 																  final_layout,
 																  0, start_level - 1, 0, 1));
 				}
-				auto barrier = pipeline_barrier(pipeline_stage::transfer,
-												pipeline_stage::top_of_pipe,
+				auto barrier = pipeline_barrier(pipeline_stage::transfer | pipeline_stages_for_initial_layout,
+												pipeline_stages_for_final_layout,
 												{}, {}, image_barriers);
 				recorder << cmd_pipeline_barrier(barrier);
 			}

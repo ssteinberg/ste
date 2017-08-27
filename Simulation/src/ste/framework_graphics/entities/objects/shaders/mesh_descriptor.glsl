@@ -22,3 +22,11 @@ struct mesh_draw_params {
 vec3 transform_model(mesh_descriptor mesh, vec3 v) {
 	return vec4(v, 1) * mesh.model_transform_matrix;
 }
+
+layout(std430, set=2, binding=2) restrict readonly buffer mesh_descriptors_binding {
+	mesh_descriptor mesh_descriptor_buffer[];
+};
+
+layout(std430, set=2, binding=3) restrict readonly buffer mesh_draw_params_binding {
+	mesh_draw_params mesh_draw_params_buffer[];
+};

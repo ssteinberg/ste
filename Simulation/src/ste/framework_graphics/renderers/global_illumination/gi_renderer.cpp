@@ -1,6 +1,6 @@
-
+//
 #include <stdafx.hpp>
-// TODO
+//
 //#include <gi_renderer.hpp>
 //
 //#include <Quad.hpp>

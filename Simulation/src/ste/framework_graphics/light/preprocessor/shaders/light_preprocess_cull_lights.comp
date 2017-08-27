@@ -4,7 +4,7 @@
 
 layout(local_size_x = 128) in;
 
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 #include <common.glsl>
 #include <hdr_common.glsl>
@@ -13,20 +13,7 @@ layout(local_size_x = 128) in;
 #include <atmospherics.glsl>
 #include <light.glsl>
 
-layout(std430, binding = 2) restrict buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-// TODO: Binding changed
-layout(binding = 0) restrict buffer ll_counter_data {
-	uint ll_counter;
-};
-
-layout(std430, binding = 5) restrict writeonly buffer ll_data {
-	uint ll[];
-};
-
-uniform clip_planes {
+layout(push_constant) uniform clip_planes {
 	vec4 np, rp, lp, tp, bp;
 };
 

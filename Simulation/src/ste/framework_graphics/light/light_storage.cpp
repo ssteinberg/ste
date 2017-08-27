@@ -27,11 +27,10 @@ void light_storage::build_cascade_depth_array() {
 }
 
 void light_storage::update_directional_lights_cascades_buffer(gl::command_recorder &recorder,
-															  const camera<float> &cam, 
+															  const glm::dualquat &view_transform,
 															  float projection_near, 
 															  float projection_fovy, 
 															  float projection_aspect) {
-	auto view_transform = cam.view_transform_dquat();
 	auto projection_tan_half_fovy = glm::tan(projection_fovy * .5f);
 	
 	lib::vector<light_cascades_descriptor> update_data;

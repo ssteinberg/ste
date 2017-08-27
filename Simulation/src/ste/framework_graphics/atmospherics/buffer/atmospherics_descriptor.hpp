@@ -59,17 +59,17 @@ protected:
 			p.rayleigh_scattering_coefficient.z,
 			p.mie_scattering_coefficient };
 		data.scattering_coefficients() = scatter;
-		data.mie_absorption_coefficient() = p.ro0 * p.mie_absorption_coefficient;
-		data.phase() = p.phase;
+		data.mie_absorption_coefficient() = static_cast<float>(p.ro0 * p.mie_absorption_coefficient);
+		data.phase() = static_cast<float>(p.phase);
 
-		data.Hm() = p.scale_height_aerosols();
-		data.Hr() = p.scale_height();
+		data.Hm() = static_cast<float>(p.scale_height_aerosols());
+		data.Hr() = static_cast<float>(p.scale_height());
 
-		data.minus_one_over_Hm() = -1.f / data.Hm();
-		data.minus_one_over_Hr() = -1.f / data.Hr();
+		data.minus_one_over_Hm() = static_cast<float>(-1.f / data.Hm());
+		data.minus_one_over_Hr() = static_cast<float>(-1.f / data.Hr());
 
-		data.Hm_max() = p.max_height(data.Hm());
-		data.Hr_max() = p.max_height(data.Hr());
+		data.Hm_max() = static_cast<float>(p.max_height(data.Hm()));
+		data.Hr_max() = static_cast<float>(p.max_height(data.Hr()));
 	}
 
 public:

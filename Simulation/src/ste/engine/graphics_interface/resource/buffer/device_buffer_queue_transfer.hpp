@@ -73,7 +73,7 @@ auto inline queue_transfer(const ste_context &ctx,
 											queue_release_acquire_barrier(buffer,
 																		  src_access,
 																		  src_family,
-																		  dst_access,
+																		  access_flags::none,
 																		  dst_family));
 			recorder << cmd_pipeline_barrier(barrier);
 		}
@@ -91,7 +91,7 @@ auto inline queue_transfer(const ste_context &ctx,
 			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											dst_stage,
 											queue_release_acquire_barrier(buffer,
-																		  src_access,
+																		  access_flags::none,
 																		  src_family,
 																		  dst_access,
 																		  dst_family));
@@ -116,10 +116,9 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   const device_buffer_base &buffer,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
-								   access_flags src_access,
 								   access_flags dst_access) {
 	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
-	ste_queue_family dst_family = dst_queue.queue_descriptor().family;
+	const ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
 	auto future = dst_queue.enqueue([=, &buffer]() {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
@@ -130,7 +129,7 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 			auto barrier = pipeline_barrier(pipeline_stage::bottom_of_pipe,
 											stage,
 											queue_release_acquire_barrier(buffer,
-																		  src_access,
+																		  access_flags::none,
 																		  0,
 																		  dst_access,
 																		  dst_family));

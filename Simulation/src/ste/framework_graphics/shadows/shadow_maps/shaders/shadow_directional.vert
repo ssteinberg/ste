@@ -4,13 +4,9 @@
 #extension GL_ARB_shader_draw_parameters : enable
 
 #include <mesh_descriptor.glsl>
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
 layout(location = 1) in vec3 vert;
-
-layout(std430, binding = 14) restrict readonly buffer mesh_data {
-	mesh_descriptor mesh_descriptor_buffer[];
-};
 
 out vs_out {
 	flat int instanceIdx;

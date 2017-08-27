@@ -34,6 +34,8 @@ private:
 public:
 	using value_type = T;
 
+	using update_cmd_t = _internal::vector_cmd_update<array<T>>;
+
 private:
 	buffer_t buffer;
 
@@ -75,9 +77,9 @@ public:
 					   const lib::vector<T> &data) {
 		assert(idx + data.size() <= size());
 
-		return _internal::vector_cmd_update<array<T>>(data,
-													  idx,
-													  this);
+		return update_cmd_t(data,
+							idx,
+							this);
 	}
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.

@@ -12,7 +12,6 @@
 #include <pipeline_binding_set.hpp>
 #include <pipeline_binding_set_collection_cmd_bind.hpp>
 
-#include <lib/flat_map.hpp>
 #include <alias.hpp>
 
 namespace ste {
@@ -21,8 +20,8 @@ namespace gl {
 class pipeline_binding_set_collection {
 private:
 	using layout_t = pipeline_binding_set_layout;
-	using collection_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set>;
-	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind<pipeline_binding_set_collection>;
+	using collection_t = lib::vector<pipeline_binding_set>;
+	using cmd_bind_t = pipeline_binding_set_collection_cmd_bind;
 
 private:
 	collection_t sets;
@@ -35,28 +34,19 @@ public:
 		: layout(layout),
 		pool(pool)
 	{
-		const auto& binding_sets_layouts_map = layout.set_layouts();
-		if (!binding_sets_layouts_map.size())
+		const auto& binding_sets_layouts = layout.set_layouts();
+		if (!binding_sets_layouts.size())
 			return;
 
-		lib::vector<pipeline_layout_set_index> indices;
 		lib::vector<const layout_t*> layouts;
-		indices.reserve(binding_sets_layouts_map.size());
-		layouts.reserve(binding_sets_layouts_map.size());
-
-		for (auto &s : binding_sets_layouts_map) {
-			indices.push_back(s.first);
-			layouts.push_back(&s.second);
-		}
+		layouts.reserve(binding_sets_layouts.size());
+		for (std::size_t s = 0; s<binding_sets_layouts.size(); ++s)
+			layouts.push_back(&binding_sets_layouts[s]);
 
 		// Allocate
 		auto allocated_sets = pool.allocate_binding_sets<layout_t>(layouts);
-
-		// Sort
-		for (std::size_t i = 0; i<allocated_sets.size(); ++i) {
-			auto idx = indices[i];
-			sets.emplace(idx, std::move(allocated_sets[i]));
-		}
+		for (std::size_t i = 0; i<allocated_sets.size(); ++i)
+			sets.emplace_back(std::move(allocated_sets[i]));
 	}
 	~pipeline_binding_set_collection() noexcept {}
 
@@ -72,16 +62,15 @@ public:
 		: pipeline_binding_set_collection(layout,
 										  pool)
 	{
-		for (auto &s : o.sets) {
-			auto &idx = s.first;
+		for (auto &src : o.sets) {
+			auto &idx = src.get_set_index();
 
-			auto it = sets.find(idx);
-			if (it == sets.end())
+			if (sets.size() <= idx) {
+				assert(false);
 				continue;
+			}
 
-			pipeline_binding_set &dst = it->second;
-			const pipeline_binding_set &src = s.second;
-
+			pipeline_binding_set &dst = sets[idx];
 			dst.copy(src);
 		}
 	}
@@ -92,48 +81,47 @@ public:
 	/**
 	 *	@brief	Rebuilds the required sets
 	 *	
-	 *	#return	Returns the old sets
+	 *	@param	device			Creating device
+	 *	@param	set_indices		Indices of sets to recreate
+	 *	
+	 *	@return	Returns the old sets
 	 */
-	auto recreate_sets(const lib::vector<pipeline_layout_set_index> &set_indices) {
+	auto recreate_sets(const vk::vk_logical_device<> &device,
+					   const lib::flat_set<pipeline_layout_set_index> &set_indices) {
 		lib::vector<pipeline_binding_set> ret_old_sets;
 
 		lib::vector<const layout_t*> layouts;
-		auto &pipeline_layout_map = layout.get().set_layouts();
+		layouts.reserve(set_indices.size());
 		for (auto &set_idx : set_indices) {
-			// Define layout for new set
-			auto l_it = pipeline_layout_map.find(set_idx);
-			if (l_it == pipeline_layout_map.end()) {
-				// Layout not found.
-				assert(false);
-				return ret_old_sets;
+			if (layout.get().set_layouts().size() <= set_idx) {
+				// Not found
+				throw pipeline_layout_exception("Set does not exist");
 			}
-			auto *layout = &l_it->second;
 
-			layouts.push_back(layout);
+			layouts.push_back(&layout.get().set_layouts()[set_idx]);
 		}
 
 		// Allocate the new sets
 		lib::vector<pipeline_binding_set> new_sets = pool.get().allocate_binding_sets<layout_t>(layouts);
 		ret_old_sets.reserve(new_sets.size());
 		for (std::size_t i = 0; i<new_sets.size(); ++i) {
-			auto &set_idx = set_indices[i];
+			const pipeline_layout_set_index set_idx = *(set_indices.begin() + i);
 			auto &new_set = new_sets[i];
 
 			// Find old set
-			auto it = sets.find(set_idx);
-			if (it == sets.end()) {
+			if (sets.size() <= set_idx) {
 				// Set not found.
 				assert(false);
 				continue;
 			}
-			auto &old_set = it->second;
 
 			// Copy bindings from old set
-			new_set.copy(old_set);
+			auto &s = sets[set_idx];
+			new_set.copy(s);
 
 			// Save old and store new inplace, in sets collection
-			ret_old_sets.push_back(std::move(old_set));
-			it->second = std::move(new_set);
+			ret_old_sets.push_back(std::move(s));
+			s = std::move(new_set);
 		}
 
 		return ret_old_sets;
@@ -149,16 +137,13 @@ public:
 			auto &idx = b.first;
 			auto &writes = b.second;
 
-			auto it = sets.find(idx);
-			if (it == sets.end()) {
+			if (sets.size() <= idx) {
 				// Set not found?!
 				assert(false);
 				continue;
 			}
 
-			auto &set = it->second;
-
-			set.write(writes);
+			sets[idx].write(writes);
 		}
 	}
 

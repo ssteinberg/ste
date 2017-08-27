@@ -17,6 +17,8 @@
 
 #include <ste_shader_spirv_reflection_output.hpp>
 
+#include <pipeline_external_binding_set.hpp>
+
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
 #include <istream>
@@ -133,11 +135,17 @@ public:
 	auto &get_stage_attachments() const { return shader->stage_attachments; }
 
 	/**
+	 *	@brief	Releases ownership of the internal shader object. 
+	 *			The pipline shader stage is left in unusable state.
+	 */
+	auto &&shader_object() && { return std::move(shader); }
+
+	/**
 	 *	@brief	Provides the shader specialization constant map.
 	 *			For new specializations to take affect, pipeline has to be recreated.
 	 */
-	void set_specializations(const vk::vk_shader<>::spec_map &specializations) {
-		this->specializations = specializations;
+	void set_specializations(vk::vk_shader<>::spec_map &&specializations) {
+		this->specializations = std::move(specializations);
 	}
 
 	/**

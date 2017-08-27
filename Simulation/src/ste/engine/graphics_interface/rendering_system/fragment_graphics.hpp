@@ -37,7 +37,7 @@ private:
 	template <typename RenderingSystem, typename... Names>
 	static auto create_graphics_pipeline(const RenderingSystem &rs,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
-										 const pipeline_external_binding_set_collection* external_binding_sets_collection,
+										 const pipeline_external_binding_set* external_binding_sets_collection,
 										 optional<framebuffer_layout> &&fb_layout,
 										 lib::vector<device_pipeline_shader_stage> &out_shader_stages,
 										 Names&&... shader_stages_names) {
@@ -61,7 +61,7 @@ private:
 		// Create pipeline
 		return external_binding_sets_collection ?
 			auditor.pipeline(ctx,
-							 *external_binding_sets_collection) :
+							 std::ref(*external_binding_sets_collection)) :
 			auditor.pipeline(ctx);
 	}
 
@@ -73,7 +73,7 @@ private:
 					  Names&&... shader_stages_names)
 		: pipeline(create_graphics_pipeline(rs,
 											std::move(pipeline_graphics_configurations),
-											rs.external_binding_sets(),
+											rs.external_binding_set(),
 											std::move(fb_layout),
 											this->shader_stages,
 											std::forward<Names>(shader_stages_names)...))
@@ -111,6 +111,9 @@ protected:
 
 public:
 	virtual ~fragment_graphics() noexcept {}
+
+	fragment_graphics(fragment_graphics&&) = default;
+	fragment_graphics& operator=(fragment_graphics&&) = default;
 
 	// Subclasses are expected to declare:
 	//static const lib::string& name();

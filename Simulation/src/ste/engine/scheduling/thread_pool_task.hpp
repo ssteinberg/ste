@@ -20,7 +20,7 @@ template <typename R, typename ... Params>
 struct thread_pool_task_exec_impl {
 	template <typename F>
 	void operator()(F &f, std::promise<R> &promise, Params&&... params) const {
-		static_assert(std::is_callable_v<F(Params...)>, "F not a valid functor accepting Params...");
+		static_assert(std::is_invocable_v<F(Params...)>, "F not a valid functor accepting Params...");
 
 		auto r = f(std::forward<Params>(params)...);
 		promise.set_value(std::move(r));
@@ -31,7 +31,7 @@ template <typename ... Params>
 struct thread_pool_task_exec_impl<void, Params...> {
 	template <typename F>
 	void operator()(F &f, std::promise<void> &promise, Params&&... params) const {
-		static_assert(std::is_callable_v<F(Params...)>, "F not a valid functor accepting Params...");
+		static_assert(std::is_invocable_v<F(Params...)>, "F not a valid functor accepting Params...");
 
 		f(std::forward<Params>(params)...);
 		promise.set_value();
@@ -73,7 +73,7 @@ private:
 public:
 	template <typename F>
 	unique_thread_pool_task(F &&f) {
-		static_assert(std::is_callable_v<F(Params...)>, "F not a valid functor accepting Params...");
+		static_assert(std::is_invocable_v<F(Params...)>, "F not a valid functor accepting Params...");
 		static_assert(function_traits<F>::arity == sizeof...(Params), "lambda takes wrong number of arguments");
 
 		std::promise<R> promise;
@@ -108,7 +108,7 @@ private:
 public:
 	template <typename F>
 	thread_pool_task(F &&f) {
-		static_assert(std::is_callable_v<F()>, "F not a valid functor of arity 0");
+		static_assert(std::is_invocable_v<F()>, "F not a valid functor of arity 0");
 		static_assert(std::is_void_v<R> || std::is_constructible_v<R, std::result_of_t<F()>>, "Result of F is not convetible to R");
 
 		std::promise<R> promise;

@@ -58,12 +58,12 @@ mat4 look_at(vec3 eye, vec3 center, vec3 up) {
  *	@param f		Far clipping plane
  */
 mat4 perspective_reversed(float fovy, float aspect, float n, float f) {
-	float tanHalfFovy = tan(fovy * .5f);
+	float tan_half_fovy = tan(fovy * .5f);
 
 	mat4 m = mat4(.0f);
 
-	m[0][0] = 1.f / (aspect * tanHalfFovy);
-	m[1][1] = 1.f / tanHalfFovy;
+	m[0][0] = 1.f / (aspect * tan_half_fovy);
+	m[1][1] = 1.f / tan_half_fovy;
 	m[2][2] = n / (f - n);
 	m[2][3] = -1.f;
 	m[3][2] = n * f / (f - n);
@@ -79,12 +79,12 @@ mat4 perspective_reversed(float fovy, float aspect, float n, float f) {
  *	@param n		Near clipping plane
  */
 mat4 perspective_reversed_infinite(float fovy, float aspect, float n) {
-	float tanHalfFovy = tan(fovy * .5f);
+	float tan_half_fovy = tan(fovy * .5f);
 
 	mat4 m = mat4(.0f);
 
-	m[0][0] = 1.f / (aspect * tanHalfFovy);
-	m[1][1] = 1.f / tanHalfFovy;
+	m[0][0] = 1.f / (aspect * tan_half_fovy);
+	m[1][1] = 1.f / tan_half_fovy;
 	m[2][3] = -1.f;
 	m[3][2] = n;
 

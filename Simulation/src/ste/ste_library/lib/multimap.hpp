@@ -12,7 +12,7 @@ namespace ste {
 namespace lib {
 
 template <typename K, typename V, class P = std::less<K>>
-using multimap = std::multimap<K, V, P, allocator<std::pair<K, V>>>;
+using multimap = std::multimap<K, V, P, allocator<std::pair<const K, V>>>;
 
 }
 }

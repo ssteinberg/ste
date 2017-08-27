@@ -1,0 +1,61 @@
+
+#type compute
+#version 450
+
+layout(local_size_x = 32, local_size_y = 32) in;
+
+#include <common.glsl>
+
+layout(constant_id = 0) const int levels = 2;
+
+layout(binding = 0) uniform sampler2D depth_target;
+layout(rg32f, binding = 1) restrict writeonly uniform image2D output_images[levels];
+
+const int sample_count = 1 << (levels-1);
+vec2 samples[sample_count][sample_count];
+
+void main() {
+	ivec2 coords = ivec2(gl_GlobalInvocationID.xy) << (levels - 1);
+	int c = sample_count;
+	
+	for (int x=0; x<c; ++x) {
+		for (int y=0; y<c; ++y) {
+			vec4 d = vec4(texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,0)).x,
+						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,0)).x,
+						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,1)).x,
+						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,1)).x);
+		
+			bvec4 b = equal(d, vec4(0));
+			vec4 mind = mix(d, vec4(1), b);
+			float t = min_element(mind);
+			float s = max_element(d);
+
+			samples[x][y] = vec2(t,s);
+			imageStore(output_images[0], coords + ivec2(x, y), vec4(t,s, 0, 0));
+		}
+	}
+	
+	for (int l=1; l<levels; ++l) {
+		coords /= 2;
+		c /= 2;
+
+		for (int x=0; x<c; ++x) {
+			for (int y=0; y<c; ++y) {	
+				vec4 a = vec4(samples[x*2+0][y*2+0].x,
+							  samples[x*2+1][y*2+0].x,
+							  samples[x*2+0][y*2+1].x,
+							  samples[x*2+1][y*2+1].x);
+				vec4 b = vec4(samples[x*2+0][y*2+0].y,
+							  samples[x*2+1][y*2+0].y,
+							  samples[x*2+0][y*2+1].y,
+							  samples[x*2+1][y*2+1].y);
+		
+				float t = min_element(a);
+				float s = max_element(b);
+		
+				samples[x][y] = vec2(t,s);
+				imageStore(output_images[l], coords + ivec2(x, y), vec4(t,s, 0, 0));
+			}
+		}
+	}
+}

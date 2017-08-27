@@ -12,6 +12,7 @@
 
 #include <alias.hpp>
 #include <lib/vector.hpp>
+#include <atomic>
 
 namespace ste {
 namespace graphics {
@@ -25,7 +26,7 @@ private:
 	using lll_counter_type = gl::stable_vector<lll_counter_element>;
 
 public:
-	static constexpr int lll_image_res_multiplier = 8;
+	static constexpr unsigned lll_image_res_multiplier = 8;
 
 private:
 	alias<const ste_context> ctx;
@@ -38,33 +39,36 @@ private:
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_heads;
 	ste_resource<gl::texture<gl::image_type::image_2d>> lll_low_detail_size;
 
-	glm::ivec2 size;
-	bool resize_on_clear{ false };
+	glm::uvec2 extent;
+	std::atomic_flag up_to_date;
 
 	void resize_internal(gl::command_recorder &recorder);
 
 public:
-	linked_light_lists(const ste_context &ctx, glm::ivec2 size);
+	linked_light_lists(const ste_context &ctx,
+					   const glm::uvec2 &extent);
+	~linked_light_lists() noexcept {}
 
-	void resize(glm::ivec2 size) {
-		size = size / lll_image_res_multiplier;
-		if (size.x <= 0 || size.y <= 0 || size == this->size)
-			return;
+	linked_light_lists(linked_light_lists&&) = default;
 
-		resize_on_clear = true;
-		this->size = size;
-	}
-	auto& get_size() const { return size; }
+	void resize(const glm::uvec2 &extent);
+	auto& get_extent() const { return extent; }
 
 	void clear(gl::command_recorder &recorder) {
-		if (resize_on_clear) {
+		if (up_to_date.test_and_set(std::memory_order_acquire))
 			resize_internal(recorder);
-			resize_on_clear = false;
-		}
 
-		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t >(0)) };
+		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t>(0)) };
 		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
+
+	auto& linked_light_lists_buffer() const { return lll; }
+	auto& linked_light_lists_counter_buffer() const { return lll_counter; }
+
+	auto& linked_light_lists_heads_map() const { return *lll_heads; }
+	auto& linked_light_lists_size_map() const { return *lll_size; }
+	auto& linked_light_lists_low_detail_heads_map() const { return *lll_low_detail_heads; }
+	auto& linked_light_lists_low_detail_size_map() const { return *lll_low_detail_size; }
 };
 
 }

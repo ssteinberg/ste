@@ -17,7 +17,7 @@ struct mesh_descriptor {
 	glm::vec4 bounding_sphere;
 
 	std::int32_t mat_idx;
-	std::int32_t light_caster;
+	std::int32_t light_caster{ 0 };
 
 	float _unused[2];
 };

@@ -11,7 +11,7 @@
 #include <device_pipeline_shader_stage.hpp>
 
 #include <ste_shader_stage_variable.hpp>
-#include <pipeline_external_binding_set_collection.hpp>
+#include <pipeline_external_binding_set.hpp>
 #include <pipeline_binding_layout_collection.hpp>
 
 #include <pipeline_attachment_layout.hpp>
@@ -29,6 +29,8 @@
 
 #include <alias.hpp>
 #include <anchored.hpp>
+#include <connection.hpp>
+#include <atomic_pod.hpp>
 
 namespace ste {
 namespace gl {
@@ -54,9 +56,9 @@ private:
 
 	using attachment_map_t = pipeline_attachment_layout_collection;
 
-	using spec_map_t = lib::unordered_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
+	using spec_map_t = lib::flat_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
 
-	using binding_sets_layout_map_t = lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout>;
+	using binding_sets_layout_t = lib::vector<pipeline_binding_set_layout>;
 
 	using spec_to_dependant_array_variables_map_t =
 		lib::flat_map<const ste_shader_stage_variable*, lib::vector<const pipeline_binding_layout*>>;
@@ -75,20 +77,24 @@ private:
 	spec_map_t specializations;
 
 	// Layouts of the descriptor sets
-	binding_sets_layout_map_t bindings_set_layouts;
+	binding_sets_layout_t bindings_set_layouts;
 	lib::unique_ptr<vk::vk_pipeline_layout<>> layout;
 
-	// External binding sets
-	const pipeline_external_binding_set_collection *external_binding_sets{ nullptr };
+	// External binding set
+	const pipeline_external_binding_set *external_binding_set{ nullptr };
+	// And connections
+	pipeline_external_binding_set::signal_set_invalidated_t::connection_type external_binding_set_invalidated_connection;
+	pipeline_external_binding_set::signal_specialization_change_t::connection_type external_binding_set_constant_specialized_connection;
 
 	// Layout can be modified (by respecializing constants, which define array length of binding variables).
 	// In which case the affected sets need to be recreated.
 	lib::flat_set<pipeline_layout_set_index> set_layouts_modified_queue;
+
 	// Map of specialization variables to dependant array variables
 	spec_to_dependant_array_variables_map_t spec_to_dependant_array_variables_map;
 
 	// If for any reason pipeline layout has changed, mark it and let device_pipeline recreate the pipeline when applicable.
-	bool layout_invalidated_flag{ false };
+	atomic_pod<bool> layout_invalidated_flag{ false };
 
 private:
 	static void update_variable(variable_map_t &map,
@@ -131,31 +137,41 @@ private:
 		}
 	}
 
-	void erase_variables_provided_by_external_binding_sets(variable_map_t &map) {
-		auto &external_sets = external_binding_sets->get_sets();
+	void erase_sets_provided_by_external_binding_sets(variable_map_t &map) {
+		auto &external_set_layout = external_binding_set->get_layout();
 
 		for (auto it = map.begin(); it != map.end();) {
 			auto& b = it->second;
 			auto set_idx = b.set_idx();
 			auto bind_idx = b.bind_idx();
 
-			// If variable exists in external_binding_sets, validate compatibility and ignore the binding,
-			// it is handled externally
-			auto external_it = external_sets.find(set_idx);
-			if (external_it != external_sets.end()) {
-				const pipeline_external_binding_set_layout &external_set_layout = external_it->second.get_layout();
+			if (b.binding->binding_type == ste_shader_stage_binding_type::push_constant)
+				continue;
 
-				// Find the binding and verify compatibility
+			// If variable belongs to a set provided by external_binding_set, validate compatibility and ignore the binding,
+			// it is handled externally
+			if (external_binding_set->set_idx() == set_idx) {
+				// Find the binding
+				bool found = false;
 				for (auto &external_binding : external_set_layout) {
 					if (external_binding.bind_idx() == bind_idx) {
-						external_binding.validate_layout(b.binding);
+						// Verify
+						if (!external_binding.get_binding().compatible(*b.binding)) {
+							throw pipeline_layout_variable_incompatible_with_external_set_exception("Variable is incompatible with external binding set");
+						}
+
+						found = true;
 						break;
 					}
 				}
 
+				if (!found) {
+					// Not found in external binding set
+					throw pipeline_layout_variable_not_found_in_external_set_exception("Variable bound to external set but not found in external binding sets");
+				}
+
 				// Set is handled externally
-				auto next_it = it;
-				++next_it;
+				auto next_it = std::next(it);
 				map.erase(it);
 				it = next_it;
 			}
@@ -178,7 +194,7 @@ private:
 				continue;
 			}
 
-			// Also individually populate and map push and specialization constants
+			// Also individually map specialization constants
 			if (b.second.binding->binding_type == ste_shader_stage_binding_type::spec_constant) {
 				spec_variables_map[name] = &val;
 			}
@@ -199,21 +215,45 @@ private:
 	}
 
 	void create_set_layouts() {
+		if (!variables_map.size())
+			return;
+
+		// Find first set index, and count
+		pipeline_layout_set_index largest_set_idx = 0;
+		for (auto &v : variables_map)
+			largest_set_idx = std::max(largest_set_idx, v.second.binding->set_idx);
+		
 		// Sort variables into sets
-		lib::flat_map<pipeline_layout_set_index, pipeline_binding_set_layout::bindings_vec_t> sets;
+		lib::vector<pipeline_binding_set_layout::bindings_vec_t> sets;
+		const auto set_count = largest_set_idx + 1;
+		sets.resize(set_count);
 		for (auto &v : variables_map) {
 			auto& b = v.second;
 			if (b.binding->binding_type == ste_shader_stage_binding_type::uniform ||
-				b.binding->binding_type == ste_shader_stage_binding_type::storage)
+				b.binding->binding_type == ste_shader_stage_binding_type::storage) {
 				sets[b.binding->set_idx].push_back(&b);
+			}
+		}
+
+		// If we have an external binding set: 
+		// 1) External set must be bound to a set index greater than any local set
+		// 2) Make sure we have consecutive set layouts, including the external set. 
+		if (external_binding_set) {
+			if (external_binding_set->set_idx() <= largest_set_idx) {
+				throw pipeline_layout_exception("External binding set overlaps local binding set");
+			}
+
+			largest_set_idx = external_binding_set->set_idx() - 1;
 		}
 
 		// Create descriptor set layouts
-		for (auto &s : sets) {
-			auto &v = s.second;
-			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), std::move(v));
+		for (std::size_t i=0; i<sets.size(); ++i) {
+			auto &v = sets[i];
 
-			bindings_set_layouts.emplace(std::make_pair(s.first, std::move(set_layout)));
+			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
+														  std::move(v),
+														  static_cast<pipeline_layout_set_index>(i));
+			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}
 	}
 
@@ -222,15 +262,49 @@ private:
 	*/
 	void invalidate_set_layout(const pipeline_layout_set_index &index) {
 		set_layouts_modified_queue.insert(index);
+		std::atomic_thread_fence(std::memory_order_release);
 	}
 
 	/**
 	*	@brief	Flags the pipeline layout invalid
 	*/
 	void invalidate_layout() {
-		layout_invalidated_flag = true;
+		layout_invalidated_flag.get().store(true, std::memory_order_release);
 	}
 
+	/**
+	 *	@brief	Updates the specialization map of an attached shader stage
+	 */
+	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
+		const auto& map = specializations[stage];
+		if (!this->external_binding_set) {
+			// No external binding set attached
+			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			return;
+		}
+
+		const auto it = this->external_binding_set->specializations.find(stage);
+		if (it == this->external_binding_set->specializations.end()) {
+			// External binding set does not have any specializations for the stage
+			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			return;
+		}
+
+		const auto &external_map = it->second;
+
+		// Combine specialization maps
+		vk::vk_shader<>::spec_map spec;
+		for (auto &s : map)
+			spec.emplace(s);
+		for (auto &s : external_map)
+			spec.emplace(s);
+		
+		stages[stage]->set_specializations(std::move(spec));
+	}
+
+	/**
+	 *	@brief	Specializes a constant
+	 */
 	template <typename T>
 	void specialize_constant_impl(const lib::string &name,
 								  const optional<lib::string> &data = none,
@@ -267,7 +341,7 @@ private:
 				map[b.bind_idx] = data.get();
 			else
 				map.erase(b.bind_idx);
-			stages[s]->set_specializations(map);
+			update_shader_stage_specialization_map(s);
 		}
 
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
@@ -283,20 +357,47 @@ private:
 		}
 	}
 
+	/**
+	 *	@brief	Attaches an external binding set to the layout
+	 */
+	void attach_external_binding_set_collection(const pipeline_external_binding_set &external_binding_set) {
+		this->external_binding_set = &external_binding_set;
+
+		// Update specializations
+		for (auto &spec : external_binding_set.specializations) {
+			update_shader_stage_specialization_map(spec.first);
+		}
+
+		// Connect to external binding set's signals
+		external_binding_set_invalidated_connection = make_connection(external_binding_set.get_signal_set_invalidated(), [this](auto) {
+			// External binding set was invalidated, add to set recreation queue and invalidate layout.
+			set_layouts_modified_queue.insert(this->external_binding_set->set_idx());
+			std::atomic_thread_fence(std::memory_order_release);
+
+			invalidate_layout();
+		});
+		external_binding_set_constant_specialized_connection = make_connection(external_binding_set.get_signal_specialization_change(),
+																			   [this](auto, const auto &stages) {
+			// External binding set's constant was specialized, update specialization map
+			for (auto &s : stages)
+				update_shader_stage_specialization_map(s);
+		});
+	}
+
 public:
 	/**
 	 *	@brief	Pipeline layout descriptor
 	 *
 	 *	@param	ctx						Context
 	 *	@param	pipeline_shader_stages	Shader stages that define the layout
-	 *	@param	external_binding_sets	External binding sets used in this layout
+	 *	@param	external_binding_set	External binding sets used in this layout
 	 *
 	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with
-	 *																external_binding_sets
+	 *																external_binding_set
 	 */
 	pipeline_layout(const ste_context &ctx,
 					const shader_stages_list_t &pipeline_shader_stages,
-					optional<std::reference_wrapper<const pipeline_external_binding_set_collection>> external_binding_sets)
+					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
 		: ctx(ctx)
 	{
 		{
@@ -326,7 +427,7 @@ public:
 				for (auto &a : attachments) {
 					// Create new attachment layout descriptor and add to map
 					const auto& name = a.variable->name();
-					pipeline_attachment_layout attachment = { &a };
+					const pipeline_attachment_layout attachment = { &a };
 
 					add_attachment(attachments_map,
 								   name,
@@ -338,9 +439,9 @@ public:
 			}
 
 			// Verify and erase variables that are handled externally
-			if (external_binding_sets) {
-				this->external_binding_sets = &external_binding_sets.get().get();
-				erase_variables_provided_by_external_binding_sets(all_variables);
+			if (external_binding_set) {
+				erase_sets_provided_by_external_binding_sets(all_variables);
+				attach_external_binding_set_collection(external_binding_set.get().get());
 			}
 
 			// Then create variables' layouts
@@ -386,21 +487,41 @@ public:
 	}
 
 	/**
+	 *	@brief	Recreates a specific set layout.
+	 *			Returns the old set.
+	 *
+	 *	@throws	pipeline_layout_exception	If set index not found
+	 */
+	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
+		if (bindings_set_layouts.size() <= set_idx) {
+			// Not found
+			throw pipeline_layout_exception("Set does not exist");
+		}
+
+		return bindings_set_layouts[set_idx].recreate(ctx.get().device());
+	}
+
+	/**
 	*	@brief	Recreates the pipeline layout and resets flag
-	*	
+	*
 	*	@return	Returns the old layout object
 	*/
 	lib::unique_ptr<vk::vk_pipeline_layout<>> recreate_layout() {
-		lib::vector<const vk::vk_descriptor_set_layout<>*> set_layout_ptrs;
-		for (auto &s : bindings_set_layouts) {
-			set_layout_ptrs.push_back(&s.second.get());
+		auto size = bindings_set_layouts.size();
+		if (external_binding_set != nullptr) {
+			// The external binding set is the last one, immediately after the local sets. This invariant is ensured in create_set_layouts().
+			++size;
+			assert(external_binding_set->set_idx() + 1 == size);
 		}
 
-		if (external_binding_sets != nullptr) {
-			// Add external set layouts to pipeline layout
-			for (auto &es : external_binding_sets->get_layouts()) {
-				set_layout_ptrs.push_back(&es.get());
-			}
+		lib::vector<const vk::vk_descriptor_set_layout<>*> set_layout_ptrs;
+		set_layout_ptrs.resize(size, nullptr);
+
+		for (std::size_t i=0; i<bindings_set_layouts.size(); ++i)
+			set_layout_ptrs[i] = &bindings_set_layouts[i].get();
+		if (external_binding_set != nullptr) {
+			// Add external set layout to pipeline layouts
+			set_layout_ptrs[external_binding_set->set_idx()] = &external_binding_set->get_layout().get();
 		}
 
 		// Create push contant layout descriptors
@@ -409,65 +530,33 @@ public:
 		// Save old layout
 		auto old_layout = std::move(layout);
 
-		// Create pipeline layout and raise layout invalidated flag
+		// Create pipeline layout
 		layout = lib::allocate_unique<vk::vk_pipeline_layout<>>(ctx.get().device(),
 																set_layout_ptrs,
 																push_constant_layouts);
-		layout_invalidated_flag = false;
+		// Erase invalid flag
+		layout_invalidated_flag.get().store(false, std::memory_order_relaxed);
 
 		return old_layout;
 	}
 
 	/**
-	*	@brief	Recreates invalidated set layout and resets flags
-	*	
-	*	@param	old_layouts	If non-null, old set layouts will be moved to this vector.
-	*
-	*	@return	Vector of modified set indices
+	*	@brief	Returns the status of the layout invalid flag
 	*/
-	auto recreate_invalidated_set_layouts(lib::vector<pipeline_binding_set_layout> *old_layouts = nullptr) {
-		lib::vector<pipeline_layout_set_index> modified_set_indices;
-
-		if (set_layouts_modified_queue.empty())
-			return modified_set_indices;
-
-		if (old_layouts)
-			old_layouts->reserve(set_layouts_modified_queue.size());
-
-		for (auto &set_idx : set_layouts_modified_queue) {
-			auto set_layout_it = bindings_set_layouts.find(set_idx);
-			if (set_layout_it == bindings_set_layouts.end()) {
-				// Set not found, can not be.
-				assert(false);
-				continue;
-			}
-
-			// Recreate set based on same bindings
-			// (only possible change is modified array length of a binding)
-			auto bindings = set_layout_it->second.get_bindings();
-			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
-														  std::move(bindings));
-
-			if (old_layouts)
-				old_layouts->push_back(std::move(set_layout_it->second));
-
-			// Replace set with new one
-			set_layout_it->second = std::move(set_layout);
-
-			modified_set_indices.push_back(set_idx);
-		}
-
-		// Erase queue
-		set_layouts_modified_queue.clear();
-
-		return modified_set_indices;
+	auto is_layout_invalidated() const {
+		return layout_invalidated_flag.get().load(std::memory_order_acquire);
 	}
 
 	/**
-	*	@brief	Returns the status of the layout invalid flag.
-	*/
-	auto is_layout_invalidated() {
-		return layout_invalidated_flag;
+	 *	@brief	Returns a copy of the queue of modified set indices, and clears the queue.
+	 */
+	auto read_and_clear_modified_sets_queue() {
+		std::atomic_thread_fence(std::memory_order_acquire);
+
+		auto v = set_layouts_modified_queue;
+		set_layouts_modified_queue.clear();
+
+		return v;
 	}
 
 	/**
@@ -491,10 +580,7 @@ public:
 
 	auto& get() const { return *layout; }
 
-	bool is_pipeline_layout_invalidated() const { return layout_invalidated_flag; }
-
 	auto& set_layouts() const { return bindings_set_layouts; }
-	auto& modified_set_layouts() const { return set_layouts_modified_queue; }
 
 	auto& variables() const { return variables_map; }
 	auto& push_variables() const { return *push_constants_layout; }

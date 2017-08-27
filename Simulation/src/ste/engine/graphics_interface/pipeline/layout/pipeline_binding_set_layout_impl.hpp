@@ -8,6 +8,8 @@
 #include <vk_descriptor_set_layout.hpp>
 #include <pipeline_layout_set_index.hpp>
 
+#include <pipeline_layout_exceptions.hpp>
+
 #include <allow_type_decay.hpp>
 
 #include <lib/string.hpp>
@@ -24,23 +26,24 @@ namespace _internal {
 template <typename BindingLayout>
 class pipeline_binding_set_layout_impl : public allow_type_decay<pipeline_binding_set_layout_impl<BindingLayout>, vk::vk_descriptor_set_layout<>> {
 public:
-	using bindings_vec_t = lib::vector<BindingLayout>;
+	using binding_layout_t = BindingLayout;
+	using bindings_vec_t = lib::vector<binding_layout_t>;
 	using name_bindings_map_t = lib::flat_map<lib::string, typename bindings_vec_t::const_iterator>;
 
 private:
 	bindings_vec_t bindings;
-	pipeline_layout_set_index set_idx{ 0 };
+	pipeline_layout_set_index set_idx;
 	name_bindings_map_t name_map;
 
 	vk::vk_descriptor_set_layout<> vk_layout;
 
 private:
-	template <typename T = BindingLayout>
+	template <typename T = binding_layout_t>
 	auto &access_it(typename bindings_vec_t::const_iterator it,
 					std::enable_if_t<std::is_pointer_v<T>>* = nullptr) const {
 		return **it;
 	}
-	template <typename T = BindingLayout>
+	template <typename T = binding_layout_t>
 	auto &access_it(typename bindings_vec_t::const_iterator it,
 					std::enable_if_t<!std::is_pointer_v<T>>* = nullptr) const {
 		return *it;
@@ -57,23 +60,39 @@ private:
 
 public:
 	pipeline_binding_set_layout_impl(const vk::vk_logical_device<> &device,
-									 bindings_vec_t &&bindings)
+									 bindings_vec_t &&bindings,
+									 pipeline_layout_set_index set_idx)
 		: bindings(std::move(bindings)),
+		set_idx(set_idx),
 		vk_layout(generate_vk_layout(device))
 	{
-		assert(this->bindings.size());
-		set_idx = access_it<>(this->bindings.begin()).set_idx();
-
 		// Create name map
 		for (auto it = begin(); it != end(); ++it) {
-			name_map[access_it<>(it).name()] = it;
 			assert(set_idx == access_it<>(it).set_idx());
+
+			// Check for duplicate names
+			auto ret = name_map.try_emplace(access_it<>(it).name(), it);
+			if (!ret.second) {
+				// Name already exists
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name was already used in layout");
+			}
 		}
 	}
 	~pipeline_binding_set_layout_impl() noexcept {}
 
 	pipeline_binding_set_layout_impl(pipeline_binding_set_layout_impl&&) = default;
 	pipeline_binding_set_layout_impl &operator=(pipeline_binding_set_layout_impl&&) = default;
+
+	/**
+	 *	@brief	Recreates the layout.
+	 *			Returns old layout handle.
+	 */
+	auto recreate(const vk::vk_logical_device<> &device) {
+		auto old = std::move(vk_layout);
+		vk_layout = generate_vk_layout(device);
+
+		return old;
+	}
 
 	/**
 	*	@brief	Checks existance of a variable name

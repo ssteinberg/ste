@@ -18,10 +18,11 @@ namespace pipeline {
 */
 class image {
 private:
-	const image_view_generic *view;
-	image_layout layout;
+	const image_view_generic *view{ nullptr };
+	image_layout layout{ gl::image_layout::general };
 
 public:
+	image() = default;
 	/**
 	*	@brief	Constructs a new combined-image-sampler object, referencing an image view and a layout.
 	*/
@@ -38,6 +39,9 @@ public:
 
 	image_layout get_layout() const { return layout; }
 	auto& get_image_view() const { return *view; }
+	VkImageView get_image_view_handle() const {
+		return view ? view->get_image_view_handle() : VK_NULL_HANDLE;
+	}
 };
 
 class storage_image : public image {

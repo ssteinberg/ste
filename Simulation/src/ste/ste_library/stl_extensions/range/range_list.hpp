@@ -47,8 +47,7 @@ private:
 			   const T &splitter) {
 		auto itend = it->start + it->length;
 		auto end = splitter.start + splitter.length;
-		auto next = it;
-		++next;
+		auto next = std::next(it);
 
 		if (end <= it->start)
 			return;
@@ -126,6 +125,13 @@ public:
 		list.erase(it);
 	}
 
+	void pop_back() {
+		list.pop_back();
+	}
+	void pop_front() {
+		list.pop_front();
+	}
+
 	/**
 	 *	@brief	Add range
 	 */
@@ -173,6 +179,10 @@ public:
 
 	auto begin() const { return list.begin(); }
 	auto end() const { return list.end(); }
+	auto front() const { return list.front(); }
+	auto back() const { return list.back(); }
+
+	auto size() const { return list.size(); }
 };
 
 template <typename T = std::size_t, class Allocator = std::allocator<T>>

@@ -10,31 +10,9 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 #include <linked_light_lists.glsl>
 #include <linked_light_lists_store.glsl>
 
-#include <girenderer_transform_buffer.glsl>
+#include <renderer_transform_buffers.glsl>
 
-layout(std430, binding = 2) restrict readonly buffer light_data {
-	light_descriptor light_buffer[];
-};
-
-layout(std430, binding = 4) restrict readonly buffer ll_counter_data {
-	uint ll_counter;
-};
-layout(std430, binding = 5) restrict readonly buffer ll_data {
-	uint ll[];
-};
-
-layout(r8ui,  binding = 4) restrict writeonly uniform uimage2D lll_size;
-layout(r8ui,  binding = 5) restrict writeonly uniform uimage2D lll_low_detail_size;
-layout(r32ui, binding = 6) restrict writeonly uniform uimage2D lll_heads;
-layout(r32ui, binding = 7) restrict writeonly uniform uimage2D lll_low_detail_heads;
-layout(std430, binding = 7) restrict buffer lll_counter_data {
-	uint lll_counter;
-};
-layout(std430, binding = 11) restrict writeonly buffer lll_data {
-	lll_element lll_buffer[];
-};
-
-layout(location = 0) uniform sampler2D depth_map;
+#include <gbuffer.glsl>
 
 lll_element active_lights[total_max_active_lights_per_frame];
 lll_element active_low_detail_lights[max_active_low_detail_lights_per_frame];
@@ -72,7 +50,7 @@ void add_low_detail_light(uint light_idx,
 
 void main() {
 	ivec2 image_coord = ivec2(gl_GlobalInvocationID.xy);
-	ivec2 image_size = imageSize(lll_heads);
+	ivec2 image_size = imageSize(linked_light_list_heads);
 	if (any(greaterThanEqual(image_coord, image_size)))
 		return;
 
@@ -137,8 +115,8 @@ void main() {
 	// Add the encoded lights to the per-pixel linked-light-list
 	uint next_active_idx = atomicAdd(lll_counter, uint(total_active_lights + total_active_low_detail_lights));
 	uint next_low_detail_idx = next_active_idx + total_active_lights;
-	imageStore(lll_heads, image_coord, next_active_idx.xxxx);
-	imageStore(lll_low_detail_heads, image_coord, next_low_detail_idx.xxxx);
+	imageStore(linked_light_list_heads, image_coord, next_active_idx.xxxx);
+	imageStore(linked_light_list_low_detail_heads, image_coord, next_low_detail_idx.xxxx);
 	
 	// Copy lll elements to buffer and mark the ll end
 	for (int i = 0; i < total_active_lights; ++i)
@@ -148,6 +126,6 @@ void main() {
 		lll_buffer[next_low_detail_idx + i] = active_low_detail_lights[i];
 		
 	// Write linked-lists' lengths
-	imageStore(lll_size, image_coord, total_active_lights.xxxx);
-	imageStore(lll_low_detail_size, image_coord, total_active_low_detail_lights.xxxx);
+	imageStore(linked_light_list_size, image_coord, total_active_lights.xxxx);
+	imageStore(linked_light_list_low_detail_size, image_coord, total_active_low_detail_lights.xxxx);
 }

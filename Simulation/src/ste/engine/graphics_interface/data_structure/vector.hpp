@@ -46,6 +46,11 @@ private:
 public:
 	using value_type = T;
 
+	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, minimal_atom_size, max_sparse_size>>;
+	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, minimal_atom_size, max_sparse_size>>;
+	using unbind_cmd_t = _internal::vector_cmd_unbind<vector<T, minimal_atom_size, max_sparse_size>>;
+	using update_cmd_t = _internal::vector_cmd_update<vector<T, minimal_atom_size, max_sparse_size>>;
+
 private:
 	buffer_t buffer;
 
@@ -83,11 +88,11 @@ public:
 					   const lib::vector<T> &data) {
 		assert(idx + data.size() <= size());
 
-		std::copy(data.begin(), data.end(), host_replica.begin() + idx);
+		std::copy(data.begin(), data.end(), host_replica.begin() + static_cast<int>(idx));
 
-		return _internal::vector_cmd_update<vector<T, minimal_atom_size, max_sparse_size>>(data,
-																						   idx,
-																						   this);
+		return update_cmd_t(data,
+							idx,
+							this);
 	}
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
@@ -107,7 +112,7 @@ public:
 							 std::uint64_t count = 1) {
 		assert(idx + count <= size());
 
-		host_replica.erase(host_replica.begin() + idx, host_replica.begin() + idx + count);
+		host_replica.erase(host_replica.begin() + idx, host_replica.begin() + static_cast<int>(idx + count));
 
 		return overwrite_cmd(idx,
 							 lib::vector<T>(host_replica.begin() + idx + count, host_replica.end()));
@@ -123,7 +128,7 @@ public:
 		auto location = host_replica.size();
 		std::copy(data.begin(), data.end(), std::back_inserter(host_replica));
 
-		return _internal::vector_cmd_insert<vector<T, minimal_atom_size, max_sparse_size>>(data, location, this);
+		return insert_cmd_t(data, location, this);
 	}
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
@@ -144,7 +149,7 @@ public:
 		assert(count_to_pop <= size());
 		host_replica.erase(host_replica.end() - count_to_pop, host_replica.end());
 
-		return _internal::vector_cmd_unbind<vector<T, minimal_atom_size, max_sparse_size>>(size(), count_to_pop, this);
+		return unbind_cmd_t(size(), count_to_pop, this);
 	}
 
 	/**
@@ -157,9 +162,9 @@ public:
 		auto old_size = size();
 		host_replica.resize(new_size);
 
-		return _internal::vector_cmd_resize<vector<T, minimal_atom_size, max_sparse_size>>(old_size,
-																						   new_size,
-																						   this);
+		return resize_cmd_t(old_size,
+							new_size,
+							this);
 	}
 
 	auto size() const { return host_replica.size(); }

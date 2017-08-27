@@ -115,7 +115,7 @@ public:
 
 	static const lib::string& name() { return "simple_fragment"; }
 
-	void set_framebuffer(gl::framebuffer &fb) {
+	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline.attach_framebuffer(fb);
 	}
 
@@ -128,7 +128,7 @@ public:
 		simple_storage::uniform_buffer_object data = { glm::vec4{ glm::cos(angle), glm::sin(angle), -glm::sin(angle), glm::cos(angle) } };
 
 		recorder
-			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader | gl::pipeline_stage::vertex_input,
 															 gl::pipeline_stage::transfer,
 															 gl::buffer_memory_barrier(s->ubo,
 																					   gl::access_flags::uniform_read,
@@ -139,7 +139,7 @@ public:
 			<< s->vertex_buffer.overwrite_cmd(0, v)
 			<< s->ubo.overwrite_cmd(0, data)
 			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-															 gl::pipeline_stage::vertex_shader,
+															 gl::pipeline_stage::vertex_shader | gl::pipeline_stage::vertex_input,
 															 gl::buffer_memory_barrier(s->ubo,
 																					   gl::access_flags::transfer_write,
 																					   gl::access_flags::uniform_read),
@@ -215,7 +215,7 @@ public:
 																							   device().get_surface().extent()))
 	{
 		hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
-		frag1.set_framebuffer(hdr_fb);
+		frag1.attach_framebuffer(hdr_fb);
 
 		fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 		hdr.attach_framebuffer(fxaa_fb);
@@ -239,7 +239,7 @@ public:
 																																						 device().get_surface().extent()));
 
 			hdr_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
-			frag1.set_framebuffer(hdr_fb);
+			frag1.attach_framebuffer(hdr_fb);
 
 			fxaa_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 			hdr.attach_framebuffer(fxaa_fb);
@@ -312,6 +312,7 @@ auto requested_device_features() {
 	requested_features.shaderImageGatherExtended = VK_TRUE;
 	requested_features.sparseBinding = VK_TRUE;
 	requested_features.sparseResidencyBuffer = VK_TRUE;
+	requested_features.tessellationShader = VK_TRUE;
 
 	return requested_features;
 }

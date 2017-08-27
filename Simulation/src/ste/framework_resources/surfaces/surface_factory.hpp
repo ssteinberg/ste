@@ -146,11 +146,12 @@ private:
 
 			// Transfer to primary queue and desired layout
 			gl::access_flags access = gl::access_flags_for_image_layout(layout);
+			gl::pipeline_stage pipeline_stages = gl::all_possible_pipeline_stages_for_access_flags(access);
 			auto future = gl::queue_transfer_discard(ctx,
 													 image,
 													 gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(gl::ste_queue_type::primary_queue),
-													 gl::pipeline_stage::all_commands,
-													 gl::image_layout::undefined, gl::access_flags::none,
+													 pipeline_stages,
+													 gl::image_layout::undefined,
 													 layout, access);
 			future.get();
 
