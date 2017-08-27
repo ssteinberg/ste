@@ -122,6 +122,13 @@ public:
 	}
 
 	/**
+	 *	@brief		Should be called on camera projection change
+	 */
+	void invalidate_projection_buffer() {
+		projection_data_up_to_date_flag.clear(std::memory_order_release);
+	}
+
+	/**
 	*	@brief		Updates common descriptor set's bindings and data
 	*/
 	void update(gl::command_recorder &recorder,

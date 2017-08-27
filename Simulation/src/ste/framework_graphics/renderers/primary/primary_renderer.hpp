@@ -10,10 +10,9 @@
 #include <presentation_engine.hpp>
 #include <pipeline_external_binding_set.hpp>
 
-#include <camera.hpp>
-#include <camera_projection_reversed_infinite_perspective.hpp>
 #include <scene.hpp>
 
+#include <primary_renderer_camera.hpp>
 #include <primary_renderer_buffers.hpp>
 #include <primary_renderer_framebuffers.hpp>
 
@@ -38,7 +37,7 @@ namespace graphics {
 class primary_renderer : public gl::rendering_presentation_system {
 	using Base = gl::rendering_presentation_system;
 
-	using camera_t = camera<float, camera_projection_reversed_infinite_perspective>;
+	using camera_t = primary_renderer_camera;
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
@@ -46,6 +45,7 @@ private:
 	scene *s;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
+	camera_t::projection_change_signal::connection_type camera_projection_change_signal;
 
 	primary_renderer_buffers buffers;
 	primary_renderer_framebuffers framebuffers;

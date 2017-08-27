@@ -7,8 +7,7 @@
 #include <ste_context.hpp>
 #include <command_recorder.hpp>
 
-#include <camera.hpp>
-#include <camera_projection_reversed_infinite_perspective.hpp>
+#include <primary_renderer_camera.hpp>
 #include <array.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
@@ -44,7 +43,7 @@ public:
 	{}
 
 	void update_view_data(gl::command_recorder &recorder,
-						  const camera<float, camera_projection_reversed_infinite_perspective> &c) {
+						  const primary_renderer_camera &c) {
 		auto p = c.get_position();
 
 		view_data v;
@@ -56,7 +55,7 @@ public:
 	}
 
 	void update_proj_data(gl::command_recorder &recorder,
-						  const camera<float, camera_projection_reversed_infinite_perspective> &c,
+						  const primary_renderer_camera &c,
 						  const glm::uvec2 backbuffer_size) {
 		proj_data p;
 

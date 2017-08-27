@@ -10,6 +10,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/dual_quaternion.hpp>
 
+#include <signal.hpp>
+
 namespace ste {
 namespace graphics {
 
@@ -18,8 +20,11 @@ namespace graphics {
  */
 template <typename T, template<typename> class projection_model>
 class camera {
-private:
+public:
 	using vec3 = glm::tvec3<T>;
+	using projection_model_t = projection_model<T>;
+
+	using projection_change_signal = signal<const camera<T, projection_model>*, const projection_model_t&>;
 
 private:
 	vec3 camera_position;
@@ -31,10 +36,12 @@ private:
 
 	float camera_pitch_limit;
 
-	projection_model<T> proj;
+	projection_model_t proj;
+	mutable projection_change_signal proj_change_signal;
 
 public:
-	camera(projection_model<T> &&proj)
+	camera() = default;
+	camera(const projection_model_t &proj)
 		: camera_position({ 0,0,0 }),
 		camera_look_at({ 0,0,-1 }),
 		camera_direction({ 0,0,-1 }),
@@ -45,11 +52,22 @@ public:
 	{}
 	camera(const vec3 &position,
 		   const vec3 &direction,
-		   const vec3 &up) : camera() 
+		   const vec3 &up)
+		: camera(proj)
 	{
 		camera_position = position;
 		camera_up = up;
 		lookat(camera_position + direction);
+	}
+	camera(const vec3 &position,
+		   const vec3 &direction,
+		   const vec3 &up,
+		   const projection_model_t &proj)
+		: camera(position,
+				 direction,
+				 up)
+	{
+		update_projection_model(proj);
 	}
 	~camera() noexcept {}
 
@@ -59,8 +77,15 @@ public:
 	camera &operator=(const camera&) = default;
 
 	/*
-	 *	@brief	Returns a reference to the projection model associated with the camera
-	 */
+	*	@brief	Sets a new instance of the projection model associated with the camera
+	*/
+	void set_projection_model(const projection_model_t &proj) {
+		this->proj = proj;
+		proj_change_signal.emit(this, this->proj);
+	}
+	/*
+	*	@brief	Returns a reference to the projection model associated with the camera
+	*/
 	auto &get_projection_model() const { return proj; }
 
 	/**
@@ -152,10 +177,10 @@ public:
 	*	@brief	Rotates the camera by pitch and yaw angles, in radians. Camera position remains unchanged.
 	*/
 	void pitch_and_yaw(float pitch, float yaw) {
-		glm::vec3 tangent = glm::cross(camera_direction, camera_up);
+		const glm::vec3 tangent = glm::cross(camera_direction, camera_up);
 
 		// Calculate current pitch
-		float camera_pitch = asinf(camera_direction.y);
+		const float camera_pitch = asinf(camera_direction.y);
 		// Limit to preset limits
 		pitch = glm::clamp(pitch, -(camera_pitch + camera_pitch_limit), camera_pitch_limit - camera_pitch);
 
@@ -186,6 +211,8 @@ public:
 
 		return dualquat_translate_rotate(r, t);
 	}
+
+	auto& get_projection_change_signal() const { return proj_change_signal; }
 };
 
 }
