@@ -222,6 +222,40 @@ public:
 	}
 
 	/**
+	 *	@brief	Convenience method that submits a one-time batch to a queue. Batch's command buffer is recorded using the provided lambda.
+	 *			Blocks until enqueue is complete.
+	 *			
+	 *	@param	queue_selector		The device queue selector used to select the device queue
+	 *	@param	recorder_lambda		Lambda expression that records the command buffer.
+	 *			
+	 *	@return	Device fence to the submitted batch
+	 */
+	template <typename selector_policy = ste_queue_selector_default_policy>
+	auto submit_onetime_batch(const ste_queue_selector<selector_policy> &queue_selector, std::function<void(command_recorder&)> &&recorder_lambda) const {
+		// Select queue and allocate batch and command buffer
+		auto &q = select_queue(queue_selector);
+		auto batch = q.allocate_batch();
+		auto& command_buffer = batch->acquire_command_buffer();
+		auto fence = batch->get_fence_ptr();
+
+		// Enqueue commands on a selected queue
+		auto f = q.enqueue([&]() {
+			{
+				auto recorder = command_buffer.record();
+				recorder_lambda(recorder);
+			}
+
+			gl::ste_device_queue::submit_batch(std::move(batch));
+		});
+
+		// Wait for enqueue to complete
+		f.get();
+
+		// Return device fence
+		return fence;
+	}
+
+	/**
 	*	@brief	Waits idly for all the queues and the device to finish processing
 	*/
 	void wait_idle() const {
