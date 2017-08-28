@@ -1,32 +1,31 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <format_type_traits.hpp>
 
-#include <surface_traits.hpp>
-#include <surface_element_cast.hpp>
+#include <limits>
 
 namespace ste {
 namespace graphics {
 
-template <gli::format Fin, bool height_in_alpha = true>
+template <gl::format Format, bool height_in_alpha = true>
 class normal_map_from_height_map {
 private:
-	using T = typename Core::surface_element_type<Fin>::type;
+	using T = typename gl::format_traits<Format>::element_type;
 
 public:
 	gli::texture2d operator()(const gli::texture2d &height_map, float height_scale) {
-		assert(Fin == height_map.format());
+		// Sanity
+		static_assert(gl::format_traits<Format>::elements == 1);
+		assert(gl::format_traits<Format>::gli_format == height_map.format());
 
-		unsigned components_in = gli::component_count(Fin);
-
-		assert(components_in == 1);
-
-		glm::ivec2 dim{ height_map.extent().x, height_map.extent().y };
+		const glm::ivec2 dim{ height_map.extent().x, height_map.extent().y };
 		gli::texture2d nm(height_in_alpha ? gli::format::FORMAT_RGBA32_SFLOAT_PACK32 : gli::format::FORMAT_RGB32_SFLOAT_PACK32, dim, 1);
 
+		// Generate normal map
 		float *data = reinterpret_cast<float*>(nm.data());
 		const T *heights = reinterpret_cast<const T*>(height_map.data());
 		for (int y = 0; y < dim.y; ++y) {
@@ -39,11 +38,19 @@ public:
 				T ir = x + 1 < dim.x ? heights[dim.x * y + x + 1] : ic;
 				T il = x > 0 ? heights[dim.x * y + x - 1] : ic;
 
-				float c = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ic);
-				float u = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(iu);
-				float d = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(id);
-				float l = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(il);
-				float r = Core::surface_element_cast<Fin, gli::format::FORMAT_R32_SFLOAT_PACK32>(ir);
+				float c = static_cast<float>(ic);
+				float u = static_cast<float>(iu);
+				float d = static_cast<float>(id);
+				float l = static_cast<float>(il);
+				float r = static_cast<float>(ir);
+
+				if (gl::format_traits<Format>::is_normalized_integer) {
+					c /= static_cast<float>(std::numeric_limits<T>::max());
+					u /= static_cast<float>(std::numeric_limits<T>::max());
+					d /= static_cast<float>(std::numeric_limits<T>::max());
+					l /= static_cast<float>(std::numeric_limits<T>::max());
+					r /= static_cast<float>(std::numeric_limits<T>::max());
+				}
 
 				n.z = 1.0f;
 				n.y = ((c - d) * .5f + (u - c) * .5f) * height_scale;

@@ -45,14 +45,14 @@ private:
 			return;
 		}
 
-		float d = 1.f / static_cast<float>(vertices.size());
+		const float d = 1.f / static_cast<float>(vertices.size());
 		glm::vec3 c{ 0 };
 		for (auto &v : vertices)
-			c += v.p * d;
+			c += v.p() * d;
 
 		float r = .0f;
 		for (auto &v : vertices) {
-			glm::vec3 u = v.p - c;
+			const glm::vec3 u = v.p() - c;
 			r = glm::max(r, dot(u,u));
 		}
 
@@ -90,31 +90,36 @@ public:
 	template <bool b = Mode == mesh_subdivion_mode::Triangles>
 	std::enable_if_t<b, mesh> &operator+=(const mesh<mode> &rhs) {
 		vertices.insert(vertices.end(), rhs.vertices.begin(), rhs.vertices.end());
-		auto offset = indices.size();
+		const auto offset = indices.size();
+		
 		indices.insert(indices.end(), rhs.indices.begin(), rhs.indices.end());
-		for (int i = 0; i < offset; ++i) indices[i] += offset;
+		for (int i = 0; i < offset; ++i)
+			indices[i] += offset;
+
 		calc_sphere();
 		return *this;
 	}
 
 	mesh& operator*=(float scale) {
-		for (auto &v : vertices) v.p *= scale;
+		for (auto &v : vertices)
+			v.p() *= scale;
+
 		calc_sphere();
 		return *this;
 	}
 
 	void transform(const glm::mat4 &m) {
-		auto tim = glm::transpose(glm::inverse(m));
+		const auto tim = glm::transpose(glm::inverse(m));
 		for (auto &v : vertices) {
 			auto tangent_frame = v.extract_tangent_frame();
 
 			for (int i = 0; i < 3; ++i) {
-				auto t = tim * glm::vec4(tangent_frame[i], 1);
+				const auto t = tim * glm::vec4(tangent_frame[i], 1);
 				tangent_frame[i] = glm::normalize(glm::vec3{ t.x, t.y, t.z });
 			}
 
-			auto p = m * glm::vec4(v.p, 1);
-			v.p = { p.x,p.y,p.z };
+			const auto p = m * glm::vec4(v.p(), 1);
+			v.p() = { p.x,p.y,p.z };
 			v.tangent_frame_from_tbn(tangent_frame[0], tangent_frame[1], tangent_frame[2]);
 		}
 		calc_sphere();

@@ -6,17 +6,15 @@ using namespace ste;
 using namespace ste::graphics;
 
 material::material(const ste_context &ctx,
-				   texture_storage &material_texture_storage,
 				   material_layer *head_layer)
-	: material_texture_storage(material_texture_storage),
-	material_sampler(ctx.device(),
-					 gl::sampler_parameter::anisotropy(16),
-					 gl::sampler_parameter::address_mode(gl::sampler_address_mode::repeat,
-														 gl::sampler_address_mode::repeat,
-														 gl::sampler_address_mode::repeat),
-					 gl::sampler_parameter::filtering(gl::sampler_filter::linear,
-													  gl::sampler_filter::linear,
-													  gl::sampler_mipmap_mode::linear))
+	: material_sampler(ctx.device(),
+					   gl::sampler_parameter::anisotropy(16),
+					   gl::sampler_parameter::address_mode(gl::sampler_address_mode::repeat,
+														   gl::sampler_address_mode::repeat,
+														   gl::sampler_address_mode::repeat),
+					   gl::sampler_parameter::filtering(gl::sampler_filter::linear,
+														gl::sampler_filter::linear,
+														gl::sampler_mipmap_mode::linear))
 {
 	set_head_layer(head_layer);
 }
