@@ -92,13 +92,8 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 	}
 
 	// Indices
-	if constexpr (std::is_same_v<std::uint32_t, decltype(shape.mesh.indices[0])>) {
-		vbo_indices = shape.mesh.indices;
-	}
-	else {
-		for (auto ind : shape.mesh.indices)
-			vbo_indices.push_back(static_cast<std::uint32_t>(ind));
-	}
+	for (auto ind : shape.mesh.indices)
+		vbo_indices.push_back(static_cast<std::uint32_t>(ind));
 
 	if (tc_stride && normals_stride) {
 		// Align tangents to u's (texture coordinate) direction
@@ -149,31 +144,42 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 	int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
 	auto &material = mat_idx >= 0 ? materials[mat_idx] : empty_mat;
 
-	return ctx.engine().task_scheduler().schedule_now([=, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
+	return ctx.engine().task_scheduler().schedule_now([=, &ctx, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
 		// Read loaded textures, if any.
-		lib::shared_ptr<texture_t> diff_map = mat_idx >= 0 ? textures[material.diffuse_texname] : nullptr;
-		lib::shared_ptr<texture_t> opacity_map = mat_idx >= 0 ? textures[material.alpha_texname] : nullptr;
-		lib::shared_ptr<texture_t> specular_map = mat_idx >= 0 ? textures[material.specular_texname] : nullptr;
-		lib::shared_ptr<texture_t> normalmap = mat_idx >= 0 ? textures[material.bump_texname] : nullptr;
-		lib::shared_ptr<texture_t> roughness_map = mat_idx >= 0 ? textures[material.unknown_parameter[roughness_map_key]] : nullptr;
-		lib::shared_ptr<texture_t> metallic_map = mat_idx >= 0 ? textures[material.unknown_parameter[metallic_map_key]] : nullptr;
-		lib::shared_ptr<texture_t> anisotropy_map = mat_idx >= 0 ? textures[material.unknown_parameter[anisotropy_map_key]] : nullptr;
-		lib::shared_ptr<texture_t> thickness_map = mat_idx >= 0 ? textures[material.unknown_parameter[thickness_map_key]] : nullptr;
+		texture_t diff_map;
+		texture_t opacity_map;
+		texture_t specular_map;
+		texture_t normalmap;
+		texture_t roughness_map;
+		texture_t metallic_map;
+//		texture_t anisotropy_map;
+		texture_t thickness_map;
+		if (mat_idx >= 0) {
+			diff_map = textures[material.diffuse_texname];
+			opacity_map = textures[material.alpha_texname];
+			specular_map = textures[material.specular_texname];
+			normalmap = textures[material.bump_texname];
+			roughness_map = textures[material.unknown_parameter[roughness_map_key]];
+			metallic_map = textures[material.unknown_parameter[metallic_map_key]];
+//			anisotropy_map = textures[material.unknown_parameter[anisotropy_map_key]];
+			thickness_map = textures[material.unknown_parameter[thickness_map_key]];
+		}
 
 		// Allocate material and head layer
 		auto layer = scene_properties->material_layers_storage().allocate_layer();
-		auto mat = scene_properties->materials_storage().allocate_material(layer.get());
+		auto mat = scene_properties->materials_storage().allocate_material(ctx,
+																		   layer.get());
 
 		// Set material textures
-		if (diff_map != nullptr)		mat->set_texture(diff_map);
-		if (specular_map != nullptr)	mat->set_cavity_map(specular_map);
-		if (normalmap != nullptr)		mat->set_normal_map(normalmap);
-		if (opacity_map != nullptr)		mat->set_mask_map(opacity_map);
+		if (diff_map)		mat->set_texture(diff_map);
+		if (specular_map)	mat->set_cavity_map(specular_map);
+		if (normalmap)		mat->set_normal_map(normalmap);
+		if (opacity_map)	mat->set_mask_map(opacity_map);
 
-		if (roughness_map != nullptr)	layer->set_roughness(roughness_map);
-		if (metallic_map != nullptr)	layer->set_metallic(metallic_map);
-//		if (anisotropy_map != nullptr)	layer->set_anisotropy(anisotropy_map);
-		if (thickness_map != nullptr)	layer->set_layer_thickness(thickness_map);
+		if (roughness_map)	layer->set_roughness(roughness_map);
+		if (metallic_map)	layer->set_metallic(metallic_map);
+//		if (anisotropy_map)	layer->set_anisotropy(anisotropy_map);
+		if (thickness_map)	layer->set_layer_thickness(thickness_map);
 
 		// Create mesh from vertices and indices
 		lib::unique_ptr<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>> m = lib::allocate_unique<graphics::mesh<graphics::mesh_subdivion_mode::Triangles>>();
@@ -201,10 +207,11 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 												   const std::string &name,
 												   bool srgb,
 												   bool is_displacement_map,
+												   graphics::scene_properties *scene_properties,
 												   texture_map_type *texmap,
 												   const std::experimental::filesystem::path &dir,
 												   float normal_map_bias) {
-	return ctx.engine().task_scheduler().schedule_now([=]() {
+	return ctx.engine().task_scheduler().schedule_now([=, &ctx]() {
 		// Correct path
 		std::string normalized_name = name;
 		std::replace(normalized_name.begin(), normalized_name.end(), '\\', '/');
@@ -223,10 +230,11 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 		}
 
 		// Enforce correct normal maps and displacement maps. 
-		if (is_displacement_map && surface.format() != gli::FORMAT_R8_UNORM_PACK8) {
+		bool displacement = is_displacement_map;
+		if (displacement && surface.format() != gli::FORMAT_R8_UNORM_PACK8) {
 			if (surface.format() == gli::FORMAT_RGB8_UNORM_PACK8 || surface.format() == gli::FORMAT_RGBA8_UNORM_PACK8) {
 				ste_log_warn() << "Texture \"" << name << "\" looks like a normal map and not a displacement map as specified by the model. Assuming a normal map." << std::endl;
-				is_displacement_map = false;
+				displacement = false;
 			}
 			else {
 				ste_log_warn() << "Texture \"" << name << "\" doesn't look like a displacement map. Bailing out..." << std::endl;
@@ -235,22 +243,24 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 		}
 
 		// We use normal maps, if a displacement map is provided, use it to generate a normal map.
-		if (is_displacement_map)
-			surface = graphics::normal_map_from_height_map<std::uint8_t, false>()(surface, normal_map_bias);
+		if (displacement)
+			surface = graphics::normal_map_from_height_map<gl::format::r8_unorm, false>()(surface, normal_map_bias);
 
 		// Create texture.
-		lib::shared_ptr<texture_t> texture;
+		texture_t texture;
 		if (gli::detail::get_format_info(surface.format()).Component == 1) {
-			texture = surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
-																				   std::move(surface),
-																				   gl::image_usage::sampled,
-																				   gl::image_layout::shader_read_only_optimal);
+			auto t = surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
+																				  std::move(surface),
+																				  gl::image_usage::sampled,
+																				  gl::image_layout::shader_read_only_optimal);
+			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
 		}
 		else {
-			texture = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																						 std::move(surface),
-																						 gl::image_usage::sampled,
-																						 gl::image_layout::shader_read_only_optimal);
+			auto t = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
+																						std::move(surface),
+																						gl::image_usage::sampled,
+																						gl::image_layout::shader_read_only_optimal);
+			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
 		}
 		(*texmap)[name] = std::move(texture);
 	});
@@ -259,10 +269,12 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 lib::vector<ste::task_future<void>> model_factory::load_textures(const ste_context &ctx,
 																 shapes_type &shapes,
 																 materials_type &materials,
+																 graphics::scene_properties *scene_properties,
 																 texture_map_type &tex_map,
 																 const std::experimental::filesystem::path &dir,
 																 float normal_map_bias) {
-	tex_map.emplace(std::make_pair(lib::string(""), lib::shared_ptr<texture_t>(nullptr)));
+	// Some models will have an empty string for a texture, avoid loading and using such textures by presetting an empty texture.
+	tex_map.emplace(std::make_pair(lib::string(""), texture_t()));
 
 	// For each shape, load all textures.
 	lib::vector<ste::task_future<void>> futures;
@@ -285,11 +297,12 @@ lib::vector<ste::task_future<void>> model_factory::load_textures(const ste_conte
 				const bool displacement = str == materials[mat_idx].displacement_texname;
 
 				// Create texture loading task.
-				tex_map.emplace(std::make_pair(str, lib::shared_ptr<texture_t>(nullptr)));
+				tex_map.emplace(std::make_pair(str, texture_t()));
 				futures.push_back(load_texture(ctx,
 											   str,
 											   srgb,
 											   displacement,
+											   scene_properties,
 											   &tex_map,
 											   dir,
 											   normal_map_bias));
@@ -341,9 +354,10 @@ ste::task_future<void> model_factory::load_model_async(const ste_context &ctx,
 
 		// Load all textures, in parallel
 		{
-			for (auto &f : load_textures(&ctx.engine().task_scheduler(), 
+			for (auto &f : load_textures(ctx, 
 										 shapes, 
-										 materials, 
+										 materials,
+										 scene_properties,
 										 *textures, 
 										 dir, 
 										 normal_map_bias))
@@ -354,7 +368,7 @@ ste::task_future<void> model_factory::load_model_async(const ste_context &ctx,
 		{
 			lib::vector<ste::task_future<void>> futures;
 			for (auto &shape : shapes)
-				futures.push_back(process_model_mesh(&ctx.engine().task_scheduler(),
+				futures.push_back(process_model_mesh(ctx,
 													 scene_properties,
 													 shape,
 													 object_group,

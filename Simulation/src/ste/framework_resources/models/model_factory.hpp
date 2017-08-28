@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015-2016
+// © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
@@ -13,15 +13,12 @@
 #include <scene_properties.hpp>
 #include <material.hpp>
 #include <material_layer.hpp>
-
-#include <texture.hpp>
-#include <surface_factory.hpp>
+#include <material_texture.hpp>
 
 #include <filesystem>
 
 #include <lib/unique_ptr.hpp>
 #include <lib/unordered_map.hpp>
-#include <lib/string.hpp>
 
 #include <lib/vector.hpp>
 #include <future>
@@ -33,8 +30,8 @@ namespace resource {
 
 class model_factory {
 private:
-	using texture_t = gl::texture<gl::image_type::image_2d>;
-	using texture_map_type = lib::unordered_map<std::string, lib::shared_ptr<texture_t>>;
+	using texture_t = graphics::material_texture;
+	using texture_map_type = lib::unordered_map<std::string, texture_t>;
 	using shapes_type = std::vector<tinyobj::shape_t>;
 	using materials_type = std::vector<tinyobj::material_t>;
 
@@ -52,16 +49,18 @@ private:
 	static void add_object_to_object_group(const ste_context &ctx,
 										   graphics::object_group *object_group,
 										   const lib::shared_ptr<graphics::object> &obj);
-	static ste::task_future<void> load_texture(const ste_context &ctx,
-											   const std::string &name,
+	static ste::task_future<void> load_texture(const ste_context &,
+											   const std::string &,
 											   bool srgb,
-											   bool displacement,
+											   bool is_displacement_map,
+											   graphics::scene_properties *,
 											   texture_map_type *texmap,
 											   const std::experimental::filesystem::path &dir,
 											   float normal_map_bias);
 	static lib::vector<ste::task_future<void>> load_textures(const ste_context &ctx,
 															 shapes_type &shapes,
 															 materials_type &materials,
+															 graphics::scene_properties *,
 															 texture_map_type &tex_map,
 															 const std::experimental::filesystem::path &dir,
 															 float normal_map_bias);

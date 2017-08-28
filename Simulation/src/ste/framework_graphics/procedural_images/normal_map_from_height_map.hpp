@@ -19,8 +19,8 @@ private:
 public:
 	gli::texture2d operator()(const gli::texture2d &height_map, float height_scale) {
 		// Sanity
+		static_assert(gl::format_traits<Format>::elements == 1);
 		assert(gl::format_traits<Format>::gli_format == height_map.format());
-		assert(gl::format_traits<Format>::components == 1);
 
 		const glm::ivec2 dim{ height_map.extent().x, height_map.extent().y };
 		gli::texture2d nm(height_in_alpha ? gli::format::FORMAT_RGBA32_SFLOAT_PACK32 : gli::format::FORMAT_RGB32_SFLOAT_PACK32, dim, 1);
