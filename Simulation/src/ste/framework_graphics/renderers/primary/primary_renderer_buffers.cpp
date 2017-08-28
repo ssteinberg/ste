@@ -97,8 +97,8 @@ void primary_renderer_buffers::update(gl::command_recorder &recorder,
 									  scene *s,
 									  const camera_t *cam) {
 	// Update material bindings, if materials were mutated
-	common_binding_set_collection["material_textures_count"] = s->properties().materials_storage().get_material_texture_storage().size();
-	common_binding_set_collection["material_textures"] = s->properties().materials_storage().get_material_texture_storage().binder();
+	common_binding_set_collection["material_textures_count"] = s->properties().material_textures_storage().size();
+	common_binding_set_collection["material_textures"] = s->properties().material_textures_storage().binder();
 
 	// Upload new camera transform data
 	transform_buffers.update_view_data(recorder, *cam);

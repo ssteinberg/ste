@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <ste_context.hpp>
+
 #include <ste_resource_traits.hpp>
 
 #include <image.hpp>
@@ -35,12 +35,13 @@ private:
 	using tombstone_ranges_t = lib::range_list<std::uint32_t>;
 	using tombstone_range = tombstone_ranges_t::value_type;
 
-	using texture_t = texture<type, dimensions>;
 	using image_t = pipeline::image;
 
 	using changes_vector_t = lib::vector<std::pair<std::uint32_t, pipeline::image>>;
 
 public:
+	using texture_t = texture<type, dimensions>;
+
 	class slot_t : public allow_type_decay<slot_t, texture_t> {
 		friend class image_vector;
 		struct token {};
@@ -95,14 +96,14 @@ private:
 		v[idx] = image_t();
 
 		// Add tombstone
-		tombstone_range t(idx, 1);
+		const tombstone_range t(idx, 1);
 		tombstones.add(t);
 
 		// Update changes
 		add_change(idx, image_t());
 	}
 	/**
-	*	@brief	Marks an element with a tombstone. Tombstones can be consumed by calling insert(), overwriting the tombstone
+	*	@brief	Marks an element with a tombstone. Tombstones can be consumed by calling allocate_slot(), overwriting the tombstone
 	*			with new data.
 	*/
 	void erase(const slot_t &element) {

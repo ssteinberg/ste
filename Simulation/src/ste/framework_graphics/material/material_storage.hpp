@@ -6,7 +6,6 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 
-#include <image_vector.hpp>
 #include <material.hpp>
 #include <resource_storage_stable.hpp>
 
@@ -19,9 +18,6 @@ namespace graphics {
 class material_storage : public gl::resource_storage_stable<material_descriptor> {
 	using Base = gl::resource_storage_stable<material_descriptor>;
 
-private:
-	gl::image_vector<gl::image_type::image_2d> material_texture_storage;
-
 public:
 	material_storage(const ste_context &ctx) : Base(ctx, gl::buffer_usage::storage_buffer) {}
 
@@ -32,8 +28,6 @@ public:
 	void erase_material(const material *mat) {
 		erase_resource(mat);
 	}
-
-	auto& get_material_texture_storage() { return material_texture_storage; }
 };
 
 }
