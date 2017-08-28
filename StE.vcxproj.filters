@@ -251,12 +251,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\mesh_bounding_sphere.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\Quad.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\Sphere.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\procedural_images\normal_map_from_height_map.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1917,6 +1911,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_textures_storage\material_texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\quad.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\sphere.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
