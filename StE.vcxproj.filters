@@ -224,9 +224,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\mesh_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_descriptor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1917,6 +1914,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\sphere.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

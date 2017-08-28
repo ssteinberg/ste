@@ -568,6 +568,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_textures_storage\material_texture.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_textures_storage\material_textures_storage.hpp" />
@@ -1010,7 +1011,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\buffers\object_group_draw_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\buffers\object_group_indirect_command_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\mesh_descriptor.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\Object.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object_group.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\light.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_cascade_descriptor.hpp" />
