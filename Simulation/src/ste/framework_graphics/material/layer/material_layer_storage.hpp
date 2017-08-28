@@ -6,7 +6,8 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 
-#include <image_vector.hpp>
+#include <material_textures_storage.hpp>
+
 #include <material_layer.hpp>
 #include <resource_storage_stable.hpp>
 
@@ -21,19 +22,19 @@ class material_layer_storage : public gl::resource_storage_stable<material_layer
 
 private:
 	alias<const ste_context> ctx;
-	alias<gl::image_vector<gl::image_type::image_2d>> material_texture_storage;
+	alias<material_textures_storage> textures_storage;
 
 public:
 	material_layer_storage(const ste_context &ctx,
-						   gl::image_vector<gl::image_type::image_2d> &material_texture_storage) 
+						   material_textures_storage &textures_storage)
 		: Base(ctx, gl::buffer_usage::storage_buffer),
 		ctx(ctx),
-		material_texture_storage(material_texture_storage)
+		textures_storage(textures_storage)
 	{}
 
 	lib::unique_ptr<material_layer> allocate_layer() {
 		return Base::allocate_resource<material_layer>(ctx.get(),
-													   material_texture_storage.get());
+													   textures_storage.get());
 	}
 	void erase_layer(const material_layer *layer) {
 		erase_resource(layer);

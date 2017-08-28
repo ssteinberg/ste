@@ -7,7 +7,8 @@
 
 #include <material_descriptor.hpp>
 #include <observable_resource.hpp>
-#include <image_vector.hpp>
+
+#include <material_texture.hpp>
 
 #include <material_layer.hpp>
 
@@ -15,8 +16,6 @@
 #include <texture.hpp>
 
 #include <rgb.hpp>
-
-#include <lib/shared_ptr.hpp>
 #include <alias.hpp>
 
 namespace ste {
@@ -30,14 +29,12 @@ class material : public gl::observable_resource<material_descriptor> {
 	using texture_storage = gl::image_vector<gl::image_type::image_2d>;
 
 private:
-	alias<texture_storage> material_texture_storage;
-
 	gl::sampler material_sampler;
 
-	texture_storage::value_type cavity_map{ nullptr };
-	texture_storage::value_type normal_map{ nullptr };
-	texture_storage::value_type mask_map{ nullptr };
-	texture_storage::value_type texture{ nullptr };
+	material_texture cavity_map;
+	material_texture normal_map;
+	material_texture mask_map;
+	material_texture texture;
 
 	rgb emission{ 0, 0, 0 };
 
@@ -66,14 +63,8 @@ public:
 	* 	@param head_layer	material head layer (top layer) of the layer stack
 	*/
 	explicit material(const ste_context &ctx,
-					  texture_storage &material_texture_storage,
 					  material_layer *head_layer);
-	~material() {
-		cavity_map = nullptr;
-		normal_map = nullptr;
-		mask_map = nullptr;
-		texture = nullptr;
-	}
+	~material() noexcept {}
 
 	/**
 	*	@brief	Set material texture
@@ -84,9 +75,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_texture(gl::texture<gl::image_type::image_2d> &&tex) {
-		texture = material_texture_storage->allocate_slot(std::move(tex));
-		descriptor.texture_handle = texture->get_slot_idx();
+	void set_texture(const material_texture &tex) {
+		texture = tex;
+		descriptor.texture_handle = texture.texture_index();
 
 		if (descriptor.texture_handle)  descriptor.material_flags |= material_descriptor::material_has_texture_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_texture_bit;
@@ -101,9 +92,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_cavity_map(gl::texture<gl::image_type::image_2d> &&tex) {
-		cavity_map = material_texture_storage->allocate_slot(std::move(tex));
-		descriptor.cavity_handle = cavity_map->get_slot_idx();
+	void set_cavity_map(const material_texture &tex) {
+		cavity_map = tex;
+		descriptor.cavity_handle = cavity_map.texture_index();
 
 		if (descriptor.cavity_handle)   descriptor.material_flags |= material_descriptor::material_has_cavity_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_cavity_map_bit;
@@ -116,9 +107,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_normal_map(gl::texture<gl::image_type::image_2d> &&tex) {
-		normal_map = material_texture_storage->allocate_slot(std::move(tex));
-		descriptor.normal_handle = normal_map->get_slot_idx();
+	void set_normal_map(const material_texture &tex) {
+		normal_map = tex;
+		descriptor.normal_handle = normal_map.texture_index();
 
 		if (descriptor.normal_handle)	descriptor.material_flags |= material_descriptor::material_has_normal_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_normal_map_bit;
@@ -133,9 +124,9 @@ public:
 	*
 	* 	@param tex	2D texture object
 	*/
-	void set_mask_map(gl::texture<gl::image_type::image_2d> &&tex) {
-		mask_map = material_texture_storage->allocate_slot(std::move(tex));
-		descriptor.mask_handle = mask_map->get_slot_idx();
+	void set_mask_map(const material_texture &tex) {
+		mask_map = tex;
+		descriptor.mask_handle = mask_map.texture_index();
 
 		if (descriptor.mask_handle)		descriptor.material_flags |= material_descriptor::material_has_mask_map_bit;
 		else							descriptor.material_flags &= ~material_descriptor::material_has_mask_map_bit;
@@ -186,10 +177,10 @@ public:
 	*/
 	void attach_layer_stack(material_layer *head_layer);
 
-	auto *get_cavity_map() const { return cavity_map.get(); }
-	auto *get_normal_map() const { return normal_map.get(); }
-	auto *get_mask_map() const { return mask_map.get(); }
-	auto *get_texture() const { return texture.get(); }
+	auto& get_cavity_map() const { return cavity_map; }
+	auto& get_normal_map() const { return normal_map; }
+	auto& get_mask_map() const { return mask_map; }
+	auto& get_texture() const { return texture; }
 
 	rgb get_emission() const { return emission; }
 
