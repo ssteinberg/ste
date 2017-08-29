@@ -4,8 +4,8 @@
 #include <presentation_engine.hpp>
 #include <presentation_frame_time_predictor.hpp>
 
-#include <cmd_pipeline_barrier.hpp>
 #include <cmd_clear_color_image.hpp>
+#include <cmd_pipeline_barrier.hpp>
 
 #include <surface_factory.hpp>
 #include <text_manager.hpp>
@@ -45,7 +45,7 @@ private:
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
 private:
-	static auto create_fb_layout(const ste_context &ctx) {
+	static auto create_fb_clear_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
 									  gl::image_layout::color_attachment_optimal,
@@ -58,7 +58,7 @@ public:
 					 gl::presentation_engine &presentation,
 					 text::text_manager &tm)
 		: Base(ctx,
-			   create_fb_layout(ctx)),
+			   create_fb_clear_layout(ctx)),
 		presentation(presentation),
 		title_text_frag(tm.create_fragment()),
 		footer_text_frag(tm.create_fragment())
@@ -78,6 +78,9 @@ public:
 			{
 				auto recorder = command_buffer.record();
 				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
+				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
+
+				title_text_frag.manager().attach_framebuffer(fb);
 
 				{
 					using namespace text::attributes;
@@ -101,21 +104,17 @@ public:
 																		orange(lib::to_wstring(pending_requests) + L" pending requests"))));
 				}
 
-				title_text_frag.manager().attach_framebuffer(fb);
-				footer_text_frag.manager().attach_framebuffer(fb);
-
 				recorder
-					// Clear framebuffer
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::top_of_pipe,
 																	 gl::pipeline_stage::transfer,
-																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																										gl::image_layout::present_src_khr,
-																										gl::image_layout::transfer_dst_optimal)))
-					<< gl::cmd_clear_color_image(swap_chain_image(batch->presentation_image_index()).image, gl::image_layout::transfer_dst_optimal, glm::i32vec4(0))
+																	 gl::image_layout_transform_barrier(swapchain_image,
+																										gl::image_layout::undefined,
+																										gl::image_layout::shared_present_khr)))
+					<< gl::cmd_clear_color_image(swap_chain_image(batch->presentation_image_index()).image, gl::image_layout::present_src_khr, glm::i32vec4{ 0 })
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																	 gl::pipeline_stage::color_attachment_output,
-																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																										gl::image_layout::transfer_dst_optimal,
+																	 gl::image_layout_transform_barrier(swapchain_image,
+																										gl::image_layout::shared_present_khr,
 																										gl::image_layout::color_attachment_optimal)))
 
 					// Render text
@@ -125,7 +124,7 @@ public:
 					// Prepare framebuffer for presentation
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
 																	 gl::pipeline_stage::bottom_of_pipe,
-																	 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
+																	 gl::image_layout_transform_barrier(swapchain_image,
 																										gl::image_layout::color_attachment_optimal,
 																										gl::image_layout::present_src_khr)));
 			}
@@ -470,6 +469,8 @@ int main()
 			   mat_editor_materials,
 			   mat_editor_layers,
 			   mat_editor_objects);
+	if (window.should_close())
+		return 0;
 
 
 	/*
