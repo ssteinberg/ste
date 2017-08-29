@@ -18,9 +18,9 @@
 #include <device_resource_allocation_policy.hpp>
 
 #include <allow_type_decay.hpp>
-#include <functional>
-#include <lib/blob.hpp>
 #include <lib/range_list.hpp>
+#include <mutex>
+#include <atomic>
 
 namespace ste {
 namespace gl {
@@ -28,7 +28,7 @@ namespace gl {
 template <
 	typename T,
 	std::uint64_t minimal_atom_size = 65536,
-	std::uint64_t max_sparse_size = 64 * 1024 * 1024
+	std::uint64_t max_sparse_size = 1024 * 1024
 >
 class stable_vector :
 	ste_resource_deferred_create_trait,
@@ -56,9 +56,11 @@ public:
 
 private:
 	buffer_t buffer;
-	std::uint64_t elements{ 0 };
+	std::atomic<std::uint64_t> elements{ 0 };
 
 	tombstone_ranges_t tombstones;
+
+	mutable std::mutex tombstones_mutex;
 
 public:
 	stable_vector(const ste_context &ctx,
@@ -77,8 +79,21 @@ public:
 	}
 	~stable_vector() noexcept {}
 
-	stable_vector(stable_vector&&) = default;
-	stable_vector &operator=(stable_vector&&) = default;
+	stable_vector(stable_vector &&o) noexcept : buffer(std::move(o.buffer)), elements(o.elements.load()) {
+		std::unique_lock<std::mutex> lt(o.tombstones_mutex);
+		tombstones = std::move(o.tombstones);
+	}
+	stable_vector &operator=(stable_vector &&o) noexcept {
+		std::unique_lock<std::mutex> lock1(tombstones_mutex, std::defer_lock);
+		std::unique_lock<std::mutex> lock2(o.tombstones_mutex, std::defer_lock);
+		std::lock(lock1, lock2);
+
+		buffer = std::move(o.buffer);
+		elements.store(o.elements.load());
+		tombstones = std::move(o.tombstones);
+
+		return *this;
+	}
 
 	/**
 	*	@brief	Marks an element with a tombstone. Tombstones can be consumed by calling insert(), overwriting the tombstone
@@ -88,7 +103,9 @@ public:
 				   std::uint64_t count = 1) {
 		assert(idx + count <= size());
 
-		tombstone_range t(idx, count);
+		std::unique_lock<std::mutex> lt(tombstones_mutex);
+
+		const tombstone_range t(idx, count);
 		tombstones.add(t);
 	}
 
@@ -102,6 +119,8 @@ public:
 	auto insert_cmd(const lib::vector<T> &data,
 					std::uint64_t &location) {
 		// If there are tombstones, replace one of them with new element, if possible
+		std::unique_lock<std::mutex> lt(tombstones_mutex);
+
 		auto it = tombstones.begin();
 		for (; it != tombstones.end(); ++it) {
 			if (it->length >= data.size())
@@ -111,15 +130,19 @@ public:
 		if (it != tombstones.end()) {
 			location = it->start;
 
-			tombstone_range t(location, data.size());
+			const tombstone_range t(location, data.size());
 			tombstones.remove(t);
+
+			lt.unlock();
 
 			return insert_cmd_t(data,
 								location,
 								this);
 		}
 
-		location = elements++;
+		lt.unlock();
+
+		location = elements.fetch_add(1);
 		return insert_cmd_t(data, location, this);
 	}
 	/**
@@ -166,8 +189,7 @@ public:
 	*	@param	data	Data to push back
 	*/
 	auto push_back_cmd(const lib::vector<T> &data) {
-		auto location = elements;
-		elements += data.size();
+		const auto location = elements.fetch_add(data.size());
 
 		return insert_cmd_t(data, location, this);
 	}
@@ -187,10 +209,10 @@ public:
 	*	@param	count_to_pop	Elements count to pop
 	*/
 	auto pop_back_cmd(std::uint64_t count_to_pop = 1) {
-		assert(count_to_pop <= elements);
-		elements -= count_to_pop;
+		const auto location = elements.fetch_add(-count_to_pop);
+		assert(static_cast<std::int64_t>(location) > 0);
 
-		return unbind_cmd_t(elements, count_to_pop, this);
+		return unbind_cmd_t(location, count_to_pop, this);
 	}
 
 	/**
@@ -200,15 +222,14 @@ public:
 	*	@param	new_size		New vector size
 	*/
 	auto resize_cmd(std::uint64_t new_size) {
-		auto old_size = elements;
-		elements = new_size;
+		const auto old_size = elements.exchange(new_size);
 
 		return resize_cmd_t(old_size,
 							new_size,
 							this);
 	}
 
-	auto size() const { return elements; }
+	auto size() const { return elements.load(); }
 
 	auto& get() { return buffer; }
 	auto& get() const { return buffer; }

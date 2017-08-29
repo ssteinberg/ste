@@ -11,17 +11,12 @@
 #include <copy_data_buffer.hpp>
 #include <vector_common.hpp>
 
-#include <cmd_update_buffer.hpp>
-#include <cmd_copy_buffer.hpp>
-#include <task.hpp>
-
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
 
 #include <allow_type_decay.hpp>
-#include <functional>
-#include <lib/blob.hpp>
 #include <lib/vector.hpp>
+#include <mutex>
 
 namespace ste {
 namespace gl {
@@ -29,7 +24,7 @@ namespace gl {
 template <
 	typename T,
 	std::uint64_t minimal_atom_size = 65536,
-	std::uint64_t max_sparse_size = 64 * 1024 * 1024
+	std::uint64_t max_sparse_size = 1024 * 1024
 >
 class vector :
 	ste_resource_deferred_create_trait,
@@ -56,6 +51,16 @@ private:
 
 	lib::vector<T> host_replica;
 
+	mutable std::mutex mutex;
+
+private:
+	/**
+	 *	@brief	Move constructor that hold a lock
+	 */
+	vector(std::unique_lock<std::mutex> &&guard, vector &&o) noexcept
+		: buffer(std::move(o.buffer)), host_replica(std::move(o.host_replica))
+	{}
+
 public:
 	vector(const ste_context &ctx,
 		   const buffer_usage &usage)
@@ -75,8 +80,17 @@ public:
 	}
 	~vector() noexcept {}
 
-	vector(vector&&) = default;
-	vector &operator=(vector&&) = default;
+	vector(vector &&o) noexcept : vector(std::unique_lock<std::mutex>(o.mutex), std::move(o)) {}
+	vector &operator=(vector &&o) noexcept {
+		std::unique_lock<std::mutex> lock1(mutex, std::defer_lock);
+		std::unique_lock<std::mutex> lock2(o.mutex, std::defer_lock);
+		std::lock(lock1, lock2);
+
+		buffer = std::move(o.buffer);
+		host_replica = std::move(o.host_replica);
+
+		return *this;
+	}
 
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
@@ -86,9 +100,13 @@ public:
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
 					   const lib::vector<T> &data) {
-		assert(idx + data.size() <= size());
 
-		std::copy(data.begin(), data.end(), host_replica.begin() + static_cast<int>(idx));
+		{
+			std::unique_lock<std::mutex> l(mutex);
+
+			assert(idx + data.size() <= size());
+			std::copy(data.begin(), data.end(), host_replica.begin() + static_cast<int>(idx));
+		}
 
 		return update_cmd_t(data,
 							idx,
@@ -110,12 +128,18 @@ public:
 	*/
 	auto erase_and_shift_cmd(std::uint64_t idx,
 							 std::uint64_t count = 1) {
-		assert(idx + count <= size());
+		lib::vector<T> overwrite_data;
+		{
+			std::unique_lock<std::mutex> l(mutex);
 
-		host_replica.erase(host_replica.begin() + idx, host_replica.begin() + static_cast<int>(idx + count));
+			assert(idx + count <= size());
+
+			overwrite_data = lib::vector<T>(host_replica.begin() + idx + count, host_replica.end());
+			host_replica.erase(host_replica.begin() + idx, host_replica.begin() + static_cast<int>(idx + count));
+		}
 
 		return overwrite_cmd(idx,
-							 lib::vector<T>(host_replica.begin() + idx + count, host_replica.end()));
+							 overwrite_data);
 	}
 
 	/**
@@ -125,8 +149,13 @@ public:
 	*	@param	data	Data to push back
 	*/
 	auto push_back_cmd(const lib::vector<T> &data) {
-		auto location = host_replica.size();
-		std::copy(data.begin(), data.end(), std::back_inserter(host_replica));
+		std::size_t location;
+		{
+			std::unique_lock<std::mutex> l(mutex);
+
+			location = size();
+			std::copy(data.begin(), data.end(), std::back_inserter(host_replica));
+		}
 
 		return insert_cmd_t(data, location, this);
 	}
@@ -147,9 +176,16 @@ public:
 	*/
 	auto pop_back_cmd(std::uint64_t count_to_pop = 1) {
 		assert(count_to_pop <= size());
-		host_replica.erase(host_replica.end() - count_to_pop, host_replica.end());
 
-		return unbind_cmd_t(size(), count_to_pop, this);
+		std::size_t location;
+		{
+			std::unique_lock<std::mutex> l(mutex);
+
+			location = size();
+			host_replica.erase(host_replica.end() - count_to_pop, host_replica.end());
+		}
+
+		return unbind_cmd_t(location, count_to_pop, this);
 	}
 
 	/**
@@ -159,8 +195,13 @@ public:
 	*	@param	new_size		New vector size
 	*/
 	auto resize_cmd(std::uint64_t new_size) {
-		auto old_size = size();
-		host_replica.resize(new_size);
+		std::size_t old_size;
+		{
+			std::unique_lock<std::mutex> l(mutex);
+
+			old_size = size();
+			host_replica.resize(new_size);
+		}
 
 		return resize_cmd_t(old_size,
 							new_size,
