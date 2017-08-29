@@ -164,5 +164,39 @@ struct image_extent_type<3> {
 template <int dimensions>
 using image_extent_type_t = typename image_extent_type<dimensions>::type;
 
+// Image type trait - layer image type
+template<image_type type>
+struct image_layer_type {};
+template <>
+struct image_layer_type<image_type::image_1d> {
+	static constexpr auto value = image_type::image_1d;
+};
+template <>
+struct image_layer_type<image_type::image_1d_array> {
+	static constexpr auto value = image_type::image_1d;
+};
+template <>
+struct image_layer_type<image_type::image_2d> {
+	static constexpr auto value = image_type::image_2d;
+};
+template <>
+struct image_layer_type<image_type::image_2d_array> {
+	static constexpr auto value = image_type::image_2d;
+};
+template <>
+struct image_layer_type<image_type::image_3d> {
+	static constexpr auto value = image_type::image_3d;
+};
+template <>
+struct image_layer_type<image_type::image_cubemap> {
+	static constexpr auto value = image_type::image_cubemap;
+};
+template <>
+struct image_layer_type<image_type::image_cubemap_array> {
+	static constexpr auto value = image_type::image_cubemap;
+};
+template <image_type type>
+static constexpr auto image_layer_type_v = image_layer_type<type>::value;
+
 }
 }

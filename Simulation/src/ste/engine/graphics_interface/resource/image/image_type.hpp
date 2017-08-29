@@ -1,10 +1,9 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-#include <vulkan/vulkan.h>
 
 namespace ste {
 namespace gl {
