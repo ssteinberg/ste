@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <shaped_light.hpp>
 
+#include <command_recorder.hpp>
+
 namespace ste {
 namespace graphics {
 
@@ -29,13 +31,19 @@ protected:
 public:
 	virtual ~quad_light() noexcept {}
 
-	void set_points(const glm::vec3 *quad_points) {
+	void set_points(gl::command_recorder &recorder, 
+					const glm::vec3 *quad_points) {
 		glm::vec3 n = glm::cross(quad_points[1] - quad_points[0], quad_points[3] - quad_points[0]);
 		float area = glm::length(n);
 
-		Base::set_points(quad_points, 4, area, n / area);
+		Base::set_points(recorder,
+						 quad_points, 4, area, n / area);
 	}
-	void set_points(const std::array<glm::vec3, 4> &quad_points) { set_points(&quad_points[0]); }
+	void set_points(gl::command_recorder &recorder, 
+					const std::array<glm::vec3, 4> &quad_points) {
+		set_points(recorder,
+				   &quad_points[0]);
+	}
 };
 
 class quad_light_onesided : public quad_light {

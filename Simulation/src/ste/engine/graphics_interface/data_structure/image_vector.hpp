@@ -18,7 +18,10 @@
 #include <lib/vector.hpp>
 #include <lib/shared_ptr.hpp>
 
+#include <optional.hpp>
 #include <allow_type_decay.hpp>
+#include <mutex>
+#include <atomic>
 
 namespace ste {
 namespace gl {
@@ -50,16 +53,17 @@ public:
 		texture_t tex;
 
 		alias<image_vector> storage;
-		std::uint32_t slot_idx;
+		std::uint32_t slot_idx{ 0 };
 
 	public:
 		slot_t(token,
 			   texture_t &&tex,
 			   image_vector &parent,
-			   std::uint32_t slot_idx) 
+			   std::uint32_t slot_idx)
 			: tex(std::move(tex)),
 			storage(parent),
-			slot_idx(slot_idx) {}
+			slot_idx(slot_idx)
+		{}
 		slot_t(slot_t&&) = default;
 		slot_t(const slot_t&) = delete;
 		slot_t &operator=(slot_t&&) = delete;
@@ -92,15 +96,21 @@ private:
 	void erase(std::uint32_t idx) {
 		assert(idx < size());
 
-		// Set null handle image in slot
-		v[idx] = image_t();
+		// Annihilate slot
+		{
+			std::unique_lock<std::mutex> l(general_mutex);
 
-		// Add tombstone
-		const tombstone_range t(idx, 1);
-		tombstones.add(t);
+			// Update changes
+			add_change(idx, image_t());
+		}
 
-		// Update changes
-		add_change(idx, image_t());
+		{
+			std::unique_lock<std::mutex> lt(tombstones_mutex);
+
+			// Mark tombstone
+			const tombstone_range t(idx, 1);
+			tombstones.add(t);
+		}
 	}
 	/**
 	*	@brief	Marks an element with a tombstone. Tombstones can be consumed by calling allocate_slot(), overwriting the tombstone
@@ -111,10 +121,13 @@ private:
 	}
 
 private:
-	lib::vector<image_t> v;
+	std::atomic<std::uint32_t> count{ 0 };
 	tombstone_ranges_t tombstones;
 
 	mutable changes_vector_t changes;
+
+	mutable std::mutex tombstones_mutex;
+	mutable std::mutex general_mutex;
 
 public:
 	image_vector() = default;
@@ -131,33 +144,34 @@ public:
 	*/
 	auto allocate_slot(texture_t &&tex,
 					   image_layout layout = default_layout) {
-		std::uint32_t location;
+		// Find a location for the slot: If there are tombstones, replace one of them with new element, if possible
+		optional<std::uint32_t> location;
+		{
+			std::unique_lock<std::mutex> l(tombstones_mutex);
 
-		// If there are tombstones, replace one of them with new element, if possible
-		auto it = tombstones.begin();
-		if (it != tombstones.end()) {
-			location = it->start;
-			tombstones.pop_front();
-		}
-		else {
-			location = static_cast<std::uint32_t>(v.size());
+			auto it = tombstones.begin();
+			if (it != tombstones.end()) {
+				location = it->start;
+				tombstones.pop_front();
+			}
 		}
 
-		// Create slot
+		// If no tombstones, use a location past the vector's end.
+		if (!location)
+			location = count.fetch_add(1);
+
+		// Create slot and pipeline image, we can do that without a lock
 		value_type val = lib::allocate_shared<slot_t>(slot_t::token(),
 													  std::move(tex),
 													  *this,
-													  location);
+													  location.get());
 		auto img = image_t(val->tex, layout);
 		
-		// Write image to vector and update changes data
-		if (location < v.size()) {
-			v[location] = img;
-			add_change(location, std::move(img));
-		}
-		else {
-			v.push_back(img);
-			changes.push_back(std::make_pair(location, std::move(img)));
+		// Update changes data
+		{
+			std::unique_lock<std::mutex> l(general_mutex);
+			add_change(location.get(),
+					   std::move(img));
 		}
 
 		return val;
@@ -169,13 +183,23 @@ public:
 	 *			Same return type as gl::bind, designed to be passed to a pipeline binding point.
 	 */
 	auto binder() const {
+		// Make a copy of the changes vector, safely, and clear the changes.
+		changes_vector_t changes_copy;
+		{
+			std::unique_lock<std::mutex> l(general_mutex);
+
+			changes_copy = changes;
+			changes.clear();
+		}
+
+		// Create binding data
 		lib::vector<std::pair<std::uint32_t, lib::vector<pipeline::image>>> array_element_and_images_pairs;
-		for (auto it = changes.begin(); it != changes.end();) {
+		for (auto it = changes_copy.begin(); it != changes_copy.end();) {
 			std::uint32_t array_element = it->first;
 			lib::vector<pipeline::image> images = { it->second };
 
 			it = std::next(it);
-			while (it != changes.end() && it->first == array_element + images.size()) {
+			while (it != changes_copy.end() && it->first == array_element + images.size()) {
 				images.push_back(it->second);
 				it = std::next(it);
 			}
@@ -184,15 +208,10 @@ public:
 																	std::move(images)));
 		}
 
-		changes.clear();
-
 		return gl::bind(array_element_and_images_pairs);
 	}
 
-	const auto& operator[](std::size_t idx) const { return v[idx]; }
-
-	auto size() const { return v.size(); }
-	auto& get() const { return v; }
+	auto size() const { return count.load(); }
 };
 
 template <image_type type, int dimensions = image_dimensions_v<type>>

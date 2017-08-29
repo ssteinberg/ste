@@ -20,14 +20,14 @@ public:
 		for (unsigned x = 0; x <= horz_slices; ++x) {
 			float phi = x == horz_slices ? -glm::pi<float>() : glm::mix(-glm::pi<float>(), glm::pi<float>(), static_cast<float>(x) / static_cast<float>(horz_slices - 1));
 			for (unsigned y = 0; y < vert_slices; ++y) {
-				float theta = glm::mix(theta_min, theta_max, static_cast<float>(y) / static_cast<float>(vert_slices - 1));
+				const float theta = glm::mix(theta_min, theta_max, static_cast<float>(y) / static_cast<float>(vert_slices - 1));
 
 				object_vertex_data v;
-				v.p.y = glm::sin(theta);
-				v.p.x = glm::cos(theta) * glm::sin(phi);
-				v.p.z = glm::cos(theta) * glm::cos(phi);
+				v.p().y = glm::sin(theta);
+				v.p().x = glm::cos(theta) * glm::sin(phi);
+				v.p().z = glm::cos(theta) * glm::cos(phi);
 
-				glm::vec3 n = v.p;
+				glm::vec3 n = v.p();
 				glm::vec3 t;
 				t.y = glm::sin(theta + glm::half_pi<float>());
 				t.x = glm::cos(theta + glm::half_pi<float>()) * glm::sin(phi);
@@ -35,8 +35,8 @@ public:
 				glm::vec3 b = glm::cross(t,n);
 				v.tangent_frame_from_tbn(t,b,n);
 
-				v.uv.x = .5f + glm::atan(v.p.x, v.p.z) / glm::two_pi<float>();
-				v.uv.y = static_cast<float>(y) / static_cast<float>(vert_slices - 1);
+				v.uv().x = .5f + glm::atan(v.p().x, v.p().z) / glm::two_pi<float>();
+				v.uv().y = static_cast<float>(y) / static_cast<float>(vert_slices - 1);
 
 				vert.push_back(v);
 			}

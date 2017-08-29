@@ -25,29 +25,12 @@ tinyobj::material_t model_factory::empty_mat;
 void model_factory::add_object_to_object_group(const ste_context &ctx, 
 											   graphics::object_group *object_group,
 											   const lib::shared_ptr<graphics::object> &obj) {
-	const auto queue_type = gl::ste_queue_type::data_transfer_sparse_queue;
-	const auto queue_selector = gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(queue_type);
-	auto &q = ctx.device().select_queue(queue_selector);
-
-	// Create a batch
-	auto batch = q.allocate_batch();
-	auto& command_buffer = batch->acquire_command_buffer();
-	auto fence = batch->get_fence_ptr();
-
 	// Enqueue object add command on a transfer queue
-	auto f = q.enqueue([&]() {
-		// Record and submit a one-time batch
-		{
-			auto recorder = command_buffer.record();
-
-			// Add to object group
-			object_group->add_object(recorder,
-									 obj);
-		}
-
-		gl::ste_device_queue::submit_batch(std::move(batch));
+	ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
+									  [&](gl::command_recorder &recorder) {
+		object_group->add_object(recorder,
+								 obj);
 	});
-	f.get();
 }
 
 ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,

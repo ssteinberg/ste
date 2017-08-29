@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <shaped_light.hpp>
 
+#include <command_recorder.hpp>
+
 #include <lib/vector.hpp>
 #include <array>
 
@@ -43,18 +45,28 @@ protected:
 public:
 	virtual ~polygonal_light() noexcept {}
 
-	void set_points(const glm::vec3 *points, std::size_t size) {
+	void set_points(gl::command_recorder &recorder, 
+					const glm::vec3 *points, std::size_t size) {
 		glm::vec3 n = { 0,0,0 };
 		float area = .0f;
 		if (size > 2) {
 			n = glm::normalize(glm::cross(points[1] - points[0], points[2] - points[0]));
 			area = calculate_area(points, size, n);
 		}
-		Base::set_points(points, size, area, n);
+		Base::set_points(recorder,
+						 points, size, area, n);
 	}
-	void set_points(const lib::vector<glm::vec3> &points) { set_points(&points[0], points.size()); }
+	void set_points(gl::command_recorder &recorder, 
+					const lib::vector<glm::vec3> &points) {
+		set_points(recorder,
+				   &points[0], points.size());
+	}
 	template <int N>
-	void set_points(const std::array<glm::vec3, N> &points) { set_points(&points[0], points.size()); }
+	void set_points(gl::command_recorder &recorder, 
+					const std::array<glm::vec3, N> &points) {
+		set_points(recorder,
+				   &points[0], points.size());
+	}
 };
 
 class polygonal_light_onesided : public polygonal_light {
