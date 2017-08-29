@@ -212,10 +212,12 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 			return;
 		}
 
+		auto surface_format_details = gli::detail::get_format_info(surface.format());
+
 		// Enforce correct normal maps and displacement maps. 
 		bool displacement = is_displacement_map;
-		if (displacement && surface.format() != gli::FORMAT_R8_UNORM_PACK8) {
-			if (surface.format() == gli::FORMAT_RGB8_UNORM_PACK8 || surface.format() == gli::FORMAT_RGBA8_UNORM_PACK8) {
+		if (displacement && surface_format_details.Component != 1) {
+			if (surface_format_details.Component == 3) {
 				ste_log_warn() << "Texture \"" << name << "\" looks like a normal map and not a displacement map as specified by the model. Assuming a normal map." << std::endl;
 				displacement = false;
 			}
@@ -231,14 +233,28 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 
 		// Create texture.
 		texture_t texture;
-		if (gli::detail::get_format_info(surface.format()).Component == 1) {
+		if (surface_format_details.Component == 1 && (surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
+			auto t = surface_factory::image_from_surface_2d<gl::format::r8_srgb>(ctx,
+																				 std::move(surface),
+																				 gl::image_usage::sampled,
+																				 gl::image_layout::shader_read_only_optimal);
+			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
+		}
+		else if (surface_format_details.Component == 1 && !(surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
 			auto t = surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
 																				  std::move(surface),
 																				  gl::image_usage::sampled,
 																				  gl::image_layout::shader_read_only_optimal);
 			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
 		}
-		else {
+		else if (surface_format_details.Component >= 3 && (surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
+			auto t = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_srgb>(ctx,
+																					   std::move(surface),
+																					   gl::image_usage::sampled,
+																					   gl::image_layout::shader_read_only_optimal);
+			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
+		}
+		else if (surface_format_details.Component >= 3 && !(surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
 			auto t = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
 																						std::move(surface),
 																						gl::image_usage::sampled,

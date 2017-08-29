@@ -5,7 +5,6 @@
 
 #include <stdafx.hpp>
 #include <access_flags.hpp>
-#include <ste_engine_exceptions.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,12 +20,11 @@ enum class image_layout : std::uint32_t {
 	transfer_dst_optimal = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 	preinitialized = VK_IMAGE_LAYOUT_PREINITIALIZED,
 	present_src_khr = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+	shared_present_khr = VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR,
 };
 
 /**
  *	@brief	Returns the access flags representing the expected nature of access to an image in a specific image layout.
- *	
- *	@throws	ste_engine_exception		If image layout is undefined or preinitialized.
  */
 auto inline access_flags_for_image_layout(image_layout layout) {
 	switch (layout) {
@@ -46,9 +44,15 @@ auto inline access_flags_for_image_layout(image_layout layout) {
 		return access_flags::transfer_read;
 	case image_layout::general:
 		return access_flags::shader_read | access_flags::shader_write;	// General is used for storage images
-	default:
-		throw ste_engine_exception("Can not deduce access flags for image layout. Image layout must not be image_layout::undefined, image_layout::preinitialized or image_layout::general.");
+	case image_layout::shared_present_khr:
+		return access_flags::memory_read | access_flags::transfer_write | access_flags::transfer_read;
+	case image_layout::undefined:
+	case image_layout::preinitialized:
+		return access_flags::none;
 	}
+
+	assert(false);
+	return access_flags::none;
 }
 
 }
