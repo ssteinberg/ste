@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -16,15 +16,19 @@ namespace resource {
 
 namespace _detail {
 
+/**
+*	@brief	Surface array
+*/
 template<gl::format format, gl::image_type image_type>
 class surface_array : public surface_base<format, image_type> {
 	using Base = surface_base<format, image_type>;
 
 public:
+	template<bool c>
 	using surface_layer_type = std::conditional_t<
 		image_type == gl::image_type::image_cubemap_array,
-		surface_cubemap<format>,
-		surface<format, gl::image_layer_type_v<image_type>>
+		surface_cubemap<format, c>,
+		surface<format, gl::image_layer_type_v<image_type>, c>
 	>;
 
 	using Base::extent_type;
@@ -45,21 +49,43 @@ public:
 		: Base(extent, levels, layers),
 		storage(Base::blocks_layer() * Base::layers())
 	{}
+	~surface_array() noexcept {}
 
+	surface_array(surface_array&&) = default;
+	surface_array(const surface_array&) = delete;
+	surface_array &operator=(surface_array&&) = default;
+	surface_array &operator=(const surface_array&) = delete;
+
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
 	auto* data() { return storage.get(); }
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
 	auto* data() const { return storage.get(); }
 
+	/**
+	*	@brief	Returns a non-array surface for the queried layer index
+	*
+	*	@param	layer_index		Layer index
+	*/
 	auto operator[](std::size_t layer_index) {
 		assert(layer_index < Base::layers());
-		return surface<format, image_type, false>(Base::extent(),
-												  Base::levels(),
-												  storage.view(Base::offset_blocks(layer_index, 0)));
+		return surface_layer_type<false>(Base::extent(),
+										 Base::levels(),
+										 storage.view(Base::offset_blocks(layer_index, 0)));
 	}
+	/**
+	*	@brief	Returns a non-array surface for the queried layer index
+	*
+	*	@param	layer_index		Layer index
+	*/
 	auto operator[](std::size_t layer_index) const {
 		assert(layer_index < Base::layers());
-		return surface<format, image_type, true>(Base::extent(),
-												 Base::levels(),
-												 storage.view(Base::offset_blocks(layer_index, 0)));
+		return surface_layer_type<true>(Base::extent(),
+										Base::levels(),
+										storage.view(Base::offset_blocks(layer_index, 0)));
 	}
 };
 

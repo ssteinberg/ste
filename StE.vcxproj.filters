@@ -1934,6 +1934,9 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_convert.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\cubemap_face.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

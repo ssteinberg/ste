@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -14,6 +14,9 @@ namespace resource {
 
 namespace _detail {
 
+/**
+*	@brief	A surface image, which represents a level of a layer of a surface.
+*/
 template<gl::format format, typename extent_type, typename block_ptr_type>
 class surface_image {
 private:
@@ -30,22 +33,50 @@ public:
 		storage(storage),
 		_blocks(blocks)
 	{}
+	~surface_image() noexcept {}
 
+	surface_image(surface_image&&) = default;
+	surface_image(const surface_image&) = delete;
+	surface_image &operator=(surface_image&&) = default;
+	surface_image &operator=(const surface_image&) = delete;
+
+	/**
+	*	@brief	Returns a pointer to the image data
+	*/
 	auto data() { return storage; }
+	/**
+	*	@brief	Returns a pointer to the image data
+	*/
 	auto data() const { return storage; }
 
+	/**
+	*	@brief	Returns a reference to a block in the image
+	*	
+	*	@param	block_index		Address of the block
+	*/
 	auto& operator[](std::size_t block_index) {
 		assert(block_index < _blocks);
 		return storage[block_index];
 	}
+	/**
+	*	@brief	Returns a reference to a block in the image
+	*	
+	*	@param	block_index		Address of the block
+	*/
 	auto& operator[](std::size_t block_index) const {
 		assert(block_index < _blocks);
 		return storage[block_index];
 	}
 
+	/**
+	*	@brief	Returns block count in the image
+	*/
 	auto blocks() const { return _blocks; }
 };
 
+/**
+*	@brief	Surface
+*/
 template<gl::format format, gl::image_type image_type, bool is_const = false>
 class surface : public surface_base<format, image_type> {
 	using Base = surface_base<format, image_type>;
@@ -75,11 +106,28 @@ public:
 		: Base(extent, levels, 1),
 		storage(storage)
 	{}
+	~surface() noexcept {}
 
+	surface(surface&&) = default;
+	surface(const surface&) = delete;
+	surface &operator=(surface&&) = default;
+	surface &operator=(const surface&) = delete;
+
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
 	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	block_type* data() { return storage.get(); }
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
 	const block_type* data() const { return storage.get(); }
 
+	/**
+	*	@brief	Returns an image for the queried level index
+	*	
+	*	@param	level_index		Level index
+	*/
 	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	auto operator[](std::size_t level_index) {
 		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
@@ -87,6 +135,11 @@ public:
 						  ptr,
 						  Base::blocks(level_index));
 	}
+	/**
+	*	@brief	Returns an image for the queried level index
+	*
+	*	@param	level_index		Level index
+	*/
 	auto operator[](std::size_t level_index) const {
 		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
 		return const_layer_type(Base::extent(),

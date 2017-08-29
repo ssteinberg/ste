@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -18,8 +18,13 @@ namespace resource {
 
 namespace _detail {
 
+/**
+ *	@brief	Surface shared storage
+ */
 template<typename block_type, bool is_const>
 class surface_storage {
+	friend class surface_storage<block_type, true>;
+
 private:
 	std::shared_ptr<block_type> data;
 	std::size_t offset;
@@ -50,6 +55,9 @@ public:
 	const block_type* get() const { return data.get() + offset; }
 };
 
+/**
+*	@brief	Surface base class
+*/
 template<gl::format format, gl::image_type image_type>
 class surface_base {
 public:
@@ -73,21 +81,45 @@ protected:
 	}
 
 public:
+	~surface_base() noexcept {}
+
+	surface_base(surface_base&&) = default;
+	surface_base(const surface_base&) = delete;
+	surface_base &operator=(surface_base&&) = default;
+	surface_base &operator=(const surface_base&) = delete;
+
+	/**
+	*	@brief	Returns the extent size of a level
+	*	
+	*	@param	level	Surface level
+	*/
 	auto extent(std::size_t level = 0) const {
 		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
 						_extent >> static_cast<typename extent_type::value_type>(level));
 	}
+	/**
+	*	@brief	Returns the levels count in the surface
+	*/
 	auto levels() const {
 		return _levels;
 	}
+	/**
+	*	@brief	Returns the layers count in the surface
+	*/
 	auto layers() const {
 		return _layers;
 	}
 
+	/**
+	*	@brief	Returns the extent size of a block
+	*/
 	auto block_extent() const {
 		return extent_type(static_cast<typename extent_type::value_type>(1));
 	}
 
+	/**
+	*	@brief	Returns the block count in a single surface level
+	*/
 	auto blocks(std::size_t level) const {
 		assert(level < levels());
 
@@ -98,6 +130,9 @@ public:
 		return b;
 	}
 
+	/**
+	*	@brief	Returns the count of blocks that compose the whole mipmap chain of a layer
+	*/
 	auto blocks_layer() const {
 		std::size_t b = 0;
 		for (std::size_t l = 0; l < levels(); ++l)
@@ -106,6 +141,9 @@ public:
 		return b;
 	}
 
+	/**
+	*	@brief	Computes the offset, in blocks, to a specified level of a specified layer of the surface
+	*/
 	auto offset_blocks(std::size_t layer, std::size_t level) const {
 		std::size_t level_offset = 0;
 		for (std::size_t l = 0; l < level; ++l)
@@ -114,10 +152,16 @@ public:
 		return blocks_layer() * layer + level_offset;
 	}
 
+	/**
+	*	@brief	Returns the size, in bytes, of a block
+	*/
 	auto block_bytes() const {
 		return sizeof(traits::element_type);
 	}
 
+	/**
+	*	@brief	Returns the size, in bytes, of the surface data
+	*/
 	auto bytes() const {
 		return block_bytes() * blocks_layer() * layers();
 	}
