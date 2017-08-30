@@ -10,8 +10,8 @@ namespace ste::gl::_detail {
 template <format Format>
 constexpr format_rtti format_rtti_for_format() {
 	format_rtti ret;
-	ret.elements = static_cast<std::uint8_t>(format_traits<Format>::elements);
-	ret.block_bytes = static_cast<std::uint8_t>(format_traits<Format>::block_bytes);
+	ret.elements = format_traits<Format>::elements;
+	ret.block_bytes = format_traits<Format>::block_bytes;
 	ret.block_extent = format_traits<Format>::block_extent;
 	ret.is_depth = format_traits<Format>::is_depth;
 	ret.is_float = format_traits<Format>::is_float;
@@ -20,6 +20,28 @@ constexpr format_rtti format_rtti_for_format() {
 	ret.is_normalized_integer = format_traits<Format>::is_normalized_integer;
 	ret.is_scaled_integer = format_traits<Format>::is_scaled_integer;
 	ret.is_compressed = format_traits<Format>::is_compressed;
+
+	// Sanity
+	if constexpr (!format_traits<Format>::is_compressed) {
+		static_assert(format_traits<Format>::elements == format_traits<Format>::block_type::elements, "Elements count mismatch");
+		static_assert(format_traits<Format>::block_bytes == format_traits<Format>::block_type::bytes, "Block size mismatch");
+		if constexpr (format_traits<Format>::is_scaled_integer && !format_traits<Format>::is_signed)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_uscaled);
+		if constexpr (format_traits<Format>::is_scaled_integer && format_traits<Format>::is_signed)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_sscaled);
+		if constexpr (format_traits<Format>::is_srgb) {
+			static_assert(format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed);
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_srgb);
+		}
+		else {
+			if constexpr (format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed)
+				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_unorm);
+			if constexpr (format_traits<Format>::is_normalized_integer && format_traits<Format>::is_signed)
+				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_snorm);
+		}
+		if constexpr (format_traits<Format>::is_float)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_fp);
+	}
 
 	return ret;
 }
@@ -511,14 +533,6 @@ std::unordered_map<format, format_rtti> _internal::format_rtti_database::databas
 	{
 		format::r64g64b64a64_sfloat,
 		_detail::format_rtti_for_format<format::r64g64b64a64_sfloat>()
-	},
-	{
-		format::b10g11r11_ufloat_pack32,
-		_detail::format_rtti_for_format<format::b10g11r11_ufloat_pack32>()
-	},
-	{
-		format::e5b9g9r9_ufloat_pack32,
-		_detail::format_rtti_for_format<format::e5b9g9r9_ufloat_pack32>()
 	},
 	{
 		format::d16_unorm,
