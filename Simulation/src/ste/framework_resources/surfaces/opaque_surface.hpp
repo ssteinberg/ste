@@ -4,65 +4,22 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <surface_exceptions.hpp>
 
 #include <format.hpp>
-#include <format_type_traits.hpp>
+#include <format_rtti.hpp>
 
 #include <image_type.hpp>
 #include <image_type_traits.hpp>
 
-#include <memory>
+#include <lib/vector.hpp>
 
 namespace ste {
 namespace resource {
 
-namespace _detail {
-
-/**
- *	@brief	Surface shared storage
- */
-template<typename block_type, bool is_const>
-class surface_storage {
-	friend class surface_storage<block_type, true>;
-
-private:
-	std::shared_ptr<block_type> data;
-	std::size_t offset;
-
-private:
-	surface_storage(std::shared_ptr<block_type> data,
-					std::size_t offset) : data(data), offset(offset) {}
-
+template <std::uint32_t dimensions>
+class opaque_surface {
 public:
-	surface_storage(std::size_t blocks)
-		: data(new block_type[blocks],
-			   std::default_delete<block_type[]>()),
-		offset(0)
-	{}
-
-	template <bool b = is_const, typename = typename std::enable_if_t<b>>
-	surface_storage(surface_storage<block_type, false> &&o) noexcept : data(std::move(o.data)), offset(o.offset) {}
-
-	surface_storage(surface_storage&&) = default;
-	surface_storage(const surface_storage&) = default;
-	surface_storage &operator=(surface_storage&&) = default;
-	surface_storage &operator=(const surface_storage&) = default;
-
-	auto view(std::size_t offset) const { return surface_storage(data, offset); }
-
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
-	block_type* get() { return data.get() + offset; }
-	const block_type* get() const { return data.get() + offset; }
-};
-
-/**
-*	@brief	Surface base class
-*/
-template<gl::format format, gl::image_type image_type>
-class surface_base {
-public:
-	using traits = gl::format_traits<format>;
-	static constexpr auto dimensions = gl::image_dimensions_v<image_type>;
 	using extent_type = typename gl::image_extent_type<dimensions>::type;
 
 private:
@@ -70,27 +27,53 @@ private:
 	std::size_t surface_levels;
 	std::size_t surface_layers;
 
-protected:
-	surface_base(const extent_type &extent,
-				 std::size_t levels,
-				 std::size_t layers)
-		: surface_extent(extent), surface_levels(levels), surface_layers(layers)
-	{
-		assert(layers > 0);
-		assert(levels > 0);
-	}
+	gl::format surface_format;
+	gl::image_type surface_image_type;
+
+	gl::format_rtti format_traits;
+
+	lib::vector<std::uint8_t> storage;
 
 public:
-	~surface_base() noexcept {}
+	opaque_surface(const gl::format &format,
+				   const gl::image_type &image_type,
+				   const extent_type &extent,
+				   std::size_t levels,
+				   std::size_t layers,
+				   lib::vector<std::uint8_t> &&data)
+		: surface_extent(extent), 
+		surface_levels(levels),
+		surface_layers(layers),
+		surface_format(format),
+		surface_image_type(image_type),
+		format_traits(gl::format_id(format)),
+		storage(std::move(data)) 
+	{
+		// Sanity checks
+		if (gl::image_dimensions_for_type(image_type) != dimensions)
+			throw surface_opaque_storage_mismatch_error("Unexpected image_type");
+		if (bytes() != data.size())
+			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
+		if (gl::image_is_cubemap_for_type(image_type) && (layers % 6) != 0)
+			throw surface_opaque_storage_mismatch_error("Expected a cubemap or cubemap array but layers count doesn't match");
+	}
+	~opaque_surface() noexcept {}
 
-	surface_base(surface_base&&) = default;
-	surface_base(const surface_base&) = delete;
-	surface_base &operator=(surface_base&&) = default;
-	surface_base &operator=(const surface_base&) = delete;
+	opaque_surface(opaque_surface&&) = default;
+	opaque_surface &operator=(opaque_surface&&) = default;
+
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
+	auto* data() { return storage.data(); }
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
+	auto* data() const { return storage.data(); }
 
 	/**
 	*	@brief	Returns the extent size of a level
-	*	
+	*
 	*	@param	level	Surface level
 	*/
 	auto extent(std::size_t level = 0) const {
@@ -109,6 +92,14 @@ public:
 	auto layers() const {
 		return surface_layers;
 	}
+	/**
+	*	@brief	Returns the surface image type
+	*/
+	auto image_type() const { return image_type; }
+	/**
+	*	@brief	Returns the surface format
+	*/
+	auto format() const { return format; }
 
 	/**
 	*	@brief	Returns the extent size of a block
@@ -156,7 +147,7 @@ public:
 	*	@brief	Returns the size, in bytes, of a block
 	*/
 	auto block_bytes() const {
-		return sizeof(traits::element_type);
+		return format_traits.texel_bytes;
 	}
 
 	/**
@@ -166,8 +157,6 @@ public:
 		return block_bytes() * blocks_layer() * layers();
 	}
 };
-
-}
 
 }
 }

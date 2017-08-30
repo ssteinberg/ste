@@ -1,17 +1,12 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
-#include <resource_exceptions.hpp>
+#include <surface_exceptions.hpp>
 
 namespace ste {
 namespace resource {
-
-class surface_error : public resource_exception {
-public:
-	using resource_exception::resource_exception;
-};
 
 class surface_unsupported_format_error : public surface_error {
 public:

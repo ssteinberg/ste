@@ -586,10 +586,12 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_reversed_infinite_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\cubemap_face.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\opaque_surface.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_array.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_common.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_cubemap.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\fonts\font.hpp" />

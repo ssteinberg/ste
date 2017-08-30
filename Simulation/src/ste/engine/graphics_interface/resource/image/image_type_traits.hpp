@@ -44,6 +44,28 @@ struct image_dimensions<image_type::image_cubemap_array> {
 template <image_type type>
 static constexpr auto image_dimensions_v = image_dimensions<type>::value;
 
+// Run-time image dimensions type trait
+inline std::uint32_t image_dimensions_for_type(image_type type) {
+	switch (type) {
+	default:
+		assert(false);
+	case image_type::image_1d:
+			return 1;
+	case image_type::image_2d:
+			return 2;
+	case image_type::image_3d:
+			return 3;
+	case image_type::image_1d_array:
+			return 1;
+	case image_type::image_2d_array:
+			return 2;
+	case image_type::image_cubemap:
+			return 2;
+	case image_type::image_cubemap_array:
+			return 2;
+	}
+}
+
 // Image Vulkan type (VkImageViewType) type trait
 template<image_type type>
 struct image_vk_type {};
@@ -77,6 +99,28 @@ struct image_vk_type<image_type::image_cubemap_array> {
 };
 template <image_type type>
 static constexpr auto image_vk_type_v = image_vk_type<type>::value;
+
+// Run-time image Vulkan type (VkImageViewType) type trait
+inline VkImageViewType image_vk_type_for_type(image_type type) {
+	switch (type) {
+	default:
+		assert(false);
+	case image_type::image_1d:
+			return VK_IMAGE_VIEW_TYPE_1D;
+	case image_type::image_2d:
+			return VK_IMAGE_VIEW_TYPE_2D;
+	case image_type::image_3d:
+			return VK_IMAGE_VIEW_TYPE_3D;
+	case image_type::image_1d_array:
+			return VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+	case image_type::image_2d_array:
+			return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+	case image_type::image_cubemap:
+			return VK_IMAGE_VIEW_TYPE_CUBE;
+	case image_type::image_cubemap_array:
+			return VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+	}
+}
 
 // Image type trait - image arrays
 template<image_type type>
@@ -112,6 +156,28 @@ struct image_has_arrays<image_type::image_cubemap_array> {
 template <image_type type>
 static constexpr auto image_has_arrays_v = image_has_arrays<type>::value;
 
+// Run-time image type trait - image arrays
+inline bool image_has_arrays_for_type(image_type type) {
+	switch (type) {
+	default:
+		assert(false);
+	case image_type::image_1d:
+			return false;
+	case image_type::image_2d:
+			return false;
+	case image_type::image_3d:
+			return false;
+	case image_type::image_1d_array:
+			return true;
+	case image_type::image_2d_array:
+			return true;
+	case image_type::image_cubemap:
+			return false;
+	case image_type::image_cubemap_array:
+			return true;
+	}
+}
+
 // Image type trait - cubemap images
 template<image_type type>
 struct image_is_cubemap {};
@@ -146,8 +212,30 @@ struct image_is_cubemap<image_type::image_cubemap_array> {
 template <image_type type>
 static constexpr auto image_is_cubemap_v = image_is_cubemap<type>::value;
 
+// Run-time image type trait - cubemap images
+inline bool image_is_cubemap_for_type(image_type type) {
+	switch (type) {
+	default:
+		assert(false);
+	case image_type::image_1d:
+			return false;
+	case image_type::image_2d:
+			return false;
+	case image_type::image_3d:
+			return false;
+	case image_type::image_1d_array:
+			return false;
+	case image_type::image_2d_array:
+			return false;
+	case image_type::image_cubemap:
+			return true;
+	case image_type::image_cubemap_array:
+			return true;
+	}
+}
+
 // Image's dimension type trait - Extent type
-template<int dimensions>
+template<std::uint32_t dimensions>
 struct image_extent_type {};
 template <>
 struct image_extent_type<1> {
@@ -161,7 +249,7 @@ template <>
 struct image_extent_type<3> {
 	using type = glm::u32vec3;
 };
-template <int dimensions>
+template <std::uint32_t dimensions>
 using image_extent_type_t = typename image_extent_type<dimensions>::type;
 
 // Image type trait - layer image type
@@ -197,6 +285,28 @@ struct image_layer_type<image_type::image_cubemap_array> {
 };
 template <image_type type>
 static constexpr auto image_layer_type_v = image_layer_type<type>::value;
+
+// Run-time image type trait - layer image type
+inline image_type image_layer_type_for_type(image_type type) {
+	switch (type) {
+	default:
+		assert(false);
+	case image_type::image_1d:
+			return image_type::image_1d;
+	case image_type::image_1d_array:
+			return image_type::image_1d;
+	case image_type::image_2d:
+			return image_type::image_2d;
+	case image_type::image_2d_array:
+			return image_type::image_2d;
+	case image_type::image_3d:
+			return image_type::image_3d;
+	case image_type::image_cubemap:
+			return image_type::image_cubemap;
+	case image_type::image_cubemap_array:
+			return image_type::image_cubemap;
+	}
+}
 
 }
 }
