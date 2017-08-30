@@ -8,7 +8,6 @@
 #include <half.hpp>
 
 #include <image_view_swizzle.hpp>
-#include <type_traits>
 
 namespace ste {
 namespace resource {
@@ -237,10 +236,10 @@ public:
 		a() = in_a;
 	}
 
-	auto r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
-	auto g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
-	auto b() const { return _detail::block_element<type, b_bits, b_offset, true>(data); }
-	auto a() const { return _detail::block_element<a_type, a_bits, a_offset, true>(data); }
+	r_comp_type r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
+	g_comp_type g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
+	b_comp_type b() const { return _detail::block_element<type, b_bits, b_offset, true>(data); }
+	a_comp_type a() const { return _detail::block_element<a_type, a_bits, a_offset, true>(data); }
 
 	auto r() { return _detail::block_element<type, r_bits, r_offset, false>(data); }
 	auto g() { return _detail::block_element<type, g_bits, g_offset, false>(data); }
@@ -308,9 +307,9 @@ public:
 		b() = in_b;
 	}
 
-	auto r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
-	auto g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
-	auto b() const { return _detail::block_element<type, b_bits, b_offset, true>(data); }
+	r_comp_type r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
+	g_comp_type g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
+	b_comp_type b() const { return _detail::block_element<type, b_bits, b_offset, true>(data); }
 
 	auto r() { return _detail::block_element<type, r_bits, r_offset, false>(data); }
 	auto g() { return _detail::block_element<type, g_bits, g_offset, false>(data); }
@@ -361,8 +360,8 @@ public:
 		g() = in_g;
 	}
 
-	auto r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
-	auto g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
+	r_comp_type r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
+	g_comp_type g() const { return _detail::block_element<type, g_bits, g_offset, true>(data); }
 
 	auto r() { return _detail::block_element<type, r_bits, r_offset, false>(data); }
 	auto g() { return _detail::block_element<type, g_bits, g_offset, false>(data); }
@@ -403,7 +402,7 @@ public:
 		r() = in_r;
 	}
 
-	auto r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
+	r_comp_type r() const { return _detail::block_element<type, r_bits, r_offset, true>(data); }
 
 	auto r() { return _detail::block_element<type, r_bits, r_offset, false>(data); }
 };
@@ -442,7 +441,7 @@ public:
 		d() = in_d;
 	}
 
-	auto d() const { return _detail::block_element<type, d_bits, d_offset, true>(data); }
+	d_comp_type d() const { return _detail::block_element<type, d_bits, d_offset, true>(data); }
 
 	auto d() { return _detail::block_element<type, d_bits, d_offset, false>(data); }
 };

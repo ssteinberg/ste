@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <format.hpp>
 #include <image_view_swizzle.hpp>
-#include <block.hpp>
+#include <surface_block.hpp>
 
 #include <half.hpp>
 

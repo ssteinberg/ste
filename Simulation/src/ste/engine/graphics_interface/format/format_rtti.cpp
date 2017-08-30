@@ -25,6 +25,8 @@ constexpr format_rtti format_rtti_for_format() {
 	if constexpr (!format_traits<Format>::is_compressed) {
 		static_assert(format_traits<Format>::elements == format_traits<Format>::block_type::elements, "Elements count mismatch");
 		static_assert(format_traits<Format>::block_bytes == format_traits<Format>::block_type::bytes, "Block size mismatch");
+		static_assert(format_traits<Format>::block_bytes == sizeof(format_traits<Format>::block_type), "wrong sizeof block class");
+
 		if constexpr (format_traits<Format>::is_scaled_integer && !format_traits<Format>::is_signed)
 			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_uscaled);
 		if constexpr (format_traits<Format>::is_scaled_integer && format_traits<Format>::is_signed)

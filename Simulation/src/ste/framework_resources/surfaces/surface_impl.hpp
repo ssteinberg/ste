@@ -9,6 +9,8 @@
 #include <image_type.hpp>
 #include <surface_common.hpp>
 
+#include <surface_block.hpp>
+
 namespace ste {
 namespace resource {
 
@@ -85,7 +87,8 @@ public:
 	using Base::extent_type;
 	using Base::traits;
 
-	using block_type = typename traits::element_type;
+	using block_type = typename traits::block_type;
+	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
