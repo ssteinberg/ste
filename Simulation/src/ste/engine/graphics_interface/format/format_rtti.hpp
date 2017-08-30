@@ -18,15 +18,16 @@ namespace ste {
 namespace gl {
 
 struct format_rtti {
-	int elements;
-	int texel_bytes;
+	std::uint8_t elements;
+	std::uint8_t block_bytes;
+	glm::u8vec2 block_extent;
 	bool is_depth;
 	bool is_float;
 	bool is_signed;
 	bool is_srgb;
 	bool is_normalized_integer;
 	bool is_scaled_integer;
-	gli::format gli_format;
+	bool is_compressed;
 };
 
 namespace _internal {
@@ -75,7 +76,7 @@ auto inline format_elements(const format &format) {
 *	@throws	std::runtime_error	If format not found
 */
 auto inline format_texel_size(const format &format) {
-	return format_id(format).texel_bytes;
+	return format_id(format).block_bytes;
 }
 
 /**

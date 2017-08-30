@@ -147,7 +147,7 @@ public:
 	*	@brief	Returns the size, in bytes, of a block
 	*/
 	auto block_bytes() const {
-		return format_traits.texel_bytes;
+		return format_traits.block_bytes;
 	}
 
 	/**

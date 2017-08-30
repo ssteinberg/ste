@@ -18,6 +18,7 @@ enum class component_swizzle : std::uint32_t {
 	g = VK_COMPONENT_SWIZZLE_G,
 	b = VK_COMPONENT_SWIZZLE_B,
 	a = VK_COMPONENT_SWIZZLE_A,
+	d = r
 };
 
 class image_view_swizzle {
