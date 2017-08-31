@@ -81,6 +81,15 @@ public:
 						surface_extent >> static_cast<typename extent_type::value_type>(level));
 	}
 	/**
+	*	@brief	Returns the extent size, in blocks, of a level
+	*
+	*	@param	level	Surface level
+	*/
+	auto extent_in_blocks(std::size_t level = 0) const {
+		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
+			(surface_extent / block_extent()) >> static_cast<typename extent_type::value_type>(level));
+	}
+	/**
 	*	@brief	Returns the levels count in the surface
 	*/
 	auto levels() const {
@@ -105,7 +114,7 @@ public:
 	*	@brief	Returns the extent size of a block
 	*/
 	auto block_extent() const {
-		return extent_type(static_cast<typename extent_type::value_type>(1));
+		return format_traits.block_extent;
 	}
 
 	/**
@@ -138,7 +147,7 @@ public:
 	auto offset_blocks(std::size_t layer, std::size_t level) const {
 		std::size_t level_offset = 0;
 		for (std::size_t l = 0; l < level; ++l)
-			level_offset += blocks(l) * block_bytes();
+			level_offset += blocks(l);
 
 		return blocks_layer() * layer + level_offset;
 	}
@@ -155,6 +164,13 @@ public:
 	*/
 	auto bytes() const {
 		return block_bytes() * blocks_layer() * layers();
+	}
+
+	/**
+	 *	@brief	Returns the RTTI traits structure for the surface format
+	 */
+	auto& get_format_traits() const {
+		return format_traits;
 	}
 };
 

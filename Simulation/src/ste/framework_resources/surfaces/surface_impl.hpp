@@ -23,18 +23,25 @@ template<gl::format format, typename extent_type, typename block_ptr_type>
 class surface_image {
 private:
 	extent_type extent;
+	extent_type blockextent;
 	block_ptr_type storage;
 
 	std::size_t _blocks;
 
 public:
 	surface_image(const extent_type &extent,
+				  const extent_type &block_extent,
 				  block_ptr_type storage,
 				  std::size_t blocks)
 		: extent(extent),
+		blockextent(block_extent),
 		storage(storage),
-		_blocks(blocks)
-	{}
+		_blocks(blocks) 
+	{
+		// Sanity
+		assert((extent.x / block_extent.x) * (extent.y / block_extent.y) == blocks);
+		assert((extent.x % block_extent.x) == 0 && (extent.y % block_extent.y) == 0);
+	}
 	~surface_image() noexcept {}
 
 	surface_image(surface_image&&) = default;
@@ -53,7 +60,7 @@ public:
 
 	/**
 	*	@brief	Returns a reference to a block in the image
-	*	
+	*
 	*	@param	block_index		Address of the block
 	*/
 	auto& operator[](std::size_t block_index) {
@@ -62,7 +69,7 @@ public:
 	}
 	/**
 	*	@brief	Returns a reference to a block in the image
-	*	
+	*
 	*	@param	block_index		Address of the block
 	*/
 	auto& operator[](std::size_t block_index) const {
@@ -71,9 +78,34 @@ public:
 	}
 
 	/**
+	*	@brief	Returns a reference to a block in the image
+	*
+	*	@param	block_coord		Coordinates of the block
+	*/
+	auto& at(const extent_type &block_coord) {
+		const std::size_t block_index = block_coord.y * block_extent().x + block_coord.x;
+		return (*this)[block_index];
+	}
+	/**
+	*	@brief	Returns a reference to a block in the image
+	*
+	*	@param	block_coord		Coordinates of the block
+	*/
+	auto& at(const extent_type &block_coord) const {
+		const std::size_t block_index = block_coord.y * block_extent().x + block_coord.x;
+		return (*this)[block_index];
+	}
+
+	/**
 	*	@brief	Returns block count in the image
 	*/
 	auto blocks() const { return _blocks; }
+	/**
+	*	@brief	Returns the extent size of a block
+	*/
+	auto block_extent() const {
+		return blockextent;
+	}
 };
 
 /**
@@ -135,6 +167,7 @@ public:
 	auto operator[](std::size_t level_index) {
 		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
 		return layer_type(Base::extent(),
+						  Base::block_extent(),
 						  ptr,
 						  Base::blocks(level_index));
 	}
@@ -146,6 +179,7 @@ public:
 	auto operator[](std::size_t level_index) const {
 		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
 		return const_layer_type(Base::extent(),
+								Base::block_extent(),
 								ptr,
 								Base::blocks(level_index));
 	}

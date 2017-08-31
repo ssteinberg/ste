@@ -10,9 +10,11 @@ namespace ste::gl::_detail {
 template <format Format>
 constexpr format_rtti format_rtti_for_format() {
 	format_rtti ret;
+
 	ret.elements = format_traits<Format>::elements;
 	ret.block_bytes = format_traits<Format>::block_bytes;
 	ret.block_extent = format_traits<Format>::block_extent;
+
 	ret.is_depth = format_traits<Format>::is_depth;
 	ret.is_float = format_traits<Format>::is_float;
 	ret.is_signed = format_traits<Format>::is_signed;
@@ -20,6 +22,22 @@ constexpr format_rtti format_rtti_for_format() {
 	ret.is_normalized_integer = format_traits<Format>::is_normalized_integer;
 	ret.is_scaled_integer = format_traits<Format>::is_scaled_integer;
 	ret.is_compressed = format_traits<Format>::is_compressed;
+
+	if constexpr (!format_traits<Format>::is_compressed) {
+		ret.block_common_type_name = format_traits<Format>::block_type::common_type_name;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp32)
+			ret.block_loader_fp32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp64)
+			ret.block_loader_fp64 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int32)
+			ret.block_loader_int32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int64)
+			ret.block_loader_int64 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint32)
+			ret.block_loader_uint32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint64)
+			ret.block_loader_uint64 = format_traits<Format>::block_type::load_block;
+	}
 
 	// Sanity
 	if constexpr (!format_traits<Format>::is_compressed) {

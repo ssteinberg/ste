@@ -171,12 +171,6 @@
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_mipmap_generator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_convert.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -1947,6 +1941,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_1component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_2component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_3component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_4component.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_depth.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

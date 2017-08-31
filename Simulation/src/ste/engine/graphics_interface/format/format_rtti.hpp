@@ -21,13 +21,22 @@ struct format_rtti {
 	std::uint8_t elements;
 	std::uint8_t block_bytes;
 	glm::u8vec2 block_extent;
-	bool is_depth;
-	bool is_float;
-	bool is_signed;
-	bool is_srgb;
-	bool is_normalized_integer;
-	bool is_scaled_integer;
-	bool is_compressed;
+
+	unsigned is_depth : 1;
+	unsigned is_float : 1;
+	unsigned is_signed : 1;
+	unsigned is_srgb : 1;
+	unsigned is_normalized_integer : 1;
+	unsigned is_scaled_integer : 1;
+	unsigned is_compressed : 1;
+
+	resource::block_common_type block_common_type_name;
+	std::size_t(*block_loader_fp32)(const std::uint8_t *input, float *output){ nullptr };
+	std::size_t(*block_loader_fp64)(const std::uint8_t *input, double *output) { nullptr };
+	std::size_t(*block_loader_int32)(const std::uint8_t *input, std::int32_t *output) { nullptr };
+	std::size_t(*block_loader_int64)(const std::uint8_t *input, std::int64_t *output) { nullptr };
+	std::size_t(*block_loader_uint32)(const std::uint8_t *input, std::uint32_t *output) { nullptr };
+	std::size_t(*block_loader_uint64)(const std::uint8_t *input, std::uint64_t *output) { nullptr };
 };
 
 namespace _internal {

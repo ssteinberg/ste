@@ -77,8 +77,26 @@ public:
 	*/
 	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	auto operator[](cubemap_face face) {
-		auto face_index = static_cast<std::underlying_type_t<cubemap_face>>(face);
+		const auto face_index = static_cast<std::underlying_type_t<cubemap_face>>(face);
+		return (*this)[face_index];
+	}
+	/**
+	*	@brief	Returns a cubemap face for the queried face index
+	*
+	*	@param	face	Cubemap face
+	*/
+	auto operator[](cubemap_face face) const {
+		const auto face_index = static_cast<std::underlying_type_t<cubemap_face>>(face);
+		return (*this)[face_index];
+	}
 
+	/**
+	*	@brief	Returns a cubemap face for the queried face index
+	*
+	*	@param	face_index	Cubemap face
+	*/
+	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
+	auto operator[](std::uint32_t face_index) {
 		assert(face_index < Base::layers());
 		return surface<format, image_type, false>(Base::extent(),
 												  Base::levels(),
@@ -87,11 +105,9 @@ public:
 	/**
 	*	@brief	Returns a cubemap face for the queried face index
 	*
-	*	@param	face	Cubemap face
+	*	@param	face_index	Cubemap face
 	*/
-	auto operator[](cubemap_face face) const {
-		auto face_index = static_cast<std::underlying_type_t<cubemap_face>>(face);
-
+	auto operator[](std::uint32_t face_index) const {
 		assert(face_index < Base::layers());
 		return surface<format, image_type, true>(Base::extent(),
 												 Base::levels(),
