@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include <stdafx.hpp>
+#include <opaque_surface.hpp>
+#include <surface.hpp>
+#include <surface_convert.hpp>
+
 #include <lib/string.hpp>
 #include <fstream>
 #include <lib/unique_ptr.hpp>
@@ -10,45 +15,76 @@
 
 #include <filesystem>
 
-#include <task_future.hpp>
-#include <task_scheduler.hpp>
-
-#include <Log.hpp>
+#include <log.hpp>
 #include <attributed_string.hpp>
 
 #include <surface_factory_exceptions.hpp>
 
-#include <gli/load_dds.hpp>
+#include <optional.hpp>
 
 namespace ste {
 namespace resource {
 
 class surface_io {
 private:
-	static gli::texture2d load_png(const std::experimental::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_tga(const std::experimental::filesystem::path &file_name, bool srgb);
-	static gli::texture2d load_jpeg(const std::experimental::filesystem::path &file_name, bool srgb);
-	static void write_png(const std::experimental::filesystem::path &file_name, const char *image_data, int components, int width, int height);
+	static opaque_surface<2> load_png(const std::experimental::filesystem::path &file_name, bool srgb = false);
+	static opaque_surface<2> load_tga(const std::experimental::filesystem::path &file_name, bool srgb = false);
+	static opaque_surface<2> load_jpeg(const std::experimental::filesystem::path &file_name, bool srgb = false);
+	static opaque_surface<2> load_dds(const std::experimental::filesystem::path &file_name);
+	static opaque_surface<2> load_ktx(const std::experimental::filesystem::path &file_name);
+	static void write_png(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
+	static void write_jpeg(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
 
-	~surface_io() {}
+	~surface_io() noexcept {}
 
 public:
-	static void write_surface_2d(const gli::texture2d &surface, const std::experimental::filesystem::path &path) {
-		int components;
-		if (surface.format() == gli::format::FORMAT_R8_UNORM_PACK8)			components = 1;
-		else if (surface.format() == gli::format::FORMAT_RGB8_UNORM_PACK8)	components = 3;
-		else if (surface.format() == gli::format::FORMAT_RGBA8_UNORM_PACK8)	components = 4;
-		else {
-			ste_log_error() << "Can't write surface file: " << path.string() << std::endl;
-			throw surface_unsupported_format_error("Unsupported surface format");
+	enum class surface_write_file_format {
+		png,
+		jpeg
+	};
+
+public:
+	/**
+	 *	@brief	Writes surface to file. Converts the surface to a 8-bit unorm format if needed.
+	 *	
+	 *	@param	surface			Input surface
+	 *	@param	path			Filesystem path of output
+	 *	@param	file_format		Selects desired output file format
+	 */
+	template <gl::format format>
+	static void write_surface_2d(const surface_2d<format> &surface, 
+								 const std::experimental::filesystem::path &path,
+								 const surface_write_file_format &file_format = surface_write_file_format::png) {
+		static constexpr auto elements = gl::format_traits<format>::elements;
+		static constexpr auto write_format = elements == 1 ? gl::format::r8_unorm : (elements == 3 ? gl::format::r8g8b8_unorm : gl::format::r8g8b8a8_unorm);
+
+		// Select writer
+		void(*writer)(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
+		switch (file_format) {
+		case surface_write_file_format::jpeg:
+			writer = write_jpeg;
+			if (elements != 1 && elements != 3) {
+				ste_log_error() << "Can not write surface to selected file format: " << path.string() << std::endl;
+				throw surface_unsupported_format_error("Can not write surface to selected file format");
+			}
+			break;
+		case surface_write_file_format::png:
+			writer = write_png;
+			if (elements != 1 && elements != 3 && elements != 4) {
+				ste_log_error() << "Can not write surface to selected file format: " << path.string() << std::endl;
+				throw surface_unsupported_format_error("Can not write surface to selected file format");
+			}
+			break;
 		}
 
-		write_png(path, reinterpret_cast<const char*>(surface.data()), components, surface.extent().x, surface.extent().y);
-	}
-	static auto write_surface_2d_async(task_scheduler &sched, const gli::texture2d &surface, const std::experimental::filesystem::path &path) {
-		return sched.schedule_now([&]() {
-			write_surface_2d(surface, path);
-		});
+		// Convert (if needed) and write
+		if constexpr (write_format != format) {
+			auto target = surface_convert::convert_2d<write_format>(surface);
+			writer(path, target.data(), elements, target.extent().x, target.extent().y);
+		}
+		else {
+			writer(path, surface.data(), elements, surface.extent().x, surface.extent().y);
+		}
 	}
 
 	static auto load_surface_2d(const std::experimental::filesystem::path &path, bool srgb) {
@@ -76,66 +112,50 @@ public:
 			}
 		}
 
-		using namespace ste::text;
-		using namespace attributes;
-
 		// Load image
-		if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
-			// DDS
-			// Directly construct GLI surface
-			auto texture = gli::texture2d(gli::load_dds(path.string()));
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse DDS surface: " << path;
-				throw surface_error("Parsing DDS surface failed");
+		{
+			using namespace text;
+			using namespace attributes;
+
+			if (magic[0] == 'D' && magic[1] == 'D' && magic[2] == 'S' && magic[3] == ' ') {
+				// DDS
+				auto texture = load_dds(path.string());
+
+				ste_log() << attributed_string("Loaded DDS surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
+				return texture;
+			}
+			if (magic[0] == 0xAB && magic[1] == 0x4B && magic[2] == 0x54 && magic[3] == 0x58) {
+				// KTX
+				auto texture = load_ktx(path.string());
+
+				ste_log() << attributed_string("Loaded KTX surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
+				return texture;
+			}
+			if (magic[0] == 0xff && magic[1] == 0xd8) {
+				// JPEG
+				auto texture = load_jpeg(path, srgb);
+
+				ste_log() << attributed_string("Loaded JPEG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
+				return texture;
+			}
+			if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
+				// PNG
+				auto texture = load_png(path, srgb);
+
+				ste_log() << attributed_string("Loaded PNG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
+				return texture;
+			}
+			if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
+				// TGA?
+				auto texture = load_tga(path, srgb);
+
+				ste_log() << attributed_string("Loaded TGA surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
+				return texture;
 			}
 
-			ste_log() << attributed_string("Loaded DDS surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-
-		if (magic[0] == 0xff && magic[1] == 0xd8) {
-			// JPEG
-			auto texture = load_jpeg(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse JPEG surface: " << path;
-				throw surface_error("Parsing JPEG surface failed");
-			}
-
-			ste_log() << attributed_string("Loaded JPEG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else if (magic[0] == 0x89 && magic[1] == 0x50 && magic[2] == 0x4e && magic[3] == 0x47) {
-			// PNG
-			auto texture = load_png(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse PNG surface: " << path;
-				throw surface_error("Parsing PNG surface failed");
-			}
-
-			ste_log() << attributed_string("Loaded PNG surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else if (magic[0] == 0 && magic[1] == 0 && magic[3] == 0) {
-			// TGA?
-			auto texture = load_tga(path, srgb);
-			if (texture.empty()) {
-				ste_log_error() << "Can't parse TGA surface: " << path.string() << std::endl;
-				throw surface_error("Parsing TGA surface failed");
-			}
-
-			ste_log() << attributed_string("Loaded TGA surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
-			return texture;
-		}
-		else {
 			ste_log_error() << red(attributed_string("Incompatible surface format: \"")) + i(lib::to_string(path.string())) + "\"." << std::endl;
 			throw surface_unsupported_format_error("Incompatible surface format");
 		}
-	}
-
-	static auto load_surface_2d_async(task_scheduler &sched, const std::experimental::filesystem::path &path, bool srgb) {
-		return sched.schedule_now([&]() {
-			return lib::allocate_unique<gli::texture2d>(load_surface_2d(path, srgb));
-		});
 	}
 };
 

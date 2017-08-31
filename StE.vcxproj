@@ -541,6 +541,10 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_jpeg.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_ktx.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_png.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_tga.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_text\fonts\font.cpp" />
     <ClCompile Include="Simulation\src\ste\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -590,6 +594,7 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_4component.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_depth.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\cubemap_face.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_dds.cpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\opaque_surface.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_array.hpp" />
@@ -963,9 +968,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_resources\models\model_factory.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_text\attributed_strings\attrib.cpp">

@@ -168,7 +168,16 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_png.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_tga.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_jpeg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_ktx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1956,6 +1965,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_depth.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_dds.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
