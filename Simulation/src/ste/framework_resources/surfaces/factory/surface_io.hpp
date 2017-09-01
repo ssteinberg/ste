@@ -116,7 +116,7 @@ public:
 	*	@param	file_format		Selects desired output file format
 	*/
 	template<gl::format format, gl::image_type image_type>
-	static void write_surface(const _detail::surface_base<format, image_type> &surface,
+	static void write_surface(const surface_generic<format, image_type> &surface,
 							  const std::experimental::filesystem::path &path,
 							  const surface_write_file_format &file_format = surface_write_file_format::dds) {
 		// Select writer

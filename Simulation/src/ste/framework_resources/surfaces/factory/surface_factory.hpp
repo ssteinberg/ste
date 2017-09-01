@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//  StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,10 @@
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
 #include <device_image.hpp>
+
+#include <surface_io.hpp>
+#include <surface.hpp>
+#include <surface_convert.hpp>
 
 #include <fill_image.hpp>
 #include <generate_mipmaps.hpp>
@@ -16,9 +20,6 @@
 #include <format.hpp>
 #include <format_type_traits.hpp>
 #include <image_type_traits.hpp>
-
-#include <surface_io.hpp>
-#include <surface_convert.hpp>
 
 namespace ste {
 namespace resource {
@@ -35,29 +36,39 @@ private:
 												  const gl::image_usage &usage,
 												  const gl::image_layout &layout,
 												  bool generate_mipmaps = true) {
-		static constexpr gli::format image_gli_format = gl::format_traits<image_format>::gli_format;
+		static constexpr gl::format surface_format = Surface::surface_format;
+		static constexpr gl::image_type surface_image_type = Surface::surface_image_type;
 
 		// Convert surface to target image_format
-		bool need_conversion = image_gli_format != surface.format();
-		if (need_conversion)
-			surface = surface_convert()(surface, image_gli_format);
-
-		auto src_format = surface.format();
-		auto layers = static_cast<std::uint32_t>(surface.layers());
-		auto size = surface.extent();
-		if (src_format != image_gli_format) {
-			throw surface_format_exception("Input image_format is different from specified image format");
+		if (image_format != surface_format) {
+			if constexpr (surface_image_type == gl::image_type::image_1d)
+				surface = surface_convert::convert_1d<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_2d)
+				surface = surface_convert::convert_2d<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_3d)
+				surface = surface_convert::convert_3d<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_1d_array)
+				surface = surface_convert::convert_1d_array<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_2d_array)
+				surface = surface_convert::convert_2d_array<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_cubemap)
+				surface = surface_convert::convert_cubemap<image_format>(surface);
+			if constexpr (surface_image_type == gl::image_type::image_cubemap_array)
+				surface = surface_convert::convert_cubemap_array<image_format>(surface);
 		}
+
+		auto layers = static_cast<std::uint32_t>(surface.layers());
+		auto extent = surface.extent();
 
 		auto m = static_cast<std::uint32_t>(surface.levels());
 		auto mip_levels = generate_mipmaps ?
-			static_cast<std::uint32_t>(gli::levels(surface.extent())) :
+			static_cast<std::uint32_t>(Surface::max_levels(extent)) :
 			m;
 
 		// Create image
 		gl::device_image<dimensions, image_allocation_policy>
 			image(ctx, gl::image_initial_layout::unused,
-				  image_format, size, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
+				  image_format, extent, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
 				  mip_levels, layers);
 
 		// Copy surface to image
@@ -105,11 +116,11 @@ private:
 		class resource_deferred_policy,
 		typename Surface
 	>
-	static auto _image_from_surface_async_internal(const ste_context &ctx,
-													Surface &&surface,
-													const gl::image_usage &usage,
-													const gl::image_layout &layout,
-													bool generate_mipmaps = true) {
+		static auto _image_from_surface_async_internal(const ste_context &ctx,
+													   Surface &&surface,
+													   const gl::image_usage &usage,
+													   const gl::image_layout &layout,
+													   bool generate_mipmaps = true) {
 		// Create image from surface
 		return ste_resource<gl::device_image<dimensions, image_allocation_policy>, resource_deferred_policy>(ste_resource_create_with_lambda(),
 																											 ctx,
@@ -128,13 +139,13 @@ private:
 		gl::format image_format,
 		class resource_deferred_policy
 	>
-	static auto _image_empty_async_internal(const ste_context &ctx,
-											const gl::image_usage &usage,
-											const gl::image_layout &layout,
-											const gl::image_extent_type_t<dimensions> &extent,
-											std::uint32_t layers,
-											std::uint32_t levels,
-											bool supports_cube_views) {
+		static auto _image_empty_async_internal(const ste_context &ctx,
+												const gl::image_usage &usage,
+												const gl::image_layout &layout,
+												const gl::image_extent_type_t<dimensions> &extent,
+												std::uint32_t layers,
+												std::uint32_t levels,
+												bool supports_cube_views) {
 		// Create image from surface
 		return ste_resource<gl::device_image<dimensions, image_allocation_policy>, resource_deferred_policy>(ste_resource_create_with_lambda(),
 																											 ctx,
@@ -170,9 +181,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_1d(const ste_context &ctx,
-									  gli::texture1d &&surface,
+									  resource::surface_1d<surface_format> &&surface,
 									  const gl::image_usage &usage,
 									  const gl::image_layout &layout,
 									  bool generate_mipmaps = true) {
@@ -192,9 +203,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_2d(const ste_context &ctx,
-									  gli::texture2d &&surface,
+									  resource::surface_2d<surface_format> &&surface,
 									  const gl::image_usage &usage,
 									  const gl::image_layout &layout,
 									  bool generate_mipmaps = true) {
@@ -214,9 +225,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_3d(const ste_context &ctx,
-									  gli::texture3d &&surface,
+									  resource::surface_3d<surface_format> &&surface,
 									  const gl::image_usage &usage,
 									  const gl::image_layout &layout,
 									  bool generate_mipmaps = true) {
@@ -236,9 +247,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_cube(const ste_context &ctx,
-										gli::texture_cube &&surface,
+										resource::surface_cubemap<surface_format> &&surface,
 										const gl::image_usage &usage,
 										const gl::image_layout &layout,
 										bool generate_mipmaps = true) {
@@ -258,9 +269,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_1d_array(const ste_context &ctx,
-											gli::texture1d_array &&surface,
+											resource::surface_1d_array<surface_format> &&surface,
 											const gl::image_usage &usage,
 											const gl::image_layout &layout,
 											bool generate_mipmaps = true) {
@@ -280,9 +291,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_2d_array(const ste_context &ctx,
-											gli::texture2d_array &&surface,
+											resource::surface_2d_array<surface_format> &&surface,
 											const gl::image_usage &usage,
 											const gl::image_layout &layout,
 											bool generate_mipmaps = true) {
@@ -302,9 +313,9 @@ public:
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
-	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
+	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<ste_resource_async_policy_task_scheduler>>
 	static auto image_from_surface_cube_array(const ste_context &ctx,
-											  gli::texture_cube_array &&surface,
+											  resource::surface_cubemap_array<surface_format> &&surface,
 											  const gl::image_usage &usage,
 											  const gl::image_layout &layout,
 											  bool generate_mipmaps = true) {

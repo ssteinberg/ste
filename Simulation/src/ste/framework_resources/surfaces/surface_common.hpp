@@ -61,6 +61,9 @@ public:
 template<gl::format format, gl::image_type image_type>
 class surface_base {
 public:
+	static constexpr auto surface_image_type = image_type;
+	static constexpr auto surface_format = format;
+
 	using traits = gl::format_traits<format>;
 	static constexpr auto dimensions = gl::image_dimensions_v<image_type>;
 	using extent_type = typename gl::image_extent_type<dimensions>::type;
@@ -90,9 +93,27 @@ public:
 	surface_base &operator=(const surface_base&) = delete;
 
 	/**
+	 *	@brief	Computes maximal amount of mipmap levels, i.e. the count of levels to create a complete mipmap-chain.
+	 */
+	static constexpr std::size_t max_levels(const extent_type &extent) {
+		auto max_comp = extent.x;
+		if constexpr (dimensions > 1)	max_comp = glm::max(max_comp, extent.y);
+		if constexpr (dimensions > 2)	max_comp = glm::max(max_comp, extent.z);
+
+		return static_cast<std::size_t>(glm::log2<float>(static_cast<float>(max_comp)) + 1);
+	}
+
+	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
 	virtual const block_type* data() const = 0;
+
+	/**
+	*	@brief	Returns a pointer to the surface layer's level data
+	*/
+	const block_type* data_at(std::size_t layer, std::size_t level = 0) const {
+		return data() + offset_blocks(layer, level);
+	}
 
 	/**
 	*	@brief	Returns the extent size, in texels, of a level
@@ -109,8 +130,12 @@ public:
 	*	@param	level	Surface level
 	*/
 	auto extent_in_blocks(std::size_t level = 0) const {
+		auto extent = surface_extent;
+		extent.x /= block_extent().x;
+		if constexpr (dimensions > 1) extent.y /= block_extent().y;
+
 		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
-			(surface_extent / block_extent()) >> static_cast<typename extent_type::value_type>(level));
+						extent >> static_cast<typename extent_type::value_type>(level));
 	}
 	/**
 	*	@brief	Returns the levels count in the surface
@@ -159,7 +184,7 @@ public:
 	/**
 	*	@brief	Computes the offset, in blocks, to a specified level of a specified layer of the surface
 	*/
-	auto offset_blocks(std::size_t layer, std::size_t level) const {
+	std::size_t offset_blocks(std::size_t layer, std::size_t level) const {
 		std::size_t level_offset = 0;
 		for (std::size_t l = 0; l < level; ++l)
 			level_offset += blocks(l);
@@ -171,7 +196,7 @@ public:
 	*	@brief	Returns the size, in bytes, of a block
 	*/
 	auto block_bytes() const {
-		return sizeof(traits::element_type);
+		return sizeof(traits::block_bytes);
 	}
 
 	/**
@@ -180,6 +205,15 @@ public:
 	auto bytes() const {
 		return block_bytes() * blocks_layer() * layers();
 	}
+
+	/**
+	*	@brief	Returns the size, in bytes, of the surface layer's level
+	*/
+	auto bytes(std::size_t level) const {
+		return block_bytes() * blocks(level);
+	}
+
+	auto get_format_traits() const { return traits(); }
 };
 
 }

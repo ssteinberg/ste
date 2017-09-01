@@ -124,7 +124,7 @@ class block_component {
 	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	void write(read_type r) {
 		auto m = mask() << (offset_bits % 8);
-		auto &val = *reinterpret_cast<const read_type*>(b + offset_bits / 8);
+		auto &val = *reinterpret_cast<read_type*>(b + offset_bits / 8);
 
 		// Zero out bits
 		val &= ~m;

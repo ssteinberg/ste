@@ -67,6 +67,14 @@ public:
 	const block_type* data() const override final { return storage.get(); }
 
 	/**
+	*	@brief	Returns a pointer to the surface layer's level data
+	*/
+	block_type* data_at(std::size_t layer, std::size_t level = 0) {
+		return data() + Base::offset_blocks(layer, level);
+	}
+	using Base::data_at;
+
+	/**
 	*	@brief	Returns a non-array surface for the queried layer index
 	*
 	*	@param	layer_index		Layer index
