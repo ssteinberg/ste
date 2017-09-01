@@ -117,9 +117,9 @@ class surface : public surface_base<format, image_type> {
 
 public:
 	using Base::extent_type;
+	using Base::block_type;
 	using Base::traits;
 
-	using block_type = typename traits::block_type;
 	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
@@ -156,7 +156,7 @@ public:
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	const block_type* data() const { return storage.get(); }
+	const block_type* data() const override final { return storage.get(); }
 
 	/**
 	*	@brief	Returns an image for the queried level index

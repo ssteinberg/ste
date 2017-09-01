@@ -14,7 +14,7 @@ using namespace ste;
 using namespace ste::text;
 using namespace ste::resource;
 
-opaque_surface<2> surface_io::load_png(const std::experimental::filesystem::path &file_name, bool srgb) {
+opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::path &file_name, bool srgb) {
 	png_byte header[8];
 
 	FILE *fp = fopen(file_name.string().data(), "rb");
@@ -163,12 +163,7 @@ opaque_surface<2> surface_io::load_png(const std::experimental::filesystem::path
 	return tex;
 }
 
-void surface_io::write_png(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height) {
-	if (components != 1 && components != 3 && components != 4) {
-		ste_log_error() << file_name << " can't write " << components << " channel PNG.";
-		throw surface_unsupported_format_error("Unsupported PNG component count");
-	}
-
+void surface_io::write_png_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height) {
 	FILE *fp = fopen(file_name.string().data(), "wb");
 	if (!fp) {
 		ste_log_error() << file_name << " can't be opened for writing";
@@ -214,8 +209,11 @@ void surface_io::write_png(const std::experimental::filesystem::path &file_name,
 	case 1: color_type = PNG_COLOR_TYPE_GRAY; break;
 	case 3: color_type = PNG_COLOR_TYPE_RGB; break;
 	case 4: color_type = PNG_COLOR_TYPE_RGBA; break;
-	default:
-		throw surface_unsupported_format_error("Unsupported surface format");
+	default: {
+		using namespace attributes;
+		ste_log_error() << i(lib::to_string(file_name.string())) << " can't write " << components << " channel PNG.";
+		throw surface_unsupported_format_error("Unsupported PNG component count");
+	}
 	}
 	png_set_IHDR(png,
 				 info,

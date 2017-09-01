@@ -1970,6 +1970,9 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_dds.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_helper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

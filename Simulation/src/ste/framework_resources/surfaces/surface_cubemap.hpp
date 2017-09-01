@@ -29,9 +29,9 @@ public:
 	using surface_layer_type = surface<format, gl::image_type::image_2d>;
 
 	using Base::extent_type;
+	using Base::block_type;
 	using Base::traits;
 
-	using block_type = typename traits::block_type;
 	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
@@ -64,11 +64,11 @@ public:
 	*	@brief	Returns a pointer to the surface data
 	*/
 	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
-	auto* data() { return storage.get(); }
+	block_type* data() { return storage.get(); }
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	auto* data() const { return storage.get(); }
+	const block_type* data() const override final { return storage.get(); }
 
 	/**
 	*	@brief	Returns a cubemap face for the queried face index

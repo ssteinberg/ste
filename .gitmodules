@@ -23,9 +23,6 @@
 	path = Simulation/third_party/packages/glm
 	url = https://github.com/g-truc/glm.git
 	branch = 0.9.7
-[submodule "packages/gli"]
-	path = Simulation/third_party/packages/gli
-	url = https://github.com/g-truc/gli.git
 [submodule "packages/freetype2"]
 	path = Simulation/third_party/packages/freetype2
 	url = http://git.savannah.gnu.org/r/freetype/freetype2.git

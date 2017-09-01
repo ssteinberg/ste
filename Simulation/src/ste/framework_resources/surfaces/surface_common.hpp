@@ -64,6 +64,7 @@ public:
 	using traits = gl::format_traits<format>;
 	static constexpr auto dimensions = gl::image_dimensions_v<image_type>;
 	using extent_type = typename gl::image_extent_type<dimensions>::type;
+	using block_type = typename traits::block_type;
 
 private:
 	extent_type surface_extent;
@@ -81,12 +82,17 @@ protected:
 	}
 
 public:
-	~surface_base() noexcept {}
+	virtual ~surface_base() noexcept {}
 
 	surface_base(surface_base&&) = default;
 	surface_base(const surface_base&) = delete;
 	surface_base &operator=(surface_base&&) = default;
 	surface_base &operator=(const surface_base&) = delete;
+
+	/**
+	*	@brief	Returns a pointer to the surface data
+	*/
+	virtual const block_type* data() const = 0;
 
 	/**
 	*	@brief	Returns the extent size, in texels, of a level

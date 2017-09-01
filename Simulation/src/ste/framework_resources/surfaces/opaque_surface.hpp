@@ -34,28 +34,54 @@ private:
 
 	lib::vector<std::uint8_t> storage;
 
+private:
+	opaque_surface(const gl::format &format,
+				   const gl::image_type &image_type,
+				   const extent_type &extent,
+				   std::size_t levels,
+				   std::size_t layers)
+		: surface_extent(extent),
+		surface_levels(levels),
+		surface_layers(layers),
+		surface_format(format),
+		surface_image_type(image_type),
+		format_traits(gl::format_id(format))
+	{
+		// Sanity checks
+		if (gl::image_dimensions_for_type(image_type) != dimensions)
+			throw surface_opaque_storage_mismatch_error("Unexpected image_type");
+		if (gl::image_is_cubemap_for_type(image_type) && (layers % 6) != 0)
+			throw surface_opaque_storage_mismatch_error("Expected a cubemap or cubemap array but layers count doesn't match");
+	}
+
 public:
 	opaque_surface(const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
 				   std::size_t levels,
 				   std::size_t layers,
-				   lib::vector<std::uint8_t> &&data)
-		: surface_extent(extent), 
-		surface_levels(levels),
-		surface_layers(layers),
-		surface_format(format),
-		surface_image_type(image_type),
-		format_traits(gl::format_id(format)),
-		storage(std::move(data)) 
+				   const std::uint8_t *data,
+				   std::size_t data_size)
+		: opaque_surface(format, image_type, extent, levels, layers)
 	{
-		// Sanity checks
-		if (gl::image_dimensions_for_type(image_type) != dimensions)
-			throw surface_opaque_storage_mismatch_error("Unexpected image_type");
+		if (bytes() != data_size)
+			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
+
+		storage.resize(data_size);
+		std::memcpy(storage.data(), data, data_size);
+	}
+	opaque_surface(const gl::format &format,
+				   const gl::image_type &image_type,
+				   const extent_type &extent,
+				   std::size_t levels,
+				   std::size_t layers,
+				   lib::vector<std::uint8_t> &&data)
+		: opaque_surface(format, image_type, extent, levels, layers)
+	{
 		if (bytes() != data.size())
 			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
-		if (gl::image_is_cubemap_for_type(image_type) && (layers % 6) != 0)
-			throw surface_opaque_storage_mismatch_error("Expected a cubemap or cubemap array but layers count doesn't match");
+
+		storage = std::move(data);
 	}
 	~opaque_surface() noexcept {}
 

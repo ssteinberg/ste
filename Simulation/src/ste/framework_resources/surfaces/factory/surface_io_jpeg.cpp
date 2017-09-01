@@ -14,8 +14,8 @@ using namespace ste;
 using namespace ste::text;
 using namespace ste::resource;
 
-opaque_surface<2> surface_io::load_jpeg(const std::experimental::filesystem::path &path, bool srgb) {
-	std::ifstream fs(path.string(), std::ios::in);
+opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::path &path, bool srgb) {
+	std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
 	if (!fs) {
 		using namespace attributes;
 		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
@@ -91,16 +91,10 @@ opaque_surface<2> surface_io::load_jpeg(const std::experimental::filesystem::pat
 	return tex;
 }
 
-void surface_io::write_jpeg(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height) {
+void surface_io::write_jpeg_2d(const std::experimental::filesystem::path &path, const std::uint8_t *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3) {
-		ste_log_error() << file_name << " can't write " << components << " channel JPEG.";
+		ste_log_error() << path << " can't write " << components << " channel JPEG.";
 		throw surface_unsupported_format_error("Unsupported JPEG component count");
-	}
-
-	FILE *fp = fopen(file_name.string().data(), "wb");
-	if (!fp) {
-		ste_log_error() << file_name << " can't be opened for writing";
-		throw resource_io_error("Opening output file failed");
 	}
 
 	const auto tj = tjInitCompress();
@@ -130,7 +124,7 @@ void surface_io::write_jpeg(const std::experimental::filesystem::path &file_name
 					&dst_buffer, 
 					&dst_size, 
 					samp, 
-					100, 
+					100,	// Highest quality
 					TJFLAG_BOTTOMUP | TJFLAG_NOREALLOC) != 0) {
 		const char *err = tjGetErrorStr();
 		ste_log_error() << "libturbojpeg could not compress JPEG image: " << (err ? err : "") << std::endl;
@@ -138,7 +132,15 @@ void surface_io::write_jpeg(const std::experimental::filesystem::path &file_name
 		throw surface_error("libturbojpeg could not compress JPEG image");
 	}
 
-	fwrite(dst_buffer, dst_size, 1, fp);
+	// Write out
+	{
+		std::ofstream fs(path.string(), std::ios::out | std::ios::binary);
+		if (!fs) {
+			using namespace attributes;
+			ste_log_error() << text::attributed_string("Can't open file ") + i(lib::to_string(path.string())) + " for writing: " + std::strerror(errno) << std::endl;
+			throw resource_io_error("Could not open file");
+		}
 
-	fclose(fp);
+		std::copy(buffer.begin(), buffer.end(), std::ostream_iterator<std::uint8_t>(fs));
+	}
 }
