@@ -1,15 +1,15 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//  StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <microfacet_fit_error.hpp>
+
+#include <surface.hpp>
 
 #include <lib/unique_ptr.hpp>
 #include <istream>
-
 #include <boost/crc.hpp>
 
 namespace ste {
@@ -71,23 +71,22 @@ public:
 
 	~microfacet_refraction_fit() noexcept {}
 
-	gli::texture2d create_lut() const {
+	auto create_lut() const {
 		using exp2_coef_f = struct { float a, b, c, d; };
 
-		int size = fit_data->header.size;
+		const auto size = static_cast<std::uint32_t>(fit_data->header.size);
 
-		gli::texture2d lut_texture = gli::texture2d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size, size });
+		auto lut_texture = resource::surface_2d<gl::format::r32g32b32a32_sfloat>({ size, size });
+		auto lut0 = lut_texture[0];
 
-		auto *lut = reinterpret_cast<exp2_coef_f*>(lut_texture.data());
+		for (std::uint32_t y = 0; y < size; ++y) {
+			for (std::uint32_t x = 0; x < size; ++x) {
+				const auto offset = x + y * size;
 
-		for (int y = 0; y < size; ++y) {
-			for (int x = 0; x < size; ++x) {
-				auto offset = x + y * size;
-
-				lut[offset] = { static_cast<float>(fit_data->data[offset].a), 
-								static_cast<float>(fit_data->data[offset].b),
-								static_cast<float>(fit_data->data[offset].c),
-								static_cast<float>(fit_data->data[offset].d) };
+				lut0.at({ x,y }).r() = static_cast<float>(fit_data->data[offset].a);
+				lut0.at({ x,y }).g() = static_cast<float>(fit_data->data[offset].b);
+				lut0.at({ x,y }).b() = static_cast<float>(fit_data->data[offset].c);
+				lut0.at({ x,y }).a() = static_cast<float>(fit_data->data[offset].d);
 			}
 		}
 

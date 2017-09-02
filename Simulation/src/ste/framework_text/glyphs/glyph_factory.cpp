@@ -156,7 +156,7 @@ glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	g.metrics.width = w;
 	g.metrics.height = h;
 
-	g.glyph_distance_field = lib::allocate_unique<gli::texture2d>(gli::format::FORMAT_R32_SFLOAT_PACK32, glm::ivec2{ w, h }, 1);
+	g.glyph_distance_field = lib::allocate_unique<glyph::glyph_distance_field_surface_t>(glm::u32vec2{ static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h) });
 	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
 	lib::default_alloc<unsigned char[]>::destroy(glyph_buf);
 
@@ -178,7 +178,7 @@ std::uint32_t glyph_factory::read_kerning(const font &font, const std::pair<wcha
 	FT_Set_Pixel_Sizes(face, 0, pixel_size);
 	FT_Load_Glyph(face, left_index, FT_LOAD_DEFAULT);
 
-	bool has_kern = FT_HAS_KERNING(face);
+	const bool has_kern = FT_HAS_KERNING(face);
 
 	if (has_kern) {
 		FT_Vector delta;

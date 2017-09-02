@@ -68,7 +68,7 @@ public:
 
 	virtual ~microfacet_transmission_fit() noexcept {}
 
-	virtual gli::texture2d_array create_lut() const = 0;
+	virtual resource::surface_2d_array<gl::format::r32g32b32a32_sfloat> create_lut() const = 0;
 
 	auto ndf_type() const { return fit_data->header.ndf_type; }
 };
@@ -83,28 +83,26 @@ class microfacet_transmission_fit_v4 : public microfacet_transmission_fit<4, mic
 public:
 	using Base::Base;
 
-	gli::texture2d_array create_lut() const override {
-		using f4_coef = struct { float a, b, c, d; };
+	resource::surface_2d_array<gl::format::r32g32b32a32_sfloat> create_lut() const override {
+		const auto size = static_cast<std::uint32_t>(fit_data->header.size);
 
-		int size = fit_data->header.size;
+		auto lut = resource::surface_2d_array<gl::format::r32g32b32a32_sfloat>({ size, size }, 2);
+		auto lut0 = lut[0][0];
+		auto lut1 = lut[1][0];
 
-		gli::texture2d_array lut = gli::texture2d_array(gli::format::FORMAT_RGBA32_SFLOAT_PACK32, glm::ivec2{ size, size }, 2);
+		for (std::uint32_t y = 0; y < size; ++y) {
+			for (std::uint32_t x = 0; x < size; ++x) {
+				const auto offset = x + y * size;
 
-		auto *lut0 = reinterpret_cast<f4_coef*>(lut[0].data());
-		auto *lut1 = reinterpret_cast<f4_coef*>(lut[1].data());
+				lut0.at({ x,y }).r() = static_cast<float>(fit_data->data[offset].a);
+				lut0.at({ x,y }).g() = static_cast<float>(fit_data->data[offset].b);
+				lut0.at({ x,y }).b() = static_cast<float>(fit_data->data[offset].c);
+				lut0.at({ x,y }).a() = .0f;
 
-		for (int y = 0; y < size; ++y) {
-			for (int x = 0; x < size; ++x) {
-				auto offset = x + y * size;
-
-				lut0[offset] = { static_cast<float>(fit_data->data[offset].a),
-								 static_cast<float>(fit_data->data[offset].b),
-								 static_cast<float>(fit_data->data[offset].c),
-								 .0f };
-				lut1[offset] = { static_cast<float>(fit_data->data[offset].d),
-								 static_cast<float>(fit_data->data[offset].m),
-								.0f ,
-								.0f };
+				lut1.at({ x,y }).r() = static_cast<float>(fit_data->data[offset].d);
+				lut1.at({ x,y }).g() = static_cast<float>(fit_data->data[offset].m);
+				lut1.at({ x,y }).b() = .0f;
+				lut1.at({ x,y }).a() = .0f;
 			}
 		}
 

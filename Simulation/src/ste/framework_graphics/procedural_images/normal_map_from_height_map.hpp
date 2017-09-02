@@ -1,66 +1,75 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//  StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 #include <format_type_traits.hpp>
+#include <ste_type_traits.hpp>
 
 #include <limits>
 
 namespace ste {
 namespace graphics {
 
-template <gl::format Format, bool height_in_alpha = true>
+template <gl::format Format>
 class normal_map_from_height_map {
 private:
-	using T = typename gl::format_traits<Format>::element_type;
+	static_assert(gl::format_traits<Format>::elements == 3 || gl::format_traits<Format>::elements == 4);
+	static constexpr bool has_height_in_alpha_channel = gl::format_traits<Format>::elements == 4;
+
+	using T = typename gl::format_traits<Format>::block_type::common_type;
+//	static_assert(is_floating_point_v<T>, "Target format is not a floating-point format");
 
 public:
-	gli::texture2d operator()(const gli::texture2d &height_map, float height_scale) {
-		// Sanity
-		static_assert(gl::format_traits<Format>::elements == 1);
-		assert(gl::format_traits<Format>::gli_format == height_map.format());
+	template <gl::format src_format>
+	auto operator()(const resource::surface_2d<src_format> &height_map, float height_scale) {
+		static_assert(gl::format_traits<src_format>::elements == 1, "height_map must be a 1-channel surface");
+		static_assert(!gl::format_traits<src_format>::is_compressed && !gl::format_traits<Format>::is_compressed, "Formats must be uncompressed formats");
 
-		const glm::ivec2 dim{ height_map.extent().x, height_map.extent().y };
-		gli::texture2d nm(height_in_alpha ? gli::format::FORMAT_RGBA32_SFLOAT_PACK32 : gli::format::FORMAT_RGB32_SFLOAT_PACK32, dim, 1);
+		auto dim = height_map.extent();
+		resource::surface_2d<Format> nm(dim, 1);
 
 		// Generate normal map
-		float *data = reinterpret_cast<float*>(nm.data());
-		const T *heights = reinterpret_cast<const T*>(height_map.data());
-		for (int y = 0; y < dim.y; ++y) {
-			for (int x = 0; x < dim.x; ++x) {
+		auto nm_level = nm[0];
+		auto height_map_level = height_map[0];
+		for (std::uint32_t y = 0; y < dim.y; ++y) {
+			for (std::uint32_t x = 0; x < dim.x; ++x) {
 				glm::vec3 n;
+				glm::u32vec2 coord = { x, y };
 
-				T ic = heights[dim.x * y + x];
-				T iu = y + 1 < dim.y ? heights[dim.x * (y + 1) + x] : ic;
-				T id = y > 0 ? heights[dim.x * (y - 1) + x] : ic;
-				T ir = x + 1 < dim.x ? heights[dim.x * y + x + 1] : ic;
-				T il = x > 0 ? heights[dim.x * y + x - 1] : ic;
+				auto ic = height_map_level.at(coord).r();
+				auto iu = ic;
+				auto id = ic;
+				auto ir = ic;
+				auto il = ic;
+				if (y + 1 < dim.y)
+					iu = height_map_level.at(coord + glm::u32vec2{  0,  1 }).r();
+				if (y > 0)
+					id = height_map_level.at(coord + glm::u32vec2{  0, -1 }).r();
+				if (x + 1 < dim.x)
+					ir = height_map_level.at(coord + glm::u32vec2{  1,  0 }).r();
+				if (x > 0)
+					il = height_map_level.at(coord + glm::u32vec2{ -1,  0 }).r();
 
-				float c = static_cast<float>(ic);
-				float u = static_cast<float>(iu);
-				float d = static_cast<float>(id);
-				float l = static_cast<float>(il);
-				float r = static_cast<float>(ir);
+				const float c = static_cast<float>(ic);
+				const float u = static_cast<float>(iu);
+				const float d = static_cast<float>(id);
+				const float l = static_cast<float>(il);
+				const float r = static_cast<float>(ir);
 
-				if (gl::format_traits<Format>::is_normalized_integer) {
-					c /= static_cast<float>(std::numeric_limits<T>::max());
-					u /= static_cast<float>(std::numeric_limits<T>::max());
-					d /= static_cast<float>(std::numeric_limits<T>::max());
-					l /= static_cast<float>(std::numeric_limits<T>::max());
-					r /= static_cast<float>(std::numeric_limits<T>::max());
-				}
-
+				// Compute normal
 				n.z = 1.0f;
 				n.y = ((c - d) * .5f + (u - c) * .5f) * height_scale;
 				n.x = ((c - r) * .5f + (l - c) * .5f) * height_scale;
+				n = glm::normalize(n);
 
-				if (!height_in_alpha) {
-					reinterpret_cast<glm::vec3*>(data)[x + y * dim.x] = glm::normalize(n);
-				}
-				else {
-					reinterpret_cast<glm::vec4*>(data)[x + y * dim.x] = glm::vec4(glm::normalize(n), c);
+				// Write
+				nm_level.at(coord).r() = static_cast<T>(n.x);
+				nm_level.at(coord).g() = static_cast<T>(n.y);
+				nm_level.at(coord).b() = static_cast<T>(n.z);
+				if constexpr (has_height_in_alpha_channel) {
+					nm_level.at(coord).a() = static_cast<T>(c);
 				}
 			}
 		}

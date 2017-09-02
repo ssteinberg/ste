@@ -1,12 +1,13 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//  StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 #include <atmospherics_lut_error.hpp>
-
 #include <atmospherics_properties.hpp>
+
+#include <surface.hpp>
 
 #include <filesystem>
 
@@ -30,13 +31,13 @@ private:
 	};
 
 public:
-	static constexpr int optical_length_size = 2048;
-	static constexpr int scatter_size0 = 48;
-	static constexpr int scatter_size1 = 384;
-	static constexpr int scatter_size2 = 384;
-	static constexpr int ambient_size_0 = 48;
-	static constexpr int ambient_size_1 = 384;
-	static constexpr int ambient_size_2 = 48;
+	static constexpr std::uint32_t optical_length_size = 2048;
+	static constexpr std::uint32_t scatter_size0 = 48;
+	static constexpr std::uint32_t scatter_size1 = 384;
+	static constexpr std::uint32_t scatter_size2 = 384;
+	static constexpr std::uint32_t ambient_size_0 = 48;
+	static constexpr std::uint32_t ambient_size_1 = 384;
+	static constexpr std::uint32_t ambient_size_2 = 48;
 
 	using optical_length_element = T;
 	using scatter_element = double_vec3;
@@ -148,20 +149,13 @@ private:
 	lib::unique_ptr<lut_data_t> data;
 
 private:
-	gli::texture2d create_optical_length_lut(int lut_idx) const {
-		gli::texture2d lut_texture = gli::texture2d(gli::format::FORMAT_R32_SFLOAT_PACK32,
-													glm::ivec2{ lut_data_t::optical_length_size });
-
-		auto *lut = reinterpret_cast<float*>(lut_texture.data());
-
+	void create_optical_length_lut(int lut_idx, float *lut) const {
 		for (int y = 0; y < lut_data_t::optical_length_size; ++y) {
 			for (int x = 0; x < lut_data_t::optical_length_size; ++x) {
 				*lut = static_cast<float>((*data->optical_length_lut(lut_idx))[x][y]);
 				++lut;
 			}
 		}
-
-		return lut_texture;
 	}
 
 public:
@@ -170,18 +164,21 @@ public:
 	}
 	~atmospherics_precompute_scattering() noexcept {}
 
-	gli::texture2d_array create_optical_length_lut() const {
-		auto lut_array = gli::texture2d_array(gli::format::FORMAT_R32_SFLOAT_PACK32,
-											  glm::ivec2{ lut_data_t::optical_length_size }, 2);
-		lut_array[0] = create_optical_length_lut(optical_length_air_lut_idx);
-		lut_array[1] = create_optical_length_lut(optical_length_aerosols_lut_idx);
+	auto create_optical_length_lut() const {
+		resource::surface_2d_array<gl::format::r32_sfloat> lut_texture_array(glm::u32vec2{ lut_data_t::optical_length_size, lut_data_t::optical_length_size }, 2);
 
-		return lut_array;
+		auto* lut = reinterpret_cast<float*>(lut_texture_array.data());
+
+		create_optical_length_lut(optical_length_air_lut_idx, 
+								  lut);
+		create_optical_length_lut(optical_length_aerosols_lut_idx, 
+								  lut + lut_texture_array.offset_blocks(1, 0));
+
+		return lut_texture_array;
 	}
 
-	gli::texture3d create_scatter_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
-										  glm::ivec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
+	auto create_scatter_lut() const {
+		resource::surface_3d<gl::format::r32g32b32a32_sfloat> lut_texture(glm::u32vec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
 
 		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
@@ -201,9 +198,8 @@ public:
 		return lut_texture;
 	}
 
-	gli::texture3d create_mie0_scatter_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
-										  glm::ivec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
+	auto create_mie0_scatter_lut() const {
+		resource::surface_3d<gl::format::r32g32b32a32_sfloat> lut_texture(glm::u32vec3{ lut_data_t::scatter_size0, lut_data_t::scatter_size1, lut_data_t::scatter_size2 });
 
 		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
@@ -223,9 +219,8 @@ public:
 		return lut_texture;
 	}
 
-	gli::texture3d create_ambient_lut() const {
-		auto lut_texture = gli::texture3d(gli::format::FORMAT_RGBA32_SFLOAT_PACK32,
-										  glm::ivec3{ lut_data_t::ambient_size_0, lut_data_t::ambient_size_1, lut_data_t::ambient_size_2 });
+	auto create_ambient_lut() const {
+		resource::surface_3d<gl::format::r32g32b32a32_sfloat> lut_texture(glm::u32vec3{ lut_data_t::ambient_size_0, lut_data_t::ambient_size_1, lut_data_t::ambient_size_2 });
 
 		auto *lut = reinterpret_cast<glm::vec4*>(lut_texture.data());
 
