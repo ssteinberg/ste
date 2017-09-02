@@ -10,6 +10,9 @@
 #include <material_storage.hpp>
 #include <material_layer_storage.hpp>
 
+#include <surface.hpp>
+#include <surface_type_traits.hpp>
+#include <surface_convert.hpp>
 #include <surface_factory.hpp>
 
 #include <normal_map_from_height_map.hpp>
@@ -21,6 +24,25 @@ using namespace ste;
 using namespace ste::resource;
 
 tinyobj::material_t model_factory::empty_mat;
+
+namespace ste::resource::_detail {
+
+template <gl::format format, typename Surface, typename Map>
+void store_texture(const ste_context &ctx,
+				   const std::string &name,
+				   Surface &&surface,
+				   graphics::scene_properties *scene_properties,
+				   Map *texmap) {
+	static_assert(resource::is_surface_v<Surface> || resource::is_opaque_surface_v<Surface>);
+
+	auto t = surface_factory::image_from_surface_2d<format>(ctx,
+															surface_convert::convert_2d<format>(std::forward<Surface>(surface)),
+															gl::image_usage::sampled,
+															gl::image_layout::shader_read_only_optimal);
+	(*texmap)[name] = scene_properties->material_textures_storage().allocate_texture(std::move(t));
+}
+
+}
 
 void model_factory::add_object_to_object_group(const ste_context &ctx, 
 											   graphics::object_group *object_group,
@@ -124,7 +146,7 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 	}
 
 	// Create async task that generates object, material and material layer
-	int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
+	const int mat_idx = shape.mesh.material_ids.size() > 0 ? shape.mesh.material_ids[0] : -1;
 	auto &material = mat_idx >= 0 ? materials[mat_idx] : empty_mat;
 
 	return ctx.engine().task_scheduler().schedule_now([=, &ctx, vbo_data = std::move(vbo_data), vbo_indices = std::move(vbo_indices), &loaded_materials, &loaded_material_layers, &textures, &material]() {
@@ -201,23 +223,23 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 		std::experimental::filesystem::path full_path = dir / std::experimental::filesystem::path(normalized_name).make_preferred();
 
 		// Load surface from file
-		gli::texture2d surface;
+		optional<opaque_surface<2>> surface;
 		try {
 			surface = surface_io::load_surface_2d(full_path, srgb);
 		}
 		catch (...) {}
 
-		if (surface.empty()) {
+		if (!surface) {
 			ste_log_warn() << "Couldn't load texture " << full_path.string() << std::endl;
 			return;
 		}
 
-		auto surface_format_details = gli::detail::get_format_info(surface.format());
+		auto surface_format_traits = gl::format_id(surface.get().surface_format());
 
 		// Enforce correct normal maps and displacement maps. 
 		bool displacement = is_displacement_map;
-		if (displacement && surface_format_details.Component != 1) {
-			if (surface_format_details.Component == 3) {
+		if (displacement && surface_format_traits.elements != 1) {
+			if (surface_format_traits.elements == 3) {
 				ste_log_warn() << "Texture \"" << name << "\" looks like a normal map and not a displacement map as specified by the model. Assuming a normal map." << std::endl;
 				displacement = false;
 			}
@@ -227,41 +249,24 @@ ste::task_future<void> model_factory::load_texture(const ste_context &ctx,
 			}
 		}
 
-		// We use normal maps, if a displacement map is provided, use it to generate a normal map.
-		if (displacement)
-			surface = graphics::normal_map_from_height_map<gl::format::r8_unorm, false>()(surface, normal_map_bias);
-
 		// Create texture.
 		texture_t texture;
-		if (surface_format_details.Component == 1 && (surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
-			auto t = surface_factory::image_from_surface_2d<gl::format::r8_srgb>(ctx,
-																				 std::move(surface),
-																				 gl::image_usage::sampled,
-																				 gl::image_layout::shader_read_only_optimal);
-			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
+		if (displacement) {
+			// We use normal maps, if a displacement map is provided, use it to generate a normal map.
+			auto normal_map = graphics::normal_map_from_height_map<gl::format::r8g8b8a8_unorm>()(surface_convert::convert_2d<gl::format::r8_unorm>(std::move(surface).get()), normal_map_bias);
+			_detail::store_texture<gl::format::r8g8b8a8_unorm>(ctx, name, std::move(normal_map), scene_properties, texmap);
 		}
-		else if (surface_format_details.Component == 1 && !(surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
-			auto t = surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
-																				  std::move(surface),
-																				  gl::image_usage::sampled,
-																				  gl::image_layout::shader_read_only_optimal);
-			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
+		else if (surface_format_traits.elements == 1 && surface_format_traits.is_srgb)
+			_detail::store_texture<gl::format::r8_srgb>(ctx, name, std::move(surface).get(), scene_properties, texmap);
+		else if (surface_format_traits.elements == 1 && !surface_format_traits.is_srgb)
+			_detail::store_texture<gl::format::r8_unorm>(ctx, name, std::move(surface).get(), scene_properties, texmap);
+		else if (surface_format_traits.elements >= 3 && surface_format_traits.is_srgb)
+			_detail::store_texture<gl::format::r8g8b8a8_srgb>(ctx, name, std::move(surface).get(), scene_properties, texmap);
+		else if (surface_format_traits.elements >= 3 && !surface_format_traits.is_srgb)
+			_detail::store_texture<gl::format::r8g8b8a8_unorm>(ctx, name, std::move(surface).get(), scene_properties, texmap);
+		else {
+			assert(false);
 		}
-		else if (surface_format_details.Component >= 3 && (surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
-			auto t = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_srgb>(ctx,
-																					   std::move(surface),
-																					   gl::image_usage::sampled,
-																					   gl::image_layout::shader_read_only_optimal);
-			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
-		}
-		else if (surface_format_details.Component >= 3 && !(surface_format_details.Flags & gli::detail::CAP_COLORSPACE_SRGB_BIT)) {
-			auto t = surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																						std::move(surface),
-																						gl::image_usage::sampled,
-																						gl::image_layout::shader_read_only_optimal);
-			texture = scene_properties->material_textures_storage().allocate_texture(std::move(t));
-		}
-		(*texmap)[name] = std::move(texture);
 	});
 }
 

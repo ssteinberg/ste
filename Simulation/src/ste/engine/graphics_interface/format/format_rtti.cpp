@@ -2,35 +2,66 @@
 #include <stdafx.hpp>
 #include <format_rtti.hpp>
 #include <format_type_traits.hpp>
-#include <type_traits>
 
 using namespace ste::gl;
 
 namespace ste::gl::_detail {
 
-template <format Format, typename = std::void_t<>>
-struct format_rtti_gli_format {
-	static constexpr gli::format value = gli::format::FORMAT_UNDEFINED;
-};
-template <format Format>
-struct format_rtti_gli_format<Format, std::void_t<decltype(typename format_traits<Format>::gli_format)>> {
-	static constexpr gli::format value = format_traits<Format>::gli_format;
-};
-template <format Format>
-static constexpr auto format_rtti_gli_format_v = format_rtti_gli_format<Format>::value;
-
 template <format Format>
 constexpr format_rtti format_rtti_for_format() {
 	format_rtti ret;
+
 	ret.elements = format_traits<Format>::elements;
-	ret.texel_bytes = format_traits<Format>::texel_bytes;
+	ret.block_bytes = format_traits<Format>::block_bytes;
+	ret.block_extent = format_traits<Format>::block_extent;
+
 	ret.is_depth = format_traits<Format>::is_depth;
 	ret.is_float = format_traits<Format>::is_float;
 	ret.is_signed = format_traits<Format>::is_signed;
 	ret.is_srgb = format_traits<Format>::is_srgb;
 	ret.is_normalized_integer = format_traits<Format>::is_normalized_integer;
 	ret.is_scaled_integer = format_traits<Format>::is_scaled_integer;
-	ret.gli_format = format_rtti_gli_format_v<Format>;
+	ret.is_compressed = format_traits<Format>::is_compressed;
+
+	if constexpr (!format_traits<Format>::is_compressed) {
+		ret.block_common_type_name = format_traits<Format>::block_type::common_type_name;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp32)
+			ret.block_loader_fp32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp64)
+			ret.block_loader_fp64 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int32)
+			ret.block_loader_int32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int64)
+			ret.block_loader_int64 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint32)
+			ret.block_loader_uint32 = format_traits<Format>::block_type::load_block;
+		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint64)
+			ret.block_loader_uint64 = format_traits<Format>::block_type::load_block;
+	}
+
+	// Sanity
+	if constexpr (!format_traits<Format>::is_compressed) {
+		static_assert(format_traits<Format>::elements == format_traits<Format>::block_type::elements, "Elements count mismatch");
+		static_assert(format_traits<Format>::block_bytes == format_traits<Format>::block_type::bytes, "Block size mismatch");
+		static_assert(format_traits<Format>::block_bytes == sizeof(format_traits<Format>::block_type), "wrong sizeof block class");
+
+		if constexpr (format_traits<Format>::is_scaled_integer && !format_traits<Format>::is_signed)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_uscaled);
+		if constexpr (format_traits<Format>::is_scaled_integer && format_traits<Format>::is_signed)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_sscaled);
+		if constexpr (format_traits<Format>::is_srgb) {
+			static_assert(format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed);
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_srgb);
+		}
+		else {
+			if constexpr (format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed)
+				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_unorm);
+			if constexpr (format_traits<Format>::is_normalized_integer && format_traits<Format>::is_signed)
+				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_snorm);
+		}
+		if constexpr (format_traits<Format>::is_float)
+			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_fp);
+	}
 
 	return ret;
 }
@@ -524,14 +555,6 @@ std::unordered_map<format, format_rtti> _internal::format_rtti_database::databas
 		_detail::format_rtti_for_format<format::r64g64b64a64_sfloat>()
 	},
 	{
-		format::b10g11r11_ufloat_pack32,
-		_detail::format_rtti_for_format<format::b10g11r11_ufloat_pack32>()
-	},
-	{
-		format::e5b9g9r9_ufloat_pack32,
-		_detail::format_rtti_for_format<format::e5b9g9r9_ufloat_pack32>()
-	},
-	{
 		format::d16_unorm,
 		_detail::format_rtti_for_format<format::d16_unorm>()
 	},
@@ -542,5 +565,221 @@ std::unordered_map<format, format_rtti> _internal::format_rtti_database::databas
 	{
 		format::d32_sfloat,
 		_detail::format_rtti_for_format<format::d32_sfloat>()
-	}
+	},
+	{
+		format::bc1_rgb_unorm_block,
+		_detail::format_rtti_for_format<format::bc1_rgb_unorm_block>()
+	},
+	{
+		format::bc1_rgb_srgb_block,
+		_detail::format_rtti_for_format<format::bc1_rgb_srgb_block>()
+	},
+	{
+		format::bc1_rgba_unorm_block,
+		_detail::format_rtti_for_format<format::bc1_rgba_unorm_block>()
+	},
+	{
+		format::bc1_rgba_srgb_block,
+		_detail::format_rtti_for_format<format::bc1_rgba_srgb_block>()
+	},
+	{
+		format::bc2_unorm_block,
+		_detail::format_rtti_for_format<format::bc2_unorm_block>()
+	},
+	{
+		format::bc2_srgb_block,
+		_detail::format_rtti_for_format<format::bc2_srgb_block>()
+	},
+	{
+		format::bc3_unorm_block,
+		_detail::format_rtti_for_format<format::bc3_unorm_block>()
+	},
+	{
+		format::bc3_srgb_block,
+		_detail::format_rtti_for_format<format::bc3_srgb_block>()
+	},
+	{
+		format::bc4_unorm_block,
+		_detail::format_rtti_for_format<format::bc4_unorm_block>()
+	},
+	{
+		format::bc4_snorm_block,
+		_detail::format_rtti_for_format<format::bc4_snorm_block>()
+	},
+	{
+		format::bc5_unorm_block,
+		_detail::format_rtti_for_format<format::bc5_unorm_block>()
+	},
+	{
+		format::bc5_snorm_block,
+		_detail::format_rtti_for_format<format::bc5_snorm_block>()
+	},
+	{
+		format::bc6h_ufloat_block,
+		_detail::format_rtti_for_format<format::bc6h_ufloat_block>()
+	},
+	{
+		format::bc6h_sfloat_block,
+		_detail::format_rtti_for_format<format::bc6h_sfloat_block>()
+	},
+	{
+		format::bc7_unorm_block,
+		_detail::format_rtti_for_format<format::bc7_unorm_block>()
+	},
+	{
+		format::bc7_srgb_block,
+		_detail::format_rtti_for_format<format::bc7_srgb_block>()
+	},
+	{
+		format::etc2_r8g8b8_unorm_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8_unorm_block>()
+	},
+	{
+		format::etc2_r8g8b8_srgb_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8_srgb_block>()
+	},
+	{
+		format::etc2_r8g8b8a1_unorm_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8a1_unorm_block>()
+	},
+	{
+		format::etc2_r8g8b8a1_srgb_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8a1_srgb_block>()
+	},
+	{
+		format::etc2_r8g8b8a8_unorm_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8a8_unorm_block>()
+	},
+	{
+		format::etc2_r8g8b8a8_srgb_block,
+		_detail::format_rtti_for_format<format::etc2_r8g8b8a8_srgb_block>()
+	},
+	{
+		format::eac_r11_unorm_block,
+		_detail::format_rtti_for_format<format::eac_r11_unorm_block>()
+	},
+	{
+		format::eac_r11_snorm_block,
+		_detail::format_rtti_for_format<format::eac_r11_snorm_block>()
+	},
+	{
+		format::eac_r11g11_unorm_block,
+		_detail::format_rtti_for_format<format::eac_r11g11_unorm_block>()
+	},
+	{
+		format::eac_r11g11_snorm_block,
+		_detail::format_rtti_for_format<format::eac_r11g11_snorm_block>()
+	},
+	{
+		format::astc_4x4_unorm_block,
+		_detail::format_rtti_for_format<format::astc_4x4_unorm_block>()
+	},
+	{
+		format::astc_4x4_srgb_block,
+		_detail::format_rtti_for_format<format::astc_4x4_srgb_block>()
+	},
+	{
+		format::astc_5x4_unorm_block,
+		_detail::format_rtti_for_format<format::astc_5x4_unorm_block>()
+	},
+	{
+		format::astc_5x4_srgb_block,
+		_detail::format_rtti_for_format<format::astc_5x4_srgb_block>()
+	},
+	{
+		format::astc_5x5_unorm_block,
+		_detail::format_rtti_for_format<format::astc_5x5_unorm_block>()
+	},
+	{
+		format::astc_5x5_srgb_block,
+		_detail::format_rtti_for_format<format::astc_5x5_srgb_block>()
+	},
+	{
+		format::astc_6x5_unorm_block,
+		_detail::format_rtti_for_format<format::astc_6x5_unorm_block>()
+	},
+	{
+		format::astc_6x5_srgb_block,
+		_detail::format_rtti_for_format<format::astc_6x5_srgb_block>()
+	},
+	{
+		format::astc_6x6_unorm_block,
+		_detail::format_rtti_for_format<format::astc_6x6_unorm_block>()
+	},
+	{
+		format::astc_6x6_srgb_block,
+		_detail::format_rtti_for_format<format::astc_6x6_srgb_block>()
+	},
+	{
+		format::astc_8x5_unorm_block,
+		_detail::format_rtti_for_format<format::astc_8x5_unorm_block>()
+	},
+	{
+		format::astc_8x5_srgb_block,
+		_detail::format_rtti_for_format<format::astc_8x5_srgb_block>()
+	},
+	{
+		format::astc_8x6_unorm_block,
+		_detail::format_rtti_for_format<format::astc_8x6_unorm_block>()
+	},
+	{
+		format::astc_8x6_srgb_block,
+		_detail::format_rtti_for_format<format::astc_8x6_srgb_block>()
+	},
+	{
+		format::astc_8x8_unorm_block,
+		_detail::format_rtti_for_format<format::astc_8x8_unorm_block>()
+	},
+	{
+		format::astc_8x8_srgb_block,
+		_detail::format_rtti_for_format<format::astc_8x8_srgb_block>()
+	},
+	{
+		format::astc_10x5_unorm_block,
+		_detail::format_rtti_for_format<format::astc_10x5_unorm_block>()
+	},
+	{
+		format::astc_10x5_srgb_block,
+		_detail::format_rtti_for_format<format::astc_10x5_srgb_block>()
+	},
+	{
+		format::astc_10x6_unorm_block,
+		_detail::format_rtti_for_format<format::astc_10x6_unorm_block>()
+	},
+	{
+		format::astc_10x6_srgb_block,
+		_detail::format_rtti_for_format<format::astc_10x6_srgb_block>()
+	},
+	{
+		format::astc_10x8_unorm_block,
+		_detail::format_rtti_for_format<format::astc_10x8_unorm_block>()
+	},
+	{
+		format::astc_10x8_srgb_block,
+		_detail::format_rtti_for_format<format::astc_10x8_srgb_block>()
+	},
+	{
+		format::astc_10x10_unorm_block,
+		_detail::format_rtti_for_format<format::astc_10x10_unorm_block>()
+	},
+	{
+		format::astc_10x10_srgb_block,
+		_detail::format_rtti_for_format<format::astc_10x10_srgb_block>()
+	},
+	{
+		format::astc_12x10_unorm_block,
+		_detail::format_rtti_for_format<format::astc_12x10_unorm_block>()
+	},
+	{
+		format::astc_12x10_srgb_block,
+		_detail::format_rtti_for_format<format::astc_12x10_srgb_block>()
+	},
+	{
+		format::astc_12x12_unorm_block,
+		_detail::format_rtti_for_format<format::astc_12x12_unorm_block>()
+	},
+	{
+		format::astc_12x12_srgb_block,
+		_detail::format_rtti_for_format<format::astc_12x12_srgb_block>()
+	},
 };

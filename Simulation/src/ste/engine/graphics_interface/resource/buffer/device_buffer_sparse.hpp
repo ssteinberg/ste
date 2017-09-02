@@ -20,6 +20,7 @@
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
 #include <alias.hpp>
+#include <mutex>
 
 namespace ste {
 namespace gl {
@@ -52,6 +53,7 @@ private:
 	VkMemoryRequirements memory_requirements{};
 
 	bind_map_t bound_atoms_map;
+	std::mutex bound_atoms_map_mutex;
 
 public:
 	auto atom_size() const {
@@ -136,44 +138,48 @@ public:
 			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
 			auto size = atom_size();
 
-			for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
-				auto &r = unbind_regions[i];
-				auto atoms = atoms_range_intersect(r);
+			{
+				std::unique_lock<std::mutex> l(bound_atoms_map_mutex);
 
-				// Unbind each bound atom individually
-				for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
-					if (bound_atoms_map.size() > p && bound_atoms_map[p]) {
-						bound_atoms_map[p] = atom_t();
+				for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
+					auto &r = unbind_regions[i];
+					auto atoms = atoms_range_intersect(r);
 
-						vk::vk_sparse_memory_bind b;
-						b.allocation = nullptr;
-						b.resource_offset_bytes = p * size;
-						b.size_bytes = size;
+					// Unbind each bound atom individually
+					for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
+						if (bound_atoms_map.size() > p && bound_atoms_map[p]) {
+							bound_atoms_map[p] = atom_t();
 
-						memory_binds.push_back(b);
+							vk::vk_sparse_memory_bind b;
+							b.allocation = nullptr;
+							b.resource_offset_bytes = p * size;
+							b.size_bytes = size;
+
+							memory_binds.push_back(b);
+						}
 					}
 				}
-			}
-			for (std::size_t i = 0; i < bind_regions.size(); ++i) {
-				auto &r = bind_regions[i];
-				auto atoms = atoms_range_contain(r);
+				for (std::size_t i = 0; i < bind_regions.size(); ++i) {
+					auto &r = bind_regions[i];
+					auto atoms = atoms_range_contain(r);
 
-				if (bound_atoms_map.size() < atoms.start + atoms.length)
-					bound_atoms_map.resize(atoms.start + atoms.length);
+					if (bound_atoms_map.size() < atoms.start + atoms.length)
+						bound_atoms_map.resize(atoms.start + atoms.length);
 
-				// Bind each bound atom individually
-				for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
-					if (!bound_atoms_map[p]) {
-						bound_atoms_map[p] = device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
-																								   size,
-																								   memory_requirements);
+					// Bind each bound atom individually
+					for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
+						if (!bound_atoms_map[p]) {
+							bound_atoms_map[p] = device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
+																									   size,
+																									   memory_requirements);
 
-						vk::vk_sparse_memory_bind b;
-						b.allocation = &bound_atoms_map[p];
-						b.resource_offset_bytes = p * size;
-						b.size_bytes = size;
+							vk::vk_sparse_memory_bind b;
+							b.allocation = &bound_atoms_map[p];
+							b.resource_offset_bytes = p * size;
+							b.size_bytes = size;
 
-						memory_binds.push_back(b);
+							memory_binds.push_back(b);
+						}
 					}
 				}
 			}

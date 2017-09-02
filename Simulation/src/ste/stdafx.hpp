@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//  StE
+// © Shlomi Steinberg 2015-2017
 
 #ifndef _PCH_
 #define _PCH_
@@ -18,15 +18,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/bit.hpp>
 #include <glm/gtc/constants.hpp>
-
-#include <gli/format.hpp>
-#include <gli/texture1d.hpp>
-#include <gli/texture1d_array.hpp>
-#include <gli/texture2d.hpp>
-#include <gli/texture2d_array.hpp>
-#include <gli/texture3d.hpp>
-#include <gli/texture_cube.hpp>
-#include <gli/texture_cube_array.hpp>
 
 
 #include <memory>

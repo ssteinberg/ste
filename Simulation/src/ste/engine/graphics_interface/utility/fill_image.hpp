@@ -7,6 +7,9 @@
 #include <ste_context.hpp>
 #include <job.hpp>
 
+#include <surface.hpp>
+#include <surface_type_traits.hpp>
+
 #include <device_image.hpp>
 #include <device_image_queue_transfer.hpp>
 #include <device_image_exceptions.hpp>
@@ -39,44 +42,42 @@ void inline fill_image_copy_depth_slice(const glm::u32vec3 &extent,
 	}
 }
 
-template <int dimensions, class allocation_policy>
-void fill_image_copy_surface_to_staging(const gli::texture &surface,
+template <int dimensions, class allocation_policy, typename Surface>
+void fill_image_copy_surface_to_staging(const Surface &surface,
 										const device_image<dimensions, allocation_policy> &staging,
-										std::uint32_t m,
-										unsigned faces,
-										unsigned base_layer,
-										unsigned layers,
-										const glm::u32vec3 &extent,
-										int image_texel_bytes,
+										std::uint32_t level,
+										std::uint32_t layers,
+										const glm::u32vec3 &extent_blocks,
+										int image_block_bytes,
 										glm::u8* staging_ptr) {
-	for (unsigned f = 0; f < faces; ++f) {
-		for (unsigned l = base_layer; l < base_layer + layers; ++l) {
-			auto subresource_layout = staging->get_image_subresource_layout(0, f + l * faces);
+	static_assert(resource::is_surface_v<Surface>);
 
-			auto *ptr = staging_ptr + subresource_layout.offset;
-			const void *surface_data = surface.data(l, f, m);
-			const auto *src = reinterpret_cast<const glm::u8*>(surface_data);
-			std::size_t src_size = surface.size(m);
+	for (std::uint32_t l = 0; l < layers; ++l) {
+		auto subresource_layout = staging->get_image_subresource_layout(0, l);
 
-			std::size_t row_stride = image_texel_bytes * extent.x;
-			std::size_t depth_stride = row_stride * extent.y;
+		auto *ptr = staging_ptr + subresource_layout.offset;
+		const void *surface_data = surface.data_at(l, level);
+		const auto *src = reinterpret_cast<const glm::u8*>(surface_data);
+		std::size_t src_size = surface.bytes(level);
 
-			if (subresource_layout.rowPitch == row_stride &&
-				subresource_layout.depthPitch == depth_stride) {
-				std::size_t level_bytes = static_cast<std::size_t>(extent.z * depth_stride);
-				std::memcpy(ptr, src, std::min(src_size, level_bytes));
-			}
-			else {
-				for (std::uint32_t z = 0; z < extent.z; ++z) {
-					fill_image_copy_depth_slice(extent,
-												src_size,
-												static_cast<std::size_t>(subresource_layout.rowPitch),
-												row_stride,
-												ptr, src);
-					ptr += subresource_layout.depthPitch;
-					src += depth_stride;
-					src_size = src_size > depth_stride ? src_size - depth_stride : 0;
-				}
+		const std::size_t row_stride = image_block_bytes * extent_blocks.x;
+		const std::size_t depth_stride = row_stride * extent_blocks.y;
+
+		if (subresource_layout.rowPitch == row_stride &&
+			subresource_layout.depthPitch == depth_stride) {
+			const std::size_t level_bytes = static_cast<std::size_t>(extent_blocks.z * depth_stride);
+			std::memcpy(ptr, src, std::min(src_size, level_bytes));
+		}
+		else {
+			for (std::uint32_t z = 0; z < extent_blocks.z; ++z) {
+				fill_image_copy_depth_slice(extent_blocks,
+											src_size,
+											static_cast<std::size_t>(subresource_layout.rowPitch),
+											row_stride,
+											ptr, src);
+				ptr += subresource_layout.depthPitch;
+				src += depth_stride;
+				src_size = src_size > depth_stride ? src_size - depth_stride : 0;
 			}
 		}
 	}
@@ -87,35 +88,36 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					  Surface &&surface,
 					  image_layout final_layout,
 					  ste_queue_selector<selector_policy> &&final_queue_selector) {
+	static_assert(resource::is_surface_v<Surface>);
+
+	static constexpr gl::format format = Surface::surface_format();
+	static constexpr gl::image_type image_type = Surface::surface_image_type();
+	using extent_type = gl::image_extent_type_t<gl::image_dimensions_v<image_type>>;
+
+	static constexpr auto image_dimensions = gl::image_dimensions_v<image_type>;
+	auto image_format = image.get_format();
+
+	static_assert(image_dimensions == dimensions);
+
+	// Validate formats
+	if (image_format != format) {
+		throw device_image_format_exception("Surface and image format mismatch");
+	}
+
 	auto future = image.parent_context().engine().task_scheduler().schedule_now([=, &image, surface = std::move(surface), final_queue_selector = std::move(final_queue_selector)]() {
 		const ste_context &ctx = image.parent_context();
-		const gli::texture &surface_generic = surface;
 
-		auto image_format = image.get_format();
-
-		auto image_texel_bytes = format_id(image_format).texel_bytes;
-		auto surface_texel_bytes = gli::block_size(surface.format());
-		glm::u32vec3 surface_extent = surface_generic.extent();
-		glm::u32vec3 image_extent = image.get_extent();
+		const auto image_block_bytes = format_id(image_format).block_bytes;
+		const auto surface_block_bytes = surface.block_bytes();
+		const extent_type image_extent = image.get_extent();
+		const extent_type surface_extent = surface.extent();
 
 		// Calculate layers and levels to copy
-		auto faces = static_cast<std::uint32_t>(surface_generic.max_face());
-		if (faces == 0) faces = 1;
-		if ((faces != 1 && faces != 6) || surface_generic.base_face() != 0) {
-			throw device_image_format_exception("Unsupported surface faces layout");
-		}
-		auto base_layer = static_cast<std::uint32_t>(faces * surface_generic.base_layer());
-		auto base_mip = static_cast<std::uint32_t>(surface_generic.base_level());
-		auto layers = std::min(faces * static_cast<std::uint32_t>(surface_generic.layers()), 
-							   image.get_layers() - base_layer);
-		auto mips = std::min(static_cast<std::uint32_t>(surface_generic.levels()), 
-							 image.get_mips() - base_mip);
+		auto layers = std::min(static_cast<std::uint32_t>(surface.layers()),
+							   image.get_layers());
+		auto mips = std::min(static_cast<std::uint32_t>(surface.levels()),
+							 image.get_mips());
 
-		// Validate formats
-		if (surface_texel_bytes != image_texel_bytes ||
-			gli::block_extent(surface.format()) != glm::ivec3(1)) {
-			throw device_image_format_exception("Surface and image format mismatch");
-		}
 		// Validate size
 		if (surface_extent != image_extent) {
 			throw device_image_format_exception("Surface and image extent mismatch");
@@ -129,33 +131,38 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		// Create staging image
 		device_image<dimensions, device_resource_allocation_policy_host_visible_coherent>
 			staging_image(ctx, image_initial_layout::preinitialized,
-						  image_format, surface.extent(), image_usage::transfer_src,
-						  1, base_layer + layers, false, false);
+						  image_format, surface_extent, image_usage::transfer_src,
+						  1, layers, false, false);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
 		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
 
 		// Upload
-		for (std::uint32_t m = base_mip; m < mips; ++m) {
-			auto size = surface_generic.extent(m);
+		for (std::uint32_t m = 0; m < mips; ++m) {
+			auto extent = surface.extent(m);
+			auto extent_blocks = surface.extent_in_blocks(m);
+			glm::u32vec3 extent_blocks3 = glm::u32vec3(1);
+			extent_blocks3.x = extent_blocks.x;
+			if constexpr (dimensions > 1) extent_blocks3.y = extent_blocks[1];
+			if constexpr (dimensions > 2) extent_blocks3.z = extent_blocks[2];
 
 			VkImageAspectFlags aspect = static_cast<VkImageAspectFlags>(format_aspect(image_format));
 			VkImageCopy range = {
-				{ aspect, 0, base_layer, layers },
+				{ aspect, 0, 0, layers },
 				{ 0, 0, 0 },
-				{ aspect, m, base_layer, layers },
+				{ aspect, m, 0, layers },
 				{ 0, 0, 0 },
-				{ static_cast<std::uint32_t>(size.x), static_cast<std::uint32_t>(size.y), static_cast<std::uint32_t>(size.z) }
+				{ static_cast<std::uint32_t>(extent.x), 0, 0 }
 			};
+			if constexpr (dimensions > 1) range.extent.height = static_cast<std::uint32_t>(extent[1]);
+			if constexpr (dimensions > 2) range.extent.depth = static_cast<std::uint32_t>(extent[2]);
 
 			// Write mipmap level to staging
-			fill_image_copy_surface_to_staging(surface_generic,
+			fill_image_copy_surface_to_staging(surface,
 											   staging_image,
 											   m,
-											   faces,
-											   base_layer / faces,
-											   layers / faces,
-											   size,
-											   image_texel_bytes,
+											   layers,
+											   extent_blocks3,
+											   image_block_bytes,
 											   static_cast<glm::u8*>(*mmap_u8_ptr));
 
 			// Create a batch
@@ -221,9 +228,9 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<1, allocation_policy> &image,
-				gli::texture1d &&surface,
+				resource::surface_1d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -240,9 +247,9 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<1, allocation_policy> &image,
-				gli::texture1d_array &&surface,
+				resource::surface_1d_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -259,9 +266,9 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<2, allocation_policy> &image,
-				gli::texture2d &&surface,
+				resource::surface_2d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -278,9 +285,9 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<2, allocation_policy> &image,
-				gli::texture2d_array &&surface,
+				resource::surface_2d_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -297,9 +304,9 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<3, allocation_policy> &image,
-				gli::texture3d &&surface,
+				resource::surface_3d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -316,9 +323,9 @@ auto fill_image(const device_image<3, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<2, allocation_policy> &image,
-				gli::texture_cube &&surface,
+				resource::surface_cubemap<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,
@@ -335,9 +342,9 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 *	@param	final_layout		Desired image layout. After job completion image will be in that layout.
 *	@param	final_queue_selector		After job completion image will be transfered to this queue
 */
-template <class allocation_policy, typename selector_policy>
+template <class allocation_policy, typename selector_policy, gl::format format>
 auto fill_image(const device_image<2, allocation_policy> &image,
-				gli::texture_cube_array &&surface,
+				resource::surface_cubemap_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector) {
 	return _internal::fill_image_array<>(image,

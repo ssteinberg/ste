@@ -11,7 +11,6 @@
 #include <glm/gtc/quaternion.hpp>
 
 namespace ste {
-namespace gl {
 
 // Vector elements count
 namespace _detail {
@@ -209,6 +208,10 @@ template<typename T> struct is_signed {
 	using UnderlyingT = remove_extents_t<T>;
 	static constexpr auto value = safe_numerical_limits_t<UnderlyingT>::is_signed;
 };
+template<>
+struct is_signed<half_float::half> {
+	static constexpr auto value = true;
+};
 template<typename T>
 static constexpr auto is_signed_v = is_signed<T>::value;
 
@@ -220,9 +223,12 @@ template<typename T> struct is_floating_point {
 	using UnderlyingT = remove_extents_t<T>;
 	static constexpr auto value = safe_numerical_limits_t<UnderlyingT>::is_iec559;
 };
+template<> 
+struct is_floating_point<half_float::half> {
+	static constexpr auto value = true;
+};
 template<typename T>
 static constexpr auto is_floating_point_v = is_floating_point<T>::value;
 
 
-}
 }

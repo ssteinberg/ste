@@ -7,6 +7,8 @@
 #include <cmd_clear_color_image.hpp>
 #include <cmd_pipeline_barrier.hpp>
 
+#include <model_factory.hpp>
+#include <surface.hpp>
 #include <surface_factory.hpp>
 #include <text_manager.hpp>
 #include <text_fragment.hpp>
@@ -24,7 +26,6 @@
 #include <camera_projection_reversed_infinite_perspective.hpp>
 
 #include <random>
-#include "model_factory.hpp"
 
 //#include <imgui/imgui.h>
 //#include <debug_gui.hpp>
@@ -181,9 +182,11 @@ auto create_light_mesh(const ste_context &ctx,
 
 	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
 
-	gli::texture2d light_color_tex{ gli::format::FORMAT_RGB8_UNORM_PACK8,{ 1, 1 }, 1 };
-	auto c = static_cast<glm::vec3>(color) / color.luminance();
-	*reinterpret_cast<glm::u8vec3*>(light_color_tex.data()) = glm::u8vec3(c.r * 255.5f, c.g * 255.5f, c.b * 255.5f);
+	resource::surface_2d<gl::format::r8g8b8a8_unorm> light_color_tex{ { 1, 1 } };
+	auto c = glm::clamp(static_cast<glm::vec3>(color) / color.luminance(), glm::vec3(.0f), glm::vec3(1.f));
+	light_color_tex[0][0].r() = static_cast<std::uint8_t>(c.r * 255.5f);
+	light_color_tex[0][0].g() = static_cast<std::uint8_t>(c.g * 255.5f);
+	light_color_tex[0][0].b() = static_cast<std::uint8_t>(c.b * 255.5f);
 
 	auto layer = scene->properties().material_layers_storage().allocate_layer();
 	auto mat = scene->properties().materials_storage().allocate_material(ctx,
