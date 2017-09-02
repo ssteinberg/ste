@@ -7,6 +7,7 @@
 #include <attrib.hpp>
 
 #include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 
 #include <turbojpeg.h>
 
@@ -28,13 +29,13 @@ opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::
 	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]);
 
 	if (content.size() == 0) {
-		ste_log_error() << "Can't open JPEG: " << path;
+		ste_log_error() << "Can't open JPEG: " << path << std::endl;
 		throw resource_io_error("Reading file failed");
 	}
 
 	const auto tj = tjInitDecompress();
 	if (tj == nullptr) {
-		ste_log_error() << path << ": libturbojpeg signaled error.";
+		ste_log_error() << path << ": libturbojpeg signaled error." << std::endl;
 		throw surface_error("libjpegturbo error");
 	}
 
@@ -67,13 +68,12 @@ opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::
 	const auto w0 = corrected_stride / comp + !!(corrected_stride%comp);
 	const auto level0_size = corrected_stride * h;
 
-	lib::vector<std::uint8_t> image_data;
-	image_data.resize(level0_size);
+	lib::unique_ptr<std::uint8_t[]> image_data = lib::allocate_unique<std::uint8_t[]>(level0_size);
 
 	if (tjDecompress2(tj,
 					  data,
 					  static_cast<unsigned long>(content.size()),
-	                  reinterpret_cast<unsigned char*>(image_data.data()),
+	                  image_data.get(),
 					  w,
 					  w0 * comp,
 					  h,
@@ -87,19 +87,24 @@ opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::
 
 	tjDestroy(tj);
 
-	opaque_surface<2> tex(format, gl::image_type::image_2d, { w0, h }, 1, 1, std::move(image_data));
+	opaque_surface<2> tex(format, 
+						  gl::image_type::image_2d, 
+						  { w0, h }, 
+						  1, 1, 
+						  std::move(image_data), 
+						  level0_size);
 	return tex;
 }
 
 void surface_io::write_jpeg_2d(const std::experimental::filesystem::path &path, const std::uint8_t *image_data, int components, int width, int height) {
 	if (components != 1 && components != 3) {
-		ste_log_error() << path << " can't write " << components << " channel JPEG.";
+		ste_log_error() << path << " can't write " << components << " channel JPEG." << std::endl;
 		throw surface_unsupported_format_error("Unsupported JPEG component count");
 	}
 
 	const auto tj = tjInitCompress();
 	if (tj == nullptr) {
-		ste_log_error() << "libturbojpeg signaled error.";
+		ste_log_error() << "libturbojpeg signaled error." << std::endl;
 		throw surface_error("libjpegturbo error");
 	}
 
@@ -124,7 +129,7 @@ void surface_io::write_jpeg_2d(const std::experimental::filesystem::path &path, 
 					&dst_buffer, 
 					&dst_size, 
 					samp, 
-					100,	// Highest quality
+					90,		// Quality
 					TJFLAG_BOTTOMUP | TJFLAG_NOREALLOC) != 0) {
 		const char *err = tjGetErrorStr();
 		ste_log_error() << "libturbojpeg could not compress JPEG image: " << (err ? err : "") << std::endl;
@@ -141,6 +146,6 @@ void surface_io::write_jpeg_2d(const std::experimental::filesystem::path &path, 
 			throw resource_io_error("Could not open file");
 		}
 
-		std::copy(buffer.begin(), buffer.end(), std::ostream_iterator<std::uint8_t>(fs));
+		std::copy(buffer.data(), buffer.data() + dst_size, std::ostream_iterator<std::uint8_t>(fs));
 	}
 }

@@ -8,6 +8,7 @@
 #include <job.hpp>
 
 #include <surface.hpp>
+#include <surface_type_traits.hpp>
 
 #include <device_image.hpp>
 #include <device_image_queue_transfer.hpp>
@@ -49,6 +50,8 @@ void fill_image_copy_surface_to_staging(const Surface &surface,
 										const glm::u32vec3 &extent_blocks,
 										int image_block_bytes,
 										glm::u8* staging_ptr) {
+	static_assert(resource::is_surface_v<Surface>);
+
 	for (std::uint32_t l = 0; l < layers; ++l) {
 		auto subresource_layout = staging->get_image_subresource_layout(0, l);
 
@@ -85,8 +88,10 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					  Surface &&surface,
 					  image_layout final_layout,
 					  ste_queue_selector<selector_policy> &&final_queue_selector) {
-	static constexpr gl::format format = Surface::surface_format;
-	static constexpr gl::image_type image_type = Surface::surface_image_type;
+	static_assert(resource::is_surface_v<Surface>);
+
+	static constexpr gl::format format = Surface::surface_format();
+	static constexpr gl::image_type image_type = Surface::surface_image_type();
 	using extent_type = gl::image_extent_type_t<gl::image_dimensions_v<image_type>>;
 
 	static constexpr auto image_dimensions = gl::image_dimensions_v<image_type>;

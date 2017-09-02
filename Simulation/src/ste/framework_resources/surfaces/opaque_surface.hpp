@@ -12,13 +12,17 @@
 #include <image_type.hpp>
 #include <image_type_traits.hpp>
 
-#include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace resource {
 
 template <std::uint32_t dimensions>
 class opaque_surface {
+	friend class surface_convert;
+
+	struct ctor {};
+
 public:
 	using extent_type = typename gl::image_extent_type<dimensions>::type;
 
@@ -27,15 +31,16 @@ private:
 	std::size_t surface_levels;
 	std::size_t surface_layers;
 
-	gl::format surface_format;
-	gl::image_type surface_image_type;
+	gl::format format;
+	gl::image_type image_type;
 
 	gl::format_rtti format_traits;
 
-	lib::vector<std::uint8_t> storage;
+	lib::unique_ptr<std::uint8_t[]> storage;
 
 private:
-	opaque_surface(const gl::format &format,
+	opaque_surface(ctor,
+				   const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
 				   std::size_t levels,
@@ -43,8 +48,8 @@ private:
 		: surface_extent(extent),
 		surface_levels(levels),
 		surface_layers(layers),
-		surface_format(format),
-		surface_image_type(image_type),
+		format(format),
+		image_type(image_type),
 		format_traits(gl::format_id(format))
 	{
 		// Sanity checks
@@ -62,40 +67,65 @@ public:
 				   std::size_t layers,
 				   const std::uint8_t *data,
 				   std::size_t data_size)
-		: opaque_surface(format, image_type, extent, levels, layers)
+		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
 		if (bytes() != data_size)
 			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
 
-		storage.resize(data_size);
-		std::memcpy(storage.data(), data, data_size);
+		storage = lib::allocate_unique<std::uint8_t[]>(data_size);
+		std::memcpy(storage.get(), data, data_size);
 	}
 	opaque_surface(const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
 				   std::size_t levels,
 				   std::size_t layers,
-				   lib::vector<std::uint8_t> &&data)
-		: opaque_surface(format, image_type, extent, levels, layers)
+				   lib::unique_ptr<std::uint8_t[]> &&data,
+				   std::size_t data_size)
+		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
-		if (bytes() != data.size())
+		if (bytes() != data_size)
 			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
 
 		storage = std::move(data);
+	}
+	opaque_surface(const gl::format &format,
+				   const gl::image_type &image_type,
+				   const extent_type &extent,
+				   std::size_t levels,
+				   std::size_t layers)
+		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
+	{
+		storage = lib::allocate_unique<std::uint8_t[]>(bytes());
 	}
 	~opaque_surface() noexcept {}
 
 	opaque_surface(opaque_surface&&) = default;
 	opaque_surface &operator=(opaque_surface&&) = default;
+	opaque_surface(const opaque_surface&) = default;
+	opaque_surface &operator=(const opaque_surface&) = default;
 
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	auto* data() { return storage.data(); }
+	auto* data() { return storage.get(); }
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	auto* data() const { return storage.data(); }
+	auto* data() const { return storage.get(); }
+
+	/**
+	*	@brief	Returns a pointer to the surface layer's level data
+	*/
+	auto* data_at(std::size_t layer, std::size_t level = 0) {
+		return data() + offset_blocks(layer, level);
+	}
+	/**
+	*	@brief	Returns a pointer to the surface layer's level data
+	*/
+	const auto* data_at(std::size_t layer, std::size_t level = 0) const {
+		return data() + offset_blocks(layer, level);
+	}
 
 	/**
 	*	@brief	Returns the extent size of a level
@@ -112,8 +142,12 @@ public:
 	*	@param	level	Surface level
 	*/
 	auto extent_in_blocks(std::size_t level = 0) const {
+		auto extent = surface_extent;
+		extent.x /= block_extent().x;
+		if constexpr (dimensions > 1) extent.y /= block_extent().y;
+
 		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
-			(surface_extent / block_extent()) >> static_cast<typename extent_type::value_type>(level));
+						extent >> static_cast<typename extent_type::value_type>(level));
 	}
 	/**
 	*	@brief	Returns the levels count in the surface
@@ -130,11 +164,15 @@ public:
 	/**
 	*	@brief	Returns the surface image type
 	*/
-	auto image_type() const { return image_type; }
+	auto surface_image_type() const { return image_type; }
 	/**
 	*	@brief	Returns the surface format
 	*/
-	auto format() const { return format; }
+	auto surface_format() const { return format; }
+	/**
+	*	@brief	Returns the surface's dimensions count
+	*/
+	static constexpr auto surface_dimensions() { return dimensions; }
 
 	/**
 	*	@brief	Returns the extent size of a block
@@ -190,6 +228,13 @@ public:
 	*/
 	auto bytes() const {
 		return block_bytes() * blocks_layer() * layers();
+	}
+
+	/**
+	*	@brief	Returns the size, in bytes, of the surface layer's level
+	*/
+	auto bytes(std::size_t level) const {
+		return block_bytes() * blocks(level);
 	}
 
 	/**

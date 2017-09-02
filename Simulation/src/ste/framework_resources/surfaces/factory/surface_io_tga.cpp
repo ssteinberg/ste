@@ -6,7 +6,7 @@
 #include <attributed_string.hpp>
 #include <attrib.hpp>
 
-#include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 
 #include <tga.h>
 
@@ -63,10 +63,13 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 	rowbytes += 3 - ((rowbytes - 1) % 4);
 
 	const auto level0_size = rowbytes * h;
-	lib::vector<std::uint8_t> image_data;
-	image_data.resize(level0_size);
+	lib::unique_ptr<std::uint8_t[]> image_data = lib::allocate_unique<std::uint8_t[]>(level0_size);
 
-	if (TGAReadScanlines(tga, reinterpret_cast<tbyte*>(image_data.data()), 0, h, TGA_BGR) != TGA_OK) {
+	if (TGAReadScanlines(tga, 
+						 reinterpret_cast<tbyte*>(image_data.get()), 
+						 0, 
+						 h, 
+						 TGA_BGR) != TGA_OK) {
 		ste_log_error() << file_name << " is not a valid TGA" << std::endl;
 		throw surface_unsupported_format_error("Not a valid TGA");
 	}
@@ -74,7 +77,12 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 	TGAClose(tga);
 
 	// Create surface
-	opaque_surface<2> tex(format, gl::image_type::image_2d, { w, h }, 1, 1, std::move(image_data));
+	opaque_surface<2> tex(format, 
+						  gl::image_type::image_2d, 
+						  { w, h }, 
+						  1, 1, 
+						  std::move(image_data), 
+						  level0_size);
 	return tex;
 }
 
@@ -97,14 +105,14 @@ void surface_io::write_tga_2d(const std::experimental::filesystem::path &file_na
 	data.flags = TGA_RGB | TGA_RLE_ENCODE | TGA_IMAGE_DATA;
 	data.img_data = const_cast<tbyte*>(reinterpret_cast<const tbyte*>(image_data));
 	data.img_id = const_cast<tbyte*>(reinterpret_cast<const tbyte*>(tga_img_id));
+	data.cmap = nullptr;
 
+	std::memset(&tga->hdr, 0, sizeof(tga->hdr));
 	tga->hdr.width = width;
 	tga->hdr.height = height;
 	tga->hdr.horz = TGA_LEFT;
 	tga->hdr.vert = TGA_BOTTOM;
 	tga->hdr.id_len = 3;
-	tga->hdr.img_t = 0;
-	tga->hdr.map_len = 0;
 	switch (components) {
 	case 1:
 		tga->hdr.alpha = 0;

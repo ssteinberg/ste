@@ -86,9 +86,15 @@ public:
 		return 1;
 	}
 
+	/**
+	*	@brief	Encodes from buffer to block.
+	*
+	*	@param	data			Input buffer
+	*	@param	max_elements	Max elements to read
+	*/
 	template <typename src_type>
-	void write_block(const src_type *data) {
-		d() = static_cast<d_comp_type>(*data);
+	void write_block(const src_type *data, std::size_t max_elements = 1) {
+		d() = max_elements > 0 ? static_cast<d_comp_type>(*(data + 0)) : static_cast<d_comp_type>(0);
 	}
 };
 

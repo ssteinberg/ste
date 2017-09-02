@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <human_vision_properties.hpp>
+
 #include <storage.hpp>
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
@@ -13,7 +15,7 @@
 #include <array.hpp>
 #include <std430.hpp>
 
-#include <human_vision_properties.hpp>
+#include <surface.hpp>
 #include <surface_factory.hpp>
 
 namespace ste {
@@ -28,22 +30,19 @@ private:
 
 	ste_resource<gl::texture<gl::image_type::image_2d>> create_hdr_vision_properties_texture(const ste_context &ctx) {
 		static constexpr auto format = gl::format::r32g32b32a32_sfloat;
-		static constexpr auto gli_format = gl::format_traits<format>::gli_format;
 
-		gli::texture2d hdr_human_vision_properties_data(gli_format, glm::tvec2<std::size_t>{ 4096, 1 }, 1);
+		auto hdr_human_vision_properties_data = resource::surface_2d<format>(glm::tvec2<std::size_t>{ 4096, 1 });
+		auto level = hdr_human_vision_properties_data[0];
 		{
-			glm::vec4 *d = reinterpret_cast<glm::vec4*>(hdr_human_vision_properties_data.data());
-			for (int i = 0; i < hdr_human_vision_properties_data.extent().x; ++i, ++d) {
+			for (std::uint32_t i = 0; i < hdr_human_vision_properties_data.extent().x; ++i) {
 				const float x = (static_cast<float>(i) + .5f) / static_cast<float>(hdr_human_vision_properties_data.extent().x);
 				const float l = glm::mix(ste::graphics::human_vision_properties::min_luminance,
 										 vision_properties_max_lum,
 										 x);
-				*d = {
-					ste::graphics::human_vision_properties::scotopic_vision(l),
-					ste::graphics::human_vision_properties::mesopic_vision(l),
-					ste::graphics::human_vision_properties::monochromaticity(l),
-					ste::graphics::human_vision_properties::visual_acuity(l)
-				};
+				level.at({ i, 1 }).r() = ste::graphics::human_vision_properties::scotopic_vision(l);
+				level.at({ i, 1 }).g() = ste::graphics::human_vision_properties::mesopic_vision(l);
+				level.at({ i, 1 }).b() = ste::graphics::human_vision_properties::monochromaticity(l);
+				level.at({ i, 1 }).a() = ste::graphics::human_vision_properties::visual_acuity(l);
 			}
 		}
 

@@ -19,16 +19,15 @@ namespace _detail {
 /**
 *	@brief	Surface array
 */
-template<gl::format format, gl::image_type image_type>
+template <gl::format format, gl::image_type image_type>
 class surface_array : public surface_base<format, image_type> {
 	using Base = surface_base<format, image_type>;
 
 public:
-	template<bool c>
 	using surface_layer_type = std::conditional_t<
 		image_type == gl::image_type::image_cubemap_array,
-		surface_cubemap<format, c>,
-		surface<format, gl::image_layer_type_v<image_type>, c>
+		surface_cubemap<format>,
+		surface<format, gl::image_layer_type_v<image_type>>
 	>;
 
 	using Base::extent_type;
@@ -41,38 +40,31 @@ public:
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
 
 private:
-	surface_storage<block_type, false> storage;
+	surface_storage<block_type> storage;
 
 public:
-	surface_array(const extent_type &extent,
-				  std::size_t layers,
-				  std::size_t levels = 1)
+	surface_array(const extent_type& extent,
+	              std::size_t layers,
+	              std::size_t levels = 1)
 		: Base(extent, levels, layers),
-		storage(Base::blocks_layer() * Base::layers())
-	{}
+		  storage(Base::blocks_layer() * Base::layers()) {}
+
 	~surface_array() noexcept {}
 
 	surface_array(surface_array&&) = default;
 	surface_array(const surface_array&) = delete;
-	surface_array &operator=(surface_array&&) = default;
-	surface_array &operator=(const surface_array&) = delete;
+	surface_array& operator=(surface_array&&) = default;
+	surface_array& operator=(const surface_array&) = delete;
 
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	block_type* data() { return storage.get(); }
+	block_type* data() override final { return storage.get(); }
+
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
 	const block_type* data() const override final { return storage.get(); }
-
-	/**
-	*	@brief	Returns a pointer to the surface layer's level data
-	*/
-	block_type* data_at(std::size_t layer, std::size_t level = 0) {
-		return data() + Base::offset_blocks(layer, level);
-	}
-	using Base::data_at;
 
 	/**
 	*	@brief	Returns a non-array surface for the queried layer index
@@ -81,10 +73,11 @@ public:
 	*/
 	auto operator[](std::size_t layer_index) {
 		assert(layer_index < Base::layers());
-		return surface_layer_type<false>(Base::extent(),
-										 Base::levels(),
-										 storage.view(Base::offset_blocks(layer_index, 0)));
+		return surface_layer_type(Base::extent(),
+		                          Base::levels(),
+		                          storage.view(Base::offset_blocks(layer_index, 0)));
 	}
+
 	/**
 	*	@brief	Returns a non-array surface for the queried layer index
 	*
@@ -92,9 +85,9 @@ public:
 	*/
 	auto operator[](std::size_t layer_index) const {
 		assert(layer_index < Base::layers());
-		return surface_layer_type<true>(Base::extent(),
-										Base::levels(),
-										storage.view(Base::offset_blocks(layer_index, 0)));
+		return surface_layer_type(Base::extent(),
+		                          Base::levels(),
+		                          storage.view(Base::offset_blocks(layer_index, 0)));
 	}
 };
 

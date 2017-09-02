@@ -19,7 +19,7 @@ namespace _detail {
 /**
 *	@brief	Cubemap surface
 */
-template<gl::format format, bool is_const = false>
+template <gl::format format>
 class surface_cubemap : public surface_base<format, gl::image_type::image_cubemap> {
 	using Base = surface_base<format, gl::image_type::image_cubemap>;
 
@@ -38,57 +38,47 @@ public:
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
 
 private:
-	surface_storage<block_type, is_const> storage;
+	surface_storage<block_type> storage;
 
 public:
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
-	surface_cubemap(const extent_type &extent,
-					std::size_t levels = 1)
+	surface_cubemap(const extent_type& extent,
+	                std::size_t levels = 1)
 		: Base(extent, levels, 6),
-		storage(Base::blocks_layer() * Base::layers())
-	{}
-	surface_cubemap(const extent_type &extent,
-					std::size_t levels,
-					const surface_storage<block_type, is_const> &storage)
+		  storage(Base::blocks_layer() * Base::layers()) {}
+
+	surface_cubemap(const extent_type& extent,
+	                std::size_t levels,
+	                const surface_storage<block_type>& storage)
 		: Base(extent, levels, 6),
-		storage(storage)
-	{}
+		  storage(storage) {}
+
 	~surface_cubemap() noexcept {}
 
 	surface_cubemap(surface_cubemap&&) = default;
 	surface_cubemap(const surface_cubemap&) = delete;
-	surface_cubemap &operator=(surface_cubemap&&) = default;
-	surface_cubemap &operator=(const surface_cubemap&) = delete;
+	surface_cubemap& operator=(surface_cubemap&&) = default;
+	surface_cubemap& operator=(const surface_cubemap&) = delete;
 
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
-	block_type* data() { return storage.get(); }
+	block_type* data() override final { return storage.get(); }
+
 	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
 	const block_type* data() const override final { return storage.get(); }
 
 	/**
-	*	@brief	Returns a pointer to the surface layer's level data
-	*/
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
-	block_type* data_at(std::size_t layer, std::size_t level = 0) {
-		return data() + Base::offset_blocks(layer, level);
-	}
-	using Base::data_at;
-
-	/**
 	*	@brief	Returns a cubemap face for the queried face index
 	*
 	*	@param	face	Cubemap face
 	*/
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	auto operator[](cubemap_face face) {
 		const auto face_index = static_cast<std::underlying_type_t<cubemap_face>>(face);
 		return (*this)[face_index];
 	}
+
 	/**
 	*	@brief	Returns a cubemap face for the queried face index
 	*
@@ -104,13 +94,13 @@ public:
 	*
 	*	@param	face_index	Cubemap face
 	*/
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
 	auto operator[](std::uint32_t face_index) {
 		assert(face_index < Base::layers());
-		return surface<format, image_type, false>(Base::extent(),
-												  Base::levels(),
-												  storage.view(Base::offset_blocks(face_index, 0)));
+		return surface<format, image_type>(Base::extent(),
+		                                   Base::levels(),
+		                                   storage.view(Base::offset_blocks(face_index, 0)));
 	}
+
 	/**
 	*	@brief	Returns a cubemap face for the queried face index
 	*
@@ -118,9 +108,9 @@ public:
 	*/
 	auto operator[](std::uint32_t face_index) const {
 		assert(face_index < Base::layers());
-		return surface<format, image_type, true>(Base::extent(),
-												 Base::levels(),
-												 storage.view(Base::offset_blocks(face_index, 0)));
+		return surface<format, image_type>(Base::extent(),
+		                                   Base::levels(),
+		                                   storage.view(Base::offset_blocks(face_index, 0)));
 	}
 };
 

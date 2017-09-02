@@ -7,6 +7,7 @@
 #include <opaque_surface.hpp>
 #include <surface.hpp>
 #include <surface_convert.hpp>
+#include <surface_copy.hpp>
 
 #include <lib/string.hpp>
 #include <fstream>
@@ -27,17 +28,19 @@ namespace resource {
 
 class surface_io {
 private:
-	static opaque_surface<2> load_png_2d(const std::experimental::filesystem::path &file_name, bool srgb = false);
-	static opaque_surface<2> load_tga_2d(const std::experimental::filesystem::path &file_name, bool srgb = false);
-	static opaque_surface<2> load_jpeg_2d(const std::experimental::filesystem::path &file_name, bool srgb = false);
+	static opaque_surface<2> load_png_2d(const std::experimental::filesystem::path &file_name, bool srgb);
+	static opaque_surface<2> load_tga_2d(const std::experimental::filesystem::path &file_name, bool srgb);
+	static opaque_surface<2> load_jpeg_2d(const std::experimental::filesystem::path &file_name, bool srgb);
 	static opaque_surface<1> load_dds_1d(const std::experimental::filesystem::path &file_name);
 	static opaque_surface<2> load_dds_2d(const std::experimental::filesystem::path &file_name);
 	static opaque_surface<3> load_dds_3d(const std::experimental::filesystem::path &file_name);
-	static opaque_surface<2> load_ktx(const std::experimental::filesystem::path &file_name);
+	static opaque_surface<1> load_ktx_1d(const std::experimental::filesystem::path &file_name);
+	static opaque_surface<2> load_ktx_2d(const std::experimental::filesystem::path &file_name);
+	static opaque_surface<3> load_ktx_3d(const std::experimental::filesystem::path &file_name);
 	static void write_png_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
 	static void write_tga_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
 	static void write_jpeg_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
-	static void write_dds(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, std::size_t bytes, gl::format format, gl::image_type image_type, const glm::u32vec3 &extent, int levels, int layers);
+	static void write_dds(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, std::size_t bytes, gl::format format, gl::image_type image_type, const glm::u32vec3 &extent, std::uint32_t levels, std::uint32_t layers);
 
 	~surface_io() noexcept {}
 
@@ -51,7 +54,7 @@ public:
 
 public:
 	/**
-	 *	@brief	Writes 2D surface to file. Converts the surface to a 8-bit unorm format if needed.
+	 *	@brief	Writes 2D surface to file. Converts the surface to a 8-bit srgb format if needed.
 	 *
 	 *	@param	surface			Input surface
 	 *	@param	path			Filesystem path of output
@@ -62,7 +65,7 @@ public:
 							   const std::experimental::filesystem::path &path,
 							   const surface_write_file_format &file_format = surface_write_file_format::png) {
 		static constexpr auto elements = gl::format_traits<format>::elements;
-		static constexpr auto write_format = elements == 1 ? gl::format::r8_unorm : (elements == 3 ? gl::format::r8g8b8_unorm : gl::format::r8g8b8a8_unorm);
+		static constexpr auto write_format = elements == 1 ? gl::format::r8_srgb : (elements == 3 ? gl::format::r8g8b8_srgb : gl::format::r8g8b8a8_srgb);
 
 		// Select writer
 		void(*writer)(const std::experimental::filesystem::path &, const std::uint8_t *, int, int, int);
@@ -100,11 +103,17 @@ public:
 
 		// Convert (if needed) and write
 		if constexpr (write_format != format) {
-			auto src = surface_convert::convert_2d<write_format>(surface);
-			writer(path, src.data(), elements, src.extent().x, src.extent().y);
+			auto src = surface_convert::convert_2d<write_format>(surface_copy::copy_2d(surface));
+			writer(path, 
+				   reinterpret_cast<const std::uint8_t *>(src.data()), 
+				   elements, 
+				   src.extent().x, src.extent().y);
 		}
 		else {
-			writer(path, surface.data(), elements, surface.extent().x, surface.extent().y);
+			writer(path, 
+				   reinterpret_cast<const std::uint8_t *>(surface.data()), 
+				   elements, 
+				   surface.extent().x, surface.extent().y);
 		}
 	}
 
@@ -119,8 +128,10 @@ public:
 	static void write_surface(const surface_generic<format, image_type> &surface,
 							  const std::experimental::filesystem::path &path,
 							  const surface_write_file_format &file_format = surface_write_file_format::dds) {
+		static constexpr auto dimensions = gl::image_dimensions_v<image_type>;
+
 		// Select writer
-		void(*writer)(const std::experimental::filesystem::path &, const std::uint8_t*, std::size_t, gl::format, gl::image_type, const glm::u32vec3&, int, int);
+		void(*writer)(const std::experimental::filesystem::path &, const std::uint8_t*, std::size_t, gl::format, gl::image_type, const glm::u32vec3&, std::uint32_t, std::uint32_t);
 		switch (file_format) {
 		case surface_write_file_format::dds:
 			writer = write_dds;
@@ -134,9 +145,18 @@ public:
 
 		// Write out
 		glm::u32vec3 extent = { 1,1,1 };
-		for (constexpr int i=0; i<gl::image_dimensions_v<image_type>; ++i)
-			extent[i] = surface.extent()[i];
-		writer(path, surface.data(), surface.bytes(), format, image_type, extent, surface.levels(), surface.layers());
+		if constexpr (dimensions>0) extent.x = surface.extent().x;
+		if constexpr (dimensions>1) extent.y = surface.extent().y;
+		if constexpr (dimensions>2) extent.z = surface.extent().z;
+
+		writer(path, 
+			   reinterpret_cast<const std::uint8_t *>(surface.data()), 
+			   surface.bytes(), 
+			   format, 
+			   image_type, 
+			   extent, 
+			   static_cast<std::uint32_t>(surface.levels()),
+			   static_cast<std::uint32_t>(surface.layers()));
 	}
 
 	/**
@@ -145,7 +165,7 @@ public:
 	 *	@param	path	Filesystem path of input file
 	 *	@param	srgb	Use sRGB non-linear color space
 	 */
-	static auto load_surface_2d(const std::experimental::filesystem::path &path, bool srgb) {
+	static auto load_surface_2d(const std::experimental::filesystem::path &path, bool srgb = false) {
 		unsigned char magic[4] = { 0, 0, 0, 0 };
 
 		// Check image format
@@ -184,7 +204,7 @@ public:
 			}
 			if (magic[0] == 0xAB && magic[1] == 0x4B && magic[2] == 0x54 && magic[3] == 0x58) {
 				// KTX
-				auto texture = load_ktx(path.string());
+				auto texture = load_ktx_2d(path.string());
 
 				ste_log() << attributed_string("Loaded KTX surface \"") + i(lib::to_string(path.string())) + "\" (" + lib::to_string(texture.extent().x) + " X " + lib::to_string(texture.extent().y) + ") successfully." << std::endl;
 				return texture;

@@ -604,6 +604,8 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_cubemap.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_impl.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\surface_type_traits.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_copy.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\attributed_strings\attrib_type.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\fonts\font.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_text\glyphs\text_font_key.hpp" />
@@ -1015,7 +1017,6 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\resource_exceptions.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_convert.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_factory.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_mipmap_generator.hpp" />
     <ClInclude Include="Simulation\src\ste\stdafx.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\fxaa_postprocess.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\atmospherics_buffer.hpp" />

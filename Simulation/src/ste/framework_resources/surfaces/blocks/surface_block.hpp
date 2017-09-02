@@ -86,6 +86,7 @@ struct block_primary_type_selector {
 
 	using read_type = std::conditional_t<element_bits <= 32, std::uint32_t, std::uint64_t>;
 	using type = std::conditional_t<uses_fp, fp_t, std::conditional_t<is_signed, integer_t, uinteger_t>>;
+	using block_writer_type = type;
 };
 template <int element_bits>
 struct block_primary_type_selector<block_type::block_fp, element_bits> {
@@ -95,6 +96,9 @@ struct block_primary_type_selector<block_type::block_fp, element_bits> {
 	static constexpr bool is_signed = false;
 	using read_type = std::conditional_t<element_bits <= 32, std::uint32_t, std::uint64_t>;
 	using type = std::conditional_t<element_bits == 32, float, std::conditional_t<element_bits == 64, double, half_float::half>>;
+
+	// half doesn't like conversions from anything but float, so for block writer functions avoid forcing half.
+	using block_writer_type = std::conditional_t<element_bits == 64, double, float>;
 };
 
 /**
@@ -121,7 +125,7 @@ class block_component {
 	read_type read() const {
 		return (*reinterpret_cast<const read_type*>(b + offset_bits / 8) >> (offset_bits % 8)) & mask();
 	}
-	template <bool b = is_const, typename = typename std::enable_if_t<!b>>
+	template <bool checker = is_const, typename = typename std::enable_if_t<!checker>>
 	void write(read_type r) {
 		auto m = mask() << (offset_bits % 8);
 		auto &val = *reinterpret_cast<read_type*>(b + offset_bits / 8);
@@ -145,8 +149,11 @@ class block_component {
 			return static_cast<T>(data);
 		if constexpr (type == block_type::block_sint)
 			return static_cast<T>(data);
-		if constexpr (type == block_type::block_fp)
-			return *reinterpret_cast<const T*>(&data);
+		if constexpr (type == block_type::block_fp) {
+			std::uint64_t temp = 0;
+			*reinterpret_cast<read_type*>(&temp) = data;
+			return *reinterpret_cast<const T*>(&temp);
+		}
 	}
 	static read_type convert_public_to_read(T data) {
 		if constexpr (type == block_type::block_unorm)
@@ -179,7 +186,7 @@ public:
 	/**
 	 *	@brief	Assign new value to the component.
 	 */
-	template <bool t = is_const, typename = typename std::enable_if_t<!t>>
+	template <bool checker = is_const, typename = typename std::enable_if_t<!checker>>
 	block_component &operator=(const T &input) {
 		write(convert_public_to_read(input));
 		return *this;

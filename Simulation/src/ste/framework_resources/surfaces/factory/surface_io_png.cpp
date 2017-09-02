@@ -6,7 +6,7 @@
 #include <attributed_string.hpp>
 #include <attrib.hpp>
 
-#include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 
 #include <libpng16/png.h>
 
@@ -26,14 +26,14 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	fread(header, 1, 8, fp);
 
 	if (png_sig_cmp(header, 0, 8)) {
-		ste_log_error() << file_name << " is not a PNG";
+		ste_log_error() << file_name << " is not a PNG" << std::endl;
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
 	}
 
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png_ptr) {
-		ste_log_error() << file_name << " png_create_read_struct returned 0";
+		ste_log_error() << file_name << " png_create_read_struct returned 0" << std::endl;
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
 	}
@@ -41,7 +41,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	// create png info struct
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) {
-		ste_log_error() << file_name << " png_create_info_struct returned 0";
+		ste_log_error() << file_name << " png_create_info_struct returned 0" << std::endl;
 		png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
@@ -50,7 +50,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	// create png info struct
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info) {
-		ste_log_error() << file_name << " png_create_info_struct returned 0";
+		ste_log_error() << file_name << " png_create_info_struct returned 0" << std::endl;
 		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 		fclose(fp);
 		throw surface_unsupported_format_error("Not a valid PNG");
@@ -58,7 +58,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 
 	// the code in this if statement gets called if libpng encounters an error
 	if (setjmp(png_jmpbuf(png_ptr))) {
-		ste_log_error() << file_name << " error from libpng";
+		ste_log_error() << file_name << " error from libpng" << std::endl;
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose(fp);
 		throw surface_error("libpng error");
@@ -82,7 +82,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 				 nullptr, nullptr, nullptr);
 
 	if (bit_depth != 8 && (bit_depth != 1 || color_type != PNG_COLOR_TYPE_GRAY)) {
-		ste_log_error() << file_name << " Unsupported bit depth " << bit_depth << ".  Must be 8";
+		ste_log_error() << file_name << " Unsupported bit depth " << bit_depth << ".  Must be 8" << std::endl;
 		throw surface_unsupported_format_error("Unsupported bit depth");
 	}
 
@@ -102,7 +102,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 		components = 4;
 		break;
 	default:
-		ste_log_error() << file_name << " Unknown libpng color type " << color_type;
+		ste_log_error() << file_name << " Unknown libpng color type " << color_type << std::endl;
 		fclose(fp);
 		throw surface_unsupported_format_error("Unsupported PNG color type");
 	}
@@ -122,15 +122,14 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	// Allocate the image_data as a big block
 	const std::size_t w = rowbytes / components + !!(rowbytes%components);
 	const auto level0_size = rowbytes * temp_height;
-	lib::vector<std::uint8_t> image_data;
-	image_data.resize(level0_size);
+	lib::unique_ptr<std::uint8_t[]> image_data = lib::allocate_unique<std::uint8_t[]>(level0_size);
 
 	// row_pointers is for pointing to image_data for reading the png with libpng
 	png_byte ** row_pointers = reinterpret_cast<png_byte **>(malloc(temp_height * sizeof(png_byte *)));
 	if (bit_depth == 8) {
 		// set the individual row_pointers to point at the correct offsets of image_data
 		for (unsigned int i = 0; i < temp_height; i++)
-			row_pointers[temp_height - 1 - i] = reinterpret_cast<png_byte*>(image_data.data() + i * w * components);
+			row_pointers[temp_height - 1 - i] = reinterpret_cast<png_byte*>(image_data.get() + i * w * components);
 
 		// read the png into image_data through row_pointers
 		png_read_image(png_ptr, row_pointers);
@@ -159,40 +158,45 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	free(row_pointers);
 
-	opaque_surface<2> tex(format, gl::image_type::image_2d, { w, temp_height }, 1, 1, std::move(image_data));
+	opaque_surface<2> tex(format,
+						  gl::image_type::image_2d,
+						  { w, temp_height },
+						  1, 1,
+						  std::move(image_data),
+						  level0_size);
 	return tex;
 }
 
 void surface_io::write_png_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height) {
 	FILE *fp = fopen(file_name.string().data(), "wb");
 	if (!fp) {
-		ste_log_error() << file_name << " can't be opened for writing";
+		ste_log_error() << file_name << " can't be opened for writing" << std::endl;
 		throw resource_io_error("Opening output file failed");
 	}
 
 	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!png) {
-		ste_log_error() << file_name << " png_create_write_struct failed";
+		ste_log_error() << file_name << " png_create_write_struct failed" << std::endl;
 		fclose(fp);
 		throw surface_error("png_create_write_struct failed");
 	}
 
 	png_infop info = png_create_info_struct(png);
 	if (!info) {
-		ste_log_error() << file_name << " png_create_info_struct failed";
+		ste_log_error() << file_name << " png_create_info_struct failed" << std::endl;
 		fclose(fp);
 		throw surface_error("png_create_info_struct failed");
 	}
 
 	if (setjmp(png_jmpbuf(png))) {
-		ste_log_error() << file_name << " png_jmpbuf failed";
+		ste_log_error() << file_name << " png_jmpbuf failed" << std::endl;
 		fclose(fp);
 		throw surface_error("png_jmpbuf failed");
 	}
 
 	png_byte ** const row_pointers = reinterpret_cast<png_byte **>(malloc(height * sizeof(png_byte *)));
 	if (row_pointers == nullptr) {
-		ste_log_error() << file_name << " could not allocate memory for PNG row pointers";
+		ste_log_error() << file_name << " could not allocate memory for PNG row pointers" << std::endl;
 		fclose(fp);
 		throw surface_error("Could not allocate memory for PNG row pointers");
 	}

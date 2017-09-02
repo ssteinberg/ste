@@ -134,11 +134,17 @@ public:
 		return 3;
 	}
 
+	/**
+	*	@brief	Encodes from buffer, assumed to be in RGB swizzling, to block.
+	*
+	*	@param	data			Input buffer
+	*	@param	max_elements	Max elements to read
+	*/
 	template <typename src_type>
-	void write_block(const src_type *data) {
-		r() = static_cast<r_comp_type>(*(data + 0));
-		g() = static_cast<g_comp_type>(*(data + 1));
-		b() = static_cast<b_comp_type>(*(data + 2));
+	void write_block(const src_type *data, std::size_t max_elements = 3) {
+		r() = max_elements > 0 ? static_cast<r_comp_type>(*(data + 0)) : static_cast<r_comp_type>(0);
+		g() = max_elements > 1 ? static_cast<g_comp_type>(*(data + 1)) : static_cast<g_comp_type>(0);
+		b() = max_elements > 2 ? static_cast<b_comp_type>(*(data + 2)) : static_cast<b_comp_type>(0);
 	}
 };
 

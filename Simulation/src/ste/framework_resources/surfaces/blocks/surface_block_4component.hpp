@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <surface_block.hpp>
 
+#include <ste_type_traits.hpp>
+
 namespace ste {
 namespace resource {
 
@@ -79,6 +81,10 @@ public:
 	using g_comp_type = typename _detail::block_primary_type_selector<type, g_bits>::type;
 	using b_comp_type = typename _detail::block_primary_type_selector<type, b_bits>::type;
 	using a_comp_type = typename _detail::block_primary_type_selector<a_type, a_bits>::type;
+	using r_comp_writer_type = typename _detail::block_primary_type_selector<type, r_bits>::block_writer_type;
+	using g_comp_writer_type = typename _detail::block_primary_type_selector<type, g_bits>::block_writer_type;
+	using b_comp_writer_type = typename _detail::block_primary_type_selector<type, b_bits>::block_writer_type;
+	using a_comp_writer_type = typename _detail::block_primary_type_selector<a_type, a_bits>::block_writer_type;
 	using common_type = typename common_type_selector_t::type;
 	static constexpr block_common_type common_type_name = common_type_selector_t::common_type_name;
 
@@ -168,12 +174,24 @@ public:
 		return 4;
 	}
 
+	/**
+	*	@brief	Encodes from buffer, assumed to be in RGBA swizzling, to block.
+	*
+	*	@param	data			Input buffer
+	*	@param	max_elements	Max elements to read
+	*/
 	template <typename src_type>
-	void write_block(const src_type *data) {
-		r() = static_cast<r_comp_type>(*(data + 0));
-		g() = static_cast<g_comp_type>(*(data + 1));
-		b() = static_cast<b_comp_type>(*(data + 2));
-		a() = static_cast<a_comp_type>(*(data + 3));
+	void write_block(const src_type *data, std::size_t max_elements = 4) {
+		a_comp_writer_type a_default_val;
+		if constexpr (is_floating_point_v<a_comp_writer_type>)
+			a_default_val = static_cast<a_comp_writer_type>(1.0);
+		else
+			a_default_val = std::numeric_limits<a_comp_type>::max();
+
+		r() = static_cast<r_comp_type>(max_elements > 0 ? static_cast<r_comp_writer_type>(*(data + 0)) : static_cast<r_comp_writer_type>(0));
+		g() = static_cast<g_comp_type>(max_elements > 1 ? static_cast<g_comp_writer_type>(*(data + 1)) : static_cast<g_comp_writer_type>(0));
+		b() = static_cast<b_comp_type>(max_elements > 2 ? static_cast<b_comp_writer_type>(*(data + 2)) : static_cast<b_comp_writer_type>(0));
+		a() = static_cast<a_comp_type>(max_elements > 3 ? static_cast<a_comp_writer_type>(*(data + 3)) : a_default_val);
 	}
 
 //	static void load_8blocks(const std::uint8_t *data, common_type *rgba_output) {

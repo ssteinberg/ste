@@ -18,7 +18,7 @@ using namespace surface_io_helper;
 
 namespace ste::resource::_detail {
 
-inline gl::image_type dds_image_type(dds_header const& header, dds_header10 const& Header10) {
+inline gl::image_type dds_image_type(const dds_header &header, const dds_header10 &Header10) {
 	if (header.CubemapFlags & DDSCAPS2_CUBEMAP)
 		return Header10.ArraySize > 1 ? gl::image_type::image_cubemap_array : gl::image_type::image_cubemap;
 	if (Header10.ArraySize > 1)
@@ -51,7 +51,7 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 	using extent_type = gl::image_extent_type_t<dimensions>;
 
 	// Read file
-	std::ifstream fs(path.string(), std::ios::in);
+	std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
 	if (!fs) {
 		using namespace attributes;
 		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
@@ -364,7 +364,14 @@ opaque_surface<3> surface_io::load_dds_3d(const std::experimental::filesystem::p
 	return _detail::load_dds<3>(file_name);
 }
 
-void write_dds(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, std::size_t bytes, gl::format format, gl::image_type image_type, const glm::u32vec3 &extent, int levels, int layers) {
+void surface_io::write_dds(const std::experimental::filesystem::path &file_name, 
+						   const std::uint8_t *image_data, 
+						   std::size_t bytes, 
+						   gl::format format, 
+						   gl::image_type image_type, 
+						   const glm::u32vec3 &extent, 
+						   std::uint32_t levels, 
+						   std::uint32_t layers) {
 	const auto dimensions = gl::image_dimensions_for_type(image_type);
 	const auto format_traits = gl::format_id(format);
 

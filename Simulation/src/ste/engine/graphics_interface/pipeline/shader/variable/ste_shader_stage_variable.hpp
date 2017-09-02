@@ -330,9 +330,9 @@ public:
 	template <typename T>
 	void validate() const {
 		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
-		static constexpr bool type_is_signed = ::ste::gl::is_signed<Type>::value;
-		static constexpr bool type_is_float =  ::ste::gl::is_floating_point<Type>::value;
-		static constexpr bool type_is_scalar = ::ste::gl::is_scalar<Type>::value;
+		static constexpr bool type_is_signed = ::ste::is_signed<Type>::value;
+		static constexpr bool type_is_float =  ::ste::is_floating_point<Type>::value;
+		static constexpr bool type_is_scalar = ::ste::is_scalar<Type>::value;
 		
 		if (sizeof(Type) != this->size_bytes())
 			throw ste_shader_variable_layout_verification_type_mismatch("Size mismatch");

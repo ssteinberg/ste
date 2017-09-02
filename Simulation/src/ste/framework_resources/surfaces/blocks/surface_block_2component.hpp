@@ -107,10 +107,16 @@ public:
 		return 2;
 	}
 
+	/**
+	*	@brief	Encodes from buffer, assumed to be in RG swizzling, to block.
+	*
+	*	@param	data			Input buffer
+	*	@param	max_elements	Max elements to read
+	*/
 	template <typename src_type>
-	void write_block(const src_type *data) {
-		r() = static_cast<r_comp_type>(*(data + 0));
-		g() = static_cast<g_comp_type>(*(data + 1));
+	void write_block(const src_type *data, std::size_t max_elements = 2) {
+		r() = max_elements > 0 ? static_cast<r_comp_type>(*(data + 0)) : static_cast<r_comp_type>(0);
+		g() = max_elements > 1 ? static_cast<g_comp_type>(*(data + 1)) : static_cast<g_comp_type>(0);
 	}
 };
 
