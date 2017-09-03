@@ -37,7 +37,12 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 	case 10:
 	case 11:
 		if (tga->hdr.depth == 8 && 
-			tga->hdr.alpha == 0) {
+			(tga->hdr.alpha == 0 || tga->hdr.alpha == 8)) {
+			if (tga->hdr.alpha == 8) {
+				// 8-bit depth and 8-bit alpha textures are masks, height maps, etc. sRGB makes no sense.
+				assert(!srgb);
+			}
+
 			format = srgb ? gl::format::r8_srgb : gl::format::r8_unorm;
 			components = 1;
 			break;

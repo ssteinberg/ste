@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -13,6 +13,9 @@ namespace ste {
 namespace gl {
 
 class cmd_update_buffer : public command {
+public:
+	static constexpr std::size_t maximal_update_bytes = 65536;
+
 private:
 	buffer_view buffer;
 	lib::blob data;

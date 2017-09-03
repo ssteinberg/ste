@@ -27,6 +27,9 @@ public:
 	blob(const std::string &str) : storage(str) {}
 	blob(std::string &&str) : storage(std::move(str)) {}
 
+	blob(const void *data, std::size_t bytes) : storage(reinterpret_cast<const char*>(data),
+														bytes) {}
+
 	template <typename T, typename A>
 	blob(const std::vector<T, A> &v) : storage(reinterpret_cast<const char*>(v.data()),
 											   static_cast<std::size_t>(v.size() * sizeof(T))) {}

@@ -35,11 +35,8 @@ private:
 
 		while (it != list.end() &&
 			   it->start <= rend) {
-			auto next = it;
-			++it;
-
-			start->length = next->start + next->length - start->start;
-			list.erase(next);
+			start->length = it->start + it->length - start->start;
+			it = list.erase(it);
 		}
 	}
 
