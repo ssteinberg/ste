@@ -33,8 +33,7 @@ struct material_layer_descriptor {
 	
 	uint next_layer_id;
 	
-	vec3 attenuation_coefficient;
-	uint _unused0;
+	vec4 attenuation_coefficient;
 	
 	uint packed_albedo;
 	uint ior_phase_pack;

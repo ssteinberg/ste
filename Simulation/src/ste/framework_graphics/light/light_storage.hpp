@@ -19,13 +19,11 @@
 #include <resource_storage_dynamic.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
+#include <std430.hpp>
 
 #include <array>
 #include <lib/unique_ptr.hpp>
 #include <type_traits>
-#include <optional.hpp>
-
-#include <mutex>
 #include <atomic>
 
 namespace ste {
@@ -35,8 +33,8 @@ constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;
 constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-class light_storage : public gl::resource_storage_dynamic<light_descriptor> {
-	using Base = gl::resource_storage_dynamic<light_descriptor>;
+class light_storage : public gl::resource_storage_dynamic<light_descriptor::buffer_data> {
+	using Base = gl::resource_storage_dynamic<light_descriptor::buffer_data>;
 
 public:
 	using shaped_light_point = shaped_light::shaped_light_point_type;
@@ -44,7 +42,7 @@ public:
 	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
 
 private:
-	using lights_ll_type = gl::device_buffer_sparse<std::uint32_t>;
+	using lights_ll_type = gl::device_buffer_sparse<gl::std430<std::uint32_t>>;
 	using directional_lights_cascades_type = gl::array<light_cascades_descriptor>;
 	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
 

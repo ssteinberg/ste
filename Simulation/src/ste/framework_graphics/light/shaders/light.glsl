@@ -33,13 +33,15 @@ struct light_descriptor {
 	float effective_range_or_directional_distance;
 	// polygonal_light_points_and_offset specifies the number of points and offset into the buffer (polygonal lights only)
 	uint polygonal_light_points_and_offset_or_cascade_idx;
+
+	float _unused0;
 	
 	//! The rest is used internally only
 	
 	// transformed_position: Light position in eye space for spherical, direction in eye space for directional lights.
 	vec3 transformed_position;
 
-	float _unused;
+	float _unused1;
 };
 
 layout(std430, set=2, binding=6) restrict buffer light_binding {

@@ -16,9 +16,9 @@
 namespace ste {
 namespace graphics {
 
-class light : public gl::observable_resource<light_descriptor>,
+class light : public gl::observable_resource<light_descriptor::buffer_data>,
 			  public entity {
-	using Base = gl::observable_resource<light_descriptor>;
+	using Base = gl::observable_resource<light_descriptor::buffer_data>;
 
 	static constexpr float light_minimal_luminance_multiplier = 1e-6f;
 
@@ -70,7 +70,7 @@ public:
 	auto &get_luminance() const { return descriptor.emittance; }
 	float get_radius() const { return descriptor.radius; }
 
-	const light_descriptor& get_descriptor() const override final { return descriptor; }
+	light_descriptor::buffer_data get_descriptor() const override final { return descriptor.get(); }
 };
 
 }

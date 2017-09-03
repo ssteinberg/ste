@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <light.hpp>
 
+#include <std430.hpp>
+
 #include <stable_vector.hpp>
 #include <command_recorder.hpp>
 
@@ -16,7 +18,7 @@ class shaped_light : public light {
 	using Base = light;
 
 public:
-	using shaped_light_point_type = glm::uvec2;
+	using shaped_light_point_type = gl::std430<glm::u32vec2>;
 	struct shaped_light_points_storage_info {
 		gl::stable_vector<shaped_light_point_type> *storage;
 	};
@@ -30,7 +32,7 @@ protected:
 				 float intensity,
 				 const glm::vec3 &position,
 				 shaped_light_points_storage_info storage_info) : light(color, intensity, .0f),
-																  storage_info(storage_info) {
+		storage_info(storage_info) {
 		assert(static_cast<std::uint32_t>(type) & light_type_shape_bit && "Type is not a shaped light!");
 
 		descriptor.type = type;
@@ -39,9 +41,9 @@ protected:
 	}
 
 	void set_points(gl::command_recorder &recorder,
-					const glm::vec3 *points, 
-					std::size_t size, 
-					float surface_area, 
+					const glm::vec3 *points,
+					std::size_t size,
+					float surface_area,
 					const glm::vec3 &n) {
 		lib::vector<shaped_light_point_type> points_copy;
 		float r = .0f;
@@ -57,11 +59,11 @@ protected:
 				r = glm::max(r, glm::length(*p - center));
 
 			for (auto *p = points; p != points + size; ++p) {
-				auto t = *p - center;
+				const auto t = *p - center;
 
 				// Encode
-				points_copy.push_back({ glm::packHalf2x16({t.x, t.y}),
-									    glm::packHalf2x16({t.z, .0f}) });
+				auto v = glm::u32vec2{ glm::packHalf2x16({ t.x, t.y }), glm::packHalf2x16({ t.z, .0f }) };
+				points_copy.push_back(std::make_tuple<glm::u32vec2>(std::move(v)));
 			}
 		}
 
@@ -91,7 +93,7 @@ protected:
 		float sqrt_surface_area = glm::sqrt(surface_area);
 
 		// Update descriptor
-		descriptor.set_polygonal_light_points(static_cast<std::uint8_t>(size), 
+		descriptor.set_polygonal_light_points(static_cast<std::uint8_t>(size),
 											  static_cast<std::uint32_t>(idx));
 		descriptor.radius = r;
 		update_effective_range(sqrt_surface_area);

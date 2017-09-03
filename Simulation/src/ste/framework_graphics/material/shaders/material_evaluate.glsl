@@ -273,7 +273,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		float thickness = material_is_base_layer(descriptor) ? object_thickness : descriptor.thickness;
 		float metallic = descriptor.metallic;
 		float roughness = descriptor.roughness;
-		vec3 attenuation_coefficient = descriptor.attenuation_coefficient;
+		vec3 attenuation_coefficient = descriptor.attenuation_coefficient.rgb;
 		float bottom_medium_ior = descriptor.ior;
 		
 		// Compute sine and cosine of critical angle
