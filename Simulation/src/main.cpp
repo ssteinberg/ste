@@ -4,7 +4,6 @@
 #include <presentation_engine.hpp>
 #include <presentation_frame_time_predictor.hpp>
 
-#include <cmd_clear_color_image.hpp>
 #include <cmd_pipeline_barrier.hpp>
 
 #include <model_factory.hpp>
@@ -34,19 +33,63 @@
 
 using namespace ste;
 
+class loading_photo_fragment : public gl::fragment_graphics<loading_photo_fragment> {
+	using Base = gl::fragment_graphics<loading_photo_fragment>;
+
+	gl::texture<gl::image_type::image_2d> photo;
+	gl::task<gl::cmd_draw> draw_task;
+
+public:
+	loading_photo_fragment(gl::rendering_presentation_system &rs,
+						   gl::framebuffer_layout &&fb_layout)
+		: Base(rs,
+			   gl::device_pipeline_graphics_configurations{},
+			   std::move(fb_layout),
+			   "fullscreen_triangle.vert", "loading.frag"),
+		photo(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(rs.get_creating_context(),
+																						   resource::surface_convert::convert_2d<gl::format::r8g8b8a8_srgb>(resource::surface_io::load_surface_2d("Data/loading.jpeg", true)),
+																						   gl::image_usage::sampled,
+																						   gl::image_layout::shader_read_only_optimal))
+	{
+		pipeline["sam"] = gl::bind(gl::pipeline::combined_image_sampler(photo,
+																		rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
+
+		draw_task.attach_pipeline(pipeline);
+	}
+
+	static const lib::string& name() { return "loading_photo_fragment"; }
+
+	void attach_framebuffer(gl::framebuffer &fb) {
+		pipeline.attach_framebuffer(fb);
+	}
+
+	void record(gl::command_recorder &recorder) override final {
+		recorder << draw_task(3, 1);
+	}
+};
+
 class loading_renderer : public gl::rendering_presentation_system {
 	using Base = gl::rendering_presentation_system;
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 
+	loading_photo_fragment photo_fragment;
 	text::text_fragment title_text_frag;
 	text::text_fragment footer_text_frag;
+	
+	lib::vector<gl::framebuffer> swap_chain_clear_framebuffers;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
 private:
 	static auto create_fb_clear_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
+									   gl::image_layout::color_attachment_optimal);
+		return fb_layout;
+	}
+	static auto create_fb_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
 									  gl::image_layout::color_attachment_optimal,
@@ -54,16 +97,35 @@ private:
 		return fb_layout;
 	}
 
+	void create_swap_chain_clear_framebuffers() {
+		auto surface_extent = device().get_surface().extent();
+
+		lib::vector<gl::framebuffer> v;
+		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
+			gl::framebuffer fb(get_creating_context(),
+							   create_fb_clear_layout(get_creating_context()),
+							   surface_extent);
+			fb[0] = gl::framebuffer_attachment(swap_image.view, glm::vec4(.0f));
+
+			v.push_back(std::move(fb));
+		}
+
+		swap_chain_clear_framebuffers = std::move(v);
+	}
+
 public:
 	loading_renderer(const ste_context &ctx,
 					 gl::presentation_engine &presentation,
 					 text::text_manager &tm)
 		: Base(ctx,
-			   create_fb_clear_layout(ctx)),
+			   create_fb_layout(ctx)),
 		presentation(presentation),
+		photo_fragment(*this, create_fb_clear_layout(ctx)),
 		title_text_frag(tm.create_fragment()),
-		footer_text_frag(tm.create_fragment())
-	{}
+		footer_text_frag(tm.create_fragment()) 
+	{
+		create_swap_chain_clear_framebuffers();
+	}
 	~loading_renderer() noexcept {}
 
 	void render() override final {}
@@ -82,6 +144,7 @@ public:
 				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
 
 				title_text_frag.manager().attach_framebuffer(fb);
+				photo_fragment.attach_framebuffer(swap_chain_clear_framebuffers[batch->presentation_image_index()]);
 
 				{
 					using namespace text::attributes;
@@ -106,17 +169,7 @@ public:
 				}
 
 				recorder
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::top_of_pipe,
-																	 gl::pipeline_stage::transfer,
-																	 gl::image_layout_transform_barrier(swapchain_image,
-																										gl::image_layout::undefined,
-																										gl::image_layout::shared_present_khr)))
-					<< gl::cmd_clear_color_image(swap_chain_image(batch->presentation_image_index()).image, gl::image_layout::present_src_khr, glm::i32vec4{ 0 })
-					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																	 gl::pipeline_stage::color_attachment_output,
-																	 gl::image_layout_transform_barrier(swapchain_image,
-																										gl::image_layout::shared_present_khr,
-																										gl::image_layout::color_attachment_optimal)))
+					<< photo_fragment
 
 					// Render text
 					<< title_text_frag
@@ -154,7 +207,7 @@ auto requested_device_features() {
 }
 
 
-void display_loading_screen_until(const ste_context &ctx,
+void display_loading_screen_until(ste_context &ctx,
 								  gl::presentation_engine &presentation,
 								  text::text_manager &text_manager,
 								  const ste_window &window,
@@ -162,12 +215,16 @@ void display_loading_screen_until(const ste_context &ctx,
 	loading_renderer r(ctx, presentation, text_manager);
 
 	for (;;) {
+		ctx.tick();
 		ste_window::poll_events();
+
 		if (window.should_close() || !lambda())
 			break;
 
 		r.render_and_present();
 	}
+
+	ctx.device().wait_idle();
 }
 
 auto create_light_mesh(const ste_context &ctx,
@@ -294,7 +351,7 @@ void add_scene_lights(const ste_context &ctx,
 	lights.push_back(std::move(lamp.first));
 }
 
-void load_scene(const ste_context &ctx,
+void load_scene(ste_context &ctx,
 				graphics::scene &scene,
 				gl::presentation_engine &presentation,
 				text::text_manager &text_manager,

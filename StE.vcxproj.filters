@@ -2044,8 +2044,6 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.comp" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.comp" />
-    <None Include="Simulation\src\temp.vert" />
-    <None Include="Simulation\src\temp.frag" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.geom_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.vert_old" />
@@ -2069,5 +2067,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\renderer_transform_buffers.glsl" />
+    <None Include="Simulation\src\loading.frag" />
   </ItemGroup>
 </Project>

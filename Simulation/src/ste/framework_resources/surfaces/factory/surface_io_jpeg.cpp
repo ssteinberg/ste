@@ -78,7 +78,7 @@ opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::
 					  w0 * comp,
 					  h,
 					  pixel_format,
-					  TJFLAG_BOTTOMUP) != 0) {
+					  0) != 0) {
 		const char *err = tjGetErrorStr();
 		ste_log_error() << path << " libturbojpeg could not decompress JPEG image: " << (err ? err : "") << std::endl;
 		tjDestroy(tj);
@@ -130,7 +130,7 @@ void surface_io::write_jpeg_2d(const std::experimental::filesystem::path &path, 
 					&dst_size, 
 					samp, 
 					90,		// Quality
-					TJFLAG_BOTTOMUP | TJFLAG_NOREALLOC) != 0) {
+					TJFLAG_NOREALLOC) != 0) {
 		const char *err = tjGetErrorStr();
 		ste_log_error() << "libturbojpeg could not compress JPEG image: " << (err ? err : "") << std::endl;
 		tjDestroy(tj);

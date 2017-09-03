@@ -59,7 +59,7 @@ void main() {
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
 	vout.tex_coords = vec2(0, 0);
-	gl_Position = vec4(pos + size * vec2(start_x, start_y), 0, 1);
+	gl_Position = vec4(pos + size * vec2(start_x, -start_y), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -68,7 +68,7 @@ void main() {
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
 	vout.tex_coords = vec2(1, 0);
-	gl_Position = vec4(pos + size * vec2(start_x + width, start_y), 0, 1);
+	gl_Position = vec4(pos + size * vec2(start_x + width, -start_y), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -77,7 +77,7 @@ void main() {
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
 	vout.tex_coords = vec2(0, 1);
-	gl_Position = vec4(pos + size * vec2(start_x, start_y - height), 0, 1);
+	gl_Position = vec4(pos + size * vec2(start_x, -start_y - height), 0, 1);
 	EmitVertex();
 	
 	vout.color = vin[0].color;
@@ -86,7 +86,7 @@ void main() {
 	vout.weight = vin[0].weight;
 	vout.stroke_width = vin[0].stroke_width;
 	vout.tex_coords = vec2(1, 1);
-	gl_Position = vec4(pos + size * vec2(start_x + width, start_y - height), 0, 1);
+	gl_Position = vec4(pos + size * vec2(start_x + width, -start_y - height), 0, 1);
 	EmitVertex();
 	
 	EndPrimitive();

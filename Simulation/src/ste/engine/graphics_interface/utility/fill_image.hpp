@@ -151,7 +151,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 				{ 0, 0, 0 },
 				{ aspect, m, 0, layers },
 				{ 0, 0, 0 },
-				{ static_cast<std::uint32_t>(extent.x), 0, 0 }
+				{ static_cast<std::uint32_t>(extent.x), 1, 1 }
 			};
 			if constexpr (dimensions > 1) range.extent.height = static_cast<std::uint32_t>(extent[1]);
 			if constexpr (dimensions > 2) range.extent.depth = static_cast<std::uint32_t>(extent[2]);
