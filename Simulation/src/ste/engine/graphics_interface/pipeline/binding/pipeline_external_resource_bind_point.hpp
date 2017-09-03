@@ -30,7 +30,7 @@ private:
 		using resource_type = pipeline_resource_binder<WriteType, T>;
 		using resource_underlying_type = typename resource_type::UnderlyingType;
 
-		auto set_idx = binding->set_idx();
+		const auto set_idx = binding->set_idx();
 		auto& q = (*queue)[set_idx];
 
 		// Validate

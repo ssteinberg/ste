@@ -34,7 +34,9 @@ public:
 
 private:
 	alias<const ste_device> device;
+
 	optional<pipeline_external_binding_set_layout> layout;
+	lib::vector<pipeline_external_binding_layout> spec_constant_binding_layouts;
 
 public:
 	external_binding_set_collection_from_shader_stages(const ste_device &device,
@@ -64,13 +66,15 @@ public:
 					it->second.stages.insert(stages);
 				}
 				else {
-					if (!set_idx)
-						set_idx = it->second.binding.set_idx;
+					if (binding.binding_type != ste_shader_stage_binding_type::spec_constant) {
+						if (!set_idx)
+							set_idx = binding.set_idx;
 
-					// Verify set index
-					if (set_idx) {
-						if (set_idx.get() != it->second.binding.set_idx) {
-							throw pipeline_layout_exception("Provided shader stages contain variables bound to multiple sets. Only one set allowed.");
+						// Verify set index
+						if (set_idx) {
+							if (set_idx.get() != binding.set_idx) {
+								throw pipeline_layout_exception("Provided shader stages contain variables bound to multiple sets. Only one set allowed.");
+							}
 						}
 					}
 
@@ -83,6 +87,14 @@ public:
 			}
 		}
 
+		// Check correctness
+		if (!bindings_map.size()) {
+			throw pipeline_layout_exception("No bindings provided");
+		}
+		if (!set_idx) {
+			throw pipeline_layout_exception("Exeternal layout contains only specialization constants");
+		}
+
 		// Generate the actual binding layouts and group them into sets
 		lib::vector<pipeline_external_binding_layout> binding_layouts;
 		binding_layouts.reserve(bindings_map.size());
@@ -90,7 +102,9 @@ public:
 			pipeline_external_binding_layout binding_layout(p.first,
 															std::move(p.second.stages),
 															std::move(p.second.binding));
-			binding_layouts.emplace_back(std::move(binding_layout));
+
+			auto &v = binding_layout.binding_type() == ste_shader_stage_binding_type::spec_constant ? spec_constant_binding_layouts : binding_layouts;
+			v.emplace_back(std::move(binding_layout));
 		}
 
 		// Create the external binding set layout
@@ -101,6 +115,7 @@ public:
 
 	auto generate() && {
 		return pipeline_external_binding_set(std::move(layout.get()),
+											 std::move(spec_constant_binding_layouts),
 											 device.get().binding_set_pool());
 	}
 };
