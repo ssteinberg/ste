@@ -17,6 +17,26 @@
 namespace ste {
 namespace gl {
 
+enum class device_image_flags : std::uint32_t {
+	none = 0x0,
+	support_cube_views = 0x1,
+	linear_tiling = 0x2,
+	sparse = 0x4,
+};
+
+constexpr auto operator|(const device_image_flags &lhs, const device_image_flags &rhs) {
+	using T = std::underlying_type_t<device_image_flags>;
+	return static_cast<device_image_flags>(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
+constexpr auto operator&(const device_image_flags &lhs, const device_image_flags &rhs) {
+	using T = std::underlying_type_t<device_image_flags>;
+	return static_cast<device_image_flags>(static_cast<T>(lhs) & static_cast<T>(rhs));
+}
+constexpr auto operator^(const device_image_flags &lhs, const device_image_flags &rhs) {
+	using T = std::underlying_type_t<device_image_flags>;
+	return static_cast<device_image_flags>(static_cast<T>(lhs) ^ static_cast<T>(rhs));
+}
+
 template <int dimensions, class allocation_policy = device_resource_allocation_policy_device>
 class device_image : public device_image_base,
 	public device_resource<vk::vk_image<>, allocation_policy>
@@ -38,11 +58,9 @@ public:
 				 const format &image_format,
 				 const extent_type &extent,
 				 const image_usage &usage,
-				 std::uint32_t mips = 1,
-				 std::uint32_t layers = 1,
-				 bool supports_cube_views = false,
-				 bool optimal_tiling = true,
-				 bool sparse = false)
+				 std::uint32_t mips,
+				 std::uint32_t layers,
+				 device_image_flags flags = device_image_flags::none)
 		: Base(ctx,
 			   layout,
 			   static_cast<VkFormat>(image_format),
@@ -51,9 +69,9 @@ public:
 			   static_cast<VkImageUsageFlags>(usage),
 			   mips,
 			   layers,
-			   supports_cube_views,
-			   optimal_tiling,
-			   sparse)
+			   (flags & device_image_flags::support_cube_views) != device_image_flags::none,
+			   (flags & device_image_flags::linear_tiling) == device_image_flags::none,
+			   (flags & device_image_flags::sparse) != device_image_flags::none)
 	{}
 	~device_image() noexcept {}
 

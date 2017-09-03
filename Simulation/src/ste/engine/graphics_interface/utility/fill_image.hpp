@@ -132,7 +132,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		device_image<dimensions, device_resource_allocation_policy_host_visible_coherent>
 			staging_image(ctx, image_initial_layout::preinitialized,
 						  image_format, surface_extent, image_usage::transfer_src,
-						  1, layers, false, false);
+						  1, layers, device_image_flags::linear_tiling);
 		auto staging_image_bytes = staging_image.get_underlying_memory().get_size();
 		auto mmap_u8_ptr = staging_image.get_underlying_memory().template mmap<glm::u8>(0, staging_image_bytes);
 

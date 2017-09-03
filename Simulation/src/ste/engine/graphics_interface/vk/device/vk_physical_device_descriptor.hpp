@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -19,6 +19,16 @@ struct vk_physical_device_descriptor {
 	VkPhysicalDeviceMemoryProperties memory_properties;
 
 	lib::vector<VkQueueFamilyProperties> queue_family_properties;
+
+
+	auto query_physical_device_format_properties(VkFormat format) const {
+		VkFormatProperties out = {};
+		vkGetPhysicalDeviceFormatProperties(device,
+											format,
+											&out);
+
+		return out;
+	}
 };
 
 }

@@ -568,6 +568,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage_stable.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\command\pipeline_external_binding_set_cmd_bind.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_format_properties.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object.hpp" />

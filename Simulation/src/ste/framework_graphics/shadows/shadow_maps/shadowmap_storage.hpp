@@ -23,7 +23,7 @@ namespace graphics {
 class shadowmap_storage {
 private:
 	alias<const ste_context> ctx;
-	
+
 	unsigned cube_size;
 	unsigned directional_map_size;
 
@@ -46,22 +46,24 @@ private:
 
 public:
 	shadowmap_storage(const ste_context &ctx,
-					  unsigned cube_size = 1024, 
+					  unsigned cube_size = 1024,
 					  unsigned directional_map_size = 2048)
 		: ctx(ctx),
 		cube_size(cube_size),
 		directional_map_size(directional_map_size),
 
 		shadow_depth_cube_maps(ctx,
-							   resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
-																								 gl::image_usage::sampled | gl::image_usage::color_attachment,
-																								 gl::image_layout::shader_read_only_optimal,
-																								 glm::uvec3{ cube_size, cube_size, max_active_lights_per_frame * 6 })),
+							   resource::surface_factory::image_empty_cubemap<gl::format::d32_sfloat>(ctx,
+																									  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
+																									  gl::image_layout::shader_read_only_optimal,
+																									  cube_size,
+																									  static_cast<std::uint32_t>(max_active_lights_per_frame))),
 		directional_shadow_maps(ctx,
 								resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
-																								  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																								  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																								  gl::image_layout::shader_read_only_optimal,
-																								  glm::uvec3{ directional_map_size, directional_map_size, max_active_directional_lights_per_frame * directional_light_cascades })),
+																								  { directional_map_size, directional_map_size },
+																								  static_cast<std::uint32_t>(max_active_directional_lights_per_frame * directional_light_cascades))),
 		shadow_depth_sampler(ctx.device(),
 							 gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear, gl::sampler_mipmap_mode::linear),
 							 gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_edge, gl::sampler_address_mode::clamp_to_edge),
@@ -76,24 +78,26 @@ public:
 
 	shadowmap_storage(shadowmap_storage&&) = default;
 
-	void set_cube_count(std::size_t size) {
+	void set_cube_count(std::uint32_t size) {
 		shadow_depth_cube_maps = ste_resource<gl::texture<gl::image_type::image_cubemap_array>>(ctx.get(),
-																								resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx.get(),
-																																								  gl::image_usage::sampled | gl::image_usage::color_attachment,
-																																								  gl::image_layout::shader_read_only_optimal,
-																																								  glm::uvec3{ cube_size, cube_size, size * 6 }));
+																								resource::surface_factory::image_empty_cubemap<gl::format::d32_sfloat>(ctx.get(),
+																																									   gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
+																																									   gl::image_layout::shader_read_only_optimal,
+																																									   cube_size,
+																																									   size));
 		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
 
 		storage_modified_signal.emit();
 	}
 	auto get_cube_count() const { return shadow_depth_cube_maps->get_image().get_layers(); }
 
-	void set_directional_maps_count(std::size_t size) {
+	void set_directional_maps_count(std::uint32_t size) {
 		directional_shadow_maps = ste_resource<gl::texture<gl::image_type::image_2d_array>>(ctx.get(),
 																							resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx.get(),
-																																							  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																							  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																																							  gl::image_layout::shader_read_only_optimal,
-																																							  glm::uvec3{ directional_map_size, directional_map_size, size * directional_light_cascades }));
+																																							  { directional_map_size, directional_map_size },
+																																							  size * directional_light_cascades));
 		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);;
 
 		storage_modified_signal.emit();
