@@ -50,8 +50,8 @@ layout(std430, set=2, binding=5) restrict readonly buffer material_layer_descrip
 	material_layer_descriptor mat_layer_descriptor[];
 };
 layout(constant_id=0) const int material_textures_count = 2;
-layout(set=2, binding=0) uniform texture2D material_textures[material_textures_count];
-layout(set=2, binding=1) uniform sampler material_sampler;
+layout(set=2, binding=13) uniform texture2D material_textures[material_textures_count];
+layout(set=2, binding=14) uniform sampler material_sampler;
 
 const int material_none = 0xFFFFFFFF;
 

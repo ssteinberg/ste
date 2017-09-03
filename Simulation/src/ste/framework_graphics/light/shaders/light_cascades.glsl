@@ -23,7 +23,7 @@ uniform cascades_depths_uniform_t {
 	float cascades_depths[directional_light_cascades];
 };
 
-layout(std140, binding = 0) uniform light_cascades_block {
+layout(std430, set=2, binding=12) restrict readonly buffer light_cascades_binding {
 	light_cascades_descriptor light_cascades[max_active_directional_lights_per_frame];
 };
 

@@ -35,7 +35,7 @@ public:
 		: ctx(ctx),
 		extent(glm::uvec3{ framebuffer_extent.x / tile_size, framebuffer_extent.y / tile_size, depth_tiles }),
 		volume(ctx, resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx,
-																							   gl::image_usage::sampled | gl::image_usage::storage,
+																							   gl::image_usage::sampled | gl::image_usage::storage | gl::image_usage::transfer_dst,
 																							   gl::image_layout::transfer_dst_optimal,
 																							   extent))
 		//		volume_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
@@ -60,10 +60,9 @@ public:
 		extent = tiles;
 		volume = ste_resource<gl::texture<gl::image_type::image_3d>>(ctx.get(),
 																	 resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
-																																				gl::image_usage::sampled | gl::image_usage::storage,
+																																				gl::image_usage::sampled | gl::image_usage::storage | gl::image_usage::transfer_dst,
 																																				gl::image_layout::transfer_dst_optimal,
 																																				extent));
-
 		storage_modified_signal.emit();
 	}
 

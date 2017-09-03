@@ -5,10 +5,10 @@ struct lll_element {
 	uvec2 data;
 };
 
-layout(r8ui,   set=2, binding=2) restrict uniform uimage2D linked_light_list_size;
-layout(r8ui,   set=2, binding=3) restrict uniform uimage2D linked_light_list_low_detail_size;
-layout(r32ui,  set=2, binding=4) restrict uniform uimage2D linked_light_list_heads;
-layout(r32ui,  set=2, binding=5) restrict uniform uimage2D linked_light_list_low_detail_heads;
+layout(r8ui,   set=2, binding=15) restrict uniform uimage2D linked_light_list_size;
+layout(r8ui,   set=2, binding=16) restrict uniform uimage2D linked_light_list_low_detail_size;
+layout(r32ui,  set=2, binding=17) restrict uniform uimage2D linked_light_list_heads;
+layout(r32ui,  set=2, binding=18) restrict uniform uimage2D linked_light_list_low_detail_heads;
 
 layout(std430, set=2, binding=9) restrict buffer linked_light_list_counter_binding {
 	uint lll_counter;

@@ -3,7 +3,7 @@
 #include <light_transport.glsl>
 #include <common.glsl>
 
-layout(std430, binding = 22) restrict readonly buffer atmospherics_descriptor_buffer {
+layout(std430, set=2, binding=27) restrict readonly buffer atmospherics_descriptor_binding {
 	atmospherics_descriptor atmospherics_descriptor_data;
 };
 
