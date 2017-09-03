@@ -1,33 +1,30 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <std430.hpp>
 
 #include <glm/gtc/quaternion.hpp>
 
 namespace ste {
 namespace graphics {
 
-struct mesh_descriptor {
-	glm::mat3x4 model_transform_matrix;
-	glm::quat tangent_transform_quat;
+struct mesh_descriptor : gl::std430<glm::mat3x4, glm::quat, glm::vec4, std::int32_t, std::int32_t, float, float> {
+	auto& model_transform_matrix() { return get<0>(); }
+	auto& tangent_transform_quat() { return get<1>(); }
 
-	glm::vec4 bounding_sphere;
+	auto& bounding_sphere() { return get<2>(); }
 
-	std::int32_t mat_idx;
-	std::int32_t light_caster{ 0 };
-
-	float _unused[2];
+	auto& mat_idx() { return get<3>(); }
+	auto& light_caster() { return get<4>(); }
 };
 
-struct mesh_draw_params {
-	std::uint32_t count;
-	std::uint32_t first_index;
-	std::uint32_t base_vertex;
-
-	float _unused;
+struct mesh_draw_params : gl::std430<std::uint32_t, std::uint32_t, std::uint32_t> {
+	auto& count() { return get<0>(); }
+	auto& first_index() { return get<1>(); }
+	auto& base_vertex() { return get<2>(); }
 };
 
 }

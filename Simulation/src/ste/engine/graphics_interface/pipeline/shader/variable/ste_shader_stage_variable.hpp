@@ -56,7 +56,7 @@ struct ste_shader_stage_variable_remove_blocks<T, false> {
 };
 template <typename B>
 struct ste_shader_stage_variable_remove_blocks<B, true> {
-	static constexpr bool single_element_block = B::count == 1;
+	static constexpr bool single_element_block = B::elements_count == 1;
 	using T = typename B::template type_at<0>;
 	using type = std::conditional_t<
 		single_element_block,
@@ -610,7 +610,7 @@ struct ste_shader_stage_variable_struct_validate {
 			(*var)[0]->template validate<B>();
 			return;
 		}
-		ste_shader_stage_variable_struct_validator<Var, 0, B::count, B>()(var);
+		ste_shader_stage_variable_struct_validator<Var, 0, B::elements_count, B>()(var);
 	}
 };
 

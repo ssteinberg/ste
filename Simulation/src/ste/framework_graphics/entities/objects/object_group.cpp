@@ -36,16 +36,16 @@ void object_group::add_object(gl::command_recorder &recorder,
 	transform_quat.w *= -1.f;
 
 	mesh_descriptor md;
-	md.model_transform_matrix = glm::transpose(obj->get_model_transform());
-	md.tangent_transform_quat = transform_quat;
-	md.mat_idx = obj->get_material()->resource_index_in_storage();
-	md.bounding_sphere = obj->get_mesh().bounding_sphere().sphere();
-	assert(md.mat_idx >= 0);
+	md.model_transform_matrix() = glm::transpose(obj->get_model_transform());
+	md.tangent_transform_quat() = transform_quat;
+	md.mat_idx() = obj->get_material()->resource_index_in_storage();
+	md.bounding_sphere() = obj->get_mesh().bounding_sphere().sphere();
+	assert(md.mat_idx() >= 0);
 
 	mesh_draw_params mdp;
-	mdp.count = static_cast<std::uint32_t>(ind.size());
-	mdp.first_index = total_indices;
-	mdp.base_vertex = total_vertices;
+	mdp.count() = static_cast<std::uint32_t>(ind.size());
+	mdp.first_index() = total_indices;
+	mdp.base_vertex() = total_vertices;
 
 	obj->md = md;
 
@@ -78,10 +78,10 @@ void object_group::update_dirty_buffers(gl::command_recorder &recorder) const {
 		transform_quat.w *= -1.f;
 
 		mesh_descriptor md = obj_ptr->md;
-		md.model_transform_matrix = glm::transpose(obj_ptr->get_model_transform());
-		md.tangent_transform_quat = transform_quat;
-		md.mat_idx = obj_ptr->get_material()->resource_index_in_storage();
-		assert(md.mat_idx >= 0);
+		md.model_transform_matrix() = glm::transpose(obj_ptr->get_model_transform());
+		md.tangent_transform_quat() = transform_quat;
+		md.mat_idx() = obj_ptr->get_material()->resource_index_in_storage();
+		assert(md.mat_idx() >= 0);
 
 		recorder << draw_buffers.get_mesh_data_buffer().overwrite_cmd(info.index, md);
 	}
