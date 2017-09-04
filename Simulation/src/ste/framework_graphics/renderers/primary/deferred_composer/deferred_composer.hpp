@@ -26,7 +26,7 @@ private:
 	gl::rendering_system::storage_ptr<material_lut_storage> material_luts;
 
 public:
-	deferred_composer(const gl::rendering_system &rs)
+	deferred_composer(gl::rendering_system &rs)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
 			   "fullscreen_triangle.vert", "deferred_compose.frag"),

@@ -55,10 +55,6 @@ layout(std430, set=2, binding=8) restrict buffer light_list_binding {
 	uint ll[];
 };
 
-layout(std430, set=2, binding=11) restrict readonly buffer shaped_lights_points_binding {
-	ltc_element ltc_points[];
-};
-
 /*
  *	Transforms light's position/direction based on transformation dual quaternion
  */

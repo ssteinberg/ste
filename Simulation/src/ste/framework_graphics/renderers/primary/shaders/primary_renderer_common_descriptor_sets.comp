@@ -9,10 +9,12 @@
 
 #include <light.glsl>
 #include <linked_light_lists.glsl>
+#include <linearly_transformed_cosines.glsl>
 
 #include <gbuffer.glsl>
 
 #include <shadow.glsl>
+#include <atmospherics.glsl>
 
 void main() {
 }

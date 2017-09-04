@@ -13,6 +13,7 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 																								 const linked_light_lists &linked_light_list_storage,
 																								 const deferred_gbuffer &gbuffer,
 																								 const shadowmap_storage &shadows,
+																								 const atmospherics_buffer &atmospheric_buffer,
 																								 const atmospherics_lut_storage &atmospherics_luts,
 																								 const scene *s) {
 	// Load common descriptor sets from pre-compiled SPIR-v shader
