@@ -47,7 +47,7 @@ private:
 	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
 
 private:
-	gl::array<std::uint32_t> active_lights_ll_counter;
+	gl::array<gl::std430<std::uint32_t>> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
 	directional_lights_cascades_type directional_lights_cascades_buffer;
@@ -151,7 +151,7 @@ public:
 	}
 
 	void clear_active_ll(gl::command_recorder &recorder) {
-		std::uint32_t zero = 0;
+		const gl::std430<std::uint32_t> zero = std::make_tuple<std::uint32_t>(0);
 		recorder << active_lights_ll_counter.overwrite_cmd(0, zero);
 	}
 

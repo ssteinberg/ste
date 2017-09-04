@@ -9,12 +9,11 @@
 #include <ste_resource.hpp>
 
 #include <pipeline_external_binding_set.hpp>
-#include <external_binding_set_collection_from_shader_stages.hpp>
-#include <device_pipeline_shader_stage.hpp>
 #include <scene.hpp>
 
 #include <deferred_gbuffer.hpp>
 #include <atmospherics_buffer.hpp>
+#include <atmospherics_lut_storage.hpp>
 #include <renderer_transform_buffers.hpp>
 #include <linked_light_lists.hpp>
 #include <shadowmap_storage.hpp>
@@ -41,6 +40,7 @@ private:
 																				  const linked_light_lists &linked_light_list_storage,
 																				  const deferred_gbuffer &gbuffer,
 																				  const shadowmap_storage &shadows,
+																				  const atmospherics_lut_storage &atmospherics_luts,
 																				  const scene *s);
 
 	/**
@@ -72,6 +72,7 @@ public:
 	primary_renderer_buffers(const ste_context &ctx,
 							 const glm::uvec2 &extent,
 							 const scene *s,
+							 const atmospherics_lut_storage &atmospherics_luts,
 							 const atmospherics_properties<double> &atmospherics_prop)
 		: ctx(ctx),
 		extent(extent),
@@ -90,6 +91,7 @@ public:
 																		   *linked_light_list_storage,
 																		   *gbuffer,
 																		   *shadows_storage,
+																		   atmospherics_luts,
 																		   s))
 	{
 		projection_data_up_to_date_flag.test_and_set(std::memory_order_release);

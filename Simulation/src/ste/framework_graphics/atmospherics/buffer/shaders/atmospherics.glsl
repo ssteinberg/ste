@@ -1,11 +1,13 @@
 
-#include <atmospherics_descriptor.glsl>
 #include <light_transport.glsl>
 #include <common.glsl>
 
-layout(std430, set=2, binding=27) restrict readonly buffer atmospherics_descriptor_binding {
-	atmospherics_descriptor atmospherics_descriptor_data;
-};
+layout(set=2, binding=28) uniform sampler2DArray atmospheric_optical_length_lut;
+layout(set=2, binding=29) uniform sampler3D atmospheric_mie0_scattering_lut;
+layout(set=2, binding=30) uniform sampler3D atmospheric_ambient_lut;
+layout(set=2, binding=31) uniform sampler3D atmospheric_scattering_lut;
+
+#include <atmospherics_descriptor.glsl>
 
 
 /*
@@ -38,7 +40,8 @@ float atmospherics_altitude(vec3 w_pos) {
 */
 float atmospherics_air_density(vec3 w_pos) {
 	float altitude = atmospherics_altitude(w_pos);
-	return atmospherics_descriptor_pressure_rayleigh(atmospherics_descriptor_data, altitude);
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_pressure_rayleigh(desc, altitude);
 }
 
 /*
@@ -48,7 +51,8 @@ float atmospherics_air_density(vec3 w_pos) {
 */
 float atmospherics_aerosol_density(vec3 w_pos) {
 	float altitude = atmospherics_altitude(w_pos);
-	return atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_pressure_mie(desc, altitude);
 }
 
 /*
@@ -57,34 +61,9 @@ float atmospherics_aerosol_density(vec3 w_pos) {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-float atmospherics_optical_length_air(vec3 P0, vec3 P1, 
-									  sampler2DArray atmospheric_optical_length_lut) {
-	return atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor_data, 
-														   P0, P1, 
-														   atmospheric_optical_length_lut);
-}
-
-/*
-*	Returns the atmospheric aerosol optical length
-*
-*	@param P0	Start world position
-*	@param P1	End world position
-*/
-float atmospherics_optical_length_aerosol(vec3 P0, vec3 P1, 
-										  sampler2DArray atmospheric_optical_length_lut) {
-	return atmospherics_descriptor_optical_length_mie(atmospherics_descriptor_data, 
-													  P0, P1, 
-													  atmospheric_optical_length_lut);
-}
-
-/*
-*	Returns the atmospheric air optical length
-*
-*	@param P0	Start world position
-*	@param P1	End world position
-*/
-float atmospherics_optical_length_fast_air(vec3 P0, vec3 P1) {
-	return atmospherics_descriptor_optical_length_fast_rayleigh(atmospherics_descriptor_data, 
+float atmospherics_optical_length_air(vec3 P0, vec3 P1) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_rayleigh(desc, 
 														   P0, P1);
 }
 
@@ -94,9 +73,34 @@ float atmospherics_optical_length_fast_air(vec3 P0, vec3 P1) {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-float atmospherics_optical_length_fast_aerosol(vec3 P0, vec3 P1) {
-	return atmospherics_descriptor_optical_length_fast_mie(atmospherics_descriptor_data, 
+float atmospherics_optical_length_aerosol(vec3 P0, vec3 P1) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_mie(desc, 
 													  P0, P1);
+}
+
+/*
+*	Returns the atmospheric air optical length
+*
+*	@param P0	Start world position
+*	@param P1	End world position
+*/
+float atmospherics_optical_length_fast_air(vec3 P0, vec3 P1) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_fast_rayleigh(desc, 
+																P0, P1);
+}
+
+/*
+*	Returns the atmospheric aerosol optical length
+*
+*	@param P0	Start world position
+*	@param P1	End world position
+*/
+float atmospherics_optical_length_fast_aerosol(vec3 P0, vec3 P1) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_fast_mie(desc, 
+														   P0, P1);
 }
 
 /*
@@ -105,11 +109,10 @@ float atmospherics_optical_length_fast_aerosol(vec3 P0, vec3 P1) {
 *	@param P0	Start world position
 *	@param V	Normalized ray direction
 */
-float atmospherics_optical_length_ray_air(vec3 P0, vec3 V, 
-										  sampler2DArray atmospheric_optical_length_lut) {
-	return atmospherics_descriptor_optical_length_ray_rayleigh(atmospherics_descriptor_data, 
-															   P0, V, 
-															   atmospheric_optical_length_lut);
+float atmospherics_optical_length_ray_air(vec3 P0, vec3 V) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_ray_rayleigh(desc, 
+															   P0, V);
 }
 
 /*
@@ -118,25 +121,26 @@ float atmospherics_optical_length_ray_air(vec3 P0, vec3 V,
 *	@param P0	Start world position
 *	@param V	Normalized ray direction
 */
-float atmospherics_optical_length_ray_aerosol(vec3 P0, vec3 V, 
-											  sampler2DArray atmospheric_optical_length_lut) {
-	return atmospherics_descriptor_optical_length_ray_mie(atmospherics_descriptor_data, 
-														  P0, V, 
-														  atmospheric_optical_length_lut);
+float atmospherics_optical_length_ray_aerosol(vec3 P0, vec3 V) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_descriptor_optical_length_ray_mie(desc, 
+														  P0, V);
 }
 
 /*
 *	Returns the Mie extinction coefficient in m^-1
 */
 float atmospherics_mie_extinction_coeffcient() {
-	return atmospherics_mie_scattering(atmospherics_descriptor_data) + atmospherics_mie_absorption(atmospherics_descriptor_data);
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_mie_scattering(desc) + atmospherics_mie_absorption(desc);
 }
 
 /*
 *	Returns the Rayleigh extinction coefficient in m^-1
 */
 vec3 atmospherics_rayleigh_extinction_coeffcient() {
-	return atmospherics_rayleigh_scattering(atmospherics_descriptor_data);
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+	return atmospherics_rayleigh_scattering(desc);
 }
 
 /*
@@ -145,8 +149,7 @@ vec3 atmospherics_rayleigh_extinction_coeffcient() {
 *	@param P0	Start world position
 *	@param P1	End world position
 */
-vec3 extinct(vec3 P0, vec3 P1, 
-			 sampler2DArray atmospheric_optical_length_lut) {
+vec3 extinct(vec3 P0, vec3 P1) {
 	float tr = atmospherics_optical_length_fast_air(P0, P1);
 	float tm = atmospherics_optical_length_fast_aerosol(P0, P1);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
@@ -161,8 +164,7 @@ vec3 extinct(vec3 P0, vec3 P1,
 *	@param P1	World position
 *	@param P2	World position
 */
-vec3 extinct(vec3 P0, vec3 P1, vec3 P2, 
-			 sampler2DArray atmospheric_optical_length_lut) {
+vec3 extinct(vec3 P0, vec3 P1, vec3 P2) {
 	float tr = atmospherics_optical_length_fast_air(P0, P1) + 
 			   atmospherics_optical_length_fast_air(P1, P2);
 	float tm = atmospherics_optical_length_fast_aerosol(P0, P1) +
@@ -180,8 +182,7 @@ vec3 extinct(vec3 P0, vec3 P1, vec3 P2,
 *	@param P2	World position
 *	@param P3	World position
 */
-vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3, 
-			 sampler2DArray atmospheric_optical_length_lut) {
+vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3) {
 	float tr = atmospherics_optical_length_fast_air(P0, P1) + 
 			   atmospherics_optical_length_fast_air(P1, P2) + 
 			   atmospherics_optical_length_fast_air(P2, P3);
@@ -199,10 +200,9 @@ vec3 extinct(vec3 P0, vec3 P1, vec3 P2, vec3 P3,
 *	@param P0	Start point in world coordinates
 *	@param V	Normalized ray direction in world coordinates
 */
-vec3 extinct_ray(vec3 P0, vec3 V, 
-				 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_ray_air(P0, V, atmospheric_optical_length_lut);
-	float tm = atmospherics_optical_length_ray_aerosol(P0, V, atmospheric_optical_length_lut);
+vec3 extinct_ray(vec3 P0, vec3 V) {
+	float tr = atmospherics_optical_length_ray_air(P0, V);
+	float tm = atmospherics_optical_length_ray_aerosol(P0, V);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
 	return beer_lambert(t);
@@ -216,11 +216,10 @@ vec3 extinct_ray(vec3 P0, vec3 V,
 *	@param P1	World position
 *	@param V	Normalized ray direction in world coordinates
 */
-vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V, 
-				 sampler2DArray atmospheric_optical_length_lut) {
-	float tr = atmospherics_optical_length_ray_air(P1, V, atmospheric_optical_length_lut) + 
+vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V) {
+	float tr = atmospherics_optical_length_ray_air(P1, V) + 
 			   atmospherics_optical_length_fast_air(P0, P1);
-	float tm = atmospherics_optical_length_ray_aerosol(P1, V, atmospheric_optical_length_lut) +
+	float tm = atmospherics_optical_length_ray_aerosol(P1, V) +
 			   atmospherics_optical_length_fast_aerosol(P0, P1);
 	vec3 t = atmospherics_rayleigh_extinction_coeffcient() * tr +
 			 vec3(atmospherics_mie_extinction_coeffcient()) * tm;
@@ -238,19 +237,20 @@ vec3 extinct_ray(vec3 P0, vec3 P1, vec3 V,
 vec3 scatter(vec3 P0, 
 			 vec3 P1, 
 			 vec3 P2, 
-			 float len, 
-			 sampler2DArray atmospheric_optical_length_lut) {	
+			 float len) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+
 	vec3 i = normalize(P0 - P1);
 	vec3 o = normalize(P2 - P1);
-	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
+	float p_mie = cornette_shanks_phase_function(i, o, desc.phase);
 	
 	float altitude = atmospherics_altitude(P1);
-	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
+	float density_m = atmospherics_descriptor_pressure_mie(desc, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(desc).xxx;
 		
 	vec3 scattered_intensity = scatter_coefficient * len;
-	vec3 extinction = extinct(P0, P1, P2, atmospheric_optical_length_lut);
+	vec3 extinction = extinct(P0, P1, P2);
 
 	return scattered_intensity * extinction;
 }
@@ -267,19 +267,20 @@ vec3 scatter(vec3 P0,
 vec3 scatter_ray(vec3 P0,
 				 vec3 P1, 
 				 vec3 V, 
-				 float len, 
-				 sampler2DArray atmospheric_optical_length_lut) {
+				 float len) {
+	atmospherics_descriptor desc = atmospherics_descriptor_data;
+
 	vec3 i = normalize(P0 - P1);
 	vec3 o = V;
-	float p_mie = cornette_shanks_phase_function(i, o, atmospherics_descriptor_data.phase);
+	float p_mie = cornette_shanks_phase_function(i, o, desc.phase);
 	
 	float altitude = atmospherics_altitude(P1);
-	float density_m = atmospherics_descriptor_pressure_mie(atmospherics_descriptor_data, altitude);
+	float density_m = atmospherics_descriptor_pressure_mie(desc, altitude);
 
-	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(atmospherics_descriptor_data).xxx;
+	vec3 scatter_coefficient = density_m * p_mie * atmospherics_mie_scattering(desc).xxx;
 	
 	vec3 scattered_intensity = scatter_coefficient * len;
-	vec3 extinction = extinct_ray(P0, P1, V, atmospheric_optical_length_lut);
+	vec3 extinction = extinct_ray(P0, P1, V);
 
 	return scattered_intensity * extinction;
 }
@@ -312,9 +313,7 @@ float cie_scattering_indicatrix_normalizer() {
 *	@param L		Light direction
 *	@param V		Viewing direction
 */
-vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V, 
-						 sampler3D atmospheric_scattering_lut,
-						 sampler3D atmospheric_mie0_scattering_lut) {
+vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V) {
 	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
 	float r = atmospherics_descriptor_data.center_radius.w;
 
@@ -358,8 +357,7 @@ vec3 atmospheric_scatter(vec3 P, vec3 L, vec3 V,
 *	@param NdotL	Cosine of surface normal and light direction
 *	@param L		Light direction
 */
-vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L, 
-						 sampler3D atmospheric_ambient_lut) {
+vec3 atmospheric_ambient(vec3 P, float NdotL, vec3 L) {
 	vec3 C = atmospherics_descriptor_data.center_radius.xyz;
 	float r = atmospherics_descriptor_data.center_radius.w;
 

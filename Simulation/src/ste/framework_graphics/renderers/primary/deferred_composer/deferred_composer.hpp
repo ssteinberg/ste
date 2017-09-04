@@ -8,7 +8,6 @@
 #include <rendering_system.hpp>
 
 #include <material_lut_storage.hpp>
-#include <atmospherics_lut_storage.hpp>
 
 #include <fragment_graphics.hpp>
 
@@ -25,13 +24,13 @@ private:
 	gl::task<gl::cmd_draw> draw_task;
 
 	gl::rendering_system::storage_ptr<material_lut_storage> material_luts;
-	gl::rendering_system::storage_ptr<atmospherics_lut_storage> atmospherics_luts;
 
 public:
 	deferred_composer(const gl::rendering_system &rs)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
-			   "fullscreen_triangle.vert", "deferred_compose.frag")
+			   "fullscreen_triangle.vert", "deferred_compose.frag"),
+		material_luts(rs.acquire_storage<material_lut_storage>())
 	{
 		draw_task.attach_pipeline(pipeline);
 	}

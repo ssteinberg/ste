@@ -440,8 +440,8 @@ public:
 
 			// Verify and erase variables that are handled externally
 			if (external_binding_set) {
-				erase_sets_provided_by_external_binding_sets(all_variables);
 				attach_external_binding_set_collection(external_binding_set.get().get());
+				erase_sets_provided_by_external_binding_sets(all_variables);
 			}
 
 			// Then create variables' layouts

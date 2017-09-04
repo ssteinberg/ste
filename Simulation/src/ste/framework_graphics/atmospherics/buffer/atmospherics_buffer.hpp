@@ -34,6 +34,8 @@ public:
 		auto d = descriptor(p);
 		recorder << buffer.overwrite_cmd(0, d.get());
 	}
+
+	const auto& get() const { return buffer; }
 };
 
 }
