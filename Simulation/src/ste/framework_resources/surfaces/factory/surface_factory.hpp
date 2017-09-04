@@ -22,6 +22,7 @@
 #include <format_type_traits.hpp>
 #include <image_type_traits.hpp>
 #include <device_image_format_properties.hpp>
+#include <device_image_capabilities_query.hpp>
 
 namespace ste {
 namespace resource {
@@ -57,9 +58,24 @@ private:
 		auto m = static_cast<std::uint32_t>(surface.levels());
 		auto mip_levels = generate_mipmaps ? static_cast<std::uint32_t>(Surface::max_levels(extent)) : m;
 
-		// Create image
 		gl::device_image_flags flags = gl::device_image_flags::none;
 		if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
+
+		// Check device capabilites
+		auto caps = gl::device_image_capabilities_query<dimensions>(ctx.device()->get_physical_device_descriptor(),
+																	image_format,
+																	usage,
+																	flags);
+		if (!caps.supported) {
+			throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+		}
+		if (glm::any(glm::greaterThan(extent, caps.max_extent)) || 
+			mip_levels > caps.max_levels || 
+			layers > caps.max_layers) {
+			throw surface_unsupported_format_error("Required surface extent, levels and layers combination unsupported by device");
+		}
+
+		// Create image
 		gl::device_image<dimensions, image_allocation_policy>
 			image(ctx, gl::image_initial_layout::unused,
 			      image_format, extent, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
@@ -152,7 +168,7 @@ private:
 			ctx,
 			[=, &ctx]() mutable
 		{
-			// Check optimal tiling support
+			// Check tiling support
 			const auto format_properties = gl::device_image_format_query(ctx.device()->get_physical_device_descriptor(),
 																		 image_format,
 																		 usage);
@@ -160,10 +176,25 @@ private:
 				throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
 			}
 
-			// Create image
 			gl::device_image_flags flags = gl::device_image_flags::none;
 			if (supports_cube_views)				flags = flags | gl::device_image_flags::support_cube_views;
 			if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
+
+			// Check device capabilites
+			auto caps = gl::device_image_capabilities_query<dimensions>(ctx.device()->get_physical_device_descriptor(),
+																		image_format,
+																		usage,
+																		flags);
+			if (!caps.supported) {
+				throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+			}
+			if (glm::any(glm::greaterThan(extent, caps.max_extent)) ||
+				levels > caps.max_levels ||
+				layers > caps.max_layers) {
+				throw surface_unsupported_format_error("Required surface extent, levels and layers combination unsupported by device");
+			}
+
+			// Create image
 			gl::device_image<dimensions, gl::device_resource_allocation_policy_device> image(
 				ctx, gl::image_initial_layout::unused,
 				image_format, extent, usage,

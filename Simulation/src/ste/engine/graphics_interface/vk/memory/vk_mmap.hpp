@@ -74,9 +74,9 @@ public:
 	void flush_ranges(const lib::vector<vk_mapped_memory_range> &ranges) const {
 		lib::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
 
-		vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(),
-												  mapped_ranges.size(),
-												  mapped_ranges.data());
+		const vk_result res = vkFlushMappedMemoryRanges(memory.get_creating_device(),
+														static_cast<std::uint32_t>(mapped_ranges.size()),
+														mapped_ranges.data());
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -88,9 +88,9 @@ public:
 	void invalidate_ranges(const lib::vector<vk_mapped_memory_range> &ranges) const {
 		lib::vector<VkMappedMemoryRange> mapped_ranges = vk_mapped_memory_ranges(ranges);
 
-		vk_result res = vkInvalidateMappedMemoryRanges(memory.get_creating_device(),
-													   mapped_ranges.size(),
-													   mapped_ranges.data());
+		const vk_result res = vkInvalidateMappedMemoryRanges(memory.get_creating_device(),
+															 static_cast<std::uint32_t>(mapped_ranges.size()),
+															 mapped_ranges.data());
 		if (!res) {
 			throw vk_exception(res);
 		}

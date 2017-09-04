@@ -27,6 +27,8 @@ namespace gl {
 
 namespace vk {
 
+static constexpr VkImageCreateFlags vk_image_default_flags = VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
+
 template <typename host_allocator = vk_host_allocator<>>
 class vk_image : public vk_resource<host_allocator>, public allow_type_decay<vk_image<host_allocator>, VkImage> {
 protected:
@@ -103,7 +105,7 @@ public:
 			0;
 		if (supports_cube_views)
 			flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-		flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
+		flags |= vk_image_default_flags;
 
 		VkImageCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
