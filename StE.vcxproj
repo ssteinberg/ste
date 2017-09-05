@@ -189,7 +189,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -243,7 +243,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -311,7 +311,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -381,7 +381,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -443,7 +443,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -507,7 +507,7 @@
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>

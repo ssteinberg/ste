@@ -12,7 +12,7 @@ layout(binding = 0) uniform sampler2D depth_target;
 layout(rg32f, binding = 1) restrict writeonly uniform image2D output_images[levels];
 
 const int sample_count = 1 << (levels-1);
-vec2 samples[sample_count][sample_count];
+vec2 samples[sample_count * 2];
 
 void main() {
 	ivec2 coords = ivec2(gl_GlobalInvocationID.xy) << (levels - 1);
