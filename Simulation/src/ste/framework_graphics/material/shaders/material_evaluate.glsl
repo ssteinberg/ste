@@ -273,7 +273,7 @@ vec3 material_evaluate_radiance(material_descriptor md,
 		float thickness = material_is_base_layer(descriptor) ? object_thickness : descriptor.thickness;
 		float metallic = descriptor.metallic;
 		float roughness = descriptor.roughness;
-		vec3 attenuation_coefficient = descriptor.attenuation_coefficient;
+		vec3 attenuation_coefficient = descriptor.attenuation_coefficient.rgb;
 		float bottom_medium_ior = descriptor.ior;
 		
 		// Compute sine and cosine of critical angle
@@ -369,7 +369,8 @@ vec3 material_evaluate_radiance(material_descriptor md,
 
 		// Set ior and descriptor for next layer
 		top_medium_ior = bottom_medium_ior;
-		descriptor = material_layer_unpack(mat_layer_descriptor[descriptor.next_layer_id], uv, duvdx, duvdy);
+		material_layer_descriptor next_layer_material_descriptor = mat_layer_descriptor[descriptor.next_layer_id];
+		descriptor = material_layer_unpack(next_layer_material_descriptor, uv, duvdx, duvdy);
 	}
 
 	// Apply occlusion

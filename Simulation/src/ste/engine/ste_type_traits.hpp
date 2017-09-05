@@ -9,6 +9,7 @@
 
 #include <half.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/dual_quaternion.hpp>
 
 namespace ste {
 
@@ -42,6 +43,10 @@ template<typename vecT> struct _type_elements_count_impl<glm::tvec4<vecT>> {
 template<typename quatT> struct _type_elements_count_impl<glm::tquat<quatT>> {
 	static constexpr std::size_t rows = 4;
 	static constexpr std::size_t elements = 4;
+};
+template<typename quatT> struct _type_elements_count_impl<glm::tdualquat<quatT>> {
+	static constexpr std::size_t rows = 4;
+	static constexpr std::size_t elements = 8;
 };
 template<typename matT> struct _type_elements_count_impl<glm::tmat2x2<matT>> {
 	static constexpr std::size_t rows = 2;
@@ -177,6 +182,7 @@ template<typename vecT> struct _type_remove_extents<glm::tvec2<vecT>> { using ty
 template<typename vecT> struct _type_remove_extents<glm::tvec3<vecT>> { using type = vecT; };
 template<typename vecT> struct _type_remove_extents<glm::tvec4<vecT>> { using type = vecT; };
 template<typename quatT> struct _type_remove_extents<glm::tquat<quatT>> { using type = quatT; };
+template<typename quatT> struct _type_remove_extents<glm::tdualquat<quatT>> { using type = quatT; };
 template<typename matT> struct _type_remove_extents<glm::tmat2x2<matT>> { using type = matT; };
 template<typename matT> struct _type_remove_extents<glm::tmat2x3<matT>> { using type = matT; };
 template<typename matT> struct _type_remove_extents<glm::tmat2x4<matT>> { using type = matT; };

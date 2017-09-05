@@ -59,13 +59,13 @@ public:
 	}
 
 	// Use linear_clamp sampler
-	auto& get_atmospherics_optical_length_lut() const { return atmospherics_optical_length_lut; }
+	auto& get_atmospherics_optical_length_lut() const { return atmospherics_optical_length_lut.get(); }
 	// Use linear_clamp sampler
-	auto& get_atmospherics_scatter_lut() const { return atmospherics_scatter_lut; }
+	auto& get_atmospherics_scatter_lut() const { return atmospherics_scatter_lut.get(); }
 	// Use linear_clamp sampler
-	auto& get_atmospherics_mie0_scatter_lut() const { return atmospherics_mie0_scatter_lut; }
+	auto& get_atmospherics_mie0_scatter_lut() const { return atmospherics_mie0_scatter_lut.get(); }
 	// Use linear_clamp sampler
-	auto& get_atmospherics_ambient_lut() const { return atmospherics_ambient_lut; }
+	auto& get_atmospherics_ambient_lut() const { return atmospherics_ambient_lut.get(); }
 };
 
 }

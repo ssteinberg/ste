@@ -35,7 +35,7 @@ struct vertex_input_layout {
 	using tuple_t = std::tuple<Ts...>;
 	static constexpr char _vertex_input_tag = 0;
 
-	static constexpr std::size_t count = sizeof...(Ts);
+	static constexpr std::size_t count_elements = sizeof...(Ts);
 	template <int N>
 	using type_at = typename typelist_type_at<N, Ts...>::type;
 
@@ -104,9 +104,9 @@ static constexpr auto is_vertex_input_layout_v = is_vertex_input_layout<T>::valu
 template <typename Block>
 auto vertex_input_offset_of(int element) {
 	static_assert(is_vertex_input_layout_v<Block>, "Block is not a vertex_input_layout");
-	assert(element < Block::count);
+	assert(element < Block::count_elements);
 
-	return _detail::vertex_input_offset_of_helper<Block::count - 1, Block>()(element);
+	return _detail::vertex_input_offset_of_helper<Block::count_elements - 1, Block>()(element);
 }
 template <typename... Ts>
 constexpr auto vertex_input_offset_of(int N, const vertex_input_layout<Ts...> &layout) {

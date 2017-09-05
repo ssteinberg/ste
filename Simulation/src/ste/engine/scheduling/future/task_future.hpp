@@ -126,6 +126,13 @@ private:
 public:
 	task_future_impl() = default;
 
+	/*
+	 *	@brief	ctor, consumes a future object to create a task_future wrapper
+	 *	
+	 *	@param	future	Future to consume
+	 */
+	explicit task_future_impl(future_type &&future) : sched(nullptr), future(std::move(future)) {}
+
 	/**
 	*	@brief	Move ctor.
 	*

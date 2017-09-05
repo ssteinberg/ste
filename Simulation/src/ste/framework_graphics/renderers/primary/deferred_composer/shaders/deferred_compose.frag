@@ -2,6 +2,14 @@
 #type frag
 #version 450
 
+layout(set=0, binding=0) uniform sampler3D scattering_volume;
+
+layout(set=0, binding=1) uniform sampler2D microfacet_refraction_fit_lut;
+layout(set=0, binding=2) uniform sampler2DArray microfacet_transmission_fit_lut;
+
+layout(set=0, binding=3) uniform sampler2D ltc_ggx_fit;
+layout(set=0, binding=4) uniform sampler2D ltc_ggx_amplitude;
+
 #include <chromaticity.glsl>
 
 #include <light.glsl>
@@ -14,19 +22,6 @@
 
 #include <material.glsl>
 #include <material_evaluate.glsl>
-
-layout(location = 7) uniform sampler2D microfacet_refraction_fit_lut;
-layout(location = 8) uniform sampler2DArray microfacet_transmission_fit_lut;
-
-layout(location = 9) uniform sampler2D ltc_ggx_fit;
-layout(location = 10) uniform sampler2D ltc_ggx_amplitude;
-
-layout(location = 11) uniform sampler3D scattering_volume;
-
-layout(location = 12) uniform sampler2DArray atmospheric_optical_length_lut;
-layout(location = 13) uniform sampler3D atmospheric_scattering_lut;
-layout(location = 14) uniform sampler3D atmospheric_mie0_scattering_lut;
-layout(location = 15) uniform sampler3D atmospheric_ambient_lut;
 
 #include <deferred_shading.glsl>
 

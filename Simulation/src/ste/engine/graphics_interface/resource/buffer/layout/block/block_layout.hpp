@@ -47,13 +47,13 @@ struct block_layout {
 		return _detail::block_layout_getter<N>()(_front.block);
 	}
 
-	static constexpr std::size_t count = sizeof...(Ts);
+	static constexpr std::size_t elements_count = sizeof...(Ts);
 	template <int N>
 	using type_at = decltype(_detail::block_layout_getter<N>()(_front.block));
 
 	block_layout() = default;
 	block_layout(tuple_t &&tuple) {
-		using initializer = _detail::block_layout_initialize_block_layout_with_tuple<0, count, tuple_t, block_layout<base_alignment, Ts...>>;
+		using initializer = _detail::block_layout_initialize_block_layout_with_tuple<0, elements_count, tuple_t, block_layout<base_alignment, Ts...>>;
 		initializer()(*this, std::move(tuple));
 	}
 	block_layout(Ts&&... args) : block_layout(tuple_t(std::forward<Ts>(args)...)) {}

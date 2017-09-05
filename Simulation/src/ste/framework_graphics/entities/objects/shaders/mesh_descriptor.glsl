@@ -7,8 +7,9 @@ struct mesh_descriptor {
 
 	int matIdx;
 	int light_caster;
-
-	float _unused[2];
+	
+	float _unused0;
+	float _unused1;
 };
 
 struct mesh_draw_params {

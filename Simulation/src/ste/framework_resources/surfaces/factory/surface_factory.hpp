@@ -21,6 +21,8 @@
 #include <format.hpp>
 #include <format_type_traits.hpp>
 #include <image_type_traits.hpp>
+#include <device_image_format_properties.hpp>
+#include <device_image_capabilities_query.hpp>
 
 namespace ste {
 namespace resource {
@@ -39,8 +41,13 @@ private:
 	                                              bool generate_mipmaps = true) {
 		static_assert(resource::is_surface_v<Surface>);
 
-		static constexpr gl::format surface_format = Surface::surface_format();
-		static constexpr gl::image_type surface_image_type = Surface::surface_image_type();
+		// Check optimal tiling support
+		const auto format_properties = gl::device_image_format_query(ctx.device()->get_physical_device_descriptor(),
+																	 image_format,
+																	 usage);
+		if (!format_properties.optimal_tiling && !format_properties.linear_tiling) {
+			throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+		}
 
 		// Convert surface to target image_format
 		auto surface = surface_convert::convert<image_format>(std::move(source));
@@ -51,11 +58,29 @@ private:
 		auto m = static_cast<std::uint32_t>(surface.levels());
 		auto mip_levels = generate_mipmaps ? static_cast<std::uint32_t>(Surface::max_levels(extent)) : m;
 
+		gl::device_image_flags flags = gl::device_image_flags::none;
+		if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
+
+		// Check device capabilites
+		auto caps = gl::device_image_capabilities_query<dimensions>(ctx.device()->get_physical_device_descriptor(),
+																	image_format,
+																	usage,
+																	flags);
+		if (!caps.supported) {
+			throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+		}
+		if (glm::any(glm::greaterThan(extent, caps.max_extent)) || 
+			mip_levels > caps.max_levels || 
+			layers > caps.max_layers) {
+			throw surface_unsupported_format_error("Required surface extent, levels and layers combination unsupported by device");
+		}
+
 		// Create image
 		gl::device_image<dimensions, image_allocation_policy>
 			image(ctx, gl::image_initial_layout::unused,
 			      image_format, extent, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
-			      mip_levels, layers);
+			      mip_levels, layers,
+				  flags);
 
 		// Copy surface to image
 		gl::fill_image(image,
@@ -143,11 +168,38 @@ private:
 			ctx,
 			[=, &ctx]() mutable
 		{
+			// Check tiling support
+			const auto format_properties = gl::device_image_format_query(ctx.device()->get_physical_device_descriptor(),
+																		 image_format,
+																		 usage);
+			if (!format_properties.optimal_tiling && !format_properties.linear_tiling) {
+				throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+			}
+
+			gl::device_image_flags flags = gl::device_image_flags::none;
+			if (supports_cube_views)				flags = flags | gl::device_image_flags::support_cube_views;
+			if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
+
+			// Check device capabilites
+			auto caps = gl::device_image_capabilities_query<dimensions>(ctx.device()->get_physical_device_descriptor(),
+																		image_format,
+																		usage,
+																		flags);
+			if (!caps.supported) {
+				throw surface_unsupported_format_error("Required surface format with specified usages is unsupported by device");
+			}
+			if (glm::any(glm::greaterThan(extent, caps.max_extent)) ||
+				levels > caps.max_levels ||
+				layers > caps.max_layers) {
+				throw surface_unsupported_format_error("Required surface extent, levels and layers combination unsupported by device");
+			}
+
 			// Create image
 			gl::device_image<dimensions, gl::device_resource_allocation_policy_device> image(
 				ctx, gl::image_initial_layout::unused,
 				image_format, extent, usage,
-				levels, layers, supports_cube_views);
+				levels, layers, 
+				flags);
 
 			// Transfer to primary queue and desired layout
 			gl::access_flags access = gl::access_flags_for_image_layout(layout);
@@ -388,7 +440,7 @@ public:
 	/**
 	*	@brief	Constructs and returns a ste_resource<device_image> object which asynchronously creates an empty image object and transforms it to the
 	*			desired layout.
-	*			The constructed image is created with optimal tiling and default allocation policy.
+	*			The constructed image is created with optimal tiling (if possible) and default allocation policy.
 	*
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
@@ -417,7 +469,7 @@ public:
 	/**
 	*	@brief	Constructs and returns a ste_resource<device_image> object which asynchronously creates an empty image object and transforms it to the
 	*			desired layout.
-	*			The constructed image is created with optimal tiling and default allocation policy.
+	*			The constructed image is created with optimal tiling (if possible) and default allocation policy.
 	*
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
@@ -425,30 +477,58 @@ public:
 	*	@param	extent		Image extent
 	*	@param	layers		Image layers
 	*	@param	levels		Image mipmap levels
-	*	@param	supports_cube_views	If set to true the created image will support cube-map views. Extent.x must equal to extent.y in that case.
 	*/
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<
-		          ste_resource_async_policy_task_scheduler>>
-	static auto image_empty_2d(const ste_context& ctx,
-	                           const gl::image_usage& usage,
-	                           const gl::image_layout& layout,
-	                           const gl::image_extent_type_t<2>& extent,
-	                           std::uint32_t layers = 1,
-	                           std::uint32_t levels = 1,
-	                           bool supports_cube_views = false) {
+		ste_resource_async_policy_task_scheduler>>
+		static auto image_empty_2d(const ste_context& ctx,
+								   const gl::image_usage& usage,
+								   const gl::image_layout& layout,
+								   const gl::image_extent_type_t<2>& extent,
+								   std::uint32_t layers = 1,
+								   std::uint32_t levels = 1) {
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
-		                                                                              usage,
-		                                                                              layout,
-		                                                                              extent,
-		                                                                              layers,
-		                                                                              levels,
-		                                                                              supports_cube_views);
+																					  usage,
+																					  layout,
+																					  extent,
+																					  layers,
+																					  levels,
+																					  false);
+	}
+
+	/**
+	*	@brief	Constructs and returns a ste_resource<device_image> object which asynchronously creates an empty image object and transforms it to the
+	*			desired layout. The resulting image is a 2D array, cubemap-compatible image.
+	*			The constructed image is created with optimal tiling (if possible) and default allocation policy.
+	*
+	*	@param	ctx			Context
+	*	@param	usage		Image usage flags
+	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	extent		Image extent for both x and y dimensions
+	*	@param	cubemap_layers	Cubemap layers. The returned image will have cubemap_layers*6 total layers.
+	*	@param	levels		Image mipmap levels
+	*/
+	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<
+		ste_resource_async_policy_task_scheduler>>
+		static auto image_empty_cubemap(const ste_context& ctx,
+										const gl::image_usage& usage,
+										const gl::image_layout& layout,
+										std::uint32_t extent,
+										std::uint32_t cubemap_layers,
+										std::uint32_t levels = 1) {
+		const auto layers = cubemap_layers * 6;
+		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																					  usage,
+																					  layout,
+																					  { extent, extent },
+																					  layers,
+																					  levels,
+																					  true);
 	}
 
 	/**
 	*	@brief	Constructs and returns a ste_resource<device_image> object which asynchronously creates an empty image object and transforms it to the
 	*			desired layout.
-	*			The constructed image is created with optimal tiling and default allocation policy.
+	*			The constructed image is created with optimal tiling (if possible) and default allocation policy.
 	*
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags

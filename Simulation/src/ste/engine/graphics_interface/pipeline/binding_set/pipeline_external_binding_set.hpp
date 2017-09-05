@@ -33,6 +33,7 @@ private:
 	using layout_t = pipeline_external_binding_set_layout;
 
 	using name_binding_map_t = lib::flat_map<lib::string, const pipeline_external_binding_layout*>;
+	using spec_binding_map_t = lib::flat_map<lib::string, pipeline_external_binding_layout>;
 
 	using spec_to_dependant_array_variables_t = lib::flat_set<const ste_shader_stage_variable*>;
 	using spec_map_t = lib::flat_map<ste_shader_program_stage, vk::vk_shader<>::spec_map>;
@@ -52,7 +53,7 @@ private:
 
 	name_binding_map_t name_map;
 
-	name_binding_map_t spec_variables_map;
+	spec_binding_map_t spec_variables_map;
 	spec_to_dependant_array_variables_t spec_dependant_array_variables;
 	spec_map_t specializations;
 	mutable signal_specialization_change_t signal_specialization_change;
@@ -83,12 +84,12 @@ private:
 								  const T *value = nullptr) {
 		// Specialize the binding scalar variable
 		// Used for dynamic array lengths
-		auto it = spec_variables_map.find(name);
+		const auto it = spec_variables_map.find(name);
 		if (it == spec_variables_map.end()) {
 			throw pipeline_layout_variable_not_found_exception("Specialization constant with provided name not found");
 		}
 
-		auto &b = it->second->get_binding();
+		auto &b = it->second.get_binding();
 		auto *var = b.variable.get();
 		auto *ptr = dynamic_cast<ste_shader_stage_variable_scalar*>(var);
 		assert(ptr);
@@ -107,7 +108,7 @@ private:
 		}
 
 		// Update shader stage specializations
-		for (auto &s : it->second->stage_collection()) {
+		for (auto &s : it->second.stage_collection()) {
 			auto& map = specializations[s];
 			if (data)
 				map[b.bind_idx] = data.get();
@@ -116,7 +117,7 @@ private:
 		}
 
 		// Signal specialization constant change
-		signal_specialization_change.emit(this, it->second->stage_collection());
+		signal_specialization_change.emit(this, it->second.stage_collection());
 
 		// If some array variable depends on this specialization constant, we need to update the relevant set descriptor layouts
 		if (spec_dependant_array_variables.find(var) != spec_dependant_array_variables.end()) {
@@ -158,32 +159,43 @@ public:
 	 *	@brief	External binding set collection constructor.
 	 */
 	pipeline_external_binding_set(layout_t &&input_layout,
+								  lib::vector<pipeline_external_binding_layout> &&spec_constant_binding_layouts,
 								  pipeline_binding_set_pool &pool)
 		: pool(pool),
 		set_index(input_layout.get_set_index()),
 		layout(std::move(input_layout))
 	{
 		for (auto &b : layout) {
+			assert(b.get_binding().binding_type != ste_shader_stage_binding_type::spec_constant);
 			if (b.get_binding().binding_type == ste_shader_stage_binding_type::push_constant) {
 				throw pipeline_layout_push_constant_in_external_set_exception("External binding sets can not containt push constants");
 			}
 
 			// Check for duplicate names
-			auto ret = name_map.try_emplace(b.name(), &b);
+			const auto ret = name_map.try_emplace(b.name(), &b);
 			if (!ret.second) {
 				// Name already exists
 				throw pipeline_layout_duplicate_variable_name_exception("Variable's name already exists in collection");
-			}
-
-			// Individually map specialization constants
-			if (b.get_binding().binding_type == ste_shader_stage_binding_type::spec_constant) {
-				spec_variables_map[b.name()] = &b;
 			}
 
 			// Map array variables whose length depends on specialization constants
 			auto var_arr = dynamic_cast<const ste_shader_stage_variable_array*>(b.get_binding().variable.get());
 			if (var_arr && var_arr->length_spec_constant()) {
 				spec_dependant_array_variables.insert(var_arr->get_length_spec_constant_var());
+			}
+		}
+
+		// Individually map specialization constants
+		for (auto &b : spec_constant_binding_layouts) {
+			assert(b.get_binding().binding_type == ste_shader_stage_binding_type::spec_constant);
+			auto spec_variables_map_it = spec_variables_map.emplace(b.name(), std::move(b));
+
+			// Check for duplicate names
+			const auto ret = name_map.try_emplace(spec_variables_map_it.first->second.name(), 
+												  &spec_variables_map_it.first->second);
+			if (!ret.second) {
+				// Name already exists
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name already exists in collection");
 			}
 		}
 

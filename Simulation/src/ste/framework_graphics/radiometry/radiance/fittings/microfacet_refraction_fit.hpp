@@ -32,7 +32,7 @@ class microfacet_refraction_fit {
 		data_ptr data;
 
 		void alloc_with_size(std::size_t size) {
-			data = data_ptr(new refraction_fit_exp2[size * size]);
+			data = lib::allocate_unique<refraction_fit_exp2[]>(size * size);
 		}
 	};
 

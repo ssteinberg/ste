@@ -49,7 +49,7 @@ private:
 			ste_log() << text::attributed_string("Loaded \"") + i(name) + "\" successfully." << std::endl;
 
 			return fit_data;
-		};
+		}
 	};
 
 public:

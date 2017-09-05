@@ -49,6 +49,10 @@ struct atmospherics_descriptor {
 	float Hr_max;
 };
 
+layout(std430, set=2, binding=27) restrict readonly buffer atmospherics_descriptor_binding {
+	atmospherics_descriptor atmospherics_descriptor_data;
+};
+
 
 float atmospherics_mie_scattering(atmospherics_descriptor desc) {
 	return desc.scattering_coefficients.w;
@@ -114,8 +118,7 @@ vec3 atmospherics_descriptor_rayleigh_extinction_coeffcient(atmospherics_descrip
 float atmospherics_descriptor_optical_length_ray(vec3 P0, vec3 V, float H, 
 												 vec3 C, float r,
 												 float Hmax,
-												 float lut_array_idx,
-												 sampler2DArray atmospheric_optical_length_lut) {
+												 float lut_array_idx) {
 	vec3 Y = P0 - C;
 	float Ylen = length(Y);
 	vec3 N = Y / Ylen;
@@ -143,8 +146,7 @@ float atmospherics_descriptor_optical_length_ray(vec3 P0, vec3 V, float H,
 float atmospherics_descriptor_optical_length(vec3 P0, vec3 P1, float H, 
 											 vec3 C, float r,
 											 float Hmax,
-											 float lut_array_idx,
-											 sampler2DArray atmospheric_optical_length_lut) {
+											 float lut_array_idx) {
 	if (P0 == P1)
 		return .0f;
 
@@ -153,13 +155,11 @@ float atmospherics_descriptor_optical_length(vec3 P0, vec3 P1, float H,
 	float l0 = atmospherics_descriptor_optical_length_ray(P0, V, H,
 														  C, r,
 														  Hmax,
-														  lut_array_idx,
-														  atmospheric_optical_length_lut);
+														  lut_array_idx);
 	float l1 = atmospherics_descriptor_optical_length_ray(P1, V, H,
 														  C, r,
 														  Hmax,
-														  lut_array_idx,
-														  atmospheric_optical_length_lut);
+														  lut_array_idx);
 
 	return abs(l0 - l1);
 }
@@ -219,13 +219,11 @@ float atmospherics_descriptor_optical_length_fast_mie(atmospherics_descriptor de
 *	@param P1	End point
 */
 float atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor desc, 
-													  vec3 P0, vec3 P1, 
-													  sampler2DArray atmospheric_optical_length_lut) {
+													  vec3 P0, vec3 P1) {
 	return atmospherics_descriptor_optical_length(P0, P1, desc.Hr, 
 												  desc.center_radius.xyz, desc.center_radius.w, 
 												  desc.Hr_max, 
-												  atmospherics_optical_length_air_lut_idx,
-												  atmospheric_optical_length_lut);
+												  atmospherics_optical_length_air_lut_idx);
 }
 /*
 *	Returns the optical length between 2 points for Mie scattering.
@@ -234,13 +232,11 @@ float atmospherics_descriptor_optical_length_rayleigh(atmospherics_descriptor de
 *	@param P1	End point
 */
 float atmospherics_descriptor_optical_length_mie(atmospherics_descriptor desc, 
-												 vec3 P0, vec3 P1,
-												 sampler2DArray atmospheric_optical_length_lut) {
+												 vec3 P0, vec3 P1) {
 	return atmospherics_descriptor_optical_length(P0, P1, desc.Hm, 
 												  desc.center_radius.xyz, desc.center_radius.w, 
 												  desc.Hm_max, 
-												  atmospherics_optical_length_aerosols_lut_idx,
-												  atmospheric_optical_length_lut);
+												  atmospherics_optical_length_aerosols_lut_idx);
 }
 
 /*
@@ -250,13 +246,11 @@ float atmospherics_descriptor_optical_length_mie(atmospherics_descriptor desc,
 *	@param V	Ray direction
 */
 float atmospherics_descriptor_optical_length_ray_rayleigh(atmospherics_descriptor desc, 
-														  vec3 P0, vec3 V,
-														  sampler2DArray atmospheric_optical_length_lut) {
+														  vec3 P0, vec3 V) {
 	return atmospherics_descriptor_optical_length_ray(P0, V, desc.Hr, 
 													  desc.center_radius.xyz, desc.center_radius.w, 
 													  desc.Hr_max, 
-													  atmospherics_optical_length_air_lut_idx,
-													  atmospheric_optical_length_lut);
+													  atmospherics_optical_length_air_lut_idx);
 }
 /*
 *	Returns the optical length for a ray for Mie scattering.
@@ -265,11 +259,9 @@ float atmospherics_descriptor_optical_length_ray_rayleigh(atmospherics_descripto
 *	@param V	Ray direction
 */
 float atmospherics_descriptor_optical_length_ray_mie(atmospherics_descriptor desc, 
-													 vec3 P0, vec3 V,
-													 sampler2DArray atmospheric_optical_length_lut) {
+													 vec3 P0, vec3 V) {
 	return atmospherics_descriptor_optical_length_ray(P0, V, desc.Hm, 
 													  desc.center_radius.xyz, desc.center_radius.w, 
 													  desc.Hm_max, 
-													  atmospherics_optical_length_aerosols_lut_idx,
-													  atmospheric_optical_length_lut);
+													  atmospherics_optical_length_aerosols_lut_idx);
 }

@@ -145,15 +145,15 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 			continue;
 		}
 
-		auto font_attrib = attributes::font::bind(wstr.attrib_of_type(attributes::attrib_type::font, { i,1 }));
-		auto color_attrib = attributes::rgb::bind(wstr.attrib_of_type(attributes::attrib_type::color, { i,1 }));
-		auto size_attrib = attributes::size::bind(wstr.attrib_of_type(attributes::attrib_type::size, { i,1 }));
-		auto stroke_attrib = attributes::stroke::bind(wstr.attrib_of_type(attributes::attrib_type::stroke, { i,1 }));
-		auto weight_attrib = attributes::weight::bind(wstr.attrib_of_type(attributes::attrib_type::weight, { i,1 }));
+		const auto font_attrib = attributes::font::bind(wstr.attrib_of_type(attributes::attrib_type::font, { i,1 }));
+		const auto color_attrib = attributes::rgb::bind(wstr.attrib_of_type(attributes::attrib_type::color, { i,1 }));
+		const auto size_attrib = attributes::size::bind(wstr.attrib_of_type(attributes::attrib_type::size, { i,1 }));
+		const auto stroke_attrib = attributes::stroke::bind(wstr.attrib_of_type(attributes::attrib_type::stroke, { i,1 }));
+		const auto weight_attrib = attributes::weight::bind(wstr.attrib_of_type(attributes::attrib_type::weight, { i,1 }));
 
 		const font &font = font_attrib ? font_attrib->get() : default_font;
-		int size = size_attrib ? size_attrib->get() : default_size;
-		glm::u8vec4 color = color_attrib ? color_attrib->get() : glm::u8vec4{ 255, 255, 255, 255 };
+		const int size = size_attrib ? size_attrib->get() : default_size;
+		const glm::u8vec4 color = color_attrib ? color_attrib->get() : glm::u8vec4{ 255, 255, 255, 255 };
 
 		auto optional_g = gm.glyph_for_font(font, wstr[i]);
 		if (!optional_g) {
@@ -163,16 +163,16 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 
 		const auto& g = optional_g.get();
 
-		float f = static_cast<float>(size) / static_cast<float>(glyph::ttf_pixel_size);
-		float w = weight_attrib ? weight_attrib->get() : 400.f;
-		float lh = (g->metrics.height + g->metrics.start_y) * f * 2 + 1;
+		const float f = static_cast<float>(size) / static_cast<float>(glyph::ttf_pixel_size);
+		const float w = weight_attrib ? weight_attrib->get() : 400.f;
+		const float lh = (g->metrics.height + g->metrics.start_y) * f * 2 + 1;
 
 		float advance = static_cast<float>(i + 1 < wstr.length() ? gm.spacing(font, { wstr[i], wstr[i + 1] }, size) : 0);
 
-		glm::u32vec2 pos = { static_cast<std::uint32_t>(ortho_pos.x + .5f), static_cast<std::uint32_t>(ortho_pos.y + .5f) };
-		std::uint32_t osize = static_cast<std::uint32_t>(f * 2.f * glyph_point::size_scale + .5f);
-		std::uint32_t glyph_index = static_cast<std::uint32_t>(g->buffer_index);
-		float weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
+		const glm::u32vec2 pos = { static_cast<std::uint32_t>(ortho_pos.x + .5f), static_cast<std::uint32_t>(ortho_pos.y + .5f) };
+		const std::uint32_t osize = static_cast<std::uint32_t>(f * 2.f * glyph_point::size_scale + .5f);
+		const std::uint32_t glyph_index = static_cast<std::uint32_t>(g->buffer_index);
+		const float weight = glm::clamp<float>(w - 400, -300, 500) * f * .003f;
 
 		glyph_point p;
 		p.data().x = (pos.x & 0xFFFF) | (pos.y << 16);
@@ -182,10 +182,10 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
 		p.data().w = 0;
 
 		if (stroke_attrib) {
-			float stroke_width = stroke_attrib->get_width();
+			const float stroke_width = stroke_attrib->get_width();
 			advance += glm::floor(stroke_width * .5f);
 
-			auto c = stroke_attrib->get_color();
+			const auto c = stroke_attrib->get_color();
 			p.data().w = glm::packUnorm4x8(glm::vec4(c.x / 255.0f, c.y / 255.0f, c.z / 255.0f,
 												   stroke_width * glyph_point::stroke_width_scale));
 		}

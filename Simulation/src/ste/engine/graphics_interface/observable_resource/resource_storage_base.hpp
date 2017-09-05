@@ -8,6 +8,8 @@
 #include <lib/flat_set.hpp>
 #include <anchored.hpp>
 
+#include <mutex>
+
 namespace ste {
 namespace gl {
 
@@ -26,12 +28,16 @@ protected:
 	lib::flat_set<const resource_type*> signalled_objects;
 	lib::flat_set<const resource_type*> objects;
 
+	mutable std::mutex objects_mutex;
+
 private:
 	/**
 	*	@brief	Queues the resource for GPU descriptor update
 	*/
 	void notify_resource(const resource_type *res) {
 		assert(res);
+
+		std::unique_lock<std::mutex> l(objects_mutex);
 		signalled_objects.insert(res);
 	}
 

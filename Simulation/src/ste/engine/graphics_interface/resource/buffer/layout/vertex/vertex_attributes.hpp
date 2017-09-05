@@ -25,7 +25,7 @@ template<typename V, VkVertexInputRate input_rate>
 class vertex_attributes_descriptor_impl<V, input_rate, true> {
 private:
 	using size_type = std::uint32_t;
-	static constexpr auto count = V::count;
+	static constexpr auto count = V::count_elements;
 
 	template<int index>
 	struct sizes_populator {

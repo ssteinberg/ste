@@ -1976,6 +1976,12 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_copy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_format_properties.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_capabilities_query.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -2044,8 +2050,6 @@
     <None Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\shaders\linked_light_lists_gen.comp" />
     <None Include="Simulation\src\ste\framework_graphics\light\preprocessor\shaders\light_preprocess_cull_lights.comp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\shaders\scene_geo_cull.comp" />
-    <None Include="Simulation\src\temp.vert" />
-    <None Include="Simulation\src\temp.frag" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.geom_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.vert_old" />
@@ -2069,5 +2073,6 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\renderer_transform_buffers.glsl" />
+    <None Include="Simulation\src\loading.frag" />
   </ItemGroup>
 </Project>

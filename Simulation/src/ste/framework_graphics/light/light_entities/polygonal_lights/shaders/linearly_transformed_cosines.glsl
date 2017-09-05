@@ -5,7 +5,13 @@ struct ltc_element {
 	uvec2 data;
 };
 
-vec3 ltc_point(ltc_element e) {
+layout(std430, set=2, binding=11) restrict readonly buffer shaped_lights_points_binding {
+	ltc_element ltc_points[];
+};
+
+
+vec3 ltc_point(uint ltc_element_index) {
+	ltc_element e = ltc_points[ltc_element_index];
 	vec3 p = vec3(unpackHalf2x16(e.data.x), unpackHalf2x16(e.data.y).x);
 	return p;
 }

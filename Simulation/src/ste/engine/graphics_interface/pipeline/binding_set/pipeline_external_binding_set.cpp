@@ -10,7 +10,7 @@ using namespace ste::gl;
 pipeline_external_resource_bind_point pipeline_external_binding_set::operator[](const lib::string &resource_name) {
 	const pipeline_external_binding_layout *bind;
 
-	auto var_it = name_map.find(resource_name);
+	const auto var_it = name_map.find(resource_name);
 	if (var_it != name_map.end()) {
 		// Name references a variable
 		bind = var_it->second;

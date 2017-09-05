@@ -27,40 +27,53 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	buffers(ctx,
 			ctx.device().get_surface().extent(),
 			s,
+			this->acquire_storage<atmospherics_lut_storage>(),
 			atmospherics_prop),
 	framebuffers(ctx,
 				 ctx.device().get_surface().extent()),
 
-	composer(*this),
-	hdr(*this,
+	composer(ctx,
+			 *this),
+	hdr(ctx,
+		*this,
 		ctx.device().get_surface().extent(),
 		gl::framebuffer_layout(framebuffers.fxaa_input_fb.get_layout())),
-	fxaa(*this,
+	fxaa(ctx,
+		 *this,
 		 gl::framebuffer_layout(framebuffers.hdr_input_fb.get_layout())),
 
-	downsample_depth(*this,
+	downsample_depth(ctx,
+					 *this,
 					 &buffers.gbuffer.get()),
-	prepopulate_depth(*this,
-					  s),
-	prepopulate_backface_depth(*this,
-							   s),
-	scene_geo_cull(*this,
-				   s, &s->properties().lights_storage()),
+	prepopulate_depth(ctx,
+					  *this,
+					  this->s),
+	prepopulate_backface_depth(ctx,
+							   *this,
+							   this->s),
+	scene_geo_cull(ctx,
+				   *this,
+				   this->s, &this->s->properties().lights_storage()),
 
-	linked_light_list_generator(*this,
+	linked_light_list_generator(ctx,
+								*this,
 								&buffers.linked_light_list_storage.get()),
-	light_preprocess(*this,
-					 &s->properties().lights_storage(),
-					 *cam),
+	light_preprocess(ctx,
+					 *this,
+					 &this->s->properties().lights_storage(),
+					 *this->cam),
 
-	shadows_projector(*this,
-					  s),
-	directional_shadows_projector(*this,
-								  s),
+	shadows_projector(ctx,
+					  *this,
+					  this->s),
+	directional_shadows_projector(ctx,
+								  *this,
+								  this->s),
 
-	volumetric_scatterer(*this,
+	volumetric_scatterer(ctx,
+						 *this,
 						 &buffers.vol_scat_storage.get(),
-						 &s->properties().lights_storage())
+						 &this->s->properties().lights_storage())
 {
 	// Attach a connection to swapchain's surface resize signal
 	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](auto) {
@@ -69,12 +82,12 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		framebuffers.resize(ctx.device().get_surface().extent());
 
 		// Send resize signal to interested fragments
-		hdr.resize(device().get_surface().extent());
+		hdr->resize(device().get_surface().extent());
 
 		// Reattach resized framebuffers and input images
-		hdr.attach_framebuffer(framebuffers.fxaa_input_fb);
-		hdr.set_input_image(&framebuffers.hdr_input_image.get());
-		fxaa.set_input_image(&framebuffers.fxaa_input_image.get());
+		hdr->attach_framebuffer(framebuffers.fxaa_input_fb);
+		hdr->set_input_image(&framebuffers.hdr_input_image.get());
+		fxaa->set_input_image(&framebuffers.fxaa_input_image.get());
 	});
 
 	// Attach a connection to camera's projection change signal
@@ -82,7 +95,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		// Update buffers and fragments that rely on projection data
 		buffers.invalidate_projection_buffer();
 
-		light_preprocess.update_projection_planes(*this->cam);
+		light_preprocess->update_projection_planes(*this->cam);
 	});
 }
 
@@ -122,7 +135,7 @@ void primary_renderer::present() {
 
 			// Attach swap chain framebuffer to last stage, fxaa
 			auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
-			fxaa.attach_framebuffer(fb);
+			fxaa->attach_framebuffer(fb);
 
 			// Update data
 			update(recorder);

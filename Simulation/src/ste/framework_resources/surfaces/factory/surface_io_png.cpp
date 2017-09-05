@@ -129,7 +129,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 	if (bit_depth == 8) {
 		// set the individual row_pointers to point at the correct offsets of image_data
 		for (unsigned int i = 0; i < temp_height; i++)
-			row_pointers[temp_height - 1 - i] = reinterpret_cast<png_byte*>(image_data.get() + i * w * components);
+			row_pointers[i] = reinterpret_cast<png_byte*>(image_data.get() + i * w * components);
 
 		// read the png into image_data through row_pointers
 		png_read_image(png_ptr, row_pointers);
@@ -139,7 +139,7 @@ opaque_surface<2> surface_io::load_png_2d(const std::experimental::filesystem::p
 
 		// set the individual row_pointers to point at the correct offsets of image_data
 		for (unsigned int i = 0; i < temp_height; i++)
-			row_pointers[temp_height - 1 - i] = reinterpret_cast<png_byte*>(temp + i * w / 8);
+			row_pointers[i] = reinterpret_cast<png_byte*>(temp + i * w / 8);
 
 		// read the png into image_data through row_pointers
 		png_read_image(png_ptr, row_pointers);
@@ -204,7 +204,7 @@ void surface_io::write_png_2d(const std::experimental::filesystem::path &file_na
 	// set the individual row_pointers to point at the correct offsets of image_data
 	// To maintain compatibility png_write_image requests a non-const double pointer, hack the const away...
 	for (int i = 0; i < height; i++)
-		row_pointers[height - 1 - i] = const_cast<png_byte*>(reinterpret_cast<const png_byte*>(image_data + i * width * components));
+		row_pointers[i] = const_cast<png_byte*>(reinterpret_cast<const png_byte*>(image_data + i * width * components));
 
 	png_init_io(png, fp);
 

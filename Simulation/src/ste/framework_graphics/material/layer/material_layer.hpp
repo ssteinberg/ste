@@ -289,7 +289,7 @@ public:
 
 	auto *get_next_layer() const { return next_layer; }
 
-	const material_layer_descriptor &get_descriptor() const override final { return descriptor; }
+	material_layer_descriptor get_descriptor() const override final { return descriptor; }
 };
 
 }

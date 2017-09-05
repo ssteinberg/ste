@@ -16,11 +16,16 @@ material::material(const ste_context &ctx,
 														gl::sampler_filter::linear,
 														gl::sampler_mipmap_mode::linear))
 {
+	// Set default values
+	descriptor.emission() = .0f;
+	descriptor.packed_emission_color() = 0;
+	descriptor.material_flags() = 0;
+
 	set_head_layer(head_layer);
 }
 
 void material::set_head_layer(material_layer *head_layer) {
-	descriptor.head_layer_id = material_layer_none;
+	descriptor.head_layer_id() = material_layer_none;
 	this->head_layer = nullptr;
 
 	if (head_layer != nullptr) {
@@ -28,7 +33,7 @@ void material::set_head_layer(material_layer *head_layer) {
 		assert(id >= 0);
 
 		if (id >= 0) {
-			descriptor.head_layer_id = id;
+			descriptor.head_layer_id() = id;
 			this->head_layer = head_layer;
 		}
 	}

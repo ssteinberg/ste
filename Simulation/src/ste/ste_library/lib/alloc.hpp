@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <lib/allocator.hpp>
+#include <cassert>
 
 namespace ste {
 namespace lib {
@@ -72,7 +73,7 @@ struct alloc_impl<Allocator, true> {
 	 *	@brief	Returns the expected allocation size in bytes to be used for an n-element array.
 	 */
 	static constexpr auto allocation_size_bytes(size_type n) {
-		return array_length_size() + sizeof(D) * n;
+		return array_length_size() + sizeof(value_type) * n;
 	}
 
 	template <typename Checker = value_type, typename... Args>
@@ -89,9 +90,10 @@ struct alloc_impl<Allocator, true> {
 	}
 
 	static void dtor(const_pointer ptr) {
-		static_assert(sizeof(D) > 0, "Can not delete an incomplete type");
+		static_assert(sizeof(value_type) > 0, "Can not delete an incomplete type");
 
 		auto n = *reinterpret_cast<const length_type*>(reinterpret_cast<const byte*>(ptr) - array_length_size());
+		assert(static_cast<std::int64_t>(n) > 0 && "Bad size marker!");
 
 		auto p = const_cast<pointer>(ptr);
 		for (auto i = n; i-- > 0;)

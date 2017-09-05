@@ -84,19 +84,22 @@ public:
 		auto p = _use_aligned_alloc ?
 			rpaligned_alloc(alignment, sizeof(T) * n) :
 			rpmalloc(sizeof(T) * n);
+		if (p == nullptr)
+			throw std::bad_alloc();
+
 		return reinterpret_cast<T*>(p);
 	}
-	void deallocate(pointer p, size_type) {
+	void deallocate(pointer p, size_type) noexcept {
 		static_assert(!std::is_const_v<T>, "const allocators are ill-formed.");
 
 		_internal::allocator_static_storage::init();
 		return rpfree(static_cast<void*>(p));
 	}
-	void deallocate(pointer p) {
+	void deallocate(pointer p) noexcept {
 		deallocate(p, 1);
 	}
 
-	size_type allocation_useable_size(pointer p) {
+	static size_type allocation_useable_size(pointer p) noexcept {
 		return rpmalloc_usable_size(static_cast<void*>(p));
 	}
 
@@ -104,6 +107,9 @@ public:
 		_internal::allocator_static_storage::init();
 
 		auto p = rpaligned_alloc(alignment, sizeof(T) * n);
+		if (p == nullptr)
+			throw std::bad_alloc();
+
 		return reinterpret_cast<T*>(p);
 	}
 	auto reallocate(pointer p, size_type n) {
@@ -112,12 +118,18 @@ public:
 		auto t = _use_aligned_alloc ?
 			rpaligned_realloc(p, alignment, sizeof(T) * n, 0, 0) :
 			rprealloc(p, sizeof(T) * n);
+		if (!t)
+			throw std::bad_alloc();
+
 		return reinterpret_cast<T*>(t);
 	}
 	auto reallocate_aligned(pointer p, size_type n, std::size_t alignment) {
 		_internal::allocator_static_storage::init();
 
 		auto t = rpaligned_realloc(p, alignment, sizeof(T) * n, 0, 0);
+		if (!t)
+			throw std::bad_alloc();
+
 		return reinterpret_cast<T*>(t);
 	}
 

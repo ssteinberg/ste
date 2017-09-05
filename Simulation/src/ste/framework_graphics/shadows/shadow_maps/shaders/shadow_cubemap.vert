@@ -9,6 +9,7 @@
 layout(location = 1) in vec3 vert;
 
 out vs_out {
+	vec3 position;
 	flat int instanceIdx;
 	flat uint drawIdx;
 } vout;
@@ -17,7 +18,7 @@ void main() {
 	uint draw_id = gl_BaseInstanceARB;
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
 	
-	gl_Position = vec4(transform_model(md, vert), 1);
+	vout.position = transform_model(md, vert);
 	vout.instanceIdx = gl_InstanceIndex;
 	vout.drawIdx = draw_id;
 }

@@ -25,7 +25,7 @@ material_layer_unpacked_descriptor material_layer_unpack(material_layer_descript
 
 	d.albedo = unpackUnorm4x8(l.packed_albedo);
 	d.next_layer_id = l.next_layer_id;
-	d.attenuation_coefficient = l.attenuation_coefficient;
+	d.attenuation_coefficient = l.attenuation_coefficient.rgb;
 	
 	d.roughness = textureGrad(sampler2D(material_textures[l.roughness_sampler_idx], material_sampler), 
 							  uv, 

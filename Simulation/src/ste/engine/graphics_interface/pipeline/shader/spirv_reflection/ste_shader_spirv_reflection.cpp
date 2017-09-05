@@ -238,15 +238,18 @@ std::size_t ste_shader_spirv_reflection::process_spirv_op(lib::vector<ste_shader
 		auto element_id = op[3];
 		auto elements = binds[element_id].variable.constant_value;
 		if (!elements) {
-			throw ste_shader_load_spirv_corrupt_or_incompatible();
+			// TODO: Might be part of a OpSpecConstantOp chain
+//			throw ste_shader_load_spirv_corrupt_or_incompatible();
 		}
-		if (binds[element_id].variable.array_elements != 1) {
-			assert(false && "Arrays of arrays are unsupported");
-		}
-		binds[id].variable.array_elements = static_cast<std::uint32_t>(elements.get());
+		else {
+			if (binds[element_id].variable.array_elements != 1) {
+				assert(false && "Arrays of arrays are unsupported");
+			}
+			binds[id].variable.array_elements = static_cast<std::uint32_t>(elements.get());
 
-		if (binds[element_id].storage == storage_type::spec_constant) {
-			binds[id].variable.array_length_specialization_constant_id = binds[element_id].bind_idx;
+			if (binds[element_id].storage == storage_type::spec_constant) {
+				binds[id].variable.array_length_specialization_constant_id = binds[element_id].bind_idx;
+			}
 		}
 	}
 	else if (opcode == spv::Op::OpTypeRuntimeArray) {
@@ -300,8 +303,12 @@ std::size_t ste_shader_spirv_reflection::process_spirv_op(lib::vector<ste_shader
 		binds[id].is_variable = true;
 	}
 	else if (opcode == spv::Op::OpSpecConstantOp) {
-		// Op constants unsupported.
-		assert(false);
+		std::uint32_t id = op[2];
+		std::uint32_t consume_id = op[1];
+		std::uint32_t spec_constant_op = op[3] & spv::OpCodeMask;
+		consume_type(binds[id], binds[consume_id]);
+
+		// TODO
 	}
 
 	return word_count;
@@ -396,4 +403,3 @@ ste_shader_spirv_reflection_output ste_shader_spirv_reflection::parse(const lib:
 
 	return output;
 }
-

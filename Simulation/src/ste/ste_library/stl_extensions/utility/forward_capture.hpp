@@ -57,12 +57,12 @@ using forward_capture_pack_t = std::tuple<forward_capture_t<Ts>...>;
 
 template <typename T>
 auto forward_capture(T&& val) {
-	return _detail::forward_capture_impl<T>(std::forward<T>(val));
+	return forward_capture_t<T>(std::forward<T>(val));
 }
 
 template <typename ... Ts>
 auto forward_capture_pack(Ts&&... params) {
-	return std::make_tuple(_detail::forward_capture_impl<Ts>(std::forward<Ts>(params))...);
+	return std::make_tuple(forward_capture_t<Ts>(std::forward<Ts>(params))...);
 }
 
 }

@@ -7,6 +7,7 @@
 #include <attrib.hpp>
 
 #include <lib/unique_ptr.hpp>
+#include <lib/vector.hpp>
 
 #include <tga.h>
 
@@ -35,17 +36,25 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 	case 3:
 	case 10:
 	case 11:
-		if (tga->hdr.depth == 8) {
+		if (tga->hdr.depth == 8 && 
+			(tga->hdr.alpha == 0 || tga->hdr.alpha == 8)) {
+			if (tga->hdr.alpha == 8) {
+				// 8-bit depth and 8-bit alpha textures are masks, height maps, etc. sRGB makes no sense.
+				assert(!srgb);
+			}
+
 			format = srgb ? gl::format::r8_srgb : gl::format::r8_unorm;
 			components = 1;
 			break;
 		}
-		if (tga->hdr.depth == 24) {
+		if (tga->hdr.depth == 24 && 
+			tga->hdr.alpha == 0) {
 			format = srgb ? gl::format::r8g8b8_srgb : gl::format::r8g8b8_unorm;
 			components = 3;
 			break;
 		}
-		if (tga->hdr.depth == 32) {
+		if (tga->hdr.depth == 32 && 
+			tga->hdr.alpha == 8) {
 			format = srgb ? gl::format::r8g8b8a8_srgb : gl::format::r8g8b8a8_unorm;
 			components = 4;
 			break;
@@ -67,11 +76,25 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 
 	if (TGAReadScanlines(tga, 
 						 reinterpret_cast<tbyte*>(image_data.get()), 
-						 0, 
+						 0,
 						 h, 
-						 TGA_BGR) != TGA_OK) {
+						 TGA_RGB) != h) {
 		ste_log_error() << file_name << " is not a valid TGA" << std::endl;
 		throw surface_unsupported_format_error("Not a valid TGA");
+	}
+
+	// Flip vertical
+	if (tga->hdr.vert != TGA_TOP) {
+		lib::vector<std::uint8_t> buffer;
+		buffer.resize(rowbytes);
+		for (unsigned y = 0; y < h/2; ++y) {
+			const auto lower_row = image_data.get() + y * rowbytes;
+			const auto upper_row = image_data.get() + (h - y - 1) * rowbytes;
+
+			std::memcpy(buffer.data(), lower_row, rowbytes);
+			std::memcpy(lower_row, upper_row, rowbytes);
+			std::memcpy(upper_row, buffer.data(), rowbytes);
+		}
 	}
 
 	TGAClose(tga);
@@ -87,8 +110,6 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 }
 
 void surface_io::write_tga_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height) {
-	static constexpr auto tga_img_id = "StE";
-
 	// Open for writing
 	TGA *tga = TGAOpen(const_cast<char*>(file_name.string().data()), const_cast<char*>("wb"));
 	if (!tga || tga->last != TGA_OK) {
@@ -102,17 +123,17 @@ void surface_io::write_tga_2d(const std::experimental::filesystem::path &file_na
 
 	// Construct TGA data
 	TGAData data;
-	data.flags = TGA_RGB | TGA_RLE_ENCODE | TGA_IMAGE_DATA;
+	data.flags = TGA_RGB | TGA_IMAGE_DATA;
 	data.img_data = const_cast<tbyte*>(reinterpret_cast<const tbyte*>(image_data));
-	data.img_id = const_cast<tbyte*>(reinterpret_cast<const tbyte*>(tga_img_id));
+	data.img_id = nullptr;
 	data.cmap = nullptr;
 
 	std::memset(&tga->hdr, 0, sizeof(tga->hdr));
 	tga->hdr.width = width;
 	tga->hdr.height = height;
 	tga->hdr.horz = TGA_LEFT;
-	tga->hdr.vert = TGA_BOTTOM;
-	tga->hdr.id_len = 3;
+	tga->hdr.vert = TGA_TOP;
+	tga->hdr.img_t = 2;
 	switch (components) {
 	case 1:
 		tga->hdr.alpha = 0;

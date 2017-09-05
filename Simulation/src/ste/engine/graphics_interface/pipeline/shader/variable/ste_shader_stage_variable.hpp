@@ -32,7 +32,7 @@ struct ste_shader_stage_variable_dispatcher {
 			return;
 		}
 		ste_shader_stage_variable_dispatcher<Src, Targets...>::template validate<T>(src,
-																							std::forward<Ts>(ts)...);
+																					std::forward<Ts>(ts)...);
 	}
 };
 template <typename Src, typename Target0>
@@ -56,7 +56,7 @@ struct ste_shader_stage_variable_remove_blocks<T, false> {
 };
 template <typename B>
 struct ste_shader_stage_variable_remove_blocks<B, true> {
-	static constexpr bool single_element_block = B::count == 1;
+	static constexpr bool single_element_block = B::elements_count == 1;
 	using T = typename B::template type_at<0>;
 	using type = std::conditional_t<
 		single_element_block,
@@ -65,8 +65,8 @@ struct ste_shader_stage_variable_remove_blocks<B, true> {
 	>;
 };
 template <typename T>
-using ste_shader_stage_variable_remove_blocks_t = 
-	typename ste_shader_stage_variable_remove_blocks<T, is_block_layout_v<T>>::type;
+using ste_shader_stage_variable_remove_blocks_t =
+typename ste_shader_stage_variable_remove_blocks<T, is_block_layout_v<T>>::type;
 
 }
 
@@ -98,7 +98,7 @@ private:
 
 protected:
 	ste_shader_stage_variable(lib::string name,
-									  std::uint16_t offset_bytes = 0)
+							  std::uint16_t offset_bytes = 0)
 		: var_name(name), offset_bytes(offset_bytes)
 	{}
 
@@ -241,8 +241,8 @@ private:
 
 public:
 	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_type &type,
-											 lib::string name,
-											 std::uint16_t offset_bytes)
+									 lib::string name,
+									 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		var_type(type)
 	{}
@@ -292,9 +292,9 @@ private:
 
 public:
 	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_type &type,
-											 lib::string name,
-											 std::uint16_t offset_bytes,
-											 std::uint16_t width)
+									 lib::string name,
+									 std::uint16_t offset_bytes,
+									 std::uint16_t width)
 		: Base(name, offset_bytes),
 		var_type(type),
 		var_width(width)
@@ -331,9 +331,9 @@ public:
 	void validate() const {
 		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
 		static constexpr bool type_is_signed = ::ste::is_signed<Type>::value;
-		static constexpr bool type_is_float =  ::ste::is_floating_point<Type>::value;
+		static constexpr bool type_is_float = ::ste::is_floating_point<Type>::value;
 		static constexpr bool type_is_scalar = ::ste::is_scalar<Type>::value;
-		
+
 		if (sizeof(Type) != this->size_bytes())
 			throw ste_shader_variable_layout_verification_type_mismatch("Size mismatch");
 		if (!type_is_scalar)
@@ -360,11 +360,11 @@ private:
 
 public:
 	ste_shader_stage_variable_matrix(lib::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
-											 lib::string name,
-											 std::uint16_t offset_bytes,
-											 std::uint32_t rows,
-											 std::uint32_t columns = 1,
-											 std::uint16_t matrix_stride = 0)
+									 lib::string name,
+									 std::uint16_t offset_bytes,
+									 std::uint32_t rows,
+									 std::uint32_t columns = 1,
+									 std::uint16_t matrix_stride = 0)
 		: Base(name, offset_bytes),
 		var_matrix_stride(matrix_stride),
 		var_rows(rows),
@@ -453,11 +453,11 @@ private:
 
 public:
 	ste_shader_stage_variable_array(lib::unique_ptr<ste_shader_stage_variable> &&var,
-											lib::string name,
-											std::uint16_t offset_bytes,
-											std::uint32_t array_elements,
-											std::uint16_t array_stride,
-											optional<const ste_shader_stage_variable_scalar*> length_specialization_constant = none)
+									lib::string name,
+									std::uint16_t offset_bytes,
+									std::uint32_t array_elements,
+									std::uint16_t array_stride,
+									optional<const ste_shader_stage_variable_scalar*> length_specialization_constant = none)
 		: Base(name, offset_bytes),
 		array_elements(array_elements),
 		array_stride(array_stride),
@@ -565,7 +565,7 @@ namespace _internal {
 
 template <typename T>
 void ste_shader_stage_variable_type_validator(std::uint32_t offset,
-													  const ste_shader_stage_variable *var) {
+											  const ste_shader_stage_variable *var) {
 	if (var->offset() != offset)
 		throw ste_shader_variable_layout_verification_offset_mismatch("Struct member offset mismatch");
 	var->validate<T>();
@@ -610,7 +610,7 @@ struct ste_shader_stage_variable_struct_validate {
 			(*var)[0]->template validate<B>();
 			return;
 		}
-		ste_shader_stage_variable_struct_validator<Var, 0, B::count, B>()(var);
+		ste_shader_stage_variable_struct_validator<Var, 0, B::elements_count, B>()(var);
 	}
 };
 
@@ -628,8 +628,8 @@ private:
 
 public:
 	ste_shader_stage_variable_struct(lib::vector<lib::unique_ptr<ste_shader_stage_variable>> &&elements,
-											 lib::string name,
-											 std::uint16_t offset_bytes)
+									 lib::string name,
+									 std::uint16_t offset_bytes)
 		: Base(name, offset_bytes),
 		elements(std::move(elements))
 	{}
@@ -652,7 +652,7 @@ public:
 	*	@brief	Struct elements
 	*/
 	auto count() const { return elements.size(); }
-	
+
 	auto& operator[](std::size_t idx) const { return elements[idx]; }
 	auto begin() const { return elements.begin(); }
 	auto end() const { return elements.end(); }

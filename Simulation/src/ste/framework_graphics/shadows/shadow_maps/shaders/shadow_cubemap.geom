@@ -11,6 +11,7 @@ layout(triangle_strip, max_vertices=18) out;
 #include <project.glsl>
 
 in vs_out {
+	vec3 position;
 	flat int instanceIdx;
 	flat uint drawIdx;
 } vin[];
@@ -90,10 +91,10 @@ void main() {
 	float light_range2 = light_range * light_range;
 
 	// Back face culling
-	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;
-	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
+	vec3 u = vin[2].position - vin[1].position;
+	vec3 v = vin[0].position - vin[1].position;
 	vec3 N = cross(u,v);
-	vec3 V = light_pos.xyz - gl_in[1].gl_Position.xyz;
+	vec3 V = light_pos.xyz - vin[1].position;
 	
 	if (dot(N,V) <= 0)
 		return;
@@ -103,7 +104,7 @@ void main() {
 	// Range culling
 	int out_of_range = 0;
 	for (int j = 0; j < 3; ++j) {
-		vec3 P = gl_in[j].gl_Position.xyz - light_pos;
+		vec3 P = vin[j].position - light_pos;
 		if (dot(P,P) >= light_range2)
 			++out_of_range;
 

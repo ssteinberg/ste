@@ -2,6 +2,9 @@
 #include <stdafx.hpp>
 #include <primary_renderer_buffers.hpp>
 
+#include <device_pipeline_shader_stage.hpp>
+#include <external_binding_set_collection_from_shader_stages.hpp>
+
 using namespace ste;
 using namespace ste::graphics;
 
@@ -10,6 +13,8 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 																								 const linked_light_lists &linked_light_list_storage,
 																								 const deferred_gbuffer &gbuffer,
 																								 const shadowmap_storage &shadows,
+																								 const atmospherics_buffer &atmospheric_buffer,
+																								 const atmospherics_lut_storage &atmospherics_luts,
 																								 const scene *s) {
 	// Load common descriptor sets from pre-compiled SPIR-v shader
 	gl::external_binding_set_collection_from_shader_stages::shader_stages_input_vector_t v;
@@ -74,6 +79,17 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 																						 shadows.get_shadow_sampler()));
 	set["directional_shadow_maps"] = gl::bind(gl::pipeline::combined_image_sampler(shadows.get_directional_maps(),
 																				   ctx.device().common_samplers_collection().linear_clamp_sampler()));
+
+	// Atmospherics
+	set["atmospheric_optical_length_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_optical_length_lut(),
+																						  ctx.device().common_samplers_collection().linear_clamp_sampler()));
+	set["atmospheric_mie0_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_mie0_scatter_lut(),
+																						   ctx.device().common_samplers_collection().linear_clamp_sampler()));
+	set["atmospheric_ambient_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_ambient_lut(),
+																				   ctx.device().common_samplers_collection().linear_clamp_sampler()));
+	set["atmospheric_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_scatter_lut(),
+																					  ctx.device().common_samplers_collection().linear_clamp_sampler()));
+	set["atmospherics_descriptor_binding"] = gl::bind(atmospheric_buffer.get());
 
 	return set;
 }

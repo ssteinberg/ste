@@ -7,14 +7,14 @@
 
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
+#include <rendering_system.hpp>
 
 #include <pipeline_external_binding_set.hpp>
-#include <external_binding_set_collection_from_shader_stages.hpp>
-#include <device_pipeline_shader_stage.hpp>
 #include <scene.hpp>
 
 #include <deferred_gbuffer.hpp>
 #include <atmospherics_buffer.hpp>
+#include <atmospherics_lut_storage.hpp>
 #include <renderer_transform_buffers.hpp>
 #include <linked_light_lists.hpp>
 #include <shadowmap_storage.hpp>
@@ -41,6 +41,8 @@ private:
 																				  const linked_light_lists &linked_light_list_storage,
 																				  const deferred_gbuffer &gbuffer,
 																				  const shadowmap_storage &shadows,
+																				  const atmospherics_buffer &atmospheric_buffer,
+																				  const atmospherics_lut_storage &atmospherics_luts,
 																				  const scene *s);
 
 	/**
@@ -58,6 +60,8 @@ private:
 	std::atomic_flag projection_data_up_to_date_flag;
 
 	renderer_transform_buffers transform_buffers;
+
+	gl::rendering_system::storage_ptr<atmospherics_lut_storage> atmospherics_luts;
 	atmospherics_buffer atmospheric_buffer;
 
 	ste_resource<deferred_gbuffer> gbuffer;
@@ -72,11 +76,14 @@ public:
 	primary_renderer_buffers(const ste_context &ctx,
 							 const glm::uvec2 &extent,
 							 const scene *s,
+							 gl::rendering_system::storage_ptr<atmospherics_lut_storage> &&atmospherics_luts,
 							 const atmospherics_properties<double> &atmospherics_prop)
 		: ctx(ctx),
 		extent(extent),
 
 		transform_buffers(ctx),
+
+		atmospherics_luts(std::move(atmospherics_luts)),
 		atmospheric_buffer(ctx, atmospherics_prop),
 
 		gbuffer(ctx, extent, gbuffer_depth_target_levels()),
@@ -90,6 +97,8 @@ public:
 																		   *linked_light_list_storage,
 																		   *gbuffer,
 																		   *shadows_storage,
+																		   atmospheric_buffer,
+																		   *this->atmospherics_luts,
 																		   s))
 	{
 		projection_data_up_to_date_flag.test_and_set(std::memory_order_release);

@@ -12,8 +12,10 @@
 #include <command_recorder.hpp>
 
 #include <type_traits>
+#include <lib/concurrent_queue.hpp>
 #include <lib/unique_ptr.hpp>
 #include <lib/deque.hpp>
+#include <mutex>
 
 namespace ste {
 namespace gl {
@@ -40,8 +42,7 @@ protected:
 
 private:
 	storage_type store;
-
-	lib::deque<lib::unique_ptr<command>> pending_device_operations;
+	lib::concurrent_queue<command> pending_device_operations;
 
 private:
 	/**
@@ -75,14 +76,22 @@ protected:
 	lib::unique_ptr<T> allocate_resource(Ts&&... args) {
 		static_assert(std::is_base_of<resource_type, T>::value, "T must derive from Core::observable_resource<Descriptor> !");
 
+		// Craete new resource
 		auto ptr = lib::allocate_unique<T>(std::forward<Ts>(args)...);
 		ptr->storage_ptr = dynamic_cast<Specialization*>(this);
+
+		// Find an identifier for the resource
 		auto cmd = allocate_identifier(ptr->get_descriptor(),
 									   ptr->resource_storage_identifier);
-		Base::objects.insert(ptr.get());
+
+		// Insert into objects set
+		{
+			std::unique_lock<std::mutex> l(Base::objects_mutex);
+			Base::objects.insert(ptr.get());
+		}
 
 		if (cmd != nullptr)
-			pending_device_operations.push_back(std::move(cmd));
+			pending_device_operations.push(std::move(cmd));
 
 		return std::move(ptr);
 	}
@@ -93,14 +102,19 @@ protected:
 	virtual void erase_resource(const resource_type *res) override {
 		assert(res);
 
+		// Deallocate identifier
 		auto cmd = deallocate_identifier(res->resource_storage_identifier);
-		Base::objects.erase(res);
-		Base::signalled_objects.erase(res);
+		if (cmd != nullptr)
+			pending_device_operations.push(std::move(cmd));
+
+		// Remove from object sets
+		{
+			std::unique_lock<std::mutex> l(Base::objects_mutex);
+			Base::objects.erase(res);
+			Base::signalled_objects.erase(res);
+		}
 
 		res->storage_ptr = nullptr;
-
-		if (cmd != nullptr)
-			pending_device_operations.push_back(std::move(cmd));
 	}
 
 public:
@@ -109,6 +123,7 @@ public:
 		: store(ctx, usage)
 	{}
 	virtual ~resource_storage() noexcept {
+		std::unique_lock<std::mutex> l(Base::objects_mutex);
 		for (auto &res : Base::objects)
 			erase_resource(res);
 	}
@@ -118,17 +133,22 @@ public:
 	*			was called.
 	*/
 	virtual void update(command_recorder &recorder) {
-		while (pending_device_operations.size()) {
-			recorder << **pending_device_operations.begin();
-			pending_device_operations.pop_front();
-		}
+		// Pop and submit all pending operations
+		lib::unique_ptr<command> pending_op = nullptr;
+		while ((pending_op = pending_device_operations.pop()) != nullptr)
+			recorder << *pending_op;
 
-		for (auto &res : Base::signalled_objects) {
-			auto idx = index_of(res);
-			recorder << store.overwrite_cmd(idx, res->get_descriptor());
-		}
+		// Likewise update all signalled objects
+		{
+			std::unique_lock<std::mutex> l(Base::objects_mutex);
 
-		Base::signalled_objects.clear();
+			for (auto &res : Base::signalled_objects) {
+				auto idx = index_of(res);
+				recorder << store.overwrite_cmd(idx, res->get_descriptor());
+			}
+
+			Base::signalled_objects.clear();
+		}
 	}
 
 	/**
@@ -144,7 +164,10 @@ public:
 	/**
 	*	@brief	Total count of active resources in storage
 	*/
-	std::size_t size() const { return Base::objects.size(); }
+	std::size_t size() const {
+		std::atomic_thread_fence(std::memory_order_acquire);
+		return Base::objects.size();
+	}
 };
 
 }

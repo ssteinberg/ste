@@ -19,11 +19,12 @@
 #include <resource_storage_dynamic.hpp>
 #include <array.hpp>
 #include <stable_vector.hpp>
+#include <std430.hpp>
 
 #include <array>
 #include <lib/unique_ptr.hpp>
 #include <type_traits>
-#include <optional.hpp>
+#include <atomic>
 
 namespace ste {
 namespace graphics {
@@ -32,8 +33,8 @@ constexpr std::size_t max_active_lights_per_frame = 24;
 constexpr std::size_t max_active_directional_lights_per_frame = 4;
 constexpr std::size_t total_max_active_lights_per_frame = max_active_lights_per_frame + max_active_directional_lights_per_frame;
 
-class light_storage : public gl::resource_storage_dynamic<light_descriptor>, public gl::storage<light_storage> {
-	using Base = gl::resource_storage_dynamic<light_descriptor>;
+class light_storage : public gl::resource_storage_dynamic<light_descriptor::buffer_data> {
+	using Base = gl::resource_storage_dynamic<light_descriptor::buffer_data>;
 
 public:
 	using shaped_light_point = shaped_light::shaped_light_point_type;
@@ -41,21 +42,21 @@ public:
 	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
 
 private:
-	using lights_ll_type = gl::device_buffer_sparse<std::uint32_t>;
+	using lights_ll_type = gl::device_buffer_sparse<gl::std430<std::uint32_t>>;
 	using directional_lights_cascades_type = gl::array<light_cascades_descriptor>;
 	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
 
 private:
-	gl::array<std::uint32_t> active_lights_ll_counter;
+	gl::array<gl::std430<std::uint32_t>> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
 	directional_lights_cascades_type directional_lights_cascades_buffer;
 	shaped_lights_points_storage_type shaped_lights_points_storage;
 
-	std::array<directional_light*, directional_light_cascades> active_directional_lights;
+	std::array<std::atomic<const directional_light*>, directional_light_cascades> active_directional_lights;
 	std::array<float, directional_light_cascades> cascades_depths;
 
-	optional<std::uint64_t> active_lights_ll_resize;
+	std::atomic_flag active_lights_ll_resize{ ATOMIC_FLAG_INIT };
 
 private:
 	void build_cascade_depth_array();
@@ -68,16 +69,18 @@ public:
 		directional_lights_cascades_buffer(ctx, max_active_directional_lights_per_frame, gl::buffer_usage::storage_buffer),
 		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer)
 	{
+		// Build cascades' depth array for directional lights
 		build_cascade_depth_array();
 
+		// Initialize array of active directional lights to nulls
 		for (auto &val : active_directional_lights)
-			val = nullptr;
+			val.store(nullptr);
 	}
 
 	template <typename ... Ts>
 	auto allocate_virtual_light(Ts&&... args) {
 		auto res = Base::allocate_resource<virtual_light>(std::forward<Ts>(args)...);
-		active_lights_ll_resize = Base::size();
+		active_lights_ll_resize.clear(std::memory_order_release);
 
 		return std::move(res);
 	}
@@ -85,24 +88,33 @@ public:
 	template <typename ... Ts>
 	auto allocate_sphere_light(Ts&&... args) {
 		auto res = Base::allocate_resource<sphere_light>(std::forward<Ts>(args)...);
-		active_lights_ll_resize = Base::size();
+		active_lights_ll_resize.clear(std::memory_order_release);
 
 		return std::move(res);
 	}
 
 	template <typename ... Ts>
 	auto allocate_directional_light(Ts&&... args) {
+		// Allocate a directional light resource
+		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
+
+		// Find an empty slot in active directional lights array
 		int cascade_idx;
-		for (cascade_idx = 0; cascade_idx < active_directional_lights.size() && active_directional_lights[cascade_idx] != nullptr; ++cascade_idx) {}
+		for (cascade_idx = 0; cascade_idx < active_directional_lights.size(); ++cascade_idx) {
+			// Try to take ownership of slot
+			const directional_light *expected = nullptr;
+			if (active_directional_lights[cascade_idx].compare_exchange_strong(expected, 
+																			   res.get()))
+				break;
+		}
 		if (cascade_idx == max_active_directional_lights_per_frame) {
 			assert(false && "Can not create any more directional lights");
 			return lib::unique_ptr<directional_light>(nullptr);
 		}
 
-		auto res = Base::allocate_resource<directional_light>(std::forward<Ts>(args)...);
-		active_lights_ll_resize = Base::size();
+		active_lights_ll_resize.clear(std::memory_order_release);
 
-		active_directional_lights[cascade_idx] = res.get();
+		// Write light's slot
 		res->set_cascade_idx(cascade_idx);
 
 		return std::move(res);
@@ -116,18 +128,21 @@ public:
 		shaped_light::shaped_light_points_storage_info info{ &shaped_lights_points_storage };
 
 		auto res = Base::allocate_resource<Light>(std::forward<Ts>(args)..., info);
-		active_lights_ll_resize = Base::size();
+		active_lights_ll_resize.clear(std::memory_order_release);
 
 		return std::move(res);
 	}
 
 	virtual void erase_resource(const Base::resource_type *res) override {
-		for (auto &val : active_directional_lights)
-			if (val == res) {
-				val = nullptr;
+		// Find slot owned by light, if any, and mark it free.
+		for (auto &slot : active_directional_lights) {
+			const directional_light* expected = reinterpret_cast<const directional_light*>(res);
+			if (slot.compare_exchange_strong(expected,
+											 nullptr))
 				break;
-			}
+		}
 	
+		// Deallocate light resource
 		Base::erase_resource(res);
 	}
 
@@ -136,15 +151,13 @@ public:
 	}
 
 	void clear_active_ll(gl::command_recorder &recorder) {
-		std::uint32_t zero = 0;
+		const gl::std430<std::uint32_t> zero = std::make_tuple<std::uint32_t>(0);
 		recorder << active_lights_ll_counter.overwrite_cmd(0, zero);
 	}
 
 	void update(gl::command_recorder &recorder) override final {
-		if (active_lights_ll_resize) {
-			recorder << active_lights_ll.cmd_bind_sparse_memory({}, { range<std::uint64_t>(0, active_lights_ll_resize.get()) }, {}, {});
-			active_lights_ll_resize = none;
-		}
+		if (!active_lights_ll_resize.test_and_set(std::memory_order_acquire))
+			recorder << active_lights_ll.cmd_bind_sparse_memory({}, { range<std::uint64_t>(0, Base::size()) }, {}, {});
 
 		Base::update(recorder);
 	}

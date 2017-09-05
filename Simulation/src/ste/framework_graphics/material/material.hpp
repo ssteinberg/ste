@@ -9,14 +9,10 @@
 #include <observable_resource.hpp>
 
 #include <material_texture.hpp>
-
 #include <material_layer.hpp>
 
 #include <sampler.hpp>
-#include <texture.hpp>
-
 #include <rgb.hpp>
-#include <alias.hpp>
 
 namespace ste {
 namespace graphics {
@@ -77,10 +73,10 @@ public:
 	*/
 	void set_texture(const material_texture &tex) {
 		texture = tex;
-		descriptor.texture_handle = texture.texture_index();
+		descriptor.texture_handle() = texture.texture_index();
 
-		if (descriptor.texture_handle)  descriptor.material_flags |= material_descriptor::material_has_texture_bit;
-		else							descriptor.material_flags &= ~material_descriptor::material_has_texture_bit;
+		if (descriptor.texture_handle())	descriptor.material_flags() |= material_descriptor::material_has_texture_bit;
+		else								descriptor.material_flags() &= ~material_descriptor::material_has_texture_bit;
 
 		Base::notify();
 	}
@@ -94,10 +90,10 @@ public:
 	*/
 	void set_cavity_map(const material_texture &tex) {
 		cavity_map = tex;
-		descriptor.cavity_handle = cavity_map.texture_index();
+		descriptor.cavity_handle() = cavity_map.texture_index();
 
-		if (descriptor.cavity_handle)   descriptor.material_flags |= material_descriptor::material_has_cavity_map_bit;
-		else							descriptor.material_flags &= ~material_descriptor::material_has_cavity_map_bit;
+		if (descriptor.cavity_handle())		descriptor.material_flags() |= material_descriptor::material_has_cavity_map_bit;
+		else								descriptor.material_flags() &= ~material_descriptor::material_has_cavity_map_bit;
 
 		Base::notify();
 	}
@@ -109,10 +105,10 @@ public:
 	*/
 	void set_normal_map(const material_texture &tex) {
 		normal_map = tex;
-		descriptor.normal_handle = normal_map.texture_index();
+		descriptor.normal_handle() = normal_map.texture_index();
 
-		if (descriptor.normal_handle)	descriptor.material_flags |= material_descriptor::material_has_normal_map_bit;
-		else							descriptor.material_flags &= ~material_descriptor::material_has_normal_map_bit;
+		if (descriptor.normal_handle())		descriptor.material_flags() |= material_descriptor::material_has_normal_map_bit;
+		else								descriptor.material_flags() &= ~material_descriptor::material_has_normal_map_bit;
 
 		Base::notify();
 	}
@@ -126,10 +122,10 @@ public:
 	*/
 	void set_mask_map(const material_texture &tex) {
 		mask_map = tex;
-		descriptor.mask_handle = mask_map.texture_index();
+		descriptor.mask_handle() = mask_map.texture_index();
 
-		if (descriptor.mask_handle)		descriptor.material_flags |= material_descriptor::material_has_mask_map_bit;
-		else							descriptor.material_flags &= ~material_descriptor::material_has_mask_map_bit;
+		if (descriptor.mask_handle())		descriptor.material_flags() |= material_descriptor::material_has_mask_map_bit;
+		else								descriptor.material_flags() &= ~material_descriptor::material_has_mask_map_bit;
 
 		Base::notify();
 	}
@@ -144,7 +140,7 @@ public:
 	void set_emission(const rgb &rgb) {
 		emission = rgb;
 
-		glm::vec3 v = rgb;
+		const glm::vec3 v = rgb;
 		descriptor.set_emission(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
@@ -160,8 +156,8 @@ public:
 	void enable_subsurface_scattering(bool enable) {
 		sss = enable;
 
-		if (enable)						descriptor.material_flags |= material_descriptor::material_has_subsurface_scattering_bit;
-		else							descriptor.material_flags &= ~material_descriptor::material_has_subsurface_scattering_bit;
+		if (enable)						descriptor.material_flags() |= material_descriptor::material_has_subsurface_scattering_bit;
+		else							descriptor.material_flags() &= ~material_descriptor::material_has_subsurface_scattering_bit;
 
 		Base::notify();
 	}
@@ -188,7 +184,7 @@ public:
 	
 	auto *get_head_layer() const { return head_layer; }
 
-	const material_descriptor &get_descriptor() const override final { return descriptor; }
+	material_descriptor get_descriptor() const override final { return descriptor; }
 };
 
 }

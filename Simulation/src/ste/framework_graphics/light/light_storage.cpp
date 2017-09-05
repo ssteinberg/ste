@@ -31,41 +31,41 @@ void light_storage::update_directional_lights_cascades_buffer(gl::command_record
 															  float projection_near, 
 															  float projection_fovy, 
 															  float projection_aspect) {
-	auto projection_tan_half_fovy = glm::tan(projection_fovy * .5f);
+	const auto projection_tan_half_fovy = glm::tan(projection_fovy * .5f);
 	
 	lib::vector<light_cascades_descriptor> update_data;
 	update_data.reserve(active_directional_lights.size());
 
 	for (int i = 0; i < active_directional_lights.size(); ++i) {
 		light_cascades_descriptor descriptor;
-		auto light = active_directional_lights[i];
+		const auto light = active_directional_lights[i].load(std::memory_order_acquire);
 		if (light == nullptr)
 			continue;
 
-		auto l = view_transform.real * light->get_direction();
+		const auto l = view_transform.real * light->get_direction();
 
 		glm::vec3 x = glm::cross(l, glm::vec3(0, 1, 0));
 		if (glm::dot(x, x) < 1e-5f)
 			x = glm::cross(l, glm::vec3(1, 0, 0));
 		x = glm::normalize(x);
-		glm::vec3 y = glm::normalize(glm::cross(l, x));
+		const glm::vec3 y = glm::normalize(glm::cross(l, x));
 		x = -x;		// Keep right-handed system
 
 		for (int c = 0; c < directional_light_cascades; ++c) {
 			float near_clip = c == 0 ? projection_near : cascades_depths[c - 1];
 			float far_clip = cascades_depths[c];
 
-			glm::vec2 top = projection_tan_half_fovy * glm::vec2(near_clip, far_clip);
-			glm::vec2 right = top * projection_aspect;
+			const glm::vec2 top = projection_tan_half_fovy * glm::vec2(near_clip, far_clip);
+			const glm::vec2 right = top * projection_aspect;
 
 			// Create the temporary, untranslated, unprojected transform to cascade space matrix,
 			// and use it to calculate the corrected eye distance and viewport size
-			glm::mat3x4 M = light_cascade_data::generate(x, y,
-														 l, .0f, glm::vec2(1.f),
-														 near_clip, far_clip);
+			const glm::mat3x4 M = light_cascade_data::generate(x, y,
+															   l, .0f, glm::vec2(1.f),
+															   near_clip, far_clip);
 
 			// Frustum vertices
-			glm::vec4 frustum[8] = {
+			const glm::vec4 frustum[8] = {
 				{  right.x,  top.x, -near_clip, 1 },
 				{ -right.x,  top.x, -near_clip, 1 },
 				{  right.x, -top.x, -near_clip, 1 },
@@ -79,7 +79,7 @@ void light_storage::update_directional_lights_cascades_buffer(gl::command_record
 			// Calculate cascade viewport limits
 			glm::vec4 t = { 0, 0, -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity() };
 			for (int j = 0; j < 8; ++j) {
-				glm::vec3 transformed = frustum[j] * M;
+				const glm::vec3 transformed = frustum[j] * M;
 				t = glm::max(t, glm::vec4(glm::abs(transformed.x),
 										  glm::abs(transformed.y),
 										  transformed.z,
@@ -87,11 +87,11 @@ void light_storage::update_directional_lights_cascades_buffer(gl::command_record
 			}
 
 			// Viewport size
-			glm::vec2 vp = glm::vec2{ t.x, t.y } *cascade_viewport_reserve;
-			glm::vec2 recp_vp = 1.f / vp;
+			const glm::vec2 vp = glm::vec2{ t.x, t.y } *cascade_viewport_reserve;
+			const glm::vec2 recp_vp = 1.f / vp;
 
-			float eye_dist = t.z + cascade_projection_eye_distance;
-			float proj_far_clip = t.w + eye_dist;
+			const float eye_dist = t.z + cascade_projection_eye_distance;
+			const float proj_far_clip = t.w + eye_dist;
 
 			descriptor.cascades[c].proj_eye_dist = eye_dist;
 			descriptor.cascades[c].proj_far_clip = proj_far_clip;

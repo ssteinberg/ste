@@ -86,17 +86,14 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord) {
 			vec3 L = ld.position;
 			vec3 I0 = irradiance(ld) * integrate_cosine_distribution_sphere_cross_section(light_directional_distance(ld), ld.radius);
 
-			rgb += I0 * atmospheric_scatter(P, L, V, 
-											atmospheric_scattering_lut,
-											atmospheric_mie0_scattering_lut);
+			rgb += I0 * atmospheric_scatter(P, L, V);
 
 			//? Draw the light source.
 			//!? TODO: Remove in future.
 			vec3 light_position = P - L * light_directional_distance(ld);
 			if (!isinf(intersection_ray_sphere(light_position, ld.radius,
 											   P, V))) {
-				rgb += I0 * extinct_ray(P, V,
-										atmospheric_optical_length_lut);
+				rgb += I0 * extinct_ray(P, V);
 			}
 		}
 	}
@@ -105,8 +102,7 @@ vec3 deferred_shade_atmospheric_scattering(ivec2 coord) {
 }
 
 vec3 deferred_compute_attenuation_from_fragment_to_eye(fragment_shading_parameters frag) {
-	return extinct(eye_position(), frag.world_position,
-				   atmospheric_optical_length_lut);
+	return extinct(eye_position(), frag.world_position);
 }
 
 bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag,
@@ -123,14 +119,12 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		light.l_dist = light_directional_distance(ld);
 		
 		// Atmopsheric attenuation
-		vec3 atat = extinct_ray(frag.world_position, -ld.position,
-								atmospheric_optical_length_lut);
+		vec3 atat = extinct_ray(frag.world_position, -ld.position);
 
 		cd_m2 = irradiance(ld) * atat;
 		
 		//! Atmospheric ambient light (TODO: Ambient occlusion)
-		cd_m2 += atmospheric_ambient(frag.world_position, dot(frag.n, -ld.transformed_position), ld.position,
-									 atmospheric_ambient_lut);
+		cd_m2 += atmospheric_ambient(frag.world_position, dot(frag.n, -ld.transformed_position), ld.position);
 	}
 	else {
 		float dist2 = dot(l, l);
@@ -141,8 +135,7 @@ bool deferred_generate_light_shading_parameters(fragment_shading_parameters frag
 		}
 		
 		// Atmopsheric attenuation
-		vec3 atat = extinct(ld.position, frag.world_position,
-							atmospheric_optical_length_lut);
+		vec3 atat = extinct(ld.position, frag.world_position);
 
 		light.l_dist = sqrt(dist2);
 		l /= light.l_dist;
