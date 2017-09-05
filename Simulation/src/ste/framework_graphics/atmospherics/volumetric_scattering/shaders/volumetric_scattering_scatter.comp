@@ -22,7 +22,7 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include <cosine_distribution_integration.glsl>
 
-layout(rgba16f, set=0, binding=0) restrict uniform image3D volume;
+layout(rgba16f, set=0, binding=0) restrict uniform image3D scattering_volume;
 
 const float samples = 2.f;
 
@@ -227,7 +227,7 @@ vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 
 void main() {
 	// Read work coordinates
-	ivec3 volume_size = imageSize(volume);
+	ivec3 volume_size = imageSize(scattering_volume);
 	ivec2 slice_coords = ivec2(gl_GlobalInvocationID.xy);
 	if (any(greaterThanEqual(slice_coords, volume_size.xy)))
 		return;
@@ -275,8 +275,8 @@ void main() {
 								 ld, light_idx, ll_idx, 
 								 cascade_idx, cascade, current_cascade_far_clip);
 
-			vec3 stored_rgb = imageLoad(volume, volume_coords).rgb;
-			imageStore(volume, volume_coords, vec4(stored_rgb + accum, .0f));
+			vec3 stored_rgb = imageLoad(scattering_volume, volume_coords).rgb;
+			imageStore(scattering_volume, volume_coords, vec4(stored_rgb + accum, .0f));
 
 			// Next depth
 			depth = depth_next_tile;

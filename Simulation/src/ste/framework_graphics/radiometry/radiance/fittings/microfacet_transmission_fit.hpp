@@ -29,7 +29,7 @@ class microfacet_transmission_fit {
 		data_ptr data;
 
 		void alloc_with_size(std::size_t size) {
-			data = data_ptr(new DataType[size * size]);
+			data = lib::allocate_unique<DataType[]>(size * size);
 		}
 	};
 

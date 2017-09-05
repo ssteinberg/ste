@@ -5,6 +5,7 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <ste_resource.hpp>
 
 #include <rendering_presentation_system.hpp>
 #include <presentation_engine.hpp>
@@ -51,22 +52,22 @@ private:
 	primary_renderer_framebuffers framebuffers;
 
 private:
-	deferred_composer composer;
-	hdr_dof_postprocess hdr;
-	fxaa_postprocess fxaa;
+	ste_resource<deferred_composer> composer;
+	ste_resource<hdr_dof_postprocess> hdr;
+	ste_resource<fxaa_postprocess> fxaa;
 
-	gbuffer_downsample_depth_fragment downsample_depth;
-	scene_prepopulate_depth_front_face_fragment prepopulate_depth;
-	scene_prepopulate_depth_back_face_fragment prepopulate_backface_depth;
-	scene_geo_cull_fragment scene_geo_cull;
+	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
+	ste_resource<scene_prepopulate_depth_front_face_fragment> prepopulate_depth;
+	ste_resource<scene_prepopulate_depth_back_face_fragment> prepopulate_backface_depth;
+	ste_resource<scene_geo_cull_fragment> scene_geo_cull;
 
-	linked_light_lists_gen_fragment linked_light_list_generator;
-	light_preprocessor_fragment light_preprocess;
+	ste_resource<linked_light_lists_gen_fragment> linked_light_list_generator;
+	ste_resource<light_preprocessor_fragment> light_preprocess;
 
-	shadowmap_projector shadows_projector;
-	directional_shadowmap_projector directional_shadows_projector;
+	ste_resource<shadowmap_projector> shadows_projector;
+	ste_resource<directional_shadowmap_projector> directional_shadows_projector;
 
-	volumetric_scattering_scatter_fragment volumetric_scatterer;
+	ste_resource<volumetric_scattering_scatter_fragment> volumetric_scatterer;
 
 private:
 	optional<atmospherics_properties<double>> atmospherics_properties_update;
@@ -102,7 +103,7 @@ public:
 	 * 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
 	 *	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
 	 */
-	void set_aperture_parameters(float diameter, float focal_length) { hdr.set_aperture_parameters(diameter, focal_length); }
+	void set_aperture_parameters(float diameter, float focal_length) { hdr->set_aperture_parameters(diameter, focal_length); }
 
 protected:
 	/**

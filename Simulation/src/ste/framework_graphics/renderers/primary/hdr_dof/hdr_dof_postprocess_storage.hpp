@@ -39,10 +39,10 @@ private:
 				const float l = glm::mix(ste::graphics::human_vision_properties::min_luminance,
 										 vision_properties_max_lum,
 										 x);
-				level.at({ i, 1 }).r() = ste::graphics::human_vision_properties::scotopic_vision(l);
-				level.at({ i, 1 }).g() = ste::graphics::human_vision_properties::mesopic_vision(l);
-				level.at({ i, 1 }).b() = ste::graphics::human_vision_properties::monochromaticity(l);
-				level.at({ i, 1 }).a() = ste::graphics::human_vision_properties::visual_acuity(l);
+				level.at({ i, 0 }).r() = ste::graphics::human_vision_properties::scotopic_vision(l);
+				level.at({ i, 0 }).g() = ste::graphics::human_vision_properties::mesopic_vision(l);
+				level.at({ i, 0 }).b() = ste::graphics::human_vision_properties::monochromaticity(l);
+				level.at({ i, 0 }).a() = ste::graphics::human_vision_properties::visual_acuity(l);
 			}
 		}
 

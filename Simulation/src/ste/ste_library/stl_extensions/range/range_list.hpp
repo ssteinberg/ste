@@ -40,29 +40,31 @@ private:
 		}
 	}
 
-	void split(typename list_t::iterator it, 
+	auto split(typename list_t::iterator it, 
 			   const T &splitter) {
 		auto itend = it->start + it->length;
 		auto end = splitter.start + splitter.length;
 		auto next = std::next(it);
 
 		if (end <= it->start)
-			return;
+			return next;
 		if (itend <= splitter.start)
-			return;
+			return next;
 
 		// Splitter overlaps it
 
 		if (splitter.start <= it->start)
 			// Overlap start
-			list.erase(it);
+			next = list.erase(it);
 		else
 			// splitter.start > it->start
 			it->length = splitter.start - it->start;
 
 		if (end < itend)
-			list.insert(next,
-						T(end, itend - end));
+			next = list.insert(next,
+							   T(end, itend - end));
+
+		return next;
 	}
 
 public:
@@ -109,11 +111,8 @@ public:
 	*/
 	void remove(const T &r) {
 		auto rend = r.start + r.length;
-		for (auto it = list.begin(); it != list.end() && it->start < rend;) {
-			auto split_it = it;
-			++it;
-			split(split_it, r);
-		}
+		for (auto it = list.begin(); it != list.end() && it->start < rend;)
+			it = split(it, r);
 	}
 	/**
 	*	@brief	Remove range

@@ -66,6 +66,9 @@ public:
 		hdr_input_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
 		fxaa_input_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 	}
+	~primary_renderer_framebuffers() noexcept {}
+
+	primary_renderer_framebuffers(primary_renderer_framebuffers&&) = default;
 
 	void resize(const glm::uvec2 &extent) {
 		if (extent.x <= 0 || extent.y <= 0 || extent == this->extent)

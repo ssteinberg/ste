@@ -13,6 +13,7 @@ layout(triangle_strip, max_vertices=18) out;
 #include <shadow_drawid_to_lightid_ttl.glsl>
 
 in vs_out {
+	vec3 position;
 	flat int instanceIdx;
 	flat uint drawIdx;
 } vin[];
@@ -72,8 +73,8 @@ void main() {
 
 	// Calculate normal and cull back faces
 	vec3 l = ld.transformed_position;
-	vec3 u = gl_in[2].gl_Position.xyz - gl_in[1].gl_Position.xyz;
-	vec3 v = gl_in[0].gl_Position.xyz - gl_in[1].gl_Position.xyz;
+	vec3 u = vin[2].position - vin[1].position;
+	vec3 v = vin[0].position - vin[1].position;
 	vec3 n = cross(u,v);
 
 	if (dot(n,-l) <= 0)
@@ -88,7 +89,8 @@ void main() {
 
 		vec3 vertices[3];
 		for (int j = 0; j < 3; ++j)
-			vertices[j] = transform(gl_in[j].gl_Position, M);
+			vertices[j] = transform(vec4(vin[j].position, 1), 
+									M);
 
 		process(cascade, cascade_idx, vertices, z_far);
 	}

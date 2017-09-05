@@ -28,9 +28,9 @@ private:
 	lib::vector<gl::image_view<gl::image_type::image_2d>> downsampled_depth_levels;
 
 private:
-	void attach_handles() {
+	void attach_handles(const ste_context &ctx) {
 		auto& downsampled = gbuffer->get_downsampled_depth_target().get_image();
-		int levels = downsampled.get_mips() + 1;
+		int levels = downsampled.get_mips();
 
 		// Create view of individual levels
 		lib::vector<gl::image_view<gl::image_type::image_2d>> level_views;
@@ -38,7 +38,7 @@ private:
 		for (int l = 0; l < levels; ++l)
 			level_views.emplace_back(downsampled,
 									 downsampled.get_format(),
-									 l, 1);
+									 0, l, 1);
 		downsampled_depth_levels = std::move(level_views);
 
 		// Attach to pipeline
@@ -49,8 +49,9 @@ private:
 									   gl::image_layout::general);
 
 		pipeline["levels"] = levels;
-		pipeline["depth_target"] = gl::bind(gl::pipeline::image(gbuffer->get_depth_target()));
-		pipeline["output_images"] = gl::bind(output_images);
+		pipeline["depth_target"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer->get_depth_target(), 
+																				 ctx.device().common_samplers_collection().linear_clamp_sampler()));
+		pipeline["output_images"] = gl::bind(0, output_images);
 	}
 
 public:
@@ -61,10 +62,10 @@ public:
 		gbuffer(gbuffer)
 	{
 		dispatch_task.attach_pipeline(pipeline);
-		attach_handles();
+		attach_handles(rs.get_creating_context());
 
-		gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this]() {
-			attach_handles();
+		gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this, &rs]() {
+			attach_handles(rs.get_creating_context());
 		});
 	}
 	~gbuffer_downsample_depth_fragment() noexcept {}

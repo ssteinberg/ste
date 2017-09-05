@@ -145,7 +145,7 @@ private:
 	}
 
 public:
-	balanced_thread_pool(float idle_time_threshold_for_new_worker = .1f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .2f)
+	balanced_thread_pool(float idle_time_threshold_for_new_worker = .05f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .15f)
 		: idle_time_threshold_for_new_worker(idle_time_threshold_for_new_worker),
 		  kernel_time_thershold_for_despawn_extra_worker(kernel_time_thershold_for_despawn_extra_worker),
 		  idle_time_threshold_for_despawn_surplus_worker(idle_time_threshold_for_despawn_surplus_worker) {

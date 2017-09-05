@@ -79,7 +79,7 @@ public:
 					}
 
 					// Insert new binding descriptor into map
-					pipeline_external_binding_set_layout_descriptor descriptor = { std::move(stages), std::move(binding) };
+					pipeline_external_binding_set_layout_descriptor descriptor = { stages, std::move(binding) };
 					bindings_map.emplace_hint(it,
 											  name,
 											  std::move(descriptor));

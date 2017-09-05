@@ -198,6 +198,7 @@ auto requested_device_features() {
 	requested_features.imageCubeArray = VK_TRUE;
 	requested_features.multiDrawIndirect = VK_TRUE;
 	requested_features.samplerAnisotropy = VK_TRUE;
+	requested_features.shaderStorageImageExtendedFormats = VK_TRUE;
 	requested_features.shaderImageGatherExtended = VK_TRUE;
 	requested_features.sparseBinding = VK_TRUE;
 	requested_features.sparseResidencyBuffer = VK_TRUE;
@@ -356,6 +357,7 @@ void load_scene(ste_context &ctx,
 				gl::presentation_engine &presentation,
 				text::text_manager &text_manager,
 				const ste_window &window,
+				task_future_collection<void> &&loading_futures,
 				lib::vector<lib::unique_ptr<graphics::light>> &lights,
 				lib::vector<lib::unique_ptr<graphics::material>> &materials,
 				lib::vector<lib::unique_ptr<graphics::material_layer>> &material_layers,
@@ -363,19 +365,12 @@ void load_scene(ste_context &ctx,
 				lib::vector<lib::unique_ptr<graphics::material>> &mat_editor_materials,
 				lib::vector<lib::unique_ptr<graphics::material_layer>> &mat_editor_layers,
 				lib::vector<lib::shared_ptr<graphics::object>> &mat_editor_objects) {
-	task_future_collection<void> loading_futures;
+	// Create all scene lights
+	loading_futures.insert(ctx.engine().task_scheduler().schedule_now([&]() {
+		add_scene_lights(ctx, scene, lights, materials, material_layers);
+	}));
 
-	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = create_sphere_light_object(ctx, &scene, graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
-
-	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
-																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
-
-	add_scene_lights(ctx, scene, lights, materials, material_layers);
-
+	// Load models
 	loading_futures.insert(resource::model_factory::load_model_async(ctx,
 																	 R"(Data/models/crytek-sponza/sponza.obj)",
 																	 &scene.get_object_group(),
@@ -384,7 +379,6 @@ void load_scene(ste_context &ctx,
 																	 materials,
 																	 material_layers,
 																	 &scene_objects));
-
 	loading_futures.insert(resource::model_factory::load_model_async(ctx,
 																	 R"(Data/models/dragon/china_dragon.obj)",
 																	 //R"(Data/models/mitsuba/mitsuba-sphere.obj)",
@@ -507,9 +501,23 @@ int main()
 
 
 	/*
-	*	Create scene and primary renderer, load scene resources and display loading screen
+	*	Create scene and primary render
 	*/
 	graphics::scene scene(ctx);
+	lib::unique_ptr<graphics::primary_renderer> renderer;
+	auto renderer_loader_task_future = ctx.engine().task_scheduler().schedule_now([&]() {
+		// Create renderer
+		renderer = lib::allocate_unique<graphics::primary_renderer>(ctx,
+																	presentation,
+																	&camera,
+																	&scene,
+																	atmosphere);
+	});
+
+
+	/*
+	 *	load scene resources and display loading screen
+	 */
 
 	// All scene resources
 	lib::vector<lib::unique_ptr<graphics::light>> lights;
@@ -521,33 +529,40 @@ int main()
 	lib::vector<lib::shared_ptr<graphics::object>> mat_editor_objects;
 
 	// Load
-	load_scene(ctx, scene, presentation, text_manager, window,
-			   lights,
-			   materials,
-			   material_layers,
-			   scene_objects,
-			   mat_editor_materials,
-			   mat_editor_layers,
-			   mat_editor_objects);
+	{
+		task_future_collection<void> loading_futures;
+		loading_futures.insert(std::move(renderer_loader_task_future));
+		load_scene(ctx, scene, presentation, text_manager, window,
+				   std::move(loading_futures),
+				   lights,
+				   materials,
+				   material_layers,
+				   scene_objects,
+				   mat_editor_materials,
+				   mat_editor_layers,
+				   mat_editor_objects);
+	}
+
+	// Configure
+	renderer->set_aperture_parameters(35e-3f, 25e-3f);
+
+	const glm::vec3 light0_pos{ -700.6, 138, -70 };
+	const glm::vec3 light1_pos{ 200, 550, 170 };
+	auto light0 = create_sphere_light_object(ctx, &scene, graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
+
+	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
+	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
+																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
+
 	if (window.should_close())
 		return 0;
 
 
 	/*
-	*	Create and configure GI renderer
-	*/
-
-	graphics::primary_renderer renderer(ctx,
-										presentation,
-										&camera,
-										&scene,
-										atmosphere);
-	renderer.set_aperture_parameters(35e-3f, 25e-3f);
-
-
-	/*
 	*	Main loop
 	*/
+
 	float f = .0f;
 	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {
@@ -562,7 +577,7 @@ int main()
 		float frame_time_ms = frame_time_predictor.predicted_value();
 		window.set_title(lib::to_string(frame_time_ms).c_str());
 
-		renderer.render_and_present();
+		renderer->render_and_present();
 	}
 
 	device.wait_idle();

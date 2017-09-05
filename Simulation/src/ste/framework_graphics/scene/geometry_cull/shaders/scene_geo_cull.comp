@@ -17,23 +17,23 @@ layout(local_size_x = 128) in;
 
 
 
-layout(std430, binding = 10) restrict buffer counter_data {
+layout(std430, binding = 0) restrict buffer counter_data {
 	uint counter;
 };
 
-layout(std430, binding = 10) restrict writeonly buffer idb_data {
+layout(std430, binding = 1) restrict writeonly buffer idb_data {
 	IndirectMultiDrawElementsCommand idb[];
 };
-layout(std430, binding = 0) restrict writeonly buffer sidb_data {
+layout(std430, binding = 2) restrict writeonly buffer sidb_data {
 	IndirectMultiDrawElementsCommand sidb[];
 };
-layout(std430, binding = 1) restrict writeonly buffer dsidb_data {
+layout(std430, binding = 3) restrict writeonly buffer dsidb_data {
 	IndirectMultiDrawElementsCommand dsidb[];
 };
-layout(std430, binding = 8) restrict writeonly buffer drawid_to_lightid_ttl_data {
+layout(std430, binding = 4) restrict writeonly buffer drawid_to_lightid_ttl_data {
 	drawid_to_lightid_ttl ttl[];
 };
-layout(std430, binding = 9) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
+layout(std430, binding = 5) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl d_ttl[];
 };
 

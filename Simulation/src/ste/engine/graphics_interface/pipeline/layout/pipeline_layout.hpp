@@ -215,9 +215,6 @@ private:
 	}
 
 	void create_set_layouts() {
-		if (!variables_map.size())
-			return;
-
 		// Find first set index, and count
 		pipeline_layout_set_index largest_set_idx = 0;
 		for (auto &v : variables_map)
@@ -252,6 +249,13 @@ private:
 
 			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
 														  std::move(v),
+														  static_cast<pipeline_layout_set_index>(i));
+			bindings_set_layouts.emplace_back(std::move(set_layout));
+		}
+		// Create emtpy sets to fill sets till 'largest_set_idx', if needed.
+		for (std::size_t i=sets.size(); i<=largest_set_idx; ++i) {
+			auto set_layout = pipeline_binding_set_layout(ctx.get().device(),
+														  pipeline_binding_set_layout::bindings_vec_t{},
 														  static_cast<pipeline_layout_set_index>(i));
 			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}

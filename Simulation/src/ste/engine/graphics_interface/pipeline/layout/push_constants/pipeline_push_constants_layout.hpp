@@ -177,7 +177,6 @@ private:
 	void write_constant(const T &t,
 						const push_constant_descriptor *constant) {
 		using S = std::remove_cv_t<std::remove_reference_t<T>>;
-		static_assert(std::is_pod_v<S> || is_arithmetic_v<S>, "T must be a POD or arithmetic type");
 
 		// Validate type
 		constant->validate<S>();

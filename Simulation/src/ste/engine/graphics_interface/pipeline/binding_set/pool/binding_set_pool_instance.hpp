@@ -50,6 +50,15 @@ private:
 			vk_bindings.push_back(*b);
 		}
 
+		// We allow empty pools.
+		// Empty binding sets are sometimes used by a device_pipeline, however pools with no layout bindings are not allowed.
+		// Add a dummy binding in this case.
+		if (!vk_bindings.size()) {
+			vk_bindings.push_back(vk::vk_descriptor_set_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+																	   VK_SHADER_STAGE_FRAGMENT_BIT,
+																	   0));
+		}
+
 		return vk_bindings;
 	}
 
