@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\StandAlone\ResourceLimits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\StandAlone\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7A4D51B1-F20C-3C24-8EC1-A40C9D5124EF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

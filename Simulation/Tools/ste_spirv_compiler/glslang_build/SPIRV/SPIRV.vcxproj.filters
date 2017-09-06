@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GlslangToSpv.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\InReadableOrder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\Logger.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\SpvBuilder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\doc.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\disassemble.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\bitutils.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\spirv.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GLSL.std.450.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GLSL.ext.KHR.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GlslangToSpv.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\hex_float.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\Logger.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\SpvBuilder.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\spvIR.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\doc.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\disassemble.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GLSL.ext.AMD.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\GLSL.ext.NV.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\SPIRV\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{26BEA3E6-F897-3428-A83C-CBC766B49CC3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

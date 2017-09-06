@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\OGLCompilersDLL\InitializeDll.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\OGLCompilersDLL\InitializeDll.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\OGLCompilersDLL\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{26BEA3E6-F897-3428-A83C-CBC766B49CC3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

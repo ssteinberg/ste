@@ -4,10 +4,10 @@
 #include "stdafx.h"
 #include "ste_shader_factory.hpp"
 
-#include "../glslang/build/install/include/glslang/Public/ShaderLang.h"
-#include "../glslang/build/install/include/glslang/Include/ResourceLimits.h"
-#include "../glslang/build/install/include/SPIRV/Logger.h"
-#include "../glslang/build/install/include/SPIRV/GlslangToSpv.h"
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/Include/ResourceLimits.h>
+#include <SPIRV/Logger.h>
+#include <SPIRV/GlslangToSpv.h>
 
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
@@ -182,22 +182,61 @@ struct ShaderCompUnit {
     }
 };
 
-//
-// For linking mode: Will independently parse each compilation unit, but then put them
-// in the same program and link them together, making at most one linked module per
-// pipeline stage.
-//
-// Uses the new C++ interface instead of the old handle-based interface.
-//
+void parse_glslang_errors(std::ostringstream &cout, std::string &&str) {
+    static std::string prefixes[2] = { "error", "warning" };
+
+    std::stringstream ss(str);
+    std::string line;
+    while (std::getline(ss, line, '\n')) {
+        for (auto &prefix : prefixes) {
+            auto l = prefix.length();
+            if (line.length() < l + 3) 
+                continue;
+
+            auto line_prefix = line.substr(0, l);
+            std::transform(line_prefix.begin(), line_prefix.end(), line_prefix.begin(), ::tolower);
+            if (line_prefix == prefix && line[l] == ':') {
+                while (::isspace(line[++l])) {}
+
+                // Find first ':', ignoring path's ":/" and ":\"
+                auto i1 = std::find(line.begin() + l, line.end(), ':');
+                while (i1 != line.end() && std::next(i1) != line.end() && 
+                    (*std::next(i1) == '/' || *std::next(i1) == '\\')) 
+                    i1 = std::find(std::next(i1), line.end(), ':');
+                if (i1 == line.end())
+                    break;
+                // Find second ':'
+                const auto i2 = std::find(std::next(i1), line.end(), ':');
+                if (i2 == line.end())
+                    break;
+
+                // Lower case path, and backslashes
+                std::transform(line.begin() + l, i1, line.begin() + l, ::tolower);
+                std::replace(line.begin() + l, i1, '/', '\\');
+
+                // format error/warning message
+                *i1 = '(';
+                const std::string suffix = std::string(",0): ") + prefix + " " + static_cast<char>(::toupper(prefix[0])) + "1000";
+                line.insert(i2, suffix.begin(), suffix.end());
+
+                // Erase old prefix
+                line.erase(0, l);
+
+                break;
+            }
+        }
+
+        cout << line << std::endl;
+    }
+}
 
 bool CompileAndLinkShaderUnits(ShaderCompUnit compUnit, std::vector<unsigned int> &spirv, std::ostringstream &cout) {
     // keep track of what to free
-    std::list<glslang::TShader*> shaders;
-    std::vector<std::string> Processes;
-    std::vector<std::string> baseResourceSetBinding;
+    const std::vector<std::string> Processes;
+    const std::vector<std::string> baseResourceSetBinding;
 
-    EShMessages messages = EShMsgDefault;
-    TBuiltInResource resource = DefaultTBuiltInResource;
+    const EShMessages messages = EShMsgDefault;
+    const TBuiltInResource resource = DefaultTBuiltInResource;
 
     //
     // Per-shader processing...
@@ -229,49 +268,35 @@ bool CompileAndLinkShaderUnits(ShaderCompUnit compUnit, std::vector<unsigned int
     shader->setEnvClient(glslang::EShClientVulkan, 150);
     shader->setEnvTarget(glslang::EshTargetSpv, 100);           // Target Vulkan/SPIR-v !
 
-    shaders.push_back(shader);
-
     const int defaultVersion = 110;
 
     glslang::TShader::ForbidIncluder includer;
     if (!shader->parse(&resource, defaultVersion, false, messages, includer)) {
-        cout << shader->getInfoLog();
-        cout << shader->getInfoDebugLog();
+        parse_glslang_errors(cout, std::string(shader->getInfoLog()));
+        parse_glslang_errors(cout, std::string(shader->getInfoDebugLog()));
         return false;
     }
 
     program.addShader(shader);
 
-//        if (!(Options & EOptionSuppressInfolog) &&
-//            !(Options & EOptionMemoryLeakMode)) {
-//            PutsIfNonEmpty(compUnit.fileName[0].c_str());
-//            PutsIfNonEmpty(shader->getInfoLog());
-//            PutsIfNonEmpty(shader->getInfoDebugLog());
-//        }
-
     if (!program.link(messages) || !program.mapIO()) {
-        cout << shader->getInfoLog();
-        cout << shader->getInfoDebugLog();
+        parse_glslang_errors(cout, std::string(shader->getInfoLog()));
+        parse_glslang_errors(cout, std::string(shader->getInfoDebugLog()));
         return false;
     }
 
-    cout << shader->getInfoLog();
-    cout << shader->getInfoDebugLog();
+    parse_glslang_errors(cout, std::string(shader->getInfoLog()));
+    parse_glslang_errors(cout, std::string(shader->getInfoDebugLog()));
 
-    // Report
-//    if (!(Options & EOptionSuppressInfolog) &&
-//        !(Options & EOptionMemoryLeakMode)) {
-//        PutsIfNonEmpty(program.getInfoLog());
-//        PutsIfNonEmpty(program.getInfoDebugLog());
-//    }
-    
     // Dump SPIR-V
     for (int stage = 0; stage < EShLangCount; ++stage) {
-        if (program.getIntermediate((EShLanguage)stage)) {
+        if (program.getIntermediate(static_cast<EShLanguage>(stage))) {
             std::string warningsErrors;
             spv::SpvBuildLogger logger;
             glslang::SpvOptions spvOptions;
-            glslang::GlslangToSpv(*program.getIntermediate((EShLanguage)stage), spirv, &logger, &spvOptions);
+            glslang::GlslangToSpv(*program.getIntermediate(static_cast<EShLanguage>(stage)), 
+                                  spirv, 
+                                  &logger, &spvOptions);
 
             cout << logger.getAllMessages().c_str();
 
@@ -286,10 +311,7 @@ bool CompileAndLinkShaderUnits(ShaderCompUnit compUnit, std::vector<unsigned int
     // the stuff from the shaders has to have its destructors called
     // before the pools holding the memory in the shaders is freed.
     delete &program;
-    while (shaders.size() > 0) {
-        delete shaders.back();
-        shaders.pop_back();
-    }
+    delete shader;
 
     return true;
 }
@@ -299,8 +321,6 @@ struct compile_result_t {
     unsigned code{ 0 };
 
     boost::filesystem::path path;
-    std::string glsl_source;
-    StE::shader_blob_header header;
 
     compile_result_t() = default;
     explicit compile_result_t(boost::filesystem::path path, unsigned c) : code(c), path(path) {}
@@ -321,135 +341,151 @@ auto parm_to_path(std::string s) {
 int main(int argc,
          char *argv[],
          char *envp[]) {
+    unsigned ret = 0;
     std::vector<boost::filesystem::path> paths;
 
-    if (argc != 3) {
-        std::cerr << "Expected arguments: [path_prefix] [comma separated module paths]" << std::endl;
+    if (argc != 2) {
+        std::cerr << "Expected arguments: [path_prefix]" << std::endl;
         return 2;
     }
-
-    // Read
+    
     auto prefix_path = parm_to_path(argv[1]);
-    {
-        std::string segment;
-        const auto ar = std::string(argv[2]);
-        std::istringstream src(ar);
-        while (std::getline(src, segment, ',')) {
-            if (segment.length() > 0)
-                paths.push_back(parm_to_path(segment));
-        }
-    }
-
     const boost::filesystem::path shader_binary_output_path = prefix_path / boost::filesystem::path(R"(Data\programs)");
     const boost::filesystem::path temp_path = prefix_path / boost::filesystem::path(R"(temp)");
     const boost::filesystem::path source_path = prefix_path / boost::filesystem::path(R"(src)");
 
+    // Find all source files
+    {
+        for (auto it = boost::filesystem::recursive_directory_iterator(source_path); it != boost::filesystem::recursive_directory_iterator(); ++it) {
+            auto ext = it->path().extension().string();
+            if (!ext.length())
+                continue;
+
+            if (ext == std::string(".vert") ||
+                ext == std::string(".frag") ||
+                ext == std::string(".geom") ||
+                ext == std::string(".comp") ||
+                ext == std::string(".tesc") ||
+                ext == std::string(".tese"))
+                paths.push_back(it->path());
+        }
+    }
+
+    // Make sure programs output directory exists
     if (!boost::filesystem::exists(shader_binary_output_path))
         boost::filesystem::create_directory(shader_binary_output_path);
 
-    // Submit async tasks
-    std::vector<std::pair<std::string, std::future<compile_result_t>>> futures;
-    for (auto &path : paths) {
-        auto name = path.stem().string();
-        auto f = std::async(std::launch::async, [path, &temp_path, &shader_binary_output_path, &source_path]() -> compile_result_t {
+    // Init
+    ShInitialize();
+
+    // Submit async tasks (in chunks)
+    for (std::size_t path_idx = 0; path_idx < paths.size();) {
+        std::vector<std::pair<std::string, std::future<compile_result_t>>> futures;
+        std::mutex m;
+
+        for (std::size_t t=0; path_idx < paths.size() && t<std::thread::hardware_concurrency()*2; ++path_idx, ++t) {
+            const auto &path = paths[path_idx];
+
             auto name = path.stem().string();
+            auto f = std::async(std::launch::async, [path, &temp_path, &shader_binary_output_path, &source_path, &m]() -> compile_result_t {
+                auto name = path.stem().string();
 
-            try {
-                if (!boost::filesystem::exists(path)) {
-                    return compile_result_t(path, path.string() + ": Fatal error - Does not exists");
+                try {
+                    if (!boost::filesystem::exists(path)) {
+                        return compile_result_t(path, path.string() + ": Fatal error - Does not exists\n");
+                    }
+
+                    auto spirv_temp_output = temp_path / (std::string("compiled_blob_") + path.filename().string());
+                    auto output = shader_binary_output_path / path.filename();
+
+                    // Check modification time of shader and dependencies
+                    // Ignore if up-to-date
+                    if (boost::filesystem::exists(output)) {
+                        const auto target_modification_time = std::chrono::system_clock::from_time_t(boost::filesystem::last_write_time(output));
+                        const auto source_modification_time = StE::ste_shader_factory::shader_modification_time(path, source_path);
+                        if (source_modification_time <= target_modification_time)
+                            return compile_result_t(path, up_to_date_code);
+                    }
+
+                    // Compile StE shader
+                    compile_result_t result = compile_result_t(path, 0);
+                    StE::shader_blob_header header;
+                    std::string glsl_source = StE::ste_shader_factory::compile_shader(path,
+                                                                                      source_path,
+                                                                                      header);
+
+                    // Create SPIR-v compiler
+                    EShLanguage compiler_language;
+                    switch (header.type) {
+                    case StE::ste_shader_type::vertex_program:		compiler_language = EShLangVertex; break;
+                    case StE::ste_shader_type::geometry_program:	        compiler_language = EShLangGeometry; break;
+                    case StE::ste_shader_type::fragment_program:	        compiler_language = EShLangFragment; break;
+                    case StE::ste_shader_type::compute_program:		compiler_language = EShLangCompute; break;
+                    case StE::ste_shader_type::tesselation_control_program:		compiler_language = EShLangTessControl; break;
+                    case StE::ste_shader_type::tesselation_evaluation_program:	compiler_language = EShLangTessEvaluation; break;
+                    default:
+                        return compile_result_t(path, path.string() + ": Fatal error - Not an StE shader file\n");
+                    }
+
+                    // Generate SPIR-v binary
+                    std::vector<unsigned int> spirv;
+                    std::ostringstream cout;
+                    {
+                        ShaderCompUnit compUnit(compiler_language);
+                        compUnit.addString(name,
+                                           glsl_source.data());
+
+                        std::unique_lock<std::mutex> l(m);
+
+                        CompileAndLinkShaderUnits(compUnit,
+                                                  spirv,
+                                                  cout);
+
+                        if (!spirv.size()) {
+                            return compile_result_t(path, cout.str());
+                        }
+                    }
+
+                    // Write compiled module with StE header
+                    {
+                        std::ofstream of;
+                        of.exceptions(of.exceptions() | std::ios::failbit | std::ifstream::badbit);
+                        of.open(output.string(), std::ios::out | std::ios::binary);
+                        of.write(reinterpret_cast<const char*>(&header), sizeof(header));
+                        of.write(reinterpret_cast<const char*>(spirv.data()), sizeof(unsigned int) * spirv.size());
+                    }
+
+                    return result;
                 }
-
-                auto spirv_temp_output = temp_path / (std::string("compiled_blob_") + path.filename().string());
-                auto output = shader_binary_output_path / path.filename();
-
-                // Check modification time of shader and dependencies
-                // Ignore if up-to-date
-                if (boost::filesystem::exists(output)) {
-                    const auto target_modification_time = std::chrono::system_clock::from_time_t(boost::filesystem::last_write_time(output));
-                    const auto source_modification_time = StE::ste_shader_factory::shader_modification_time(path, source_path);
-                    if (source_modification_time <= target_modification_time)
-                        return compile_result_t(path, up_to_date_code);
+                catch (std::exception e) {
+                    return compile_result_t(path, path.string() + ": Fatal error - " + std::string(e.what()) + "\n");
                 }
+            });
 
-                // Compile StE shader
-                compile_result_t result = compile_result_t(path, 0);
-                result.glsl_source = StE::ste_shader_factory::compile_shader(path,
-                                                                             source_path,
-                                                                             result.header);
+            futures.emplace_back(path.filename().string(),
+                                 std::move(f));
+        }
 
-                return result;
+        // Wait
+        for (auto &f : futures) {
+            const auto r = f.second.get();
+            if (r.code == up_to_date_code) {
+                continue;
             }
-            catch (std::exception e) {
-                return compile_result_t(path, path.string() + ": Fatal error - " + std::string(e.what()));
-            }
-        });
 
-        futures.emplace_back(name, std::move(f));
+            std::cout << f.first << "..." << std::endl << std::flush;
+            if (r.code != 0) {
+                std::cout << r.cerr << std::flush;
+                ret = 1;
+            }
+            else {
+                auto output = shader_binary_output_path / r.path.filename();
+                std::cout << "Binary installed " << output.string() << "." << std::endl << std::flush;
+            }
+        }
     }
 
-    // Wait
-    unsigned ret = 0;
-    for (auto &f : futures) {
-        const auto r = f.second.get();
-        auto name = r.path.stem().string();
-
-        std::cout << name << "..." << std::endl;
-
-        if (r.code == up_to_date_code) {
-            std::cout << "Up to date" << std::endl;
-            continue;
-        }
-        if (r.code != 0) {
-            std::cerr << r.cerr << std::endl;
-            ret = 2;
-        }
-
-        // Create SPIR-v compiler
-        EShLanguage compiler_language;
-        switch (r.header.type) {
-        case StE::ste_shader_type::vertex_program:		compiler_language = EShLangVertex; break;
-        case StE::ste_shader_type::geometry_program:	        compiler_language = EShLangGeometry; break;
-        case StE::ste_shader_type::fragment_program:	        compiler_language = EShLangFragment; break;
-        case StE::ste_shader_type::compute_program:		compiler_language = EShLangCompute; break;
-        case StE::ste_shader_type::tesselation_control_program:		compiler_language = EShLangTessControl; break;
-        case StE::ste_shader_type::tesselation_evaluation_program:	compiler_language = EShLangTessEvaluation; break;
-        default:
-            std::cerr << r.path.string() + ": Fatal error - Not an StE shader file" << std::endl;
-            ret = 2;
-            continue;
-        }
-
-        ShInitialize();
-
-        ShaderCompUnit compUnit(compiler_language);
-        compUnit.addString(name,
-                           r.glsl_source.data());
-
-        std::vector<unsigned int> spirv;
-        std::ostringstream cout;
-        CompileAndLinkShaderUnits(compUnit, spirv, cout);
-
-        if (!spirv.size()) {
-            std::cerr << cout.str();
-            ret = 2;
-            continue;
-        }
-
-        ShFinalize();
-
-        // Write compiled module with StE header
-        {
-            auto output = shader_binary_output_path / r.path.filename();
-
-            cout << "Writing " << output.string() << "..." << std::endl;
-
-            std::ofstream of;
-            of.exceptions(of.exceptions() | std::ios::failbit | std::ifstream::badbit);
-            of.open(output.string(), std::ios::out | std::ios::binary);
-            of.write(reinterpret_cast<const char*>(&r.header), sizeof(r.header));
-            of.write(reinterpret_cast<const char*>(spirv.data()), sizeof(unsigned int) * spirv.size());
-        }
-    }
+    ShFinalize();
 
     return ret;
 }

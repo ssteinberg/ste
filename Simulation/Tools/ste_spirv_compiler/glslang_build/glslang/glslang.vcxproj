@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{E1454996-09F3-3547-BAFB-930A9404F12E}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>glslang</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslang.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslang.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslang</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/glslang/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang -BD:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build --check-stamp-file D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/glslang/CMakeLists.txt;D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\CMakeLists.txt;D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/glslang/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang -BD:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build --check-stamp-file D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/glslang/CMakeLists.txt;D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\CMakeLists.txt;D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang_build\glslang\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Public\ShaderLang.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\arrays.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\BaseTypes.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\Common.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\ConstantUnion.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\InfoSink.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\InitializeGlobals.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\intermediate.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\PoolAlloc.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\ResourceLimits.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\revision.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\ShHandle.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\Include\Types.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\glslang_tab.cpp.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\gl_types.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Initialize.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\iomapper.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\LiveTraverser.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\localintermediate.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\ParseHelper.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\reflection.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\RemoveTree.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Scan.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\ScanContext.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\SymbolTable.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Versions.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\parseVersions.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\propagateNoContraction.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpContext.h" />
+    <ClInclude Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpTokens.h" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\glslang_tab.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Constant.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\iomapper.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\InfoSink.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Initialize.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\IntermTraverse.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Intermediate.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\ParseContextBase.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\ParseHelper.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\PoolAlloc.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\RemoveTree.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Scan.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\ShaderLang.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\SymbolTable.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\Versions.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\intermOut.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\limits.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\linkValidate.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\parseConst.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\reflection.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\Pp.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpAtom.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpContext.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpScanner.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\preprocessor\PpTokens.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\propagateNoContraction.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\GenericCodeGen\CodeGen.cpp" />
+    <ClCompile Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\GenericCodeGen\Link.cpp" />
+    <None Include="D:\src\git\StE\Simulation\Tools\ste_spirv_compiler\glslang\glslang\MachineIndependent\glslang.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/ZERO_CHECK.vcxproj">
+      <Project>24E4542A-9912-32D0-B3BC-E5AC302F6E31</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/hlsl/HLSL.vcxproj">
+      <Project>100D3C7E-4BE3-3391-ACC4-FEC28F825892</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/OGLCompilersDLL/OGLCompiler.vcxproj">
+      <Project>64B1C02E-ED1E-3F7B-9992-713A0661E408</Project>
+    </ProjectReference>
+    <ProjectReference Include="D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/glslang/OSDependent/Windows/OSDependent.vcxproj">
+      <Project>B80A8F71-4870-3D5C-86A7-ED18E180C5F7</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -182,7 +182,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
@@ -236,7 +236,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
@@ -304,7 +304,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
@@ -374,7 +374,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
@@ -436,7 +436,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
@@ -500,7 +500,7 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
