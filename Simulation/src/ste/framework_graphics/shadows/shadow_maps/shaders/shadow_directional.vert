@@ -8,7 +8,7 @@
 
 layout(location = 1) in vec3 vert;
 
-out vs_out {
+layout(location = 0) out vs_out {
 	vec3 position;
 	flat int instanceIdx;
 	flat uint drawIdx;

@@ -12,7 +12,7 @@ layout(location = 0) in vec4 tangent_frame_quat;
 layout(location = 1) in vec3 vert;
 layout(location = 2) in vec2 tex_coords;
 
-out scene_transform {
+layout(location = 0) out scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;

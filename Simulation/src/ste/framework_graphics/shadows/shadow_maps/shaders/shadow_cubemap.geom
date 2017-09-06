@@ -10,7 +10,7 @@ layout(triangle_strip, max_vertices=18) out;
 
 #include <project.glsl>
 
-in vs_out {
+layout(location = 0) in vs_out {
 	vec3 position;
 	flat int instanceIdx;
 	flat uint drawIdx;

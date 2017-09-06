@@ -4,7 +4,7 @@
 
 layout(location = 0) in uvec4 data;
 
-out vs_out {
+layout(location = 0) out vs_out {
 	uvec2 position;
 	vec3 color;
 	vec3 stroke_color;

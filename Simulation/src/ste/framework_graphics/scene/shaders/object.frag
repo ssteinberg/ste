@@ -8,7 +8,7 @@
 layout(location = 0) out vec4 gbuffer0;
 layout(location = 1) out vec4 gbuffer1;
 
-in scene_transform {
+layout(location = 0) in scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;

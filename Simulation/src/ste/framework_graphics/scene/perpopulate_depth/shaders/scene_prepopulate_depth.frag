@@ -4,7 +4,7 @@
 
 #include <material.glsl>
 
-in scene_transform {
+layout(location = 0) in scene_transform {
 	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;

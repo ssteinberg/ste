@@ -11,7 +11,7 @@ struct buffer_glyph_descriptor {
 	uint sampler_idx;
 };
 
-in geo_out {
+layout(location = 0) in geo_out {
 	flat vec3 color;
 	flat vec3 stroke_color;
 	flat float weight;

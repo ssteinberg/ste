@@ -14,7 +14,7 @@ struct buffer_glyph_descriptor {
 	uint sampler_idx;
 };
 
-in vs_out {
+layout(location = 0) in vs_out {
 	uvec2 position;
 	vec3 color;
 	vec3 stroke_color;
@@ -24,7 +24,7 @@ in vs_out {
 	float size;
 } vin[];
 
-out geo_out {
+layout(location = 0) out geo_out {
 	flat vec3 color;
 	flat vec3 stroke_color;
 	flat float weight;
