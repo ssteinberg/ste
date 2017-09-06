@@ -12,48 +12,60 @@ layout(binding = 0) uniform sampler2D depth_target;
 layout(rg32f, binding = 1) restrict writeonly uniform image2D output_images[levels];
 
 const int sample_count = 1 << (levels-1);
-vec2 samples[sample_count * 2];
+vec2 samples[sample_count * sample_count];
+
+void set_sampler(ivec2 idx, vec2 s) {
+	samples[sample_count * idx.y + idx.x] = s;
+}
+
+vec2 get_sampler(ivec2 idx) {
+	return samples[sample_count * idx.y + idx.x];
+}
 
 void main() {
+	// Coords is the base coordinates of the current work group in the level 1 mipmap of the depth target (i.e. first output output_images[0])
 	ivec2 coords = ivec2(gl_GlobalInvocationID.xy) << (levels - 1);
 	int c = sample_count;
 	
 	for (int x=0; x<c; ++x) {
 		for (int y=0; y<c; ++y) {
+			// Read 4 samples from full size depth_target
 			vec4 d = vec4(texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,0)).x,
 						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,0)).x,
 						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,1)).x,
 						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,1)).x);
 		
+			// Find max and min
 			bvec4 b = equal(d, vec4(0));
 			vec4 mind = mix(d, vec4(1), b);
 			float t = min_element(mind);
 			float s = max_element(d);
 
-			samples[x][y] = vec2(t,s);
+			// Write to local buffer
+			set_sampler(ivec2(x,y), vec2(t,s));
+			// And write to downsampled depth image
 			imageStore(output_images[0], coords + ivec2(x, y), vec4(t,s, 0, 0));
 		}
 	}
 	
 	for (int l=1; l<levels; ++l) {
+		// Each level, update base coords and sample count
 		coords /= 2;
 		c /= 2;
 
 		for (int x=0; x<c; ++x) {
-			for (int y=0; y<c; ++y) {	
-				vec4 a = vec4(samples[x*2+0][y*2+0].x,
-							  samples[x*2+1][y*2+0].x,
-							  samples[x*2+0][y*2+1].x,
-							  samples[x*2+1][y*2+1].x);
-				vec4 b = vec4(samples[x*2+0][y*2+0].y,
-							  samples[x*2+1][y*2+0].y,
-							  samples[x*2+0][y*2+1].y,
-							  samples[x*2+1][y*2+1].y);
+			for (int y=0; y<c; ++y) {
+				// Read 4 samples from the local sample buffer, min and max
+				vec2 s00 = get_sampler(ivec2(x*2+0, y*2+0));
+				vec2 s10 = get_sampler(ivec2(x*2+1, y*2+0));
+				vec2 s01 = get_sampler(ivec2(x*2+0, y*2+1));
+				vec2 s11 = get_sampler(ivec2(x*2+1, y*2+1));
 		
-				float t = min_element(a);
-				float s = max_element(b);
+				// Compute min and max
+				float t = min_element(vec4(s00.x, s10.x, s01.x, s11.x));
+				float s = max_element(vec4(s00.y, s10.y, s01.y, s11.y));
 		
-				samples[x][y] = vec2(t,s);
+				set_sampler(ivec2(x,y), vec2(t,s));
 				imageStore(output_images[l], coords + ivec2(x, y), vec4(t,s, 0, 0));
 			}
 		}
