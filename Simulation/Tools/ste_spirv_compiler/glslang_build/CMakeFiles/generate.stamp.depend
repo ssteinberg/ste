@@ -1,0 +1,29 @@
+# CMake generation dependency list for this directory.
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/CMakeLists.txt
+C:/Program Files/CMake/share/cmake-3.7/Modules/GNUInstallDirs.cmake
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/CMakeFiles/3.7.1/CMakeSystem.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInitialize.cmake
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/CMakeFiles/3.7.1/CMakeCCompiler.cmake
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/CMakeFiles/3.7.1/CMakeCXXCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC.cmake
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang_build/CMakeFiles/3.7.1/CMakeRCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Compiler/MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CTest.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CTestUseLaunchers.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CTestTargets.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/DartConfiguration.tcl.in
+D:/src/git/StE/Simulation/Tools/ste_spirv_compiler/glslang/ChooseMSVCCRT.cmake

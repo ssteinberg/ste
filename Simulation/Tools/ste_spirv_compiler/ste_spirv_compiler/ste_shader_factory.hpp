@@ -60,8 +60,8 @@ private:
 	static bool resolve_program(const std::string &program_name, boost::filesystem::path *path, const boost::filesystem::path &source_path);
 
 	static std::string load_source(const boost::filesystem::path &path);
-	static std::string compile_from_path(const boost::filesystem::path &path, 
-										 const boost::filesystem::path &source_path, 
+	static std::string compile_from_path(const boost::filesystem::path &path,
+										 const boost::filesystem::path &source_path,
 										 shader_blob_header &);
 
 	static std::vector<std::string> find_includes(const boost::filesystem::path &path);
@@ -72,12 +72,9 @@ private:
 
 public:
 	static std::chrono::system_clock::time_point shader_modification_time(const boost::filesystem::path &path, const boost::filesystem::path &source_path);
-	static bool compile_shader(const boost::filesystem::path &path,
-							   const boost::filesystem::path &source_path,
-							   const boost::filesystem::path &glslang_path,
-							   const boost::filesystem::path &shader_binary_output_path,
-							   const boost::filesystem::path &temp_path, 
-							   shader_blob_header &out);
+	static std::string compile_shader(const boost::filesystem::path &path,
+									  const boost::filesystem::path &source_path,
+									  shader_blob_header &out);
 };
 
 }

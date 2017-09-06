@@ -141,9 +141,9 @@ std::vector<std::string> ste_shader_factory::find_includes(const boost::filesyst
 	return ret;
 }
 
-bool ste_shader_factory::parse_include(const boost::filesystem::path &path, 
-									   int line, 
-									   std::string &source, 
+bool ste_shader_factory::parse_include(const boost::filesystem::path &path,
+									   int line,
+									   std::string &source,
 									   std::vector<std::string> &paths,
 									   const boost::filesystem::path &source_path) {
 	std::string::size_type it = 0, end;
@@ -195,7 +195,7 @@ bool ste_shader_factory::parse_include(const boost::filesystem::path &path,
 	return false;
 }
 
-bool ste_shader_factory::resolve_program(const std::string &program_name, 
+bool ste_shader_factory::resolve_program(const std::string &program_name,
 										 boost::filesystem::path *path,
 										 const boost::filesystem::path &source_path) {
 	boost::filesystem::recursive_directory_iterator end;
@@ -207,12 +207,12 @@ bool ste_shader_factory::resolve_program(const std::string &program_name,
 	});
 	if (it == end)
 		return false;
-	
+
 	*path = it->path();
 	return true;
 }
 
-std::chrono::system_clock::time_point ste_shader_factory::shader_modification_time(const boost::filesystem::path &path, 
+std::chrono::system_clock::time_point ste_shader_factory::shader_modification_time(const boost::filesystem::path &path,
 																				   const boost::filesystem::path &source_path) {
 	std::chrono::system_clock::time_point modification_time;
 
@@ -243,17 +243,14 @@ std::chrono::system_clock::time_point ste_shader_factory::shader_modification_ti
 	return modification_time;
 }
 
-bool ste_shader_factory::compile_shader(const boost::filesystem::path &path,
-										const boost::filesystem::path &source_path,
-										const boost::filesystem::path &glslang_path,
-										const boost::filesystem::path &shader_binary_output_path,
-										const boost::filesystem::path &temp_path,
-										shader_blob_header &out) {
+std::string ste_shader_factory::compile_shader(const boost::filesystem::path &path,
+											   const boost::filesystem::path &source_path,
+											   shader_blob_header &out) {
 	out = {};
 	out.magic = shader_blob_header().magic;
 
-	auto shader_name = path.stem();
-	auto src = compile_from_path(path, source_path, out);
+	const auto shader_name = path.stem();
+	const auto src = compile_from_path(path, source_path, out);
 	std::string temp_extension;
 
 	switch (out.type) {
@@ -280,25 +277,5 @@ bool ste_shader_factory::compile_shader(const boost::filesystem::path &path,
 		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
 	}
 
-	auto temp_file_path = temp_path / (shader_name.string() + temp_extension);
-	auto out_path = shader_binary_output_path;
-
-	// Save temp file
-	{
-		std::ofstream temp_file(temp_file_path.string(), std::ofstream::out);
-		if (!temp_file) {
-			std::cerr << "Can not open temp file for writing: " << temp_file_path.string() << std::endl;
-			throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
-		}
-		temp_file << src;
-	}
-
-	// GLSL -> SPIR-v
-	std::string cmd = glslang_path.string() + " -V -t -o \"" + 
-		out_path.string() + "\" \"" + temp_file_path.string() + "\"";
-	auto ret = system(cmd.c_str());
-
-	boost::filesystem::remove(temp_file_path);
-
-	return ret == 0;
+	return src;
 }

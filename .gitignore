@@ -58,6 +58,8 @@ dlldata.c
 *.meta
 *.pch
 *.pdb
+*.ipdb
+*.iobj
 *.pgc
 *.pgd
 *.rsp

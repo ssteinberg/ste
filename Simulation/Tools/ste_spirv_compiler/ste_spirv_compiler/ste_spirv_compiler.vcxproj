@@ -89,14 +89,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glslang_build/install/include;D:\src\boost\current</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0\stage\lib32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_system-vc140-mt-sgd-1_62.lib;libboost_filesystem-vc140-mt-sgd-1_62.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../glslang_build/install/lib;D:\src\boost\current\stage32\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SPVRemapperd.lib;SPIRVd.lib;OGLCompilerd.lib;OSDependentd.lib;HLSLd.lib;glslangd.lib;libboost_system-vc141-mt-sgd-1_65.lib;libboost_filesystem-vc141-mt-sgd-1_65.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,14 +106,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glslang_build/install/include;D:\src\boost\current</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0\stage\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_filesystem-vc140-mt-sgd-1_62.lib;libboost_system-vc140-mt-sgd-1_62.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../glslang_build/install/lib;D:\src\boost\current\stage64\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SPVRemapperd.lib;SPIRVd.lib;OGLCompilerd.lib;OSDependentd.lib;HLSLd.lib;glslangd.lib;libboost_system-vc141-mt-sgd-1_65.lib;libboost_filesystem-vc141-mt-sgd-1_65.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,21 +125,23 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glslang_build/install/include;D:\src\boost\current</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <Mtune>skylake</Mtune>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0\stage\lib32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_filesystem-vc141-mt-s-1_64.lib;libboost_system-vc141-mt-s-1_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../glslang_build/install/lib;D:\src\boost\current\stage32\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SPIRV.lib;OGLCompiler.lib;OSDependent.lib;HLSL.lib;glslang.lib;libboost_system-vc141-mt-s-1_65.lib;libboost_filesystem-vc141-mt-s-1_65.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,19 +153,22 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../glslang_build/install/include;D:\src\boost\current</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <Mtune>skylake</Mtune>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\src\boost_1_64_0_b2\boost_1_64_0\stage\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_filesystem-vc141-mt-s-1_64.lib;libboost_system-vc141-mt-s-1_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../glslang_build/install/lib;D:\src\boost\current\stage64\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SPIRV.lib;OGLCompiler.lib;OSDependent.lib;HLSL.lib;glslang.lib;libboost_system-vc141-mt-s-1_65.lib;libboost_filesystem-vc141-mt-s-1_65.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

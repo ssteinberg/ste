@@ -182,14 +182,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -236,14 +236,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -304,14 +304,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -374,14 +374,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -436,14 +436,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
@@ -500,14 +500,14 @@
       </Message>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>powershell.exe $(SolutionDir)Simulation\compile_shaders.ps1 -d: "$(SolutionDir)Simulation"</Command>
+      <Command>$(SolutionDir)Simulation\Tools\ste_spirv_compiler\ste_spirv_compiler.exe "$(SolutionDir)Simulation"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Compile shaders</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <TreatOutputAsContent>false</TreatOutputAsContent>
-      <Outputs>dummy.fake.file;compile_shader_timestamp.temp</Outputs>
+      <Outputs>dummy.fake.file;$(SolutionDir)Simulation\Data\programs</Outputs>
       <Inputs>
       </Inputs>
     </CustomBuildStep>
