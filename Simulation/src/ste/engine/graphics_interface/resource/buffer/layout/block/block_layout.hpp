@@ -9,6 +9,25 @@
 namespace ste {
 namespace gl {
 
+namespace _detail {
+
+template <int N, int Elements, typename Block>
+struct block_operator_equal_impl {
+    bool operator()(const Block &lhs, const Block &rhs) {
+        return
+            lhs.template get<N>() == rhs.template get<N>() &&
+            block_operator_equal_impl<N + 1, Elements, Block>()(lhs, rhs);
+    }
+};
+template <int Elements, typename Block>
+struct block_operator_equal_impl<Elements, Elements, Block> {
+    bool operator()(const Block &lhs, const Block &rhs) {
+        return true;
+    }
+};
+
+}
+
 template <std::size_t base_alignment, typename... Ts>
 struct block_layout {
 	using tuple_t = std::tuple<Ts...>;
@@ -57,6 +76,13 @@ struct block_layout {
 		initializer()(*this, std::move(tuple));
 	}
 	block_layout(Ts&&... args) : block_layout(tuple_t(std::forward<Ts>(args)...)) {}
+
+    bool operator==(const block_layout &rhs) const {
+        return _detail::block_operator_equal_impl<0, elements_count, block_layout<base_alignment, Ts...>>()(*this, rhs);
+	}
+    bool operator!=(const block_layout &rhs) const {
+        return !(*this == rhs);
+	}
 };
 
 template <int N, std::size_t base_alignment, typename... Ts>

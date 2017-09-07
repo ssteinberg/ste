@@ -19,9 +19,9 @@
 
 #include <lib/unique_ptr.hpp>
 #include <lib/unordered_map.hpp>
-
 #include <lib/vector.hpp>
 #include <future>
+#include <hash_combine.hpp>
 
 #include <tiny_obj_loader.h>
 
@@ -33,7 +33,27 @@ private:
 	using texture_t = graphics::material_texture;
 	using texture_map_type = lib::unordered_map<std::string, texture_t>;
 	using shapes_type = std::vector<tinyobj::shape_t>;
-	using materials_type = std::vector<tinyobj::material_t>;
+    using materials_type = std::vector<tinyobj::material_t>;
+    using vertex_attrib_type = tinyobj::attrib_t;
+
+	struct model_factory_vertex {
+		glm::vec3 p{ .0f };
+		glm::vec3 n{ .0f };
+		glm::vec2 uv{ .0f };
+
+		glm::vec3 t{ .0f };
+
+		bool operator==(const model_factory_vertex &rhs) const {
+			return p == rhs.p &&
+				uv == rhs.uv &&
+				n == rhs.n &&
+				t == rhs.t;
+		}
+		bool operator!=(const model_factory_vertex &rhs) const {
+			return !(*this == rhs);
+		}
+	};
+	friend std::hash<ste::resource::model_factory::model_factory_vertex>;
 
 	constexpr static char roughness_map_key[] = "map_roughness";
 	constexpr static char metallic_map_key[] = "map_metallic";
@@ -66,6 +86,7 @@ private:
 															 float normal_map_bias);
 	static ste::task_future<void> process_model_mesh(const ste_context &ctx,
 													 graphics::scene_properties *,
+                                                     const vertex_attrib_type &attrib,
 													 const tinyobj::shape_t &,
 													 graphics::object_group *,
 													 materials_type &,
@@ -86,4 +107,14 @@ public:
 };
 
 }
+}
+
+namespace std {
+template <> struct hash<ste::resource::model_factory::model_factory_vertex> {
+	size_t operator()(const ste::resource::model_factory::model_factory_vertex &x) const {
+		return ste::hash_combine()(x.p.x, x.p.y, x.p.z, 
+								   x.n.x, x.n.y, x.n.z, 
+								   x.uv.x, x.uv.y);
+	}
+};
 }

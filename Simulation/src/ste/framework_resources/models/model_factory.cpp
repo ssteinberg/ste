@@ -57,6 +57,7 @@ void model_factory::add_object_to_object_group(const ste_context &ctx,
 
 ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 														 graphics::scene_properties *scene_properties,
+                                                         const vertex_attrib_type &attrib,
 														 const tinyobj::shape_t &shape,
 														 graphics::object_group *object_group,
 														 materials_type &materials,
@@ -64,85 +65,123 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 														 lib::vector<lib::unique_ptr<graphics::material>> &loaded_materials,
 														 lib::vector<lib::unique_ptr<graphics::material_layer>> &loaded_material_layers,
 														 lib::vector<lib::shared_ptr<graphics::object>> *loaded_objects) {
-	lib::vector<graphics::object_vertex_data> vbo_data;
+	lib::vector<model_factory_vertex> vertices;
 	lib::vector<std::uint32_t> vbo_indices;
-	lib::vector<std::pair<glm::vec3, glm::vec3>> nt;
 
-	// Create vertex data
-	const auto vertices = shape.mesh.positions.size() / 3;
-	const auto tc_stride = shape.mesh.texcoords.size() / vertices;
-	const auto normals_stride = shape.mesh.normals.size() / vertices;
-	for (std::remove_cv_t<decltype(vertices)> i = 0; i < vertices; ++i) {
-		graphics::object_vertex_data v;
+	lib::unordered_map<model_factory_vertex, std::uint32_t> vertex_to_index_map;
 
-		// Position
-		v.p() = glm::vec3{ shape.mesh.positions[3 * i + 0], shape.mesh.positions[3 * i + 1], shape.mesh.positions[3 * i + 2] };
+    // Reserve memory
+	vertices.reserve(shape.mesh.indices.size());
+    vbo_indices.reserve(shape.mesh.indices.size());
 
-		// Texture coordinates
-		if (tc_stride)
-			v.uv() = glm::vec2{ shape.mesh.texcoords[tc_stride * i + 0], shape.mesh.texcoords[tc_stride * i + 1] };
-		else
-			v.uv() = glm::vec2(.0f);
+	// Sanity check
+	static constexpr auto face_vertices = 3;
+    for (auto &face : shape.mesh.num_face_vertices) {
+        assert(face == face_vertices && "Not a triangle!");
+    }
+    assert(shape.mesh.indices.size() % face_vertices == 0);
 
-		// Normal and tangent
-		if (normals_stride) {
-			glm::vec3 n = { shape.mesh.normals[normals_stride * i + 0], shape.mesh.normals[normals_stride * i + 1], shape.mesh.normals[normals_stride * i + 2] };
-			n = glm::normalize(n);
-			nt.push_back(std::make_pair(n, glm::vec3(0)));
+	// Load faces
+	for (std::size_t i=0; i < shape.mesh.indices.size(); i+=face_vertices) {
+		// Load face vertices
+		for (int j=0; j < face_vertices; ++j) {
+			auto index = shape.mesh.indices[i + j];
+			model_factory_vertex v;
+
+			// Position
+			assert(index.vertex_index >= 0);
+			v.p = glm::vec3{
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			// Texture coordinates
+			if (index.texcoord_index != -1) {
+				v.uv = glm::vec2{
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					1.f - attrib.texcoords[2 * index.texcoord_index + 1]        // Convert origin from bottom-left to top-left
+				};
+			}
+
+			// Normal
+			if (index.normal_index != -1) {
+				const glm::vec3 n = {
+					attrib.normals[3 * index.normal_index + 0],
+					attrib.normals[3 * index.normal_index + 1],
+					attrib.normals[3 * index.normal_index + 2]
+				};
+				v.n = glm::normalize(n);
+			}
+			// Tangent
+			v.t = glm::vec3(.0f);
+
+			// Create vertex index
+			auto vertex_index = static_cast<std::uint32_t>(vertices.size());
+
+			// If we have an identical vertex, use it.
+			const auto ret = vertex_to_index_map.try_emplace(v, vertex_index);
+			if (ret.second) {
+				// Store vertex
+				vertices.push_back(v);
+			}
+			else {
+				// Reuse index
+				vertex_index = ret.first->second;
+			}
+
+			// Store index
+			vbo_indices.push_back(vertex_index);
 		}
-		else
-			nt.push_back(std::make_pair(glm::vec3(0), glm::vec3(0)));
 
-		vbo_data.push_back(v);
-	}
-
-	// Indices
-	for (auto ind : shape.mesh.indices)
-		vbo_indices.push_back(static_cast<std::uint32_t>(ind));
-
-	if (tc_stride && normals_stride) {
 		// Align tangents to u's (texture coordinate) direction
-		for (std::size_t i = 0; i < shape.mesh.indices.size() - 2; i += 3) {
-			const auto i0 = shape.mesh.indices[i];
-			const auto i1 = shape.mesh.indices[i + 1];
-			const auto i2 = shape.mesh.indices[i + 2];
+		auto &v0 = vertices[*(vbo_indices.end() - 1)];
+		auto &v1 = vertices[*(vbo_indices.end() - 2)];
+		auto &v2 = vertices[*(vbo_indices.end() - 3)];
 
-			const auto &v0 = vbo_data[i0];
-			const auto &v1 = vbo_data[i1];
-			const auto &v2 = vbo_data[i2];
+		const auto x0 = v1.p.x - v0.p.x;
+		const auto x1 = v2.p.x - v0.p.x;
+		const auto y0 = v1.p.y - v0.p.y;
+		const auto y1 = v2.p.y - v0.p.y;
+		const auto z0 = v1.p.z - v0.p.z;
+		const auto z1 = v2.p.z - v0.p.z;
 
-			const auto x0 = v1.p().x - v0.p().x;
-			const auto x1 = v2.p().x - v0.p().x;
-			const auto y0 = v1.p().y - v0.p().y;
-			const auto y1 = v2.p().y - v0.p().y;
-			const auto z0 = v1.p().z - v0.p().z;
-			const auto z1 = v2.p().z - v0.p().z;
+		const auto s0 = v1.uv.x - v0.uv.x;
+		const auto s1 = v2.uv.x - v0.uv.x;
+		const auto t0 = v1.uv.y - v0.uv.y;
+		const auto t1 = v2.uv.y - v0.uv.y;
 
-			const auto s0 = v1.uv().x - v0.uv().x;
-			const auto s1 = v2.uv().x - v0.uv().x;
-			const auto t0 = v1.uv().y - v0.uv().y;
-			const auto t1 = v2.uv().y - v0.uv().y;
+		const auto r = 1.f / (s0 * t1 - s1 * t0);
+		const glm::vec3 sdir = { (t1 * x0 - t0 * x1) * r, (t1 * y0 - t0 * y1) * r, (t1 * z0 - t0 * z1) * r };
 
-			const auto r = 1.f / (s0 * t1 - s1 * t0);
-			const glm::vec3 sdir = { (t1 * x0 - t0 * x1) * r, (t1 * y0 - t0 * y1) * r, (t1 * z0 - t0 * z1) * r };
+		v0.t += sdir;
+		v1.t += sdir;
+		v2.t += sdir;
+    }
 
-			nt[i0].second += sdir;
-			nt[i1].second += sdir;
-			nt[i2].second += sdir;
+	// Create vertex objects
+	lib::vector<graphics::object_vertex_data> vbo_data;
+	vbo_data.reserve(vertices.size());
+	for (auto &v : vertices) {
+		graphics::object_vertex_data vo;
+		vo.p() = v.p;
+		vo.uv() = v.uv;
+
+		// Gram-Schmidt orthogonalization process
+		const glm::vec3 n = v.n;
+		glm::vec3 t = v.t;
+		if (glm::dot(t,t) < 1e-2) {
+			// Handle singularity
+			t = glm::cross(n, glm::vec3{ 1,0,0 });
+			if (glm::dot(t,t) < 1e-2)
+				t = glm::cross(n, glm::vec3{ 0,1,0 });
 		}
+		t = glm::normalize(t - n * glm::dot(n, t));
+		const glm::vec3 b = glm::cross(t, n);
+		// Create tangent frame
+		vo.tangent_frame_from_tbn(t, b, n);
 
-		// Finally create tangent frame
-		for (unsigned i = 0; i < vbo_data.size(); ++i) {
-			auto &v = vbo_data[i];
-
-			// Gram-Schmidt orthogonalization process
-			glm::vec3 n = nt[i].first;
-			glm::vec3 t = nt[i].second;
-			t = glm::normalize(t - n * glm::dot(n, t));
-			glm::vec3 b = glm::cross(t, n);
-
-			v.tangent_frame_from_tbn(t, b, n);
-		}
+		vbo_data.push_back(vo);
 	}
 
 	// Create async task that generates object, material and material layer
@@ -343,15 +382,16 @@ ste::task_future<void> model_factory::load_model_async(const ste_context &ctx,
 
 		shapes_type shapes;
 		materials_type materials;
+        vertex_attrib_type attribs;
 
 		// Load model
 		std::string err;
-		if (!tinyobj::LoadObj(shapes, 
-							  materials, 
-							  err, 
+		if (!tinyobj::LoadObj(&attribs,
+                              &shapes,
+							  &materials,
+							  &err, 
 							  path_string.c_str(), 
-							  dir.c_str(), 
-							  tinyobj::load_flags_t::triangulation | tinyobj::load_flags_t::calculate_normals)) {
+							  dir.c_str())) {
 			ste_log_error() << "Couldn't load model " << path_string << ": " << err;
 			throw resource_io_error("Could not load/parse model");
 		}
@@ -374,6 +414,7 @@ ste::task_future<void> model_factory::load_model_async(const ste_context &ctx,
 			for (auto &shape : shapes)
 				futures.push_back(process_model_mesh(ctx,
 													 scene_properties,
+                                                     attribs,
 													 shape,
 													 object_group,
 													 materials,
