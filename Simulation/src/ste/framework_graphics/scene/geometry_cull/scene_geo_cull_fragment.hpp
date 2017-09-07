@@ -42,7 +42,6 @@ public:
 		ls(ls)
 	{
 		dispatch_task.attach_pipeline(pipeline);
-//		program.get().set_uniform("cascades_depths", s->properties().lights_storage().get_cascade_depths_array());
 	}
 	~scene_geo_cull_fragment() noexcept {}
 

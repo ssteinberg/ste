@@ -24,7 +24,8 @@ auto fill(array<T> &dst,
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
 		_internal::copy_data_buffer(dst->parent_context(),
 									dst,
-									data,
+									data.data(),
+									data.size(),
 									offset);
 	});
 
@@ -39,7 +40,8 @@ auto fill(stable_vector<T, minimal_atom_size, max_sparse_size> &dst,
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
 		_internal::copy_data_buffer_and_resize(dst->parent_context(),
 											   dst,
-											   data,
+											   data.data(),
+											   data.size(),
 											   offset);
 	});
 
@@ -54,7 +56,8 @@ auto fill(vector<T, minimal_atom_size, max_sparse_size> &dst,
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
 		_internal::copy_data_buffer_and_resize(dst->parent_context(),
 											   dst,
-											   data,
+											   data.data(),
+											   data.size(),
 											   offset);
 	});
 

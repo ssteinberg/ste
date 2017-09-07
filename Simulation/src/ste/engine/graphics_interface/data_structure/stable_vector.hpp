@@ -18,7 +18,9 @@
 #include <device_resource_allocation_policy.hpp>
 
 #include <allow_type_decay.hpp>
+#include <lib/vector.hpp>
 #include <lib/range_list.hpp>
+#include <array>
 #include <mutex>
 #include <atomic>
 
@@ -75,7 +77,22 @@ public:
 		: stable_vector(ctx, usage)
 	{
 		// Copy initial static data
-		_internal::copy_data_buffer_and_resize(ctx, *this, initial_data);
+		_internal::copy_data_buffer(ctx,
+									*this,
+									initial_data.data(),
+									initial_data.size());
+	}
+	template <std::size_t N>
+	stable_vector(const ste_context &ctx,
+				  const std::array<T, N> &initial_data,
+				  const buffer_usage &usage)
+		: stable_vector(ctx, usage)
+	{
+		// Copy initial static data
+		_internal::copy_data_buffer(ctx,
+									*this,
+									initial_data.data(),
+									initial_data.size());
 	}
 	~stable_vector() noexcept {}
 
