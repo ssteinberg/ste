@@ -30,6 +30,7 @@ D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftmoderr.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftotval.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftoutln.h
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftpcfdrv.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftpfr.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftrender.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/ftsizes.h
@@ -49,6 +50,6 @@ D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/ft2build.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/config/ftconfig.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../include/freetype/config/ftoption.h
-D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../lib32/freetype.lib
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../lib32/freetyped.lib
 D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../lib/cmake/freetype/freetype-config.cmake
-D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../lib/cmake/freetype/freetype-config-release.cmake
+D:/src/git/StE/Simulation/third_party/build/freetype2_32/../../lib/cmake/freetype/freetype-config-debug.cmake

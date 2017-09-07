@@ -15,7 +15,7 @@ set(BINDIR "D:/src/git/StE/Simulation/third_party/build/libpng64")
 set(AWK "")
 set(DFA_XTRA "")
 set(PNG_PREFIX "")
-set(PNGLIB_VERSION "1.6.23")
+set(PNGLIB_VERSION "1.6.33")
 
 if("${OUTPUT}" STREQUAL "scripts/pnglibconf.c")
   # Generate scripts/pnglibconf.c

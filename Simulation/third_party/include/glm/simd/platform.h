@@ -177,7 +177,7 @@
 
 // Clang
 #elif defined(__clang__)
-#	if GLM_PLATFORM & GLM_PLATFORM_APPLE
+#	if defined(__apple_build_version__)
 #		if __clang_major__ == 5 && __clang_minor__ == 0
 #			define GLM_COMPILER GLM_COMPILER_CLANG33
 #		elif __clang_major__ == 5 && __clang_minor__ == 1
@@ -422,6 +422,9 @@
 #elif GLM_ARCH & GLM_ARCH_AVX_BIT
 #	include <immintrin.h>
 #elif GLM_ARCH & GLM_ARCH_SSE42_BIT
+#	if GLM_COMPILER & GLM_COMPILER_CLANG
+#		include <popcntintrin.h>
+#	endif
 #	include <nmmintrin.h>
 #elif GLM_ARCH & GLM_ARCH_SSE41_BIT
 #	include <smmintrin.h>

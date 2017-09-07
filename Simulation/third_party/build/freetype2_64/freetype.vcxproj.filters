@@ -219,6 +219,9 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftoutln.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftpcfdrv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\freetype2\include\freetype\ftpfr.h">
       <Filter>Header Files</Filter>
     </ClInclude>

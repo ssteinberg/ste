@@ -3,6 +3,6 @@ D:/src/git/StE/Simulation/third_party/build/glfw64/../../include/GLFW/glfw3nativ
 D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/cmake/glfw3/glfw3Config.cmake
 D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/cmake/glfw3/glfw3ConfigVersion.cmake
 D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/cmake/glfw3/glfw3Targets.cmake
-D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/cmake/glfw3/glfw3Targets-release.cmake
+D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/cmake/glfw3/glfw3Targets-debug.cmake
 D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/pkgconfig/glfw3.pc
-D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/glfw3.lib
+D:/src/git/StE/Simulation/third_party/build/glfw64/../../lib/glfw3d.lib

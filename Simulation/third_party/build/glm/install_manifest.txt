@@ -210,12 +210,6 @@ D:/src/git/StE/Simulation/third_party/include/glm/gtx/rotate_vector.inl
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/scalar_multiplication.hpp
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/scalar_relational.hpp
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/scalar_relational.inl
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_mat4.hpp
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_mat4.inl
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_quat.hpp
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_quat.inl
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_vec4.hpp
-D:/src/git/StE/Simulation/third_party/include/glm/gtx/simd_vec4.inl
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/spline.hpp
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/spline.inl
 D:/src/git/StE/Simulation/third_party/include/glm/gtx/std_based_type.hpp

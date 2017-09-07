@@ -30,6 +30,7 @@ D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftmoderr.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftotval.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftoutln.h
+D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftpcfdrv.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftpfr.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftrender.h
 D:/src/git/StE/Simulation/third_party/build/freetype2_64/../../include/freetype/ftsizes.h

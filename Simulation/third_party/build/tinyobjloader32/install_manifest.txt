@@ -1,2 +1,8 @@
-D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib32/tinyobjloader.lib
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib32/tinyobjloaderd.lib
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib/tinyobjloader/cmake/tinyobjloader-targets.cmake
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib/tinyobjloader/cmake/tinyobjloader-targets-debug.cmake
 D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../include/tiny_obj_loader.h
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../share/doc/tinyobjloader/LICENSE
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib/tinyobjloader/cmake/tinyobjloader-config.cmake
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib/tinyobjloader/cmake/tinyobjloader-config-version.cmake
+D:/src/git/StE/Simulation/third_party/build/tinyobjloader32/../../lib/pkgconfig/tinyobjloader.pc

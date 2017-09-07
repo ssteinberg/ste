@@ -1,4 +1,4 @@
-D:/src/git/StE/Simulation/third_party/build/libpng32/../../lib32/libpng16_staticd.lib
+D:/src/git/StE/Simulation/third_party/build/libpng32/../../lib32/libpng16_static.lib
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../include/png.h
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../include/pngconf.h
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../include/pnglibconf.h
@@ -9,4 +9,4 @@ D:/src/git/StE/Simulation/third_party/build/libpng32/../../share/man/man3/libpng
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../share/man/man3/libpngpf.3
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../share/man/man5/png.5
 D:/src/git/StE/Simulation/third_party/build/libpng32/../../lib/libpng/libpng16.cmake
-D:/src/git/StE/Simulation/third_party/build/libpng32/../../lib/libpng/libpng16-debug.cmake
+D:/src/git/StE/Simulation/third_party/build/libpng32/../../lib/libpng/libpng16-release.cmake
