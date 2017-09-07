@@ -15,7 +15,6 @@
 #include <command_recorder.hpp>
 #include <cmd_copy_buffer.hpp>
 
-#include <lib/vector.hpp>
 #include <cstring>
 
 #include <ste_engine_exceptions.hpp>
@@ -28,17 +27,18 @@ namespace _internal {
 template <typename Container>
 void copy_data_buffer(const ste_context &ctx,
 					  Container &gl_container,
-					  const lib::vector<typename Container::value_type> &data,
+					  const typename Container::value_type* data,
+					  std::size_t size,
 					  std::size_t offset = 0) {
 	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible_coherent>;
 
 	// Don't allow copying pass buffer end
-	if (data.size() > gl_container.get().get_elements_count() + offset) {
+	if (size > gl_container.get().get_elements_count() + offset) {
 		throw ste_engine_exception("Buffer overflow");
 	}
 
-	auto copy_count = data.size();
+	auto copy_count = size;
 
 	// Select queue
 	auto queue_type = ste_queue_type::data_transfer_queue;
@@ -52,7 +52,7 @@ void copy_data_buffer(const ste_context &ctx,
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		std::memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
+		std::memcpy(ptr->get_mapped_ptr(), data, static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
 	// Create a batch
@@ -82,17 +82,18 @@ void copy_data_buffer(const ste_context &ctx,
 template <typename Container, typename = typename std::enable_if<Container::sparse_container>::type>
 void copy_data_buffer_and_resize(const ste_context &ctx,
 								 Container &gl_container,
-								 const lib::vector<typename Container::value_type> &data,
+								 const typename Container::value_type* data,
+								 std::size_t size,
 								 std::size_t offset = 0) {
 	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible_coherent>;
 
 	// Don't allow copying pass buffer end
-	if (data.size() > gl_container.get().get_elements_count() + offset) {
+	if (size > gl_container.get().get_elements_count() + offset) {
 		throw ste_engine_exception("Buffer overflow");
 	}
 
-	auto copy_count = data.size();
+	auto copy_count = size;
 
 	// Select queue (might need to sparse bind)
 	auto queue_type = ste_queue_type::data_transfer_sparse_queue;
@@ -106,7 +107,7 @@ void copy_data_buffer_and_resize(const ste_context &ctx,
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
-		std::memcpy(ptr->get_mapped_ptr(), data.data(), static_cast<std::size_t>(copy_count * sizeof(T)));
+		std::memcpy(ptr->get_mapped_ptr(), data, static_cast<std::size_t>(copy_count * sizeof(T)));
 	}
 
 	// Create a batch

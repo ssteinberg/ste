@@ -20,6 +20,7 @@
 #include <array.hpp>
 #include <stable_vector.hpp>
 #include <std430.hpp>
+#include <std140.hpp>
 
 #include <array>
 #include <lib/unique_ptr.hpp>
@@ -53,13 +54,22 @@ private:
 	directional_lights_cascades_type directional_lights_cascades_buffer;
 	shaped_lights_points_storage_type shaped_lights_points_storage;
 
-	std::array<std::atomic<const directional_light*>, directional_light_cascades> active_directional_lights;
 	std::array<float, directional_light_cascades> cascades_depths;
+	gl::array<gl::std140<float>> cascades_depths_uniform_buffer;
+
+	std::array<std::atomic<const directional_light*>, directional_light_cascades> active_directional_lights;
 
 	std::atomic_flag active_lights_ll_resize{ ATOMIC_FLAG_INIT };
 
 private:
-	void build_cascade_depth_array();
+	static std::array<float, directional_light_cascades> build_cascade_depth_array();
+	static std::array<gl::std140<float>, directional_light_cascades> cascades_depths_uniform_buffer_initial_data(const std::array<float, directional_light_cascades> &cascades_depths) {
+		std::array<gl::std140<float>, directional_light_cascades> initial_data;
+		for (int i=0;i<directional_light_cascades;++i)
+			initial_data[i].get<0>() = cascades_depths[i];
+
+		return initial_data;
+	}
 
 public:
 	light_storage(const ste_context &ctx)
@@ -67,11 +77,13 @@ public:
 		active_lights_ll_counter(ctx, 1, gl::buffer_usage::storage_buffer),
 		active_lights_ll(ctx, max_ll_buffer_size, gl::buffer_usage::storage_buffer),
 		directional_lights_cascades_buffer(ctx, max_active_directional_lights_per_frame, gl::buffer_usage::storage_buffer),
-		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer)
-	{
+		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer),
 		// Build cascades' depth array for directional lights
-		build_cascade_depth_array();
-
+		cascades_depths(build_cascade_depth_array()),
+		cascades_depths_uniform_buffer(ctx,
+									   cascades_depths_uniform_buffer_initial_data(cascades_depths),
+									   gl::buffer_usage::uniform_buffer)
+	{
 		// Initialize array of active directional lights to nulls
 		for (auto &val : active_directional_lights)
 			val.store(nullptr);
@@ -103,7 +115,7 @@ public:
 		for (cascade_idx = 0; cascade_idx < active_directional_lights.size(); ++cascade_idx) {
 			// Try to take ownership of slot
 			const directional_light *expected = nullptr;
-			if (active_directional_lights[cascade_idx].compare_exchange_strong(expected, 
+			if (active_directional_lights[cascade_idx].compare_exchange_strong(expected,
 																			   res.get()))
 				break;
 		}
@@ -141,7 +153,7 @@ public:
 											 nullptr))
 				break;
 		}
-	
+
 		// Deallocate light resource
 		Base::erase_resource(res);
 	}
@@ -165,14 +177,14 @@ public:
 	/**
 	 *	@brief		Updates the directional lights cascades.
 	 *				Should be called every frame where a view transform or a projection change occured.
-	 *				
+	 *
 	 *	@param	recorder		Command recorder
 	 *	@param	view_transform	Camera's view transform dual-quaternion
 	 */
 	void update_directional_lights_cascades_buffer(gl::command_recorder &recorder,
 												   const glm::dualquat &view_transform,
-												   float projection_near, 
-												   float projection_fovy, 
+												   float projection_near,
+												   float projection_fovy,
 												   float projection_aspect);
 
 	auto& get_active_ll_counter() const { return active_lights_ll_counter; }
@@ -181,6 +193,7 @@ public:
 	auto& get_directional_lights_cascades_buffer() const { return directional_lights_cascades_buffer; }
 	auto& get_shaped_lights_points_buffer() const { return shaped_lights_points_storage; }
 
+	auto& get_cascade_depths_uniform_buffer() const { return cascades_depths_uniform_buffer; }
 	auto& get_cascade_depths_array() const { return cascades_depths; }
 };
 

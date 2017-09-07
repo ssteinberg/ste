@@ -23,11 +23,6 @@ private:
 	const volumetric_scattering_storage *vss;
 	const light_storage *ls;
 
-private:
-	void attach_handles() const {
-//		program.get().set_uniform("cascades_depths", ls->get_cascade_depths_array());
-	}
-
 public:
 	volumetric_scattering_scatter_fragment(const gl::rendering_system &rs,
 										   const volumetric_scattering_storage *vss,
@@ -37,7 +32,6 @@ public:
 		vss(vss),
 		ls(ls)
 	{
-		attach_handles();
 		dispatch_task.attach_pipeline(pipeline);
 	}
 	~volumetric_scattering_scatter_fragment() noexcept {}
@@ -50,7 +44,7 @@ public:
 		static const glm::ivec2 jobs = { 32, 32 };
 		static const glm::vec4 clear_data = { .0f, .0f, .0f, .0f };
 
-		auto size = (glm::ivec2{ vss->get_tiles_extent().x, vss->get_tiles_extent().y } + jobs - glm::ivec2(1)) / jobs;
+		const auto size = (glm::ivec2{ vss->get_tiles_extent().x, vss->get_tiles_extent().y } + jobs - glm::ivec2(1)) / jobs;
 
 		recorder << gl::cmd_clear_color_image(vss->get_volume_texture().get_image(), 
 											  gl::image_layout::transfer_dst_optimal, 
