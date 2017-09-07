@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\dummy.cpp">
       <Filter>Core Files</Filter>
@@ -201,31 +201,10 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\_vectorize.hpp">
       <Filter>Core Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_common.hpp">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\compute_vector_relational.hpp">
       <Filter>Core Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_exponential.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_geometric.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_integer.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_matrix.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_packing.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_trigonometric.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\func_vector_relational.hpp">
-      <Filter>Core Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\precision.hpp">
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\qualifier.hpp">
       <Filter>Core Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\detail\setup.hpp">
@@ -291,9 +270,6 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\bitfield.inl">
       <Filter>GTC Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\color_encoding.inl">
-      <Filter>GTC Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\color_space.inl">
       <Filter>GTC Files</Filter>
     </ClInclude>
@@ -301,9 +277,6 @@
       <Filter>GTC Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\epsilon.inl">
-      <Filter>GTC Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\functions.inl">
       <Filter>GTC Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\integer.inl">
@@ -363,9 +336,6 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\epsilon.hpp">
       <Filter>GTC Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\functions.hpp">
-      <Filter>GTC Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtc\integer.hpp">
       <Filter>GTC Files</Filter>
     </ClInclude>
@@ -423,6 +393,9 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\closest_point.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\color_encoding.inl">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\color_space.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -450,6 +423,9 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\extended_min_max.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\exterior_product.inl">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\fast_exponential.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -460,6 +436,9 @@
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\float_notmalize.inl">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\functions.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\gradient_paint.inl">
@@ -487,6 +466,9 @@
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_decompose.inl">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_factorisation.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_interpolation.inl">
@@ -549,15 +531,6 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\scalar_relational.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_mat4.inl">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_quat.inl">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_vec4.inl">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\spline.inl">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -597,6 +570,9 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\closest_point.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\color_encoding.hpp">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\color_space.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -624,6 +600,9 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\extended_min_max.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\exterior_product.hpp">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\fast_exponential.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -631,6 +610,9 @@
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\fast_trigonometry.hpp">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\functions.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\gradient_paint.hpp">
@@ -658,6 +640,9 @@
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_decompose.hpp">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_factorisation.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\matrix_interpolation.hpp">
@@ -726,15 +711,6 @@
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\scalar_relational.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_mat4.hpp">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_quat.hpp">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\simd_vec4.hpp">
-      <Filter>GTX Files</Filter>
-    </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\spline.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
@@ -754,6 +730,9 @@
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\type_trait.hpp">
+      <Filter>GTX Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\vec_swizzle.hpp">
       <Filter>GTX Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\src\git\StE\Simulation\third_party\packages\glm\glm\gtx\vector_angle.hpp">
@@ -803,7 +782,7 @@
     <None Include="D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt">
       <Filter>Text Files</Filter>
     </None>
-    <None Include="D:\src\git\StE\Simulation\third_party\packages\glm\copying.txt">
+    <None Include="D:\src\git\StE\Simulation\third_party\packages\glm\manual.md">
       <Filter>Text Files</Filter>
     </None>
     <None Include="D:\src\git\StE\Simulation\third_party\packages\glm\readme.md">

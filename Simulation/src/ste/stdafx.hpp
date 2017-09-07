@@ -16,8 +16,8 @@
 #define GLM_FORCE_AVX
 #define GLM_EXT_INCLUDED
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
-#include <glm/gtx/bit.hpp>
 #include <glm/gtc/constants.hpp>
 
 

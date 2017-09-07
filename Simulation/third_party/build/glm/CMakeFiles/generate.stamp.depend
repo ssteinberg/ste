@@ -2,24 +2,18 @@
 D:/src/git/StE/Simulation/third_party/packages/glm/CMakeLists.txt
 D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/3.7.1/CMakeSystem.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInitialize.cmake
-D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/3.7.1/CMakeCCompiler.cmake
 D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/3.7.1/CMakeCXXCompiler.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeSystemSpecificInformation.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeGenericSystem.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/WindowsPaths.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCInformation.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC-C.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC.cmake
-D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/3.7.1/CMakeRCCompiler.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeRCInformation.cmake
-C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCommonLanguageInclude.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCXXInformation.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/Compiler/MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/Platform/Windows-MSVC.cmake
+D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/3.7.1/CMakeRCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeRCInformation.cmake
 C:/Program Files/CMake/share/cmake-3.7/Modules/CMakeCommonLanguageInclude.cmake
 D:/src/git/StE/Simulation/third_party/packages/glm/cmake/GNUInstallDirs.cmake
 D:/src/git/StE/Simulation/third_party/packages/glm/cmake/CMakePackageConfigHelpers.cmake
@@ -30,3 +24,4 @@ C:/Program Files/CMake/share/cmake-3.7/Modules/BasicConfigVersion-AnyNewerVersio
 D:/src/git/StE/Simulation/third_party/packages/glm/cmake/glmBuildConfig.cmake.in
 D:/src/git/StE/Simulation/third_party/packages/glm/cmake/glmConfig.cmake.in
 D:/src/git/StE/Simulation/third_party/packages/glm/./cmake/glm.pc.in
+D:/src/git/StE/Simulation/third_party/packages/glm/cmake_uninstall.cmake.in

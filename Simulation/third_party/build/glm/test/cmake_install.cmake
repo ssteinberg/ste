@@ -31,6 +31,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("D:/src/git/StE/Simulation/third_party/build/glm/test/bug/cmake_install.cmake")
   include("D:/src/git/StE/Simulation/third_party/build/glm/test/core/cmake_install.cmake")
+  include("D:/src/git/StE/Simulation/third_party/build/glm/test/ext/cmake_install.cmake")
   include("D:/src/git/StE/Simulation/third_party/build/glm/test/gtc/cmake_install.cmake")
   include("D:/src/git/StE/Simulation/third_party/build/glm/test/gtx/cmake_install.cmake")
 

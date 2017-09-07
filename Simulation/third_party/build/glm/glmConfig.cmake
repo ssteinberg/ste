@@ -1,4 +1,4 @@
-set(GLM_VERSION "0.9.8")
+set(GLM_VERSION "0.9.9")
 set(GLM_INCLUDE_DIRS "D:/src/git/StE/Simulation/third_party/packages/glm")
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.0")

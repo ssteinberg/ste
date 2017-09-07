@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -9,13 +9,21 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGUID>{B923FE5D-9D90-3C22-B992-8510E84D03CD}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>ZERO_CHECK</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -30,6 +38,18 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -37,14 +57,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-  </PropertyGroup>
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;D:\src\git\StE\Simulation\third_party\packages\glm\test\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -54,7 +76,27 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
-      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;D:\src\git\StE\Simulation\third_party\packages\glm\test\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>D:\src\git\StE\Simulation\third_party\packages\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -74,8 +116,8 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\ext\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\ext\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Checking Build System</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
@@ -87,9 +129,35 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\ext\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\ext\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/glm -BD:/src/git/StE/Simulation/third_party/build/glm --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "$(SolutionPath)"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\ext\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\ext\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HD:/src/git/StE/Simulation/third_party/packages/glm -BD:/src/git/StE/Simulation/third_party/build/glm --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "$(SolutionPath)"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:/src/git/StE/Simulation/third_party/build/glm/CMakeFiles/d6024dd9909e840df62323d5707db506/generate.stamp.rule;C:\Program Files\CMake\share\cmake-3.7\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.7\Modules\WriteBasicConfigVersionFile.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeCXXCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeRCCompiler.cmake;D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\3.7.1\CMakeSystem.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glm.pc.in;D:\src\git\StE\Simulation\third_party\packages\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\CMakePackageConfigHelpers.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\GNUInstallDirs.cmake;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmBuildConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake\glmConfig.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\cmake_uninstall.cmake.in;D:\src\git\StE\Simulation\third_party\packages\glm\glm\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\bug\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\core\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\ext\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtc\CMakeLists.txt;D:\src\git\StE\Simulation\third_party\packages\glm\test\gtx\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\src\git\StE\Simulation\third_party\build\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\glm\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\bug\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\core\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\ext\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtc\CMakeFiles\generate.stamp;D:\src\git\StE\Simulation\third_party\build\glm\test\gtx\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
