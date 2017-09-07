@@ -65,11 +65,13 @@ protected:
 				auto v = glm::u32vec2{ glm::packHalf2x16({ t.x, t.y }), glm::packHalf2x16({ t.z, .0f }) };
 				points_copy.push_back(std::make_tuple<glm::u32vec2>(std::move(v)));
 			}
+
+            assert(points_copy.size() == size);
 		}
 
 		// Add to buffer
 		std::uint64_t idx = descriptor.get_polygonal_light_buffer_offset();
-		auto current_count = static_cast<std::size_t>(this->get_points_count());
+		const auto current_count = static_cast<std::size_t>(this->get_points_count());
 		if (current_count > 0) {
 			if (current_count < size) {
 				// Erase old points and insert new
@@ -90,7 +92,7 @@ protected:
 			recorder << storage_info.storage->insert_cmd(points_copy, idx);
 		}
 
-		float sqrt_surface_area = glm::sqrt(surface_area);
+		const float sqrt_surface_area = glm::sqrt(surface_area);
 
 		// Update descriptor
 		descriptor.set_polygonal_light_points(static_cast<std::uint8_t>(size),
@@ -103,7 +105,7 @@ protected:
 public:
 	virtual ~shaped_light() noexcept {
 		auto idx = descriptor.get_polygonal_light_buffer_offset();
-		auto count = this->get_points_count();
+		const auto count = this->get_points_count();
 		if (count > 0)
 			storage_info.storage->tombstone(idx, count);
 	}

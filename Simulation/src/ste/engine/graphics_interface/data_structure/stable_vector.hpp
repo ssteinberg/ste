@@ -142,7 +142,7 @@ public:
 
 		lt.unlock();
 
-		location = elements.fetch_add(1);
+		location = elements.fetch_add(data.size());
 		return insert_cmd_t(data, location, this);
 	}
 	/**

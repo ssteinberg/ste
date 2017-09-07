@@ -110,7 +110,7 @@ struct ste_shader_spirv_reflected_variable {
 	}
 
 	lib::unique_ptr<ste_shader_stage_variable> generate_variable(bool is_spec_constant,
-																 const lib::vector<ste_shader_stage_binding> &binds) const {
+																 const lib::vector<ste_shader_stage_binding> &binds) {
 		// Unknown type is an internal error
 		if (!has_type()) {
 			throw ste_shader_opaque_or_unknown_type();
@@ -128,15 +128,36 @@ struct ste_shader_spirv_reflected_variable {
 		else if (is_struct()) {
 			// Handle structs recursively
 			lib::vector<lib::unique_ptr<ste_shader_stage_variable>> elements;
-			for (auto &e : struct_members) {
-				// Sort by offset
-				auto it = elements.begin();
-				for (; it != elements.end() && (*it)->offset() < e.offset; ++it) {}
 
-				assert(it == elements.end() || (*it)->offset() > e.offset);
-				elements.insert(it, e.generate_variable(false,
-														binds));
-			}
+            // Some SPIR-v compilers omit the offset. In this case allow recostruction manually
+            bool reconstruct_offsets = true;
+            for (auto &e : struct_members)
+                reconstruct_offsets &= e.offset == 0;
+
+            if (!reconstruct_offsets) {
+                // We have offsets, generate variables and sort by offset
+                for (auto &e : struct_members) {
+                    auto it = elements.begin();
+                    for (; it != elements.end() && (*it)->offset() < e.offset; ++it) {}
+
+                    assert(it == elements.end() || (*it)->offset() > e.offset);
+                    elements.insert(it, e.generate_variable(false,
+                                                            binds));
+                }
+            }
+            else {
+                // We create offsets, assuming tight packing and correct sorting
+                std::uint16_t offset = 0;
+                for (auto &e : struct_members) {
+                    e.offset = offset;
+                    auto member_variable = e.generate_variable(false,
+                                                               binds);
+                    const auto size = member_variable->size_bytes();
+                    elements.push_back(std::move(member_variable));
+
+                    offset += size;
+                }
+            }
 
 			var = lib::unique_ptr<ste_shader_stage_variable>(lib::allocate_unique<ste_shader_stage_variable_struct>(std::move(elements),
 																												name,

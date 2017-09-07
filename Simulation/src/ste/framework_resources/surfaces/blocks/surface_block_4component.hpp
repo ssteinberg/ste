@@ -193,14 +193,6 @@ public:
 		b() = static_cast<b_comp_type>(max_elements > 2 ? static_cast<b_comp_writer_type>(*(data + 2)) : static_cast<b_comp_writer_type>(0));
 		a() = static_cast<a_comp_type>(max_elements > 3 ? static_cast<a_comp_writer_type>(*(data + 3)) : a_default_val);
 	}
-
-//	static void load_8blocks(const std::uint8_t *data, common_type *rgba_output) {
-//		auto *blocks = reinterpret_cast<const block_4components*>(data);
-//		*(rgba_output + 0) = static_cast<common_type>(block.r());
-//		*(rgba_output + 1) = static_cast<common_type>(block.g());
-//		*(rgba_output + 2) = static_cast<common_type>(block.b());
-//		*(rgba_output + 3) = static_cast<common_type>(block.a());
-//	}
 };
 
 }
