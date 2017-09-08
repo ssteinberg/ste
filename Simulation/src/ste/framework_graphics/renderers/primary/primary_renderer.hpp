@@ -80,6 +80,24 @@ private:
 	 */
 	void update(gl::command_recorder &recorder);
 
+	/*
+	 *	Fragments' recording methods
+	 */
+
+	void record_light_preprocess_fragment(gl::command_recorder &recorder);
+	void record_scene_geometry_cull_fragment(gl::command_recorder &recorder);
+	void record_shadow_projector_fragment(gl::command_recorder &recorder);
+	void record_directional_shadow_projector_fragment(gl::command_recorder &recorder);
+	void record_prepopulate_depth_fragment(gl::command_recorder &recorder);
+	void record_downsample_depth_fragment(gl::command_recorder &recorder);
+	void record_linked_light_list_generator_fragment(gl::command_recorder &recorder);
+	void record_scene_fragment(gl::command_recorder &recorder);
+	void record_prepopulate_depth_backface_fragment(gl::command_recorder &recorder);
+	void record_volumetric_scattering_fragment(gl::command_recorder &recorder);
+	void record_deferred_composer_fragment(gl::command_recorder &recorder);
+	void record_hdr_fragment(gl::command_recorder &recorder);
+	void record_fxaa_fragment(gl::command_recorder &recorder);
+	
 public:
 	primary_renderer(const ste_context &ctx,
 					 gl::presentation_engine &presentation,

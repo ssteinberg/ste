@@ -17,7 +17,6 @@
 #include <volumetric_scattering.glsl>
 
 #include <project.glsl>
-#include <renderer_transform_buffers.glsl>
 
 #include <cosine_distribution_integration.glsl>
 

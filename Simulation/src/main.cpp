@@ -555,10 +555,10 @@ int main()
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
 																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 
-//	if (window.should_close()) {
+	if (window.should_close()) {
         device.wait_idle();
 		return 0;
-//    }
+    }
 
 
 	/*

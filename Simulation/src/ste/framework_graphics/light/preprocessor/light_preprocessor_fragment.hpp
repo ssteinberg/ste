@@ -46,7 +46,7 @@ public:
 
 	void record(gl::command_recorder &recorder) override final {
 		constexpr int jobs = 128;
-		auto size = (ls->size() + jobs - 1) / jobs;
+		const auto size = (ls->size() + jobs - 1) / jobs;
 
 		ls->clear_active_ll(recorder);
 		recorder << dispatch_task(static_cast<std::uint32_t>(size), 1u, 1u);

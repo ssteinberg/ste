@@ -59,6 +59,8 @@ private:
 
 	static bool resolve_program(const std::string &program_name, boost::filesystem::path *path, const boost::filesystem::path &source_path);
 
+	static std::string erase_multiline_comments(std::string &&src);
+
 	static std::string load_source(const boost::filesystem::path &path);
 	static std::string compile_from_path(const boost::filesystem::path &path,
 										 const boost::filesystem::path &source_path,

@@ -8,8 +8,6 @@
 #include <quaternion.glsl>
 #include <dual_quaternion.glsl>
 
-#include <renderer_transform_buffers.glsl>
-
 #include <light_transport.glsl>
 #include <atmospherics.glsl>
 

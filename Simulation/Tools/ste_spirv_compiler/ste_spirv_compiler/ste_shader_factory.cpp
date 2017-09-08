@@ -23,6 +23,26 @@
 
 using namespace StE;
 
+std::string ste_shader_factory::erase_multiline_comments(std::string &&src) {
+	std::string::size_type i = 0;
+
+	while ((i = src.find("/*", i)) != std::string::npos) {
+		const auto j = src.find("*/", i+2);
+		const auto end = j != std::string::npos ? j + 2 : src.size();
+		
+		int new_lines = 0;
+		for (auto it = src.begin() + i + 2; it != src.begin() + end; ++it)
+			if (*it == '\n') ++new_lines;
+		src.erase(src.begin() + i, src.begin() + end - new_lines);
+		for (auto it = src.begin() + i; it != src.begin() + i + new_lines; ++it)
+			*it = '\n';
+
+		i = end;
+	}
+
+	return src;
+}
+
 std::string ste_shader_factory::load_source(const boost::filesystem::path &path) {
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
@@ -30,7 +50,8 @@ std::string ste_shader_factory::load_source(const boost::filesystem::path &path)
 		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
 	}
 
-	return std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+	std::string content = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
+	return erase_multiline_comments(std::move(content));
 }
 
 std::string ste_shader_factory::compile_from_path(const boost::filesystem::path &path,
@@ -44,13 +65,10 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 
 	std::vector<std::string> paths{ path.filename().string() };
 
-	std::ifstream fs(path.string(), std::ios::in);
-	if (!fs) {
-		std::cerr << "Can not load " << path.string() << std::endl;
-		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
-	}
+	const std::string content = load_source(path);
+	std::stringstream iss(content);
 
-	for (int i = 1; std::getline(fs, line); ++i, src += line + "\n") {
+	for (int i = 1; std::getline(iss, line); ++i, src += line + "\n") {
 		if (line[0] == '#') {
 			if (parse_type(line, header))
 				line = "";
@@ -64,8 +82,6 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 			parse_include(path, i, line, paths, source_path);
 		}
 	}
-
-	fs.close();
 
 	if (header.type == ste_shader_type::none || header.properties.version_major == 0) {
 		std::cerr << path.string() << ": Unknown type or version" << std::endl;

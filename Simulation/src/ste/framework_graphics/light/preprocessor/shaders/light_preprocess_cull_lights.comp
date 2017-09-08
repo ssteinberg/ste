@@ -6,8 +6,6 @@ layout(local_size_x = 128) in;
 
 #include <renderer_transform_buffers.glsl>
 
-#include <common.glsl>
-#include <hdr_common.glsl>
 #include <intersection.glsl>
 
 #include <atmospherics.glsl>
@@ -17,7 +15,7 @@ layout(push_constant) uniform clip_planes {
 	vec4 np, rp, lp, tp, bp;
 };
 
-void add_to_lll(int light_idx) {
+void add_to_ll(int light_idx) {
 	uint ll_idx = atomicAdd(ll_counter, 1);
 	ll[ll_idx] = uint(light_idx);
 }
@@ -58,7 +56,7 @@ void main() {
 
 	if (add_light) {
 		// Add light to active light linked list
-		add_to_lll(light_idx);
+		add_to_ll(light_idx);
 
 		light_buffer[light_idx].transformed_position = transformed_light_pos;
 	}

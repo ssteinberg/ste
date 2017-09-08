@@ -1,6 +1,5 @@
 
 #include <pack.glsl>
-#include <renderer_transform_buffers.glsl>
 
 struct g_buffer_element {
 	mat2x4 data;
