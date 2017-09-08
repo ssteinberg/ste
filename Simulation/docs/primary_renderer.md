@@ -225,7 +225,7 @@ Self sufficient
 
 **light_buffer**: <font color="red">light_preprocess (compute rw)</font> ➧ <font color="green">scene_geo_cull (compute r)</font> ➧ <font color="green">shadow_projector (geometry r)</font> ➧ <font color="green">directional_shadow_projector (geometry r)</font> ➧ <font color="green">linked_light_lists_generator (compute r)</font> ➧ <font color="green">volumetric_scattering (compute r)</font> ➧ <font color="green">composer (frag r)</font>
 
-**ll_counter**: <font color="red">light_preprocess (compute rw)</font> ➧ <font color="green">scene_geo_cull (compute r)</font> ➧ <font color="green">linked_light_lists_generator (compute r)</font>
+**ll_counter**: <font color="magenta">clear (transfer w)</font> ➧ <font color="red">light_preprocess (compute rw)</font> ➧ <font color="green">scene_geo_cull (compute r)</font> ➧ <font color="green">linked_light_lists_generator (compute r)</font>
 
 **ll**: <font color="red">light_preprocess (compute rw)</font> ➧ <font color="green">scene_geo_cull (compute r)</font> ➧ <font color="green">linked_light_lists_generator (compute r)</font>
 

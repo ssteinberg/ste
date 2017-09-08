@@ -1222,6 +1222,8 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\is_flat_container.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Simulation\docs\primary_renderer.md" />
+    <None Include="Simulation\docs\todo.md" />
     <None Include="Simulation\src\ste\engine\graphics_interface\pipeline\layout\push_constants\pipeline_push_constants_layout.hpp" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\fxaa.frag" />
     <None Include="Simulation\src\ste\framework_graphics\antialiasing\fxaa\shaders\nvidia_fxaa.glsl" />

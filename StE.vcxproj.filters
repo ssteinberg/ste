@@ -2074,5 +2074,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\primary_renderer_common_descriptor_sets.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\renderer_transform_buffers.glsl" />
     <None Include="Simulation\src\loading.frag" />
+    <None Include="Simulation\docs\primary_renderer.md" />
+    <None Include="Simulation\docs\todo.md" />
   </ItemGroup>
 </Project>
