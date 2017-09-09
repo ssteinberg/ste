@@ -123,16 +123,16 @@ void primary_renderer_buffers::update(gl::command_recorder &recorder,
 
 	// If needed, upload new camera projection data (after resize)
 	if (!projection_data_up_to_date_flag.test_and_set(std::memory_order_acquire)) {
-		recorder << gl::pipeline_barrier(gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
-										 gl::pipeline_stage::transfer,
-										 gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
-																   gl::access_flags::shader_read,
-																   gl::access_flags::transfer_write));
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
+																  gl::pipeline_stage::transfer,
+																  gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
+																							gl::access_flags::shader_read,
+																							gl::access_flags::transfer_write)));
 		transform_buffers.update_proj_data(recorder, *cam, extent);
-		recorder << gl::pipeline_barrier(gl::pipeline_stage::transfer,
-										 gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
-										 gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
-																   gl::access_flags::transfer_write,
-																   gl::access_flags::shader_read));
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																  gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
+																  gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read)));
 	}
 }

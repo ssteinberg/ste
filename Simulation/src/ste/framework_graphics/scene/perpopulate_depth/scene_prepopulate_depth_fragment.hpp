@@ -40,14 +40,18 @@ public:
 
 	scene_prepopulate_depth_fragment(scene_prepopulate_depth_fragment&&) = default;
 
+	static auto create_fb_layout() {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
+																			gl::image_layout::shader_read_only_optimal);
+		return fb_layout;
+	}
+
 	static const lib::string& name() { return "prepopulate_depth"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
-		gl::framebuffer_layout fb_layout;
-		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
-																			gl::image_layout::depth_stencil_attachment_optimal);
-		auditor.set_framebuffer_layout(fb_layout);
+		auditor.set_framebuffer_layout(create_fb_layout());
 
 		gl::device_pipeline_graphics_configurations config;
 		config.depth_op = gl::depth_operation(gl::compare_op::greater);
@@ -67,8 +71,9 @@ public:
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
-		auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
+		const auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+
 		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
 							  static_cast<std::uint32_t>(stride));
 	}

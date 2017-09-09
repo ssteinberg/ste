@@ -22,6 +22,7 @@
 #include <hdr_dof_postprocess.hpp>
 #include <scene_prepopulate_depth_fragment.hpp>
 #include <scene_geo_cull_fragment.hpp>
+#include <scene_write_gbuffer_fragment.hpp>
 #include <linked_light_lists_gen_fragment.hpp>
 #include <light_preprocessor_fragment.hpp>
 #include <shadowmap_projector.hpp>
@@ -59,6 +60,7 @@ private:
 	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
 	ste_resource<scene_prepopulate_depth_front_face_fragment> prepopulate_depth;
 	ste_resource<scene_prepopulate_depth_back_face_fragment> prepopulate_backface_depth;
+	ste_resource<scene_write_gbuffer_fragment> scene_write_gbuffer;
 	ste_resource<scene_geo_cull_fragment> scene_geo_cull;
 
 	ste_resource<linked_light_lists_gen_fragment> linked_light_list_generator;
@@ -95,8 +97,6 @@ private:
 	void record_prepopulate_depth_backface_fragment(gl::command_recorder &recorder);
 	void record_volumetric_scattering_fragment(gl::command_recorder &recorder);
 	void record_deferred_composer_fragment(gl::command_recorder &recorder);
-	void record_hdr_fragment(gl::command_recorder &recorder);
-	void record_fxaa_fragment(gl::command_recorder &recorder);
 	
 public:
 	primary_renderer(const ste_context &ctx,

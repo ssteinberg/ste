@@ -112,7 +112,7 @@ Compute stage (linked_light_lists_gen.comp):
  - <font color="green">(buffer readonly)</font> ll
  - <font color="green">(buffer readonly)</font> light_buffer
  - <font color="red">(local buffer readwrite)</font> lll_counter
- - <font color="red">(local buffer readwrite)</font> lll_buffer
+ - <font color="red">(local buffer writeonly)</font> lll_buffer
  - <font color="red">(storage image writeonly)</font> linked_light_list_heads
  - <font color="red">(storage image writeonly)</font> linked_light_list_low_detail_heads
  - <font color="red">(storage image writeonly)</font> linked_light_list_size

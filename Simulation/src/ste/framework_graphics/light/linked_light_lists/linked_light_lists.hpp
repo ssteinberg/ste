@@ -58,7 +58,7 @@ public:
 		if (up_to_date.test_and_set(std::memory_order_acquire))
 			resize_internal(recorder);
 
-		lib::vector<lll_counter_element> zero = { lll_counter_element(std::make_tuple<std::uint32_t>(0)) };
+		const lll_counter_element zero = lll_counter_element(std::make_tuple<std::uint32_t>(0));
 		recorder << lll_counter.overwrite_cmd(0, zero);
 	}
 
