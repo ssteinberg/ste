@@ -80,7 +80,7 @@ protected:
 		}
 
 		// Set object debug marker
-		vk_debug_marker_set_object_name(device,
+		vk_debug_marker_set_object_name(device.get(),
 										view,
 										VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT,
 										name);

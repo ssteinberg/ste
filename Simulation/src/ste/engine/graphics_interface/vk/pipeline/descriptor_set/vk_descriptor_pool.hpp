@@ -119,10 +119,10 @@ public:
 		descriptor_sets.reserve(sets.size());
 		for (int i=0; i<set_layouts.size(); ++i) {
 			auto s = sets[i];
-			const auto &l = set_layouts[i];
+			const auto &l = *set_layouts[i];
 
 			// Set object debug marker
-			vk_debug_marker_set_object_name(device,
+			vk_debug_marker_set_object_name(device.get(),
 											s,
 											VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT,
 											l.get_name());

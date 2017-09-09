@@ -37,6 +37,7 @@ public:
 		volume(ctx, resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx,
 																							   gl::image_usage::sampled | gl::image_usage::storage | gl::image_usage::transfer_dst,
 																							   gl::image_layout::transfer_dst_optimal,
+																							   "scattering volume image",
 																							   extent))
 		//		volume_sampler(Core::texture_filtering::Linear, Core::texture_filtering::Linear,
 		//																	Core::texture_wrap_mode::ClampToEdge, Core::texture_wrap_mode::ClampToEdge, 16),
@@ -50,9 +51,11 @@ public:
 	volumetric_scattering_storage(volumetric_scattering_storage&&) = default;
 
 	void resize(const glm::uvec2 &s) {
-		auto tiles = glm::uvec3{ s.x / tile_size,
-								 s.y / tile_size,
-								 depth_tiles };
+		const auto tiles = glm::uvec3{
+			s.x / tile_size,
+			s.y / tile_size,
+			depth_tiles
+		};
 
 		if (tiles.x <= 0 || tiles.y <= 0 || tiles == extent)
 			return;
@@ -62,6 +65,7 @@ public:
 																	 resource::surface_factory::image_empty_3d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
 																																				gl::image_usage::sampled | gl::image_usage::storage | gl::image_usage::transfer_dst,
 																																				gl::image_layout::transfer_dst_optimal,
+																																				"scattering volume image",
 																																				extent));
 		storage_modified_signal.emit();
 	}

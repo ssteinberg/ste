@@ -66,10 +66,20 @@ public:
 	hdr_dof_postprocess_storage(const ste_context &ctx) 
 		: hdr_vision_properties_texture(create_hdr_vision_properties_texture(ctx)),
 		// Buffers
-		hdr_bokeh_param_buffer(ctx, 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
+		hdr_bokeh_param_buffer(ctx, 
+							   1, 
+							   { parameters_initial }, 
+							   gl::buffer_usage::storage_buffer,
+							   "hdr_bokeh_param_buffer"),
 //		hdr_bokeh_param_buffer_prev(ctx, 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
-		histogram(ctx, 128, gl::buffer_usage::storage_buffer),
-		histogram_sums(ctx, 128, gl::buffer_usage::storage_buffer)
+		histogram(ctx, 
+				  128, 
+				  gl::buffer_usage::storage_buffer,
+				  "histogram"),
+		histogram_sums(ctx, 
+					   128, 
+					   gl::buffer_usage::storage_buffer,
+					   "histogram_sums")
 	{}
 	~hdr_dof_postprocess_storage() noexcept {}
 };

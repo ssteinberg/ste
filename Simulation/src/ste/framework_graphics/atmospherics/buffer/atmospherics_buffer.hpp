@@ -26,7 +26,8 @@ public:
 						const descriptor::Properties &p)
 		: buffer(ctx,
 				 lib::vector<descriptor::descriptor_data>{ descriptor(p).get() },
-				 gl::buffer_usage::storage_buffer)
+				 gl::buffer_usage::storage_buffer,
+				 "atmospherics_buffer")
 	{}
 
 	void update_data(gl::command_recorder &recorder,

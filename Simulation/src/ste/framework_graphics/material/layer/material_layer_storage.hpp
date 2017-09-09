@@ -27,7 +27,9 @@ private:
 public:
 	material_layer_storage(const ste_context &ctx,
 						   material_textures_storage &textures_storage)
-		: Base(ctx, gl::buffer_usage::storage_buffer),
+		: Base(ctx, 
+			   gl::buffer_usage::storage_buffer,
+			   "material_layer_storage"),
 		ctx(ctx),
 		textures_storage(textures_storage)
 	{}

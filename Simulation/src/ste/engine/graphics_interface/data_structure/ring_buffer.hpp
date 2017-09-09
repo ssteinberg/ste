@@ -55,10 +55,12 @@ private:
 
 public:
 	ring_buffer(const ste_context &ctx,
-				const buffer_usage &usage)
+				const buffer_usage &usage,
+				const char *name)
 		: buffer(ctx,
 				 segment_count,
-				 usage | buffer_usage_additional_flags),
+				 usage | buffer_usage_additional_flags,
+				 name),
 		locks(generate_array(ctx, std::make_index_sequence<segment_count>()))
 	{
 		ptr = buffer.get_underlying_memory().template mmap<value_type>(0, segment_count);

@@ -19,7 +19,10 @@ class material_storage : public gl::resource_storage_stable<material_descriptor>
 	using Base = gl::resource_storage_stable<material_descriptor>;
 
 public:
-	material_storage(const ste_context &ctx) : Base(ctx, gl::buffer_usage::storage_buffer) {}
+	material_storage(const ste_context &ctx) : Base(ctx, 
+													gl::buffer_usage::storage_buffer,
+													"material_storage") 
+	{}
 
 	template <typename ... Ts>
 	lib::unique_ptr<material> allocate_material(Ts&&... args) {

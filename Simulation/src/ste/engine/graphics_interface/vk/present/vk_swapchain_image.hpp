@@ -33,8 +33,10 @@ public:
 					   const VkImage &image,
 					   const VkFormat &image_format,
 					   const extent_type &size,
-					   std::uint32_t layers)
-		: Base(device, 
+					   std::uint32_t layers,
+					   const char *name)
+		: Base(device,
+			   name,
 			   image,
 			   image_format,
 			   Base::extent_type{ size.x, size.y, 1 },

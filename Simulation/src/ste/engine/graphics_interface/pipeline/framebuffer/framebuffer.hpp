@@ -19,6 +19,7 @@
 #include <depth_range.hpp>
 
 #include <lib/flat_map.hpp>
+#include <lib/string.hpp>
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
 #include <alias.hpp>
@@ -35,6 +36,7 @@ public:
 
 private:
 	alias<const ste_context> ctx;
+	lib::string frambuffer_name;
 
 	framebuffer_layout layout;
 	attachment_map_t attachments;
@@ -132,7 +134,8 @@ private:
 		return vk::vk_framebuffer<>(ctx.get().device(),
 									compatible_renderpass,
 									image_view_handles,
-									fb_extent);
+									fb_extent,
+									frambuffer_name.data());
 	}
 
 private:
@@ -142,20 +145,24 @@ private:
 
 public:
 	framebuffer(const ste_context &ctx,
+				const char* frambuffer_name,
 				framebuffer_layout &&layout,
 				const glm::u32vec2 &extent,
 				const depth_range &depth = depth_range::one_to_zero())
 		: ctx(ctx),
+		frambuffer_name(frambuffer_name),
 		layout(std::move(layout)), 
 		fb_extent(extent),
 		depth(depth),
 		compatible_renderpass(this->layout.create_compatible_renderpass(ctx))
 	{}
 	framebuffer(const ste_context &ctx,
+				const char* frambuffer_name,
 				const framebuffer_layout &layout,
 				const glm::u32vec2 &extent,
 				const depth_range &depth = depth_range::one_to_zero())
 		: framebuffer(ctx,
+					  frambuffer_name,
 					  framebuffer_layout(layout),
 					  extent,
 					  depth)

@@ -69,6 +69,7 @@ protected:
 	}
 
 	vk_image(const vk_logical_device<host_allocator> &device,
+			 const char *name,
 			 VkImage image,
 			 const VkFormat &image_format,
 			 const extent_type &extent,
@@ -79,7 +80,13 @@ protected:
 		: device(device), image(image),
 		image_format(image_format), extent(extent), mips(mips), layers(layers),
 		usage(usage), sparse(sparse)
-	{}
+	{
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										image,
+										VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT,
+										name);
+	}
 
 public:
 	vk_image(const vk_logical_device<host_allocator> &device,

@@ -23,11 +23,13 @@ class device_buffer
 public:
 	device_buffer(const ste_context &ctx,
 				  std::uint64_t count,
-				  const buffer_usage &usage)
+				  const buffer_usage &usage,
+				  const char *name)
 		: device_resource(ctx,
 						  static_cast<std::uint32_t>(sizeof(T)),
 						  count,
-						  static_cast<VkBufferUsageFlags>(usage))
+						  static_cast<VkBufferUsageFlags>(usage),
+						  name)
 	{}
 	~device_buffer() noexcept {}
 	

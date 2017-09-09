@@ -30,7 +30,7 @@ void vk_debug_marker_set_object_name(const vk_logical_device<A> &device,
 	info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
 	info.pNext = nullptr;
 	info.pObjectName = str;
-	info.object = t;
+	info.object = reinterpret_cast<std::uint64_t>(t);
 	info.objectType = type;
 
 	const vk_result res = device.get_extensions_func_pointers().debug_marker().vkDebugMarkerSetObjectNameEXT(device,

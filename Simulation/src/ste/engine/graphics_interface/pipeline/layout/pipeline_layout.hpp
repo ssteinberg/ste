@@ -66,6 +66,7 @@ private:
 
 private:
 	alias<const ste_context> ctx;
+	lib::string layout_name;
 
 	// Attached pipeline stages and their variables and attachment maps
 	stages_map_t stages;
@@ -250,14 +251,16 @@ private:
 
 			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
 														  std::move(v),
-														  static_cast<pipeline_layout_set_index>(i));
+														  static_cast<pipeline_layout_set_index>(i),
+														  (layout_name + " set " + lib::to_string(i)).data());
 			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}
 		// Create emtpy sets to fill sets till 'largest_set_idx', if needed.
 		for (std::size_t i=sets.size(); i<=largest_set_idx; ++i) {
 			auto set_layout = pipeline_binding_set_layout(ctx.get().device(),
 														  pipeline_binding_set_layout::bindings_vec_t{},
-														  static_cast<pipeline_layout_set_index>(i));
+														  static_cast<pipeline_layout_set_index>(i),
+														  (layout_name + " set " + lib::to_string(i)).data());
 			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}
 	}
@@ -397,14 +400,17 @@ public:
 	 *	@param	ctx						Context
 	 *	@param	pipeline_shader_stages	Shader stages that define the layout
 	 *	@param	external_binding_set	External binding sets used in this layout
+	 *	@param	layout_name				Pipeline layout name debug marker
 	 *
 	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with
 	 *																external_binding_set
 	 */
 	pipeline_layout(const ste_context &ctx,
 					const shader_stages_list_t &pipeline_shader_stages,
-					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
-		: ctx(ctx)
+					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set,
+					const char *layout_name)
+		: ctx(ctx),
+		layout_name(layout_name)
 	{
 		{
 			// Sort the variables from all the shader stages

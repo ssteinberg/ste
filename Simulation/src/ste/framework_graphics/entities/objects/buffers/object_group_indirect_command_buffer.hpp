@@ -24,7 +24,9 @@ private:
 public:
 	object_group_indirect_command_buffer(const ste_context &ctx,
 										 const gl::buffer_usage &usage = static_cast<gl::buffer_usage>(0))
-		: idb(ctx, gl::buffer_usage::indirect_buffer | usage)
+		: idb(ctx, 
+			  gl::buffer_usage::indirect_buffer | usage,
+			  "indirect draw buffer")
 	{}
 
 	auto &get() { return idb; }

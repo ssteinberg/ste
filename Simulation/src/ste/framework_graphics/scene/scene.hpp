@@ -57,7 +57,10 @@ public:
 	scene(const ste_context &ctx)
 		: objects(ctx),
 		scene_props(ctx),
-		culled_objects_counter(ctx, 1, gl::buffer_usage::storage_buffer),
+		culled_objects_counter(ctx, 
+							   1, 
+							   gl::buffer_usage::storage_buffer,
+							   "culled_objects_counter"),
 		idb(ctx, gl::buffer_usage::storage_buffer),
 		shadow_projection(ctx),
 		directional_shadow_projection(ctx)

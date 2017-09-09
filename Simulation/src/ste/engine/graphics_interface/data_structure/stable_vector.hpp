@@ -68,15 +68,18 @@ private:
 
 public:
 	stable_vector(const ste_context &ctx,
-				  const buffer_usage &usage)
+				  const buffer_usage &usage,
+				  const char *name)
 		: buffer(ctx,
 				 max_sparse_size,
-				 usage | buffer_usage_additional_flags)
+				 usage | buffer_usage_additional_flags,
+				 name)
 	{}
 	stable_vector(const ste_context &ctx,
 				  const lib::vector<T> &initial_data,
-				  const buffer_usage &usage)
-		: stable_vector(ctx, usage)
+				  const buffer_usage &usage,
+				  const char *name)
+		: stable_vector(ctx, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx,
@@ -88,8 +91,9 @@ public:
 	template <std::size_t N>
 	stable_vector(const ste_context &ctx,
 				  const std::array<T, N> &initial_data,
-				  const buffer_usage &usage)
-		: stable_vector(ctx, usage)
+				  const buffer_usage &usage,
+				  const char *name)
+		: stable_vector(ctx, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx,

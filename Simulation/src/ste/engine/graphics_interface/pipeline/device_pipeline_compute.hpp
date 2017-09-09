@@ -10,6 +10,7 @@
 
 #include <cmd_bind_pipeline.hpp>
 
+#include <lib/string.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -23,6 +24,7 @@ class device_pipeline_compute : public device_pipeline {
 	struct ctor {};
 
 private:
+	lib::string pipeline_name;
 	vk::vk_pipeline_compute<> compute_pipeline;
 
 private:
@@ -31,6 +33,7 @@ private:
 		return vk::vk_pipeline_compute<>(ctx.get().device(),
 										 shader_stage_descriptors.front(),
 										 get_layout(),
+										 pipeline_name.data(),
 										 &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
@@ -59,10 +62,12 @@ public:
 	device_pipeline_compute(ctor,
 							const ste_context &ctx,
 							lib::unique_ptr<pipeline_layout> &&layout,
-							optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
+							optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set,
+							const char *name)
 		: Base(ctx,
 			   std::move(layout),
-			   external_binding_set),
+			   external_binding_set), 
+		pipeline_name(name),
 		compute_pipeline(create_pipeline_object())
 	{}
 	~device_pipeline_compute() noexcept {}

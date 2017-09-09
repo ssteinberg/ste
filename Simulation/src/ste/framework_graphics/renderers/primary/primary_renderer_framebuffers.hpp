@@ -52,17 +52,21 @@ public:
 						resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
 																								   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																								   gl::image_layout::shader_read_only_optimal,
+																								   "hdr_input_image",
 																								   extent)),
 		fxaa_input_image(ctx,
 						 resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx,
 																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																							   gl::image_layout::shader_read_only_optimal,
+																							   "fxaa_input_image",
 																							   extent)),
 
 		hdr_input_fb(ctx,
+					 "hdr_input_fb",
 					 create_hdr_input_fb_layout(),
 					 extent),
 		fxaa_input_fb(ctx,
+					  "fxaa_input_fb",
 					  create_fxaa_input_fb_layout(),
 					  extent)
 	{
@@ -80,10 +84,12 @@ public:
 		this->extent = extent;
 
 		// Recreate framebuffers
-		hdr_input_fb = gl::framebuffer(ctx.get(), 
+		hdr_input_fb = gl::framebuffer(ctx.get(),
+									   "hdr_input_fb",
 									   create_hdr_input_fb_layout(), 
 									   extent);
-		fxaa_input_fb = gl::framebuffer(ctx.get(), 
+		fxaa_input_fb = gl::framebuffer(ctx.get(),
+										"fxaa_input_fb",
 										create_fxaa_input_fb_layout(), 
 										extent);
 
@@ -92,11 +98,13 @@ public:
 																			  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
 																																						 gl::image_usage::sampled | gl::image_usage::color_attachment,
 																																						 gl::image_layout::shader_read_only_optimal,
+																																						 "hdr_input_image",
 																																						 extent));
 		fxaa_input_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx.get(),
 																			   resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx.get(),
 																																					 gl::image_usage::sampled | gl::image_usage::color_attachment,
 																																					 gl::image_layout::shader_read_only_optimal,
+																																					 "fxaa_input_image",
 																																					 extent));
 
 		// Reattach framebuffer attachments
