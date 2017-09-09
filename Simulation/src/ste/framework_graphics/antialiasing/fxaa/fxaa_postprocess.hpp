@@ -40,12 +40,12 @@ public:
 	*	@param	input				Input image
 	*/
 	void set_input_image(gl::texture<gl::image_type::image_2d> *input) {
-		pipeline["input_tex"] = gl::bind(gl::pipeline::combined_image_sampler(*input,
-																			  ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
+		pipeline()["input_tex"] = gl::bind(gl::pipeline::combined_image_sampler(*input,
+																				ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 
 	void record(gl::command_recorder &recorder) override final {

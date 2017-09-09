@@ -150,9 +150,11 @@ public:
 	/**
 	*	@brief	Binds the binding set collection
 	*/
-	auto cmd_bind(VkPipelineBindPoint bind_point) const {
+	auto cmd_bind(VkPipelineBindPoint bind_point,
+				  std::uint32_t base_set_index = 0) const {
 		return cmd_bind_t(this,
 						  bind_point,
+						  base_set_index,
 						  &layout.get().get());
 	}
 };

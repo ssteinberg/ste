@@ -24,7 +24,7 @@ public:
 			   gl::device_pipeline_graphics_configurations{},
 			   "fullscreen_triangle.vert", "hdr_bloom_blur_x.frag")
 	{
-		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_pipeline(pipeline());
 	}
 	~hdr_bloom_blur_x_fragment() noexcept {}
 
@@ -41,13 +41,13 @@ public:
 	}
 
 	void set_source(const gl::pipeline::combined_image_sampler &src) {
-		pipeline["hdr"] = gl::bind(src);
+		pipeline()["hdr"] = gl::bind(src);
 	}
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 	const auto& get_framebuffer_layout() const {
-		return pipeline.get_framebuffer_layout();
+		return pipeline().get_framebuffer_layout();
 	}
 
 	void record(gl::command_recorder &recorder) override final {

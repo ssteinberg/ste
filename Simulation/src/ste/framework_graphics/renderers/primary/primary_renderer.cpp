@@ -40,7 +40,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		gl::framebuffer_layout(framebuffers.fxaa_input_fb.get_layout())),
 	fxaa(ctx,
 		 *this,
-		 gl::framebuffer_layout(framebuffers.hdr_input_fb.get_layout())),
+		 gl::framebuffer_layout(create_fb_layout(ctx))),
 
 	downsample_depth(ctx,
 					 *this,
@@ -88,9 +88,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		hdr->resize(device().get_surface().extent());
 
 		// Reattach resized framebuffers and input images
-		hdr->attach_framebuffer(framebuffers.fxaa_input_fb);
-		hdr->set_input_image(&framebuffers.hdr_input_image.get());
-		fxaa->set_input_image(&framebuffers.fxaa_input_image.get());
+		reattach_framebuffers();
 	});
 
 	// Attach a connection to camera's projection change signal
@@ -100,6 +98,26 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 
 		light_preprocess->update_projection_planes(*this->cam);
 	});
+
+	// Attach framebuffers
+	reattach_framebuffers();
+}
+
+void primary_renderer::reattach_framebuffers() {
+	// Attach shadow projectors' framebuffers
+	shadows_projector->attach_framebuffer(buffers.shadows_storage->get_cube_fbo());
+	directional_shadows_projector->attach_framebuffer(buffers.shadows_storage->get_directional_maps_fbo());
+
+	// Attach gbuffer framebuffers
+	prepopulate_depth->attach_framebuffer(buffers.gbuffer->get_depth_fbo());
+	prepopulate_backface_depth->attach_framebuffer(buffers.gbuffer->get_depth_backface_fbo());
+	scene_write_gbuffer->attach_framebuffer(buffers.gbuffer->get_fbo());
+
+	// Attach composer and hdr outputs
+	composer->attach_framebuffer(framebuffers.hdr_input_fb);
+	hdr->attach_framebuffer(framebuffers.fxaa_input_fb);
+	hdr->set_input_image(&framebuffers.hdr_input_image.get());
+	fxaa->set_input_image(&framebuffers.fxaa_input_image.get());
 }
 
 void primary_renderer::update(gl::command_recorder &recorder) {

@@ -26,7 +26,9 @@ public:
 			   "shadow_directional.vert", "shadow_directional.geom"),
 		s(s)
 	{
-		draw_task.attach_pipeline(pipeline);
+		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+
+		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
 		draw_task.attach_indirect_buffer(s->get_directional_shadow_projection_buffers().idb);
@@ -57,15 +59,15 @@ public:
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 	const auto& get_framebuffer_layout() const {
-		return pipeline.get_framebuffer_layout();
+		return pipeline().get_framebuffer_layout();
 	}
 
 	void record(gl::command_recorder &recorder) override final {
 		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
-		const auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+		const auto stride = sizeof(gl::draw_indexed_indirect_command_std430_t);
 
 		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
 							  static_cast<std::uint32_t>(stride));

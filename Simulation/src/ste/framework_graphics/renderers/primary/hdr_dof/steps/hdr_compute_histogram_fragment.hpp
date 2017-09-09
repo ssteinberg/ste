@@ -28,7 +28,7 @@ public:
 		: Base(rs,
 			   "hdr_create_histogram.comp")
 	{
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~hdr_compute_histogram_fragment() noexcept {}
 
@@ -38,12 +38,12 @@ public:
 
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_data, 
 					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
-		pipeline["histogram_data"] = gl::bind(histogram_data);
-		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
+		pipeline()["histogram_data"] = gl::bind(histogram_data);
+		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
 	void set_source(const gl::pipeline::image &hdr_lums,
 					const glm::u32vec2 &extent) {
-		pipeline["hdr_lums"] = gl::bind(hdr_lums);
+		pipeline()["hdr_lums"] = gl::bind(hdr_lums);
 		this->extent = extent;
 	}
 

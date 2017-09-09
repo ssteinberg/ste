@@ -29,7 +29,7 @@ public:
 			   std::move(fb_layout),
 			   "fullscreen_triangle.vert", "bokeh_bilateral_blur.frag")
 	{
-		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_pipeline(pipeline());
 	}
 	~hdr_bokeh_blur_fragment() noexcept {}
 
@@ -38,18 +38,18 @@ public:
 	static const lib::string& name() { return "hdr_bokeh_blur"; }
 
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
-		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
+		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
 	void set_source(const gl::pipeline::combined_image_sampler &src) {
-		pipeline["hdr"] = gl::bind(src);
+		pipeline()["hdr"] = gl::bind(src);
 	}
 	void set_aperture_parameters(float diameter, float focal_length) {
-		pipeline["aperture_t.aperture_focal_length"] = focal_length;
-		pipeline["aperture_t.aperture_diameter"] = diameter;
+		pipeline()["aperture_t.aperture_focal_length"] = focal_length;
+		pipeline()["aperture_t.aperture_diameter"] = diameter;
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 
 	void record(gl::command_recorder &recorder) override final {

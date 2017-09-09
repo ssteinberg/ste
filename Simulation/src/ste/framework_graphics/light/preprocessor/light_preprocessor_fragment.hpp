@@ -30,7 +30,7 @@ public:
 		ls(ls)
 	{
 		update_projection_planes(camera);
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~light_preprocessor_fragment() noexcept {}
 

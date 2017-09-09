@@ -119,7 +119,7 @@ public:
 		depth_stencil_state_create.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depth_stencil_state_create.pNext = nullptr;
 		depth_stencil_state_create.flags = 0;
-		depth_stencil_state_create.depthBoundsTestEnable = true;
+		depth_stencil_state_create.depthBoundsTestEnable = false;
 		depth_stencil_state_create.minDepthBounds = viewport.minDepth;
 		depth_stencil_state_create.maxDepthBounds = viewport.maxDepth;
 		depth_stencil_state_create.depthCompareOp = depth_op.depth_compare_op;

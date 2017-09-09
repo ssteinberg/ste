@@ -33,5 +33,5 @@ void light_preprocessor_fragment::update_projection_planes(const primary_rendere
 	clip_planes.get<3>() = tp;
 	clip_planes.get<4>() = bp;
 
-	pipeline["clip_planes"] = clip_planes;
+	pipeline()["clip_planes"] = clip_planes;
 }

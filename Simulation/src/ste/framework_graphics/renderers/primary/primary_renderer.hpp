@@ -77,6 +77,8 @@ private:
 private:
 	static gl::framebuffer_layout create_fb_layout(const ste_context &ctx);
 
+	void reattach_framebuffers();
+
 	/**
 	 *	@brief		Update buffers
 	 */

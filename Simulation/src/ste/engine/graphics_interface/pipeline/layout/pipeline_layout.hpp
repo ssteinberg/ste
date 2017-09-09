@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -23,6 +23,7 @@
 #include <vk_pipeline_layout.hpp>
 
 #include <allow_type_decay.hpp>
+#include <lib/unique_ptr.hpp>
 #include <lib/string.hpp>
 #include <lib/flat_map.hpp>
 #include <lib/flat_set.hpp>
@@ -280,17 +281,21 @@ private:
 	 *	@brief	Updates the specialization map of an attached shader stage
 	 */
 	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
+		auto stages_it = stages.find(stage);
+		if (stages_it == stages.end())
+			return;
+
 		const auto& map = specializations[stage];
 		if (!this->external_binding_set) {
 			// No external binding set attached
-			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			stages_it->second->set_specializations(vk::vk_shader<>::spec_map(map));
 			return;
 		}
 
 		const auto it = this->external_binding_set->specializations.find(stage);
 		if (it == this->external_binding_set->specializations.end()) {
 			// External binding set does not have any specializations for the stage
-			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			stages_it->second->set_specializations(vk::vk_shader<>::spec_map(map));
 			return;
 		}
 
@@ -303,7 +308,7 @@ private:
 		for (auto &s : external_map)
 			spec.emplace(s);
 		
-		stages[stage]->set_specializations(std::move(spec));
+		stages_it->second->set_specializations(std::move(spec));
 	}
 
 	/**
@@ -374,10 +379,7 @@ private:
 
 		// Connect to external binding set's signals
 		external_binding_set_invalidated_connection = make_connection(external_binding_set.get_signal_set_invalidated(), [this](auto) {
-			// External binding set was invalidated, add to set recreation queue and invalidate layout.
-			set_layouts_modified_queue.insert(this->external_binding_set->set_idx());
-			std::atomic_thread_fence(std::memory_order_release);
-
+			// External binding set was invalidated, so invalidate layout.
 			invalidate_layout();
 		});
 		external_binding_set_constant_specialized_connection = make_connection(external_binding_set.get_signal_specialization_change(),
@@ -580,6 +582,17 @@ public:
 	auto cmd_push_constants() const {
 		assert(layout.get() && "Called before creating layout");
 		return push_constants_layout->cmd_push(layout.get());
+	}
+
+	/**
+	 *	@brief	Returns a pointer to shader stage
+	 */
+	const device_pipeline_shader_stage* shader_stage(ste_shader_program_stage stage) const {
+		const auto stages_it = stages.find(stage);
+		if (stages_it == stages.end())
+			return nullptr;
+
+		return stages_it->second;
 	}
 
 	auto& get() const { return *layout; }

@@ -32,7 +32,7 @@ public:
 			   "fullscreen_triangle.vert", "deferred_compose.frag"),
 		material_luts(rs.acquire_storage<material_lut_storage>())
 	{
-		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_pipeline(pipeline());
 	}
 	~deferred_composer() noexcept {}
 
@@ -53,10 +53,10 @@ public:
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 	const auto& get_framebuffer_layout() const {
-		return pipeline.get_framebuffer_layout();
+		return pipeline().get_framebuffer_layout();
 	}
 
 	void record(gl::command_recorder &recorder) override final {

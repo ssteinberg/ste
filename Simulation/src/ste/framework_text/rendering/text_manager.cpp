@@ -30,7 +30,10 @@ text_manager::text_manager(const ste_context &context,
 	vert(context, lib::string("text_distance_map_contour.vert")),
 	geom(context, lib::string("text_distance_map_contour.geom")),
 	frag(context, lib::string("text_distance_map_contour.frag")),
-	pipeline(create_pipeline(context, vert, geom, frag))
+	pipeline(create_pipeline(context,
+							 *vert,
+							 *geom,
+							 *frag))
 {
 	bind_pipeline_resources(0);
 
@@ -92,20 +95,15 @@ void text_manager::bind_pipeline_resources(std::uint32_t first_offset) {
 	}
 }
 
-void text_manager::recreate_pipeline() {
-	pipeline = create_pipeline(context.get(), vert, geom, frag);
-	bind_pipeline_resources(0);
-}
-
 void text_manager::adjust_line(lib::vector<glyph_point> &points, const attributed_wstring &wstr, std::uint32_t line_start_index, float line_start, float line_height, const glm::vec2 &ortho_pos) {
 	// Adjusts line height
 	if (points.size() - line_start_index) {
-		auto alignment_attrib = attributes::align::bind(wstr.attrib_of_type(attributes::attrib_type::align, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
-		auto line_height_attrib = attributes::line_height::bind(wstr.attrib_of_type(attributes::attrib_type::line_height, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
+		const auto alignment_attrib = attributes::align::bind(wstr.attrib_of_type(attributes::attrib_type::align, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
+		const auto line_height_attrib = attributes::line_height::bind(wstr.attrib_of_type(attributes::attrib_type::line_height, { line_start_index, static_cast<std::uint32_t>(points.size()) - line_start_index }));
 
 		if (alignment_attrib && alignment_attrib->get() != attributes::align::alignment::Left) {
-			float line_len = ortho_pos.x - line_start;
-			float offset = alignment_attrib->get() == attributes::align::alignment::Center ? -line_len*.5f : -line_len;
+			const float line_len = ortho_pos.x - line_start;
+			const float offset = alignment_attrib->get() == attributes::align::alignment::Center ? -line_len*.5f : -line_len;
 			for (unsigned i = line_start_index; i < points.size(); ++i) {
 				points[i].data().x += static_cast<std::uint16_t>(offset);
 			}
@@ -123,7 +121,7 @@ void text_manager::adjust_line(lib::vector<glyph_point> &points, const attribute
  *	@brief	Creates points vector from attributed string.
  */
 lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const attributed_wstring &wstr) {
-	float line_start = ortho_pos.x;
+	const float line_start = ortho_pos.x;
 	std::uint32_t line_start_index = 0;
 	float prev_line_height = 0;
 	float line_height = 0;
@@ -205,7 +203,7 @@ lib::vector<glyph_point> text_manager::create_points(glm::vec2 ortho_pos, const 
  *	@brief	Updates resources bound to pipeline and records glyph buffer update commands.
  */
 bool text_manager::update_glyphs(gl::command_recorder &recorder) {
-	auto updated_range = gm.update_pending_glyphs(recorder);
+	const auto updated_range = gm.update_pending_glyphs(recorder);
 	if (!updated_range.length)
 		return false;
 

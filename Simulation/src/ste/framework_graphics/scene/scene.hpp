@@ -23,14 +23,11 @@ private:
 	static constexpr int directional_shadow_pltt_size = max_active_directional_lights_per_frame;
 
 	template <int tt_slots>
-	struct shadow_drawid_to_lightid_ttl {
-		std::uint32_t entries[tt_slots];
-	};
+	using shadow_drawid_to_lightid_ttl = gl::std430<std::uint32_t[tt_slots]>;
 
 	template <int tt_slots>
 	class shadow_projection_data {
-		using table = shadow_drawid_to_lightid_ttl<tt_slots>;
-		using table_buffer_type = gl::vector<table>;
+		using table_buffer_type = gl::vector<shadow_drawid_to_lightid_ttl<tt_slots>>;
 
 	public:
 		shadow_projection_data(const ste_context &ctx)
@@ -50,7 +47,7 @@ private:
 	object_group objects;
 	scene_properties scene_props;
 
-	mutable gl::array<std::uint32_t> culled_objects_counter;
+	mutable gl::array<gl::std430<std::uint32_t>> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
 
 	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
@@ -61,7 +58,7 @@ public:
 		: objects(ctx),
 		scene_props(ctx),
 		culled_objects_counter(ctx, 1, gl::buffer_usage::storage_buffer),
-		idb(ctx),
+		idb(ctx, gl::buffer_usage::storage_buffer),
 		shadow_projection(ctx),
 		directional_shadow_projection(ctx)
 	{}

@@ -14,14 +14,14 @@ linked_light_lists::linked_light_lists(const ste_context &ctx,
 									   const glm::uvec2 &extent)
 	: ctx(ctx),
 	lll(ctx, gl::buffer_usage::storage_buffer),
-	lll_counter(ctx, lib::vector<lll_counter_element>(1), gl::buffer_usage::storage_buffer),
+	lll_counter(ctx, lib::vector<lll_counter_element>{ lll_counter_element{ 1 } }, gl::buffer_usage::storage_buffer),
 	lll_heads(ctx, resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, gl::image_usage::storage, gl::image_layout::general, extent)),
 	lll_size(ctx, resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, gl::image_usage::storage, gl::image_layout::general, extent)),
 	lll_low_detail_heads(ctx, resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, gl::image_usage::storage, gl::image_layout::general, extent)),
 	lll_low_detail_size(ctx, resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, gl::image_usage::storage, gl::image_layout::general, extent)),
 	extent(extent)
 {
-	up_to_date.test_and_set(std::memory_order_release);
+	up_to_date.clear(std::memory_order_release);
 }
 
 void linked_light_lists::resize(const glm::uvec2 &extent) {

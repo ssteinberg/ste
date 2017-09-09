@@ -15,5 +15,5 @@ fxaa_postprocess::fxaa_postprocess(const gl::rendering_system &rs,
 		   "fullscreen_triangle.vert", "fxaa.frag"),
 	ctx(rs.get_creating_context())
 {
-	draw_task.attach_pipeline(pipeline);
+	draw_task.attach_pipeline(pipeline());
 }

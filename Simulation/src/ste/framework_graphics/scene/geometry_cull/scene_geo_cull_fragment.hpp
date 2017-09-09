@@ -41,15 +41,15 @@ public:
 		s(s),
 		ls(ls)
 	{
-		pipeline["counter_data"] = gl::bind(s->get_culled_objects_counter());
-		pipeline["idb_data"] = gl::bind(s->get_idb().get());
-		pipeline["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
-		pipeline["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
+		pipeline()["counter_data"] = gl::bind(s->get_culled_objects_counter());
+		pipeline()["idb_data"] = gl::bind(s->get_idb().get());
+		pipeline()["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
+		pipeline()["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
 
-		pipeline["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
-		pipeline["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
 
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~scene_geo_cull_fragment() noexcept {}
 

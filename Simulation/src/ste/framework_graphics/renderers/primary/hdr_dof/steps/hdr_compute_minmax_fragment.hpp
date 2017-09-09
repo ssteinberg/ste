@@ -28,7 +28,7 @@ public:
 		: Base(rs,
 			   "hdr_compute_minmax.comp")
 	{
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~hdr_compute_minmax_fragment() noexcept {}
 
@@ -37,14 +37,14 @@ public:
 	static const lib::string& name() { return "hdr_compute_minmax"; }
 
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
-		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
+		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
 	void set_source(const gl::pipeline::combined_image_sampler &src) {
-		pipeline["hdr"] = gl::bind(src);
+		pipeline()["hdr"] = gl::bind(src);
 	}
 	void set_destination(const gl::pipeline::image &hdr_lums,
 						 const glm::u32vec2 &extent) {
-		pipeline["hdr_lums"] = gl::bind(hdr_lums);
+		pipeline()["hdr_lums"] = gl::bind(hdr_lums);
 		this->extent = extent;
 	}
 

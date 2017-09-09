@@ -31,3 +31,4 @@
 15. Incorporate optimizing GLSL/SPIR-v compiler (LunarGLASS?)
 16. SPIR-v refection: OpSpecConstantOp
 17. <strike>Integrate glslang into StE SPIR-v compiler. Compile all modules in a single go.</strike>
+18. Device resources' debug names via VK_EXT_debug_marker

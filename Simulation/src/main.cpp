@@ -51,16 +51,16 @@ public:
 																						   gl::image_usage::sampled,
 																						   gl::image_layout::shader_read_only_optimal))
 	{
-		pipeline["sam"] = gl::bind(gl::pipeline::combined_image_sampler(photo,
-																		rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
+		pipeline()["sam"] = gl::bind(gl::pipeline::combined_image_sampler(photo,
+																		  rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
 
-		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_pipeline(pipeline());
 	}
 
 	static const lib::string& name() { return "loading_photo_fragment"; }
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 
 	void record(gl::command_recorder &recorder) override final {
@@ -77,7 +77,7 @@ private:
 	loading_photo_fragment photo_fragment;
 	text::text_fragment title_text_frag;
 	text::text_fragment footer_text_frag;
-	
+
 	lib::vector<gl::framebuffer> swap_chain_clear_framebuffers;
 
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
@@ -122,7 +122,7 @@ public:
 		presentation(presentation),
 		photo_fragment(*this, create_fb_clear_layout(ctx)),
 		title_text_frag(tm.create_fragment()),
-		footer_text_frag(tm.create_fragment()) 
+		footer_text_frag(tm.create_fragment())
 	{
 		create_swap_chain_clear_framebuffers();
 	}
@@ -519,7 +519,7 @@ int main()
 	 *	load scene resources and display loading screen
 	 */
 
-	// All scene resources
+	 // All scene resources
 	lib::vector<lib::unique_ptr<graphics::light>> lights;
 	lib::vector<lib::unique_ptr<graphics::material>> materials;
 	lib::vector<lib::unique_ptr<graphics::material_layer>> material_layers;
@@ -556,9 +556,9 @@ int main()
 																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 
 	if (window.should_close()) {
-        device.wait_idle();
+		device.wait_idle();
 		return 0;
-    }
+	}
 
 
 	/*

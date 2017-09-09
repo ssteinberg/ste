@@ -32,7 +32,7 @@ public:
 		vss(vss),
 		ls(ls)
 	{
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~volumetric_scattering_scatter_fragment() noexcept {}
 

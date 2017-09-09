@@ -21,10 +21,10 @@ struct mesh_descriptor : gl::std430<glm::mat3x4, glm::quat, glm::vec4, std::int3
 	auto& light_caster() { return get<4>(); }
 };
 
-struct mesh_draw_params : gl::std430<std::uint32_t, std::uint32_t, std::uint32_t> {
+struct mesh_draw_params : gl::std430<std::uint32_t, std::uint32_t, std::int32_t> {
 	auto& count() { return get<0>(); }
 	auto& first_index() { return get<1>(); }
-	auto& base_vertex() { return get<2>(); }
+	auto& vertex_offset() { return get<2>(); }
 };
 
 }

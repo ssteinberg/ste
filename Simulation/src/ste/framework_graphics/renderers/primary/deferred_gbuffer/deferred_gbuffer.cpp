@@ -4,26 +4,19 @@
 
 #include <surface_factory.hpp>
 
+#include <scene_write_gbuffer_fragment.hpp>
+#include <scene_prepopulate_depth_fragment.hpp>
+
 using namespace ste;
 using namespace ste::graphics;
 
-//gl::framebuffer_layout deferred_gbuffer::create_fbo_layout() {
-//	gl::framebuffer_layout fb_layout;
-//	fb_layout[0] = gl::ignore_store(gl::format::r32g32b32a32_sfloat,
-//									gl::image_layout::color_attachment_optimal);
-//	fb_layout[1] = gl::ignore_store(gl::format::r32g32b32a32_sfloat,
-//									gl::image_layout::color_attachment_optimal);
-//	fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
-//																		 gl::image_layout::depth_stencil_attachment_optimal);
-//	return fb_layout;
-//}
-//
-//gl::framebuffer_layout deferred_gbuffer::create_backface_fbo_layout() {
-//	gl::framebuffer_layout fb_layout;
-//	fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
-//																		 gl::image_layout::depth_stencil_attachment_optimal);
-//	return fb_layout;
-//}
+gl::framebuffer_layout deferred_gbuffer::create_fbo_layout() {
+	return scene_write_gbuffer_fragment::create_fb_layout();
+}
+
+gl::framebuffer_layout deferred_gbuffer::create_depth_fbo_layout() {
+	return scene_prepopulate_depth_fragment<true>::create_fb_layout();
+}
 
 deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 								   const glm::uvec2 &extent,
@@ -54,15 +47,18 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 	gbuffer_level_1(gbuffer.get_image(), 
 					gbuffer->get_format(), 
 					1, 1),
-//	fbo(ctx, create_fbo_layout(), extent),
-//	backface_fbo(ctx, create_backface_fbo_layout(), extent),
+	fbo(ctx, create_fbo_layout(), extent),
+	depth_fbo(ctx, create_depth_fbo_layout(), extent),
+	depth_backface_fbo(ctx, create_depth_fbo_layout(), extent),
 	depth_buffer_levels(depth_buffer_levels),
 	extent(extent)
 {
-//	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
-//	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
-//	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
-//	backface_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(backface_depth_target.get());
+	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
+	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
+	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
+
+	depth_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get(), glm::vec4(.0f));
+	depth_backface_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(backface_depth_target.get(), glm::vec4(.0f));
 }
 
 void deferred_gbuffer::resize(const glm::uvec2 &extent) {
@@ -71,6 +67,18 @@ void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 
 	this->extent = extent;
 
+	// Recreate framebuffers
+	fbo = gl::framebuffer(ctx,
+						  create_fbo_layout(),
+						  extent);
+	depth_fbo = gl::framebuffer(ctx,
+								create_depth_fbo_layout(),
+								extent);
+	depth_backface_fbo = gl::framebuffer(ctx, 
+										 create_depth_fbo_layout(), 
+										 extent);
+
+	// Recreate images
 	depth_target = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx,
 																	   resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
 																																		 gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
@@ -97,10 +105,13 @@ void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 															   gbuffer->get_format(), 
 															   1, 1);
 
-//	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
-//	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
-//	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
-//	backface_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(backface_depth_target.get());
+	// Reattach framebuffer attachments
+	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
+	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
+	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
+
+	depth_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get(), glm::vec4(.0f));
+	depth_backface_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(backface_depth_target.get(), glm::vec4(.0f));
 
 	gbuffer_resized_signal.emit();
 }

@@ -25,7 +25,7 @@ public:
 		: Base(rs,
 			   "hdr_compute_histogram_sums.comp")
 	{
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~hdr_compute_histogram_sums_fragment() noexcept {}
 
@@ -34,12 +34,12 @@ public:
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_sums,
 					  const gl::array<gl::std430<std::uint32_t>> &histogram_bins,
 					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
-		pipeline["histogram_sums"] = gl::bind(histogram_sums);
-		pipeline["histogram_bins"] = gl::bind(histogram_bins);
-		pipeline["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
+		pipeline()["histogram_sums"] = gl::bind(histogram_sums);
+		pipeline()["histogram_bins"] = gl::bind(histogram_bins);
+		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
 	void set_source(const glm::u32vec2 &extent) {
-		pipeline["hdr_lum_resolution_t.hdr_lum_resolution"] = (extent.x / 32) * (extent.y / 32);
+		pipeline()["hdr_lum_resolution_t.hdr_lum_resolution"] = (extent.x / 32) * (extent.y / 32);
 	}
 
 	static const lib::string& name() { return "hdr_compute_histogram_sums"; }

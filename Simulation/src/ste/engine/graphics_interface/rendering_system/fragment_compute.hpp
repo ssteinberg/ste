@@ -12,6 +12,7 @@
 #include <device_pipeline_compute.hpp>
 
 #include <lib/string.hpp>
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -21,10 +22,8 @@ namespace gl {
 */
 class fragment_compute : public fragment {
 private:
-	device_pipeline_shader_stage shader_stage;
-
-protected:
-	device_pipeline_compute pipeline;
+	lib::unique_ptr<device_pipeline_shader_stage> shader_stage;
+	lib::unique_ptr<device_pipeline_compute> pipeline_object;
 
 private:
 	static auto create_compute_pipeline(const ste_context &ctx,
@@ -34,19 +33,21 @@ private:
 		pipeline_auditor_compute auditor(shader_stage);
 
 		// Create pipeline
-		return external_binding_sets_collection ?
+		auto obj = external_binding_sets_collection ?
 			auditor.pipeline(ctx,
 							 std::ref(*external_binding_sets_collection)) :
 			auditor.pipeline(ctx);
+
+		return lib::allocate_unique<device_pipeline_compute>(std::move(obj));
 	}
 
 protected:
 	fragment_compute(const rendering_system &rs,
 					 const lib::string &shader_stage_name)
-		: shader_stage(rs.get_creating_context(), shader_stage_name),
-		pipeline(create_compute_pipeline(rs.get_creating_context(),
-										 rs.external_binding_set(),
-										 this->shader_stage))
+		: shader_stage(lib::allocate_unique<device_pipeline_shader_stage>(rs.get_creating_context(), shader_stage_name)),
+		pipeline_object(create_compute_pipeline(rs.get_creating_context(),
+												rs.external_binding_set(),
+												*this->shader_stage))
 	{}
 
 public:
@@ -57,6 +58,10 @@ public:
 
 	// Subclasses are expected to declare:
 	//static const lib::string& name();
+
+protected:
+	auto& pipeline() { return *pipeline_object; }
+	auto& pipeline() const { return *pipeline_object; }
 };
 
 }

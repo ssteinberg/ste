@@ -12,6 +12,6 @@ void pipeline_external_binding_set_cmd_bind::operator()(const command_buffer &bu
 	const lib::vector<const vk::vk_descriptor_set<>*> bind_sets = { &set->get_set().get() };
 	recorder << cmd_bind_descriptor_sets(bind_point,
 										 *layout,
-										 0,
+										 base_set_index,
 										 bind_sets);
 }

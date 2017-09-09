@@ -7,7 +7,8 @@
 using namespace ste;
 using namespace ste::gl;
 
-void pipeline_binding_set_collection_cmd_bind::operator()(const command_buffer &buffer, command_recorder &recorder) const {
+void pipeline_binding_set_collection_cmd_bind::operator()(const command_buffer &buffer, 
+														  command_recorder &recorder) const {
 	auto &sets = collection->get_sets();
 	if (!sets.size())
 		return;
@@ -23,6 +24,6 @@ void pipeline_binding_set_collection_cmd_bind::operator()(const command_buffer &
 	// And bind
 	recorder << cmd_bind_descriptor_sets(bind_point,
 										 *layout,
-										 0,
+										 base_set_index,
 										 bind_sets);
 }

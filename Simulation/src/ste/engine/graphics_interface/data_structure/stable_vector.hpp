@@ -49,7 +49,9 @@ private:
 
 public:
 	using value_type = T;
+
 	static constexpr bool sparse_container = true;
+	static constexpr auto sparse_size = max_sparse_size;
 
 	using insert_cmd_t = _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>;
 	using resize_cmd_t = _internal::vector_cmd_resize<stable_vector<T, minimal_atom_size, max_sparse_size>>;
@@ -81,6 +83,7 @@ public:
 									*this,
 									initial_data.data(),
 									initial_data.size());
+		elements.store(initial_data.size());
 	}
 	template <std::size_t N>
 	stable_vector(const ste_context &ctx,
@@ -93,6 +96,7 @@ public:
 									*this,
 									initial_data.data(),
 									initial_data.size());
+		elements.store(initial_data.size());
 	}
 	~stable_vector() noexcept {}
 

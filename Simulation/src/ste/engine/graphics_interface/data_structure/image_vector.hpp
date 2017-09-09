@@ -15,7 +15,7 @@
 #include <alias.hpp>
 
 #include <lib/range_list.hpp>
-#include <lib/vector.hpp>
+#include <lib/flat_map.hpp>
 #include <lib/shared_ptr.hpp>
 
 #include <optional.hpp>
@@ -40,12 +40,12 @@ private:
 
 	using image_t = pipeline::image;
 
-	using changes_vector_t = lib::vector<std::pair<std::uint32_t, pipeline::image>>;
+	using changes_set_t = lib::flat_map<std::uint32_t, image_t>;
 
 public:
 	using texture_t = texture<type, dimensions>;
 
-	class slot_t : public allow_type_decay<slot_t, texture_t> {
+	class slot_t : anchored, public allow_type_decay<slot_t, texture_t> {
 		friend class image_vector;
 		struct token {};
 
@@ -80,13 +80,7 @@ public:
 
 private:
 	void add_change(std::uint32_t idx, image_t &&img) {
-		auto it = std::upper_bound(changes.begin(), changes.end(), idx, [](std::uint32_t idx, const auto &e) {
-			return idx < e.first;
-		});
-		if (it != changes.end() && it->first == idx)
-			it->second = std::move(img);
-		else
-			changes.insert(it, std::make_pair(idx, std::move(img)));
+		changes.insert(std::make_pair(idx, std::move(img)));
 	}
 
 	/**
@@ -101,7 +95,7 @@ private:
 			std::unique_lock<std::mutex> l(general_mutex);
 
 			// Update changes
-			add_change(idx, image_t());
+			changes.erase(idx);
 		}
 
 		{
@@ -124,7 +118,7 @@ private:
 	std::atomic<std::uint32_t> count{ 0 };
 	tombstone_ranges_t tombstones;
 
-	mutable changes_vector_t changes;
+	mutable changes_set_t changes;
 
 	mutable std::mutex tombstones_mutex;
 	mutable std::mutex general_mutex;
@@ -149,10 +143,9 @@ public:
 		{
 			std::unique_lock<std::mutex> l(tombstones_mutex);
 
-			auto it = tombstones.begin();
-			if (it != tombstones.end()) {
-				location = it->start;
-				tombstones.pop_front();
+			if (tombstones.size()) {
+				location = std::prev(tombstones.end())->start;
+				tombstones.pop_back();
 			}
 		}
 
@@ -184,7 +177,7 @@ public:
 	 */
 	auto binder() const {
 		// Make a copy of the changes vector, safely, and clear the changes.
-		changes_vector_t changes_copy;
+		changes_set_t changes_copy;
 		{
 			std::unique_lock<std::mutex> l(general_mutex);
 

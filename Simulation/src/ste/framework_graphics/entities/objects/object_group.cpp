@@ -66,7 +66,7 @@ void object_group::add_object(gl::command_recorder &recorder,
 	mesh_draw_params mdp;
 	mdp.count() = static_cast<std::uint32_t>(ind.size());
 	mdp.first_index() = total_indices;
-	mdp.base_vertex() = total_vertices;
+	mdp.vertex_offset() = total_vertices;
 
 	obj->md = md;
 

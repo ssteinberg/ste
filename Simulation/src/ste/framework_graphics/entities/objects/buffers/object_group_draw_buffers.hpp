@@ -8,7 +8,6 @@
 #include <buffer_usage.hpp>
 #include <vector.hpp>
 #include <mesh_descriptor.hpp>
-#include <vector.hpp>
 
 namespace ste {
 namespace graphics {
@@ -21,12 +20,11 @@ private:
 	gl::vector<std::uint32_t> indices;
 
 public:
-	object_group_draw_buffers(const ste_context &ctx)
+	object_group_draw_buffers(const ste_context& ctx)
 		: mesh_data_bo(ctx, gl::buffer_usage::storage_buffer),
-		mesh_draw_params_bo(ctx, gl::buffer_usage::storage_buffer),
-		vbo(ctx, gl::buffer_usage::vertex_buffer),
-		indices(ctx, gl::buffer_usage::index_buffer)
-	{}
+		  mesh_draw_params_bo(ctx, gl::buffer_usage::storage_buffer),
+		  vbo(ctx, gl::buffer_usage::vertex_buffer),
+		  indices(ctx, gl::buffer_usage::index_buffer) {}
 
 	auto& get_mesh_data_buffer() { return mesh_data_bo; }
 	auto& get_mesh_data_buffer() const { return mesh_data_bo; }

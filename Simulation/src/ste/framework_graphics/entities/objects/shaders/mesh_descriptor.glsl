@@ -15,7 +15,7 @@ struct mesh_descriptor {
 struct mesh_draw_params {
 	uint count;
 	uint first_index;
-	uint base_vertex;
+	int vertex_offset;
 
 	float _unused;
 };

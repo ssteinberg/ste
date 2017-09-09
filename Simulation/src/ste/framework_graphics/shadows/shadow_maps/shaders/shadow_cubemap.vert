@@ -4,6 +4,7 @@
 #extension GL_ARB_shader_draw_parameters : enable
 
 #include <mesh_descriptor.glsl>
+#include <renderer_transform_buffers.glsl>
 
 layout(location = 1) in vec3 vert;
 
