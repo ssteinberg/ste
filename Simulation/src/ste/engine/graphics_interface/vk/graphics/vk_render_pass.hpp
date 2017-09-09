@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_render_pass_attachment.hpp>
@@ -33,6 +34,7 @@ private:
 
 public:
 	vk_render_pass(const vk_logical_device<host_allocator> &device,
+				   const char *name,
 				   const lib::vector<vk_render_pass_attachment> &attachments,
 				   const lib::vector<vk_render_pass_subpass_descriptor> &subpasses,
 				   const lib::vector<vk_render_pass_subpass_dependency> &subpass_dependencies = {}) : device(device) {
@@ -78,10 +80,16 @@ public:
 		create_info.pDependencies = dependency_descriptors.data();
 
 		VkRenderPass renderpass;
-		vk_result res = vkCreateRenderPass(device, &create_info, &host_allocator::allocation_callbacks(), &renderpass);
+		const vk_result res = vkCreateRenderPass(device, &create_info, &host_allocator::allocation_callbacks(), &renderpass);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										renderpass,
+										VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT,
+										name);
 
 		this->render_pass = renderpass;
 	}

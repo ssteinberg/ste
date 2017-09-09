@@ -89,6 +89,8 @@ private:
 
 		// Add required extensions
 		extensions.push_back("VK_KHR_swapchain");
+		if (parameters.allow_markers)
+			extensions.push_back("VK_EXT_debug_marker");
 
 		return extensions;
 	}

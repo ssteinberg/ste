@@ -9,6 +9,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
+#include <vk_extensions_proc_addr.hpp>
 
 #include <lib/vector.hpp>
 #include <allow_type_decay.hpp>
@@ -29,6 +30,8 @@ private:
 	VkPhysicalDeviceFeatures requested_features;
 	lib::vector<VkDeviceQueueCreateInfo> requested_queues;
 	lib::vector<const char*> enabled_extensions;
+
+	vk_extensions_proc_addr extensions_proc_addr;
 
 public:
 	vk_logical_device(const vk_physical_device_descriptor &physical_device,
@@ -51,12 +54,16 @@ public:
 		device_info.pEnabledFeatures = &requested_features;
 
 		VkDevice device;
-		vk_result res = vkCreateDevice(physical_device.device, &device_info, &host_allocator::allocation_callbacks(), &device);
+		const vk_result res = vkCreateDevice(physical_device.device, &device_info, &host_allocator::allocation_callbacks(), &device);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
 		this->logical_device = device;
+
+		// Get extensions' function pointers
+		extensions_proc_addr = vk_extensions_proc_addr(device,
+													   device_extensions);
 	}
 
 	~vk_logical_device() noexcept {
@@ -77,6 +84,7 @@ public:
 	auto &get_physical_device_descriptor() const { return physical_device; }
 	auto &get() const { return logical_device.get(); }
 	auto &get_requested_features() const { return requested_features; }
+	auto &get_extensions_func_pointers() const { return extensions_proc_addr; }
 };
 
 }

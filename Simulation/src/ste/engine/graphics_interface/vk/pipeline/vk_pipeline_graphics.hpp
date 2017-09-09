@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 #include <vk_handle.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
@@ -48,6 +49,7 @@ public:
 						 const lib::vector<vk_blend_op_descriptor> &attachment_blend_op,
 						 const glm::vec4 blend_constants,
 						 lib::vector<VkDynamicState> dynamic_states,
+						 const char *name,
 						 const vk_pipeline_cache<host_allocator> *cache = nullptr) : vk_pipeline(device) {
 		// Shader modules stages
 		lib::vector<typename vk_shader<host_allocator>::shader_stage_info_t> stages_info(shader_modules.size());
@@ -173,15 +175,21 @@ public:
 		create_info.pDynamicState = &dynamic_state_create;
 
 		VkPipeline pipeline;
-		vk_result res = vkCreateGraphicsPipelines(device,
-												  cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
-												  1,
-												  &create_info,
-												  &host_allocator::allocation_callbacks(),
-												  &pipeline);
+		const vk_result res = vkCreateGraphicsPipelines(device,
+														cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
+														1,
+														&create_info,
+														&host_allocator::allocation_callbacks(),
+														&pipeline);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										pipeline,
+										VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT,
+										name);
 
 		this->pipeline = pipeline;
 	}

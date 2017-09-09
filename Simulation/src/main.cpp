@@ -451,6 +451,7 @@ int main()
 	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
+	device_params.allow_markers = true;
 
 	ste_context::gl_device_t device(device_params,
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),

@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_handle.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <vk_logical_device.hpp>
 #include <vk_result.hpp>
@@ -43,6 +44,7 @@ public:
 	*	@param transform	Specifies how images should be transformed prior to presentation
 	*	@param composite_flags	Composition flags
 	*	@param present_mode	Presentation mode
+	*	@param name			Swapchain name
 	*	@param old_chain	If non-nullptr, the new chain will be recreated from old_chain, at which point 'old_chain'
 	*						will be moved from and no longer a valid swap-chain object
 	*
@@ -58,6 +60,7 @@ public:
 				 const VkSurfaceTransformFlagBitsKHR &transform,
 				 VkCompositeAlphaFlagBitsKHR &composite_flags,
 				 const VkPresentModeKHR &present_mode,
+				 const char *name,
 				 vk_swapchain *old_chain = nullptr) : device(device) {
 		VkSwapchainKHR swapchain;
 
@@ -83,10 +86,16 @@ public:
 			static_cast<VkSwapchainKHR>(*old_chain) : 
 			vk_null_handle;
 
-		vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, &host_allocator::allocation_callbacks(), &swapchain);
+		const vk_result res = vkCreateSwapchainKHR(device, &swapchain_create_info, &host_allocator::allocation_callbacks(), &swapchain);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										swapchain,
+										VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT,
+										name);
 
 		this->swapchain = swapchain;
 		swapchain_create_info.oldSwapchain = vk_null_handle;

@@ -1346,9 +1346,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_resource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_set_object_name.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_enumerate_consumed_resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1980,6 +1977,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_capabilities_query.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_extensions_proc_addr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

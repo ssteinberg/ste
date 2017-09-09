@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -8,6 +8,8 @@
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
 #include <vk_host_allocator.hpp>
+#include <vk_ext_debug_marker.hpp>
+
 #include <ste_resource_pool.hpp>
 
 #include <optional.hpp>
@@ -26,17 +28,24 @@ private:
 	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_semaphore(const vk_logical_device<host_allocator> &device) : device(device) {
+	vk_semaphore(const vk_logical_device<host_allocator> &device,
+				 const char *name) : device(device) {
 		VkSemaphoreCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 
 		VkSemaphore semaphore;
-		vk_result res = vkCreateSemaphore(device, &create_info, &host_allocator::allocation_callbacks(), &semaphore);
+		const vk_result res = vkCreateSemaphore(device, &create_info, &host_allocator::allocation_callbacks(), &semaphore);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										semaphore,
+										VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT,
+										name);
 
 		this->semaphore = semaphore;
 	}

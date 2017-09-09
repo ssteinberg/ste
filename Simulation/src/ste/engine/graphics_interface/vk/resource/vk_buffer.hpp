@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_host_allocator.hpp>
 #include <vk_exception.hpp>
@@ -36,7 +37,8 @@ public:
 	vk_buffer(const vk_logical_device<host_allocator> &device,
 			  std::uint64_t bytes,
 			  const VkBufferUsageFlags &usage,
-			  bool sparse)
+			  bool sparse,
+			  const char *name)
 		: device(device), usage(usage)
 	{
 		VkBuffer buffer;
@@ -51,10 +53,16 @@ public:
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
-		vk_result res = vkCreateBuffer(device, &create_info, &host_allocator::allocation_callbacks(), &buffer);
+		const vk_result res = vkCreateBuffer(device, &create_info, &host_allocator::allocation_callbacks(), &buffer);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										buffer,
+										VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT,
+										name);
 
 		this->buffer = buffer;
 	}

@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <vulkan/vulkan.h>
 #include <vk_handle.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <vk_pipeline.hpp>
 #include <vk_logical_device.hpp>
@@ -27,6 +28,7 @@ public:
 	vk_pipeline_compute(const vk_logical_device<host_allocator> &device,
 						const vk_shader_stage_descriptor<host_allocator> &shader_stage_descriptor,
 						const vk_pipeline_layout<host_allocator> &layout,
+						const char *name,
 						const vk_pipeline_cache<host_allocator> *cache = nullptr) : vk_pipeline(device) {
 		assert(shader_stage_descriptor.stage == VK_SHADER_STAGE_COMPUTE_BIT && "shader_stage_descriptor must be a compute shader");
 
@@ -45,15 +47,21 @@ public:
 		create_info.basePipelineIndex = 0;
 
 		VkPipeline pipeline;
-		vk_result res = vkCreateComputePipelines(device,
-												 cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
-												 1,
-												 &create_info,
-												 &host_allocator::allocation_callbacks(),
-												 &pipeline);
+		const vk_result res = vkCreateComputePipelines(device,
+													   cache != nullptr ? static_cast<VkPipelineCache>(*cache) : vk_null_handle,
+													   1,
+													   &create_info,
+													   &host_allocator::allocation_callbacks(),
+													   &pipeline);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										pipeline,
+										VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT,
+										name);
 
 		this->pipeline = pipeline;
 	}

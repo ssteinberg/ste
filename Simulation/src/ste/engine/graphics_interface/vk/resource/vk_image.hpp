@@ -10,6 +10,7 @@
 #include <image_initial_layout.hpp>
 
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_device_memory.hpp>
@@ -61,7 +62,7 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
-		vk_result res = vkBindImageMemory(this->device.get(), *this, memory, offset);
+		const vk_result res = vkBindImageMemory(this->device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -82,6 +83,7 @@ protected:
 
 public:
 	vk_image(const vk_logical_device<host_allocator> &device,
+			 const char *name,
 			 const image_initial_layout &layout,
 			 const VkFormat &image_format,
 			 int dimensions,
@@ -126,10 +128,16 @@ public:
 		create_info.queueFamilyIndexCount = 0;
 		create_info.pQueueFamilyIndices = nullptr;
 
-		vk_result res = vkCreateImage(device.get(), &create_info, &host_allocator::allocation_callbacks(), &image);
+		const vk_result res = vkCreateImage(device.get(), &create_info, &host_allocator::allocation_callbacks(), &image);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										image,
+										VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT,
+										name);
 
 		this->image = image;
 	}

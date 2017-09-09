@@ -9,8 +9,6 @@
 #include <device_image_base.hpp>
 #include <allow_type_decay.hpp>
 
-#include <vk_set_object_name.hpp>
-
 namespace ste {
 namespace gl {
 
