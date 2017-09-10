@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <optional.hpp>
 #include <allow_type_decay.hpp>
@@ -67,14 +68,22 @@ private:
 
 public:
 	vk_sampler(const vk_logical_device<host_allocator> &device,
-			   const vk_sampler_info &info) : device(device) {
+			   const vk_sampler_info &info,
+			   const char *name) : device(device) {
 		VkSamplerCreateInfo create_info = info;
 
 		VkSampler sampler;
-		vk_result res = vkCreateSampler(device, &create_info, &host_allocator::allocation_callbacks(), &sampler);
+		const vk_result res = vkCreateSampler(device, &create_info, &host_allocator::allocation_callbacks(), &sampler);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		// TODO: nVidia Vulkan bug - goes into infinite loop on 385.12 drivers
+//		vk_debug_marker_set_object_name(device,
+//										sampler,
+//										VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT,
+//										name);
 
 		this->sampler = sampler;
 	}

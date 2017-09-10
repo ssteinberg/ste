@@ -16,8 +16,8 @@
 namespace ste {
 namespace graphics {
 
-class gbuffer_downsample_depth_fragment : public gl::fragment_compute {
-    using Base = gl::fragment_compute;
+class gbuffer_downsample_depth_fragment : public gl::fragment_compute<gbuffer_downsample_depth_fragment> {
+    using Base = gl::fragment_compute<gbuffer_downsample_depth_fragment>;
 
 private:
     const deferred_gbuffer *gbuffer;
@@ -48,10 +48,8 @@ private:
             output_images.emplace_back(downsampled_depth_levels[l],
                                        gl::image_layout::general);
 
-        pipeline["levels"] = levels;
-        pipeline["depth_target"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer->get_depth_target(),
-                                                                                 ctx.device().common_samplers_collection().linear_clamp_sampler()));
-        pipeline["output_images"] = gl::bind(0, output_images);
+        pipeline()["levels"] = levels;
+        pipeline()["output_images"] = gl::bind(0, output_images);
     }
 
 public:
@@ -61,7 +59,7 @@ public:
                "gbuffer_downsample_depth.comp"),
         gbuffer(gbuffer)
     {
-        dispatch_task.attach_pipeline(pipeline);
+        dispatch_task.attach_pipeline(pipeline());
         attach_handles(rs.get_creating_context());
 
         gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this, &rs]() {
@@ -72,7 +70,7 @@ public:
 
     gbuffer_downsample_depth_fragment(gbuffer_downsample_depth_fragment&&) = default;
 
-    static const lib::string& name() { return "gbuffer_downsample_depth"; }
+    static lib::string name() { return "gbuffer_downsample_depth"; }
 
     void record(gl::command_recorder &recorder) override final {
         constexpr int jobs = 32;

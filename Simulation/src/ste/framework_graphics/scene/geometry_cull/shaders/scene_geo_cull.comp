@@ -4,7 +4,6 @@
 
 layout(local_size_x = 128) in;
 
-#include <renderer_transform_buffers.glsl>
 #include <indirect.glsl>
 
 #include <light.glsl>
@@ -16,19 +15,18 @@ layout(local_size_x = 128) in;
 #include <mesh_descriptor.glsl>
 
 
-
 layout(std430, binding = 0) restrict buffer counter_data {
 	uint counter;
 };
 
 layout(std430, binding = 1) restrict writeonly buffer idb_data {
-	IndirectMultiDrawElementsCommand idb[];
+	indirect_multi_draw_elements_command idb[];
 };
 layout(std430, binding = 2) restrict writeonly buffer sidb_data {
-	IndirectMultiDrawElementsCommand sidb[];
+	indirect_multi_draw_elements_command sidb[];
 };
 layout(std430, binding = 3) restrict writeonly buffer dsidb_data {
-	IndirectMultiDrawElementsCommand dsidb[];
+	indirect_multi_draw_elements_command dsidb[];
 };
 layout(std430, binding = 4) restrict writeonly buffer drawid_to_lightid_ttl_data {
 	drawid_to_lightid_ttl ttl[];
@@ -93,11 +91,11 @@ void main() {
 	if (shadow_instance_count > 0 || dir_shadow_instance_count > 0) {
 		uint idx = atomicAdd(counter, 1);
 
-		IndirectMultiDrawElementsCommand c;
-		c.count = mesh_draw_params_buffer[draw_id].count;
+		indirect_multi_draw_elements_command c;
+		c.index_count = mesh_draw_params_buffer[draw_id].count;
 		c.instance_count = 1;
 		c.first_index = mesh_draw_params_buffer[draw_id].first_index;
-		c.base_vertex = mesh_draw_params_buffer[draw_id].base_vertex;
+		c.vertex_offset = mesh_draw_params_buffer[draw_id].vertex_offset;
 		c.base_instance = draw_id;
 
 		idb[idx] = c;

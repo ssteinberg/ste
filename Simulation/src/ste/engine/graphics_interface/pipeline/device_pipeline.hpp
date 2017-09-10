@@ -43,12 +43,16 @@ private:
 
 	private:
 		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
-			// Bind external binding sets
-			if (pipeline->external_binding_set != nullptr)
-				recorder << pipeline->external_binding_set->cmd_bind(pipeline->get_pipeline_vk_bind_point(),
-																	 &pipeline->layout->get());
 			// Bind pipeline's binding sets
-			recorder << pipeline->binding_sets.cmd_bind(pipeline->get_pipeline_vk_bind_point());
+			recorder << pipeline->binding_sets.cmd_bind(pipeline->get_pipeline_vk_bind_point(),
+														0);
+			// Bind external binding sets
+			if (pipeline->external_binding_set != nullptr) {
+				auto external_set_base_binding_index = static_cast<std::uint32_t>(pipeline->binding_sets.get_sets().size());
+				recorder << pipeline->external_binding_set->cmd_bind(pipeline->get_pipeline_vk_bind_point(),
+																	 &pipeline->layout->get(),
+																	 external_set_base_binding_index);
+			}
 
 			// Bind pipeline
 			pipeline->bind_pipeline(buffer, recorder);

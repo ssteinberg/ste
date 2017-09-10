@@ -45,26 +45,26 @@ public:
 		begin_info.pInheritanceInfo = inheritance;
 		begin_info.flags = flags;
 
-		vk_result res = vkBeginCommandBuffer(*this, &begin_info);
+		const vk_result res = vkBeginCommandBuffer(*this, &begin_info);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 	void end() {
-		vk_result res = vkEndCommandBuffer(*this);
+		const vk_result res = vkEndCommandBuffer(*this);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 
 	void reset() {
-		vk_result res = vkResetCommandBuffer(*this, 0);
+		const vk_result res = vkResetCommandBuffer(*this, 0);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 	void reset_release() {
-		vk_result res = vkResetCommandBuffer(*this, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		const vk_result res = vkResetCommandBuffer(*this, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 		if (!res) {
 			throw vk_exception(res);
 		}

@@ -13,8 +13,8 @@
 namespace ste {
 namespace graphics {
 
-class light_preprocessor_fragment : public gl::fragment_compute {
-	using Base = fragment_compute;
+class light_preprocessor_fragment : public gl::fragment_compute<light_preprocessor_fragment> {
+	using Base = fragment_compute<light_preprocessor_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -30,13 +30,13 @@ public:
 		ls(ls)
 	{
 		update_projection_planes(camera);
-		dispatch_task.attach_pipeline(pipeline);
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~light_preprocessor_fragment() noexcept {}
 
 	light_preprocessor_fragment(light_preprocessor_fragment&&) = default;
 
-	static const lib::string& name() { return "cull_lights"; }
+	static lib::string name() { return "cull_lights"; }
 
 	/**
 	 *	@brief	Updates the fragment's projection planes uniform buffer. 
@@ -46,9 +46,8 @@ public:
 
 	void record(gl::command_recorder &recorder) override final {
 		constexpr int jobs = 128;
-		auto size = (ls->size() + jobs - 1) / jobs;
+		const auto size = (ls->size() + jobs - 1) / jobs;
 
-		ls->clear_active_ll(recorder);
 		recorder << dispatch_task(static_cast<std::uint32_t>(size), 1u, 1u);
 	}
 };

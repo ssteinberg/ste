@@ -84,6 +84,7 @@ template <typename T, class a>
 auto bind(const device_buffer<T, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
+	assert(range > 0);
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
 }
 /**
@@ -97,6 +98,7 @@ template <typename T, std::uint64_t s, class a>
 auto bind(const device_buffer_sparse<T, s, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
+	assert(range > 0);
 	return pipeline_resource_binder<vk::vk_descriptor_set_write_buffer, T>(0, { buffer_view(buffer, offset, range) });
 }
 
@@ -117,7 +119,7 @@ auto bind(const array<T> &array) {
 template <typename T, std::uint64_t a, std::uint64_t b>
 auto bind(const vector<T, a, b> &vec) {
 	return bind(vec.get(),
-				0, vec.size());
+				0, vec.sparse_size);
 }
 /**
 *	@brief	Buffer binder helper. Binds a Ring buffer.
@@ -136,7 +138,7 @@ auto bind(const ring_buffer<T, C> &ring) {
 template <typename T, std::uint64_t a, std::uint64_t b>
 auto bind(const stable_vector<T, a, b> &vec) {
 	return bind(vec.get(),
-				0, vec.size());
+				0, vec.sparse_size);
 }
 
 /**

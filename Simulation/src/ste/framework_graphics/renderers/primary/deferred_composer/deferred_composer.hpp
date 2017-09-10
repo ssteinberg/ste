@@ -32,27 +32,31 @@ public:
 			   "fullscreen_triangle.vert", "deferred_compose.frag"),
 		material_luts(rs.acquire_storage<material_lut_storage>())
 	{
-		draw_task.attach_pipeline(pipeline);
+		draw_task.attach_pipeline(pipeline());
 	}
 	~deferred_composer() noexcept {}
 
 	deferred_composer(deferred_composer&&) = default;
 
-	static const lib::string& name() { return "deferred_composer"; }
-
-	static void setup_graphics_pipeline(const gl::rendering_system &rs,
-										gl::pipeline_auditor_graphics &auditor) {
+	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::ignore_store(gl::format::r16g16b16a16_sfloat,
 										gl::image_layout::shader_read_only_optimal);
-		auditor.set_framebuffer_layout(fb_layout);
+		return fb_layout;
+	}
+
+	static lib::string name() { return "deferred_composer"; }
+
+	static void setup_graphics_pipeline(const gl::rendering_system &rs,
+										gl::pipeline_auditor_graphics &auditor) {
+		auditor.set_framebuffer_layout(create_fb_layout());
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 	const auto& get_framebuffer_layout() const {
-		return pipeline.get_framebuffer_layout();
+		return pipeline().get_framebuffer_layout();
 	}
 
 	void record(gl::command_recorder &recorder) override final {

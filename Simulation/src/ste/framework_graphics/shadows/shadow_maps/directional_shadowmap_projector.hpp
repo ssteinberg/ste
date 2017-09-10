@@ -26,23 +26,29 @@ public:
 			   "shadow_directional.vert", "shadow_directional.geom"),
 		s(s)
 	{
-		draw_task.attach_pipeline(pipeline);
+		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+
+		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_idb());
+		draw_task.attach_indirect_buffer(s->get_directional_shadow_projection_buffers().idb);
 	}
 	~directional_shadowmap_projector() noexcept {}
 
 	directional_shadowmap_projector(directional_shadowmap_projector&&) = default;
 
-	static const lib::string& name() { return "shadow_dir_project"; }
+	static auto create_fb_layout() {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
+																			gl::image_layout::shader_read_only_optimal);
+		return fb_layout;
+	}
+
+	static lib::string name() { return "shadow_dir_project"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
-		gl::framebuffer_layout fb_layout;
-		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
-																			gl::image_layout::depth_stencil_attachment_optimal);
-		auditor.set_framebuffer_layout(fb_layout);
+		auditor.set_framebuffer_layout(create_fb_layout());
 
 		gl::device_pipeline_graphics_configurations config;
 		config.depth_op = gl::depth_operation(gl::compare_op::greater);
@@ -53,15 +59,16 @@ public:
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
-		pipeline.attach_framebuffer(fb);
+		pipeline().attach_framebuffer(fb);
 	}
 	const auto& get_framebuffer_layout() const {
-		return pipeline.get_framebuffer_layout();
+		return pipeline().get_framebuffer_layout();
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
-		auto stride = sizeof(gl::draw_indexed_indirect_command_std140);
+		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
+		const auto stride = sizeof(gl::draw_indexed_indirect_command_std430_t);
+
 		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
 							  static_cast<std::uint32_t>(stride));
 	}

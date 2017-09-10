@@ -84,7 +84,8 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		device_buffer<block_type, device_resource_allocation_policy_host_visible>
 			staging_buffer(ctx,
 						   blocks,
-						   gl::buffer_usage::transfer_src);
+						   gl::buffer_usage::transfer_src,
+						   "fill_image staging buffer");
 
 		// Copy to destination image
 		{

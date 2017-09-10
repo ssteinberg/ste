@@ -73,16 +73,30 @@ private:
 
 public:
 	light_storage(const ste_context &ctx)
-		: Base(ctx, gl::buffer_usage::storage_buffer),
-		active_lights_ll_counter(ctx, 1, gl::buffer_usage::storage_buffer),
-		active_lights_ll(ctx, max_ll_buffer_size, gl::buffer_usage::storage_buffer),
-		directional_lights_cascades_buffer(ctx, max_active_directional_lights_per_frame, gl::buffer_usage::storage_buffer),
-		shaped_lights_points_storage(ctx, gl::buffer_usage::storage_buffer),
+		: Base(ctx, 
+			   gl::buffer_usage::storage_buffer,
+			   "light_storage"),
+		active_lights_ll_counter(ctx, 
+								 1, 
+								 gl::buffer_usage::storage_buffer,
+								 "active_lights_ll_counter"),
+		active_lights_ll(ctx, 
+						 max_ll_buffer_size, 
+						 gl::buffer_usage::storage_buffer,
+						 "active_lights_ll"),
+		directional_lights_cascades_buffer(ctx, 
+										   max_active_directional_lights_per_frame, 
+										   gl::buffer_usage::storage_buffer,
+										   "directional_lights_cascades_buffer"),
+		shaped_lights_points_storage(ctx, 
+									 gl::buffer_usage::storage_buffer,
+									 "shaped_lights_points_storage"),
 		// Build cascades' depth array for directional lights
 		cascades_depths(build_cascade_depth_array()),
 		cascades_depths_uniform_buffer(ctx,
 									   cascades_depths_uniform_buffer_initial_data(cascades_depths),
-									   gl::buffer_usage::uniform_buffer)
+									   gl::buffer_usage::uniform_buffer,
+									   "cascades_depths_uniform_buffer")
 	{
 		// Initialize array of active directional lights to nulls
 		for (auto &val : active_directional_lights)

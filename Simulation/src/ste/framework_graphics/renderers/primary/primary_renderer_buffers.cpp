@@ -31,7 +31,8 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	}
 	gl::pipeline_external_binding_set set{
 		gl::external_binding_set_collection_from_shader_stages(ctx.device(),
-		std::move(v)).generate()
+															   std::move(v), 
+															   "primary_renderer common binding set").generate()
 	};
 
 	// Transforms buffer bindings
@@ -123,6 +124,16 @@ void primary_renderer_buffers::update(gl::command_recorder &recorder,
 
 	// If needed, upload new camera projection data (after resize)
 	if (!projection_data_up_to_date_flag.test_and_set(std::memory_order_acquire)) {
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
+																  gl::pipeline_stage::transfer,
+																  gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
+																							gl::access_flags::shader_read,
+																							gl::access_flags::transfer_write)));
 		transform_buffers.update_proj_data(recorder, *cam, extent);
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																  gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
+																  gl::buffer_memory_barrier(transform_buffers.get_proj_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read)));
 	}
 }

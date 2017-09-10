@@ -262,7 +262,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
+		using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<T>>;
 
 		if (var_type == ste_shader_stage_variable_type::sampler_t &&
 			!std::is_convertible_v<Type, sampler>)
@@ -329,7 +329,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
+		using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<T>>;
 		static constexpr bool type_is_signed = ::ste::is_signed<Type>::value;
 		static constexpr bool type_is_float = ::ste::is_floating_point<Type>::value;
 		static constexpr bool type_is_scalar = ::ste::is_scalar<Type>::value;
@@ -412,7 +412,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using Type = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
+		using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<T>>;
 
 		scalar_var->validate<typename remove_extents<Type>::type>();
 
@@ -511,7 +511,7 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
-		using T2 = _internal::ste_shader_stage_variable_remove_blocks_t<T>;
+		using T2 = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<T>>;
 
 		if (std::is_array_v<T>) {
 			// T is an array
@@ -522,7 +522,7 @@ public:
 			if (sizeof(ElementT) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
-			using Type = _internal::ste_shader_stage_variable_remove_blocks_t<ElementT>;
+			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
 			var->validate<std::remove_extent_t<Type>>();
 		}
 		else if (std::is_array_v<T2>) {
@@ -534,7 +534,7 @@ public:
 			if (sizeof(ElementT) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
-			using Type = _internal::ste_shader_stage_variable_remove_blocks_t<ElementT>;
+			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
 			var->validate<std::remove_extent_t<Type>>();
 		}
 		else {

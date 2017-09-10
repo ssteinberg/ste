@@ -42,6 +42,9 @@ private:
 public:
 	using value_type = T;
 
+	static constexpr bool sparse_container = true;
+	static constexpr auto sparse_size = max_sparse_size;
+
 	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, minimal_atom_size, max_sparse_size>>;
 	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, minimal_atom_size, max_sparse_size>>;
 	using unbind_cmd_t = _internal::vector_cmd_unbind<vector<T, minimal_atom_size, max_sparse_size>>;
@@ -51,7 +54,6 @@ private:
 	buffer_t buffer;
 
 	lib::vector<T> host_replica;
-
 	mutable std::mutex mutex;
 
 private:
@@ -64,15 +66,18 @@ private:
 
 public:
 	vector(const ste_context &ctx,
-		   const buffer_usage &usage)
+		   const buffer_usage &usage,
+		   const char *name)
 		: buffer(ctx,
 				 max_sparse_size,
-				 usage | buffer_usage_additional_flags)
+				 usage | buffer_usage_additional_flags,
+				 name)
 	{}
 	vector(const ste_context &ctx,
 		   const lib::vector<T> &initial_data,
-		   const buffer_usage &usage)
-		: vector(ctx, usage)
+		   const buffer_usage &usage,
+		   const char *name)
+		: vector(ctx, usage, name)
 	{
 		host_replica = initial_data;
 
@@ -85,8 +90,9 @@ public:
 	template <std::size_t N>
 	vector(const ste_context &ctx,
 		   const std::array<T, N> &initial_data,
-		   const buffer_usage &usage)
-		: vector(ctx, usage)
+		   const buffer_usage &usage,
+		   const char *name)
+		: vector(ctx, usage, name)
 	{
 		host_replica = lib::vector<T>(initial_data.begin(),
 									  initial_data.end());

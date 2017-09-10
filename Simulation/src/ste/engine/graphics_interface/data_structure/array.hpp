@@ -43,16 +43,19 @@ private:
 public:
 	array(const ste_context &ctx,
 		  std::uint64_t count,
-		  const buffer_usage &usage)
+		  const buffer_usage &usage,
+		  const char *name)
 		: buffer(ctx,
 				 count,
-				 usage | buffer_usage_additional_flags)
+				 usage | buffer_usage_additional_flags,
+				 name)
 	{}
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const lib::vector<T> &initial_data,
-		  const buffer_usage &usage)
-		: array(ctx, count, usage)
+		  const buffer_usage &usage,
+		  const char *name)
+		: array(ctx, count, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx, 
@@ -62,15 +65,17 @@ public:
 	}
 	array(const ste_context &ctx,
 		  const lib::vector<T> &initial_data,
-		  const buffer_usage &usage)
-		: array(ctx, initial_data.size(), initial_data, usage)
+		  const buffer_usage &usage,
+		  const char *name)
+		: array(ctx, initial_data.size(), initial_data, usage, name)
 	{}
 	template <std::size_t N>
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const std::array<T, N> &initial_data,
-		  const buffer_usage &usage)
-		: array(ctx, count, usage)
+		  const buffer_usage &usage,
+		  const char *name)
+		: array(ctx, count, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx, 
@@ -81,8 +86,9 @@ public:
 	template <std::size_t N>
 	array(const ste_context &ctx,
 		  const std::array<T, N> &initial_data,
-		  const buffer_usage &usage)
-		: array(ctx, initial_data.size(), initial_data, usage)
+		  const buffer_usage &usage,
+		  const char *name)
+		: array(ctx, initial_data.size(), initial_data, usage, name)
 	{}
 	~array() noexcept {}
 

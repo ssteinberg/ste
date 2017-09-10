@@ -101,7 +101,7 @@ private:
 	 */
 	void glyph_loader(const font &font, wchar_t codepoint) {
 		// Cache key
-		lib::string cache_key = lib::string("ttfdf") + lib::to_string(font.get_path().string()) + lib::to_string(static_cast<std::uint32_t>(codepoint));
+		const lib::string cache_key = lib::string("ttfdf") + lib::to_string(font.get_path().string()) + lib::to_string(static_cast<std::uint32_t>(codepoint));
 
 		// Check cache
 		optional<glyph> og;
@@ -136,6 +136,7 @@ private:
 																							  std::move(*og.get().glyph_distance_field),
 																							  gl::image_usage::sampled,
 																							  gl::image_layout::shader_read_only_optimal,
+																							  "glyph image",
 																							  false);
 
 		// Store all data in pending queue
@@ -154,7 +155,7 @@ private:
 	void empty_loaded_descriptors_queue() {
 		loaded_glyphs_queue_t::stored_ptr ptr(nullptr);
 		while((ptr = loaded_glyphs_queue.pop()) != nullptr) {
-			auto index = static_cast<std::uint32_t>(glyph_textures.size());
+			const auto index = static_cast<std::uint32_t>(glyph_textures.size());
 			glyph_textures.push_back(std::move(ptr->texture));
 
 			glyph_descriptor& gd = ptr->descriptor;
@@ -171,8 +172,11 @@ private:
 public:
 	glyph_manager(const ste_context &context)
 		: context(context), 
-		buffer(context, gl::buffer_usage::storage_buffer),
+		buffer(context, 
+			   gl::buffer_usage::storage_buffer,
+			   "glyph_manager buffer"),
 		text_glyph_sampler(context.device(),
+						   "glyph_manager sampler",
 						   gl::sampler_parameter::filtering(gl::sampler_filter::linear, 
 															gl::sampler_filter::linear),
 						   gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_border, 
@@ -247,7 +251,7 @@ public:
 		for (wchar_t codepoint : codepoints) {
 			auto k = _internal::glyph_key(font, codepoint);
 
-			auto glyphit = glyphs.lower_bound(k);
+			const auto glyphit = glyphs.lower_bound(k);
 			if (glyphit == glyphs.end() || glyphit->first != k)
 				glyphs.emplace_hint(glyphit, std::make_pair(k, none));
 			else if (glyphit->second)

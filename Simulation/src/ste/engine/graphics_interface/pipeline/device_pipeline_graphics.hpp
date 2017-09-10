@@ -25,6 +25,7 @@
 #include <optional.hpp>
 #include <format_rtti.hpp>
 #include <lib/vector.hpp>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {
@@ -37,6 +38,7 @@ class device_pipeline_graphics : public device_pipeline {
 	struct ctor {};
 
 private:
+	lib::string pipeline_name;
 	device_pipeline_graphics_configurations pipeline_settings;
 	pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor vertex_input_descriptor;
 	framebuffer_layout fb_layout;
@@ -68,7 +70,7 @@ private:
 			const framebuffer_attachment_layout &attachment = a.second;
 
 			// Blend operation is only applicable for color attachments
-			bool is_depth_attachment = format_is_depth(attachment.image_format);
+			const bool is_depth_attachment = format_is_depth(attachment.image_format);
 			if (is_depth_attachment)
 				continue;
 
@@ -98,6 +100,7 @@ private:
 								  attachment_blend_ops,
 								  pipeline_settings.blend_constants,
 								  dynamic_states,
+								  pipeline_name.data(),
 								  &ctx.get().device().pipeline_cache().current_thread_cache());
 	}
 
@@ -107,8 +110,8 @@ protected:
 	}
 
 	void bind_pipeline(const command_buffer &, command_recorder &recorder) const override final {
-		lib::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
-											   attached_framebuffer->get_fb_clearvalues().begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
+		const lib::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
+													 attached_framebuffer->get_fb_clearvalues().begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
 		auto fb_extent = attached_framebuffer->extent();
 
 		recorder << cmd_begin_render_pass(*attached_framebuffer,
@@ -162,10 +165,12 @@ public:
 							 const pipeline_vertex_input_bindings_collection::pipeline_vertex_input_bindings_descriptor &vertex_input_descriptor,
 							 const framebuffer_layout &fb_layout,
 							 lib::unique_ptr<pipeline_layout> &&layout,
-							 optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
+							 optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set,
+							 const char *name)
 		: Base(ctx,
 			   std::move(layout),
 			   external_binding_set),
+		pipeline_name(name),
 		pipeline_settings(graphics_pipeline_settings),
 		vertex_input_descriptor(vertex_input_descriptor),
 		fb_layout(fb_layout)

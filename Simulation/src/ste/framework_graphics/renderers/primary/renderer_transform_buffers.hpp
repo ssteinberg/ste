@@ -49,8 +49,14 @@ private:
 
 public:
 	renderer_transform_buffers(const ste_context &ctx)
-		: view_buffer(ctx, 1, gl::buffer_usage::storage_buffer),
-		proj_buffer(ctx, 1, gl::buffer_usage::storage_buffer)
+		: view_buffer(ctx, 
+					  1, 
+					  gl::buffer_usage::storage_buffer,
+					  "renderer_transform_buffers::view_buffer"),
+		proj_buffer(ctx, 
+					1, 
+					gl::buffer_usage::storage_buffer,
+					"renderer_transform_buffers::proj_buffer")
 	{}
 
 	void update_view_data(gl::command_recorder &recorder,

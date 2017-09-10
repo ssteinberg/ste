@@ -2,7 +2,6 @@
 #include <common.glsl>
 #include <interleaved_gradient_noise.glsl>
 
-#include <renderer_transform_buffers.glsl>
 #include <project.glsl>
 
 const float shadow_cubemap_size = 1024.f;

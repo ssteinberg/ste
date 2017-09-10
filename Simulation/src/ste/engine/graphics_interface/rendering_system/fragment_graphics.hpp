@@ -15,6 +15,7 @@
 
 #include <lib/string.hpp>
 #include <lib/vector.hpp>
+#include <lib/unique_ptr.hpp>
 #include <optional.hpp>
 
 namespace ste {
@@ -26,20 +27,20 @@ namespace gl {
 template <typename CRTP>
 class fragment_graphics : public fragment {
 private:
-	lib::vector<device_pipeline_shader_stage> shader_stages;
-
+	using shader_stages_t = lib::vector<lib::unique_ptr<device_pipeline_shader_stage>>;
 	struct ctor {};
 
-protected:
-	device_pipeline_graphics pipeline;
+	shader_stages_t shader_stages;
+	lib::unique_ptr<device_pipeline_graphics> pipeline_object;
 
 private:
 	template <typename RenderingSystem, typename... Names>
 	static auto create_graphics_pipeline(const RenderingSystem &rs,
+										 const char *name,
 										 device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 										 const pipeline_external_binding_set* external_binding_sets_collection,
 										 optional<framebuffer_layout> &&fb_layout,
-										 lib::vector<device_pipeline_shader_stage> &out_shader_stages,
+										 shader_stages_t &out_shader_stages,
 										 Names&&... shader_stages_names) {
 		const ste_context &ctx = rs.get_creating_context();
 
@@ -59,24 +60,30 @@ private:
 		CRTP::setup_graphics_pipeline(rs, auditor);
 
 		// Create pipeline
-		return external_binding_sets_collection ?
+		auto obj = external_binding_sets_collection ?
 			auditor.pipeline(ctx,
-							 std::ref(*external_binding_sets_collection)) :
-			auditor.pipeline(ctx);
+							 std::ref(*external_binding_sets_collection),
+							 name) :
+			auditor.pipeline(ctx,
+							 name);
+
+		return lib::allocate_unique<device_pipeline_graphics>(std::move(obj));
 	}
 
 	template <typename RenderingSystem, typename... Names>
 	fragment_graphics(ctor,
+					  const char *name,
 					  const RenderingSystem &rs,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  optional<framebuffer_layout> &&fb_layout,
 					  Names&&... shader_stages_names)
-		: pipeline(create_graphics_pipeline(rs,
-											std::move(pipeline_graphics_configurations),
-											rs.external_binding_set(),
-											std::move(fb_layout),
-											this->shader_stages,
-											std::forward<Names>(shader_stages_names)...))
+		: pipeline_object(create_graphics_pipeline(rs,
+												   name,
+												   std::move(pipeline_graphics_configurations),
+												   rs.external_binding_set(),
+												   std::move(fb_layout),
+												   this->shader_stages,
+												   std::forward<Names>(shader_stages_names)...))
 	{
 		static_assert(sizeof...(Names) > 0, "Expected shader stages");
 	}
@@ -92,6 +99,7 @@ protected:
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  Names&&... shader_stages_names)
 		: fragment_graphics(ctor(),
+							CRTP::name().data(),
 							rs,
 							std::move(pipeline_graphics_configurations),
 							none,
@@ -101,8 +109,10 @@ protected:
 	fragment_graphics(const RenderingSystem &rs,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  framebuffer_layout &&fb_layout,
+
 					  Names&&... shader_stages_names)
 		: fragment_graphics(ctor(),
+							CRTP::name().data(),
 							rs,
 							std::move(pipeline_graphics_configurations),
 							std::move(fb_layout),
@@ -116,7 +126,11 @@ public:
 	fragment_graphics& operator=(fragment_graphics&&) = default;
 
 	// Subclasses are expected to declare:
-	//static const lib::string& name();
+	//static lib::string name();
+
+protected:
+	auto& pipeline() { return *pipeline_object; }
+	auto& pipeline() const { return *pipeline_object; }
 };
 
 }

@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_descriptor_set_layout.hpp>
 #include <vk_push_constant_layout.hpp>
 
@@ -31,6 +32,7 @@ private:
 public:
 	vk_pipeline_layout(const vk_logical_device<host_allocator> &device,
 					   const lib::vector<const vk_descriptor_set_layout<host_allocator>*> &set_layouts,
+					   const char *name,
 					   const lib::vector<vk_push_constant_layout> &push_constant_layouts = {}) : device(device) {
 		lib::vector<VkPushConstantRange> push_constant_layout_descriptors;
 		push_constant_layout_descriptors.reserve(push_constant_layouts.size());
@@ -52,10 +54,16 @@ public:
 		create_info.pSetLayouts = layouts.data();
 
 		VkPipelineLayout pipeline_layout;
-		vk_result res = vkCreatePipelineLayout(device, &create_info, &host_allocator::allocation_callbacks(), &pipeline_layout);
+		const vk_result res = vkCreatePipelineLayout(device, &create_info, &host_allocator::allocation_callbacks(), &pipeline_layout);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										pipeline_layout,
+										VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT,
+										name);
 
 		this->layout = pipeline_layout;
 	}

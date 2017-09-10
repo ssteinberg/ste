@@ -38,9 +38,9 @@ struct fragment_expand_shader_stages<Name> {
 					StagesStorage &storage,
 					Auditor &auditor,
 					const Name& name) {
-		device_pipeline_shader_stage stage(ctx, static_cast<lib::string>(name));
+		auto stage = lib::allocate_unique<device_pipeline_shader_stage>(ctx, static_cast<lib::string>(name));
 		storage.push_back(std::move(stage));
-		auditor.attach_shader_stage(storage.back());
+		auditor.attach_shader_stage(*storage.back());
 	}
 };
 

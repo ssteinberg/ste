@@ -49,7 +49,9 @@ private:
 
 public:
 	using value_type = T;
+
 	static constexpr bool sparse_container = true;
+	static constexpr auto sparse_size = max_sparse_size;
 
 	using insert_cmd_t = _internal::vector_cmd_insert<stable_vector<T, minimal_atom_size, max_sparse_size>>;
 	using resize_cmd_t = _internal::vector_cmd_resize<stable_vector<T, minimal_atom_size, max_sparse_size>>;
@@ -66,33 +68,39 @@ private:
 
 public:
 	stable_vector(const ste_context &ctx,
-				  const buffer_usage &usage)
+				  const buffer_usage &usage,
+				  const char *name)
 		: buffer(ctx,
 				 max_sparse_size,
-				 usage | buffer_usage_additional_flags)
+				 usage | buffer_usage_additional_flags,
+				 name)
 	{}
 	stable_vector(const ste_context &ctx,
 				  const lib::vector<T> &initial_data,
-				  const buffer_usage &usage)
-		: stable_vector(ctx, usage)
+				  const buffer_usage &usage,
+				  const char *name)
+		: stable_vector(ctx, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx,
 									*this,
 									initial_data.data(),
 									initial_data.size());
+		elements.store(initial_data.size());
 	}
 	template <std::size_t N>
 	stable_vector(const ste_context &ctx,
 				  const std::array<T, N> &initial_data,
-				  const buffer_usage &usage)
-		: stable_vector(ctx, usage)
+				  const buffer_usage &usage,
+				  const char *name)
+		: stable_vector(ctx, usage, name)
 	{
 		// Copy initial static data
 		_internal::copy_data_buffer(ctx,
 									*this,
 									initial_data.data(),
 									initial_data.size());
+		elements.store(initial_data.size());
 	}
 	~stable_vector() noexcept {}
 

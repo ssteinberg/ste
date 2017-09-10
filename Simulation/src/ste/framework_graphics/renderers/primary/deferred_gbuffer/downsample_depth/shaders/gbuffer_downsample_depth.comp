@@ -5,10 +5,10 @@
 layout(local_size_x = 32, local_size_y = 32) in;
 
 #include <common.glsl>
+#include <gbuffer.glsl>
 
 layout(constant_id = 0) const int levels = 2;
 
-layout(binding = 0) uniform sampler2D depth_target;
 layout(rg32f, binding = 1) restrict writeonly uniform image2D output_images[levels];
 
 const int sample_count = 1 << (levels-1);
@@ -29,11 +29,11 @@ void main() {
 	
 	for (int x=0; x<c; ++x) {
 		for (int y=0; y<c; ++y) {
-			// Read 4 samples from full size depth_target
-			vec4 d = vec4(texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,0)).x,
-						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,0)).x,
-						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(0,1)).x,
-						  texelFetchOffset(depth_target, (coords + ivec2(x, y)) * 2, 0, ivec2(1,1)).x);
+			// Read 4 samples from full size depth_map
+			vec4 d = vec4(texelFetchOffset(depth_map, (coords + ivec2(x, y)) * 2, 0, ivec2(0,0)).x,
+						  texelFetchOffset(depth_map, (coords + ivec2(x, y)) * 2, 0, ivec2(1,0)).x,
+						  texelFetchOffset(depth_map, (coords + ivec2(x, y)) * 2, 0, ivec2(0,1)).x,
+						  texelFetchOffset(depth_map, (coords + ivec2(x, y)) * 2, 0, ivec2(1,1)).x);
 		
 			// Find max and min
 			bvec4 b = equal(d, vec4(0));

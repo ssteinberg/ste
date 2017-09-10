@@ -69,7 +69,7 @@ public:
 	hdr_dof_postprocess(hdr_dof_postprocess&&o) = default;
 
 
-	static const lib::string& name() { return "hdr"; }
+	static lib::string name() { return "hdr"; }
 
 	/**
 	 *	@brief	Sets the input image. 

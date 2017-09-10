@@ -84,9 +84,13 @@ private:
 	common_samplers samplers_collection;
 
 private:
-	static lib::vector<const char*> device_extensions(lib::vector<const char*> extensions) {
+	static lib::vector<const char*> device_extensions(const ste_gl_device_creation_parameters &parameters) {
+		auto extensions = parameters.additional_device_extensions;
+
 		// Add required extensions
 		extensions.push_back("VK_KHR_swapchain");
+		if (parameters.allow_markers)
+			extensions.push_back("VK_EXT_debug_marker");
 
 		return extensions;
 	}
@@ -145,7 +149,7 @@ public:
 		device(parameters.physical_device,
 			   parameters.requested_device_features,
 			   queue_descriptors.create_device_queue_create_info()->create_info,
-			   device_extensions(parameters.additional_device_extensions)),
+			   device_extensions(parameters)),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,

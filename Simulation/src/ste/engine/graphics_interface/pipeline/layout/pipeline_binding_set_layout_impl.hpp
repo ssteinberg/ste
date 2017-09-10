@@ -36,6 +36,7 @@ private:
 	name_bindings_map_t name_map;
 
 	vk::vk_descriptor_set_layout<> vk_layout;
+	lib::string layout_name;
 
 private:
 	template <typename T = binding_layout_t>
@@ -49,22 +50,27 @@ private:
 		return *it;
 	}
 
-	auto generate_vk_layout(const vk::vk_logical_device<> &device) {
+	auto generate_vk_layout(const vk::vk_logical_device<> &device,
+							const char *name) {
 		lib::vector<vk::vk_descriptor_set_layout_binding> vk_bindings;
 		for (auto it = begin(); it != end(); ++it)
 			vk_bindings.push_back(access_it<>(it));
 
 		return vk::vk_descriptor_set_layout<>(device,
-											  vk_bindings);
+											  vk_bindings,
+											  name);
 	}
 
 public:
 	pipeline_binding_set_layout_impl(const vk::vk_logical_device<> &device,
 									 bindings_vec_t &&bindings,
-									 pipeline_layout_set_index set_idx)
+									 pipeline_layout_set_index set_idx,
+									 const char *name)
 		: bindings(std::move(bindings)),
 		set_idx(set_idx),
-		vk_layout(generate_vk_layout(device))
+		vk_layout(generate_vk_layout(device,
+									 name)),
+		layout_name(name)
 	{
 		// Create name map
 		for (auto it = begin(); it != end(); ++it) {
@@ -89,7 +95,8 @@ public:
 	 */
 	auto recreate(const vk::vk_logical_device<> &device) {
 		auto old = std::move(vk_layout);
-		vk_layout = generate_vk_layout(device);
+		vk_layout = generate_vk_layout(device,
+									   layout_name.data());
 
 		return old;
 	}

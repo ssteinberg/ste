@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -23,6 +23,7 @@
 #include <vk_pipeline_layout.hpp>
 
 #include <allow_type_decay.hpp>
+#include <lib/unique_ptr.hpp>
 #include <lib/string.hpp>
 #include <lib/flat_map.hpp>
 #include <lib/flat_set.hpp>
@@ -65,6 +66,7 @@ private:
 
 private:
 	alias<const ste_context> ctx;
+	lib::string layout_name;
 
 	// Attached pipeline stages and their variables and attachment maps
 	stages_map_t stages;
@@ -249,14 +251,16 @@ private:
 
 			auto set_layout = pipeline_binding_set_layout(ctx.get().device(), 
 														  std::move(v),
-														  static_cast<pipeline_layout_set_index>(i));
+														  static_cast<pipeline_layout_set_index>(i),
+														  (layout_name + " set " + lib::to_string(i)).data());
 			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}
 		// Create emtpy sets to fill sets till 'largest_set_idx', if needed.
 		for (std::size_t i=sets.size(); i<=largest_set_idx; ++i) {
 			auto set_layout = pipeline_binding_set_layout(ctx.get().device(),
 														  pipeline_binding_set_layout::bindings_vec_t{},
-														  static_cast<pipeline_layout_set_index>(i));
+														  static_cast<pipeline_layout_set_index>(i),
+														  (layout_name + " set " + lib::to_string(i)).data());
 			bindings_set_layouts.emplace_back(std::move(set_layout));
 		}
 	}
@@ -280,17 +284,21 @@ private:
 	 *	@brief	Updates the specialization map of an attached shader stage
 	 */
 	void update_shader_stage_specialization_map(const ste_shader_program_stage &stage) {
+		auto stages_it = stages.find(stage);
+		if (stages_it == stages.end())
+			return;
+
 		const auto& map = specializations[stage];
 		if (!this->external_binding_set) {
 			// No external binding set attached
-			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			stages_it->second->set_specializations(vk::vk_shader<>::spec_map(map));
 			return;
 		}
 
 		const auto it = this->external_binding_set->specializations.find(stage);
 		if (it == this->external_binding_set->specializations.end()) {
 			// External binding set does not have any specializations for the stage
-			stages[stage]->set_specializations(vk::vk_shader<>::spec_map(map));
+			stages_it->second->set_specializations(vk::vk_shader<>::spec_map(map));
 			return;
 		}
 
@@ -303,7 +311,7 @@ private:
 		for (auto &s : external_map)
 			spec.emplace(s);
 		
-		stages[stage]->set_specializations(std::move(spec));
+		stages_it->second->set_specializations(std::move(spec));
 	}
 
 	/**
@@ -374,10 +382,7 @@ private:
 
 		// Connect to external binding set's signals
 		external_binding_set_invalidated_connection = make_connection(external_binding_set.get_signal_set_invalidated(), [this](auto) {
-			// External binding set was invalidated, add to set recreation queue and invalidate layout.
-			set_layouts_modified_queue.insert(this->external_binding_set->set_idx());
-			std::atomic_thread_fence(std::memory_order_release);
-
+			// External binding set was invalidated, so invalidate layout.
 			invalidate_layout();
 		});
 		external_binding_set_constant_specialized_connection = make_connection(external_binding_set.get_signal_specialization_change(),
@@ -395,14 +400,17 @@ public:
 	 *	@param	ctx						Context
 	 *	@param	pipeline_shader_stages	Shader stages that define the layout
 	 *	@param	external_binding_set	External binding sets used in this layout
+	 *	@param	layout_name				Pipeline layout name debug marker
 	 *
 	 *	@throws	ste_shader_variable_layout_verification_exception		On different validation failures of a shader stage binding with
 	 *																external_binding_set
 	 */
 	pipeline_layout(const ste_context &ctx,
 					const shader_stages_list_t &pipeline_shader_stages,
-					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set)
-		: ctx(ctx)
+					optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set,
+					const char *layout_name)
+		: ctx(ctx),
+		layout_name(layout_name)
 	{
 		{
 			// Sort the variables from all the shader stages
@@ -537,6 +545,7 @@ public:
 		// Create pipeline layout
 		layout = lib::allocate_unique<vk::vk_pipeline_layout<>>(ctx.get().device(),
 																set_layout_ptrs,
+																layout_name.data(),
 																push_constant_layouts);
 		// Erase invalid flag
 		layout_invalidated_flag.get().store(false, std::memory_order_relaxed);
@@ -580,6 +589,17 @@ public:
 	auto cmd_push_constants() const {
 		assert(layout.get() && "Called before creating layout");
 		return push_constants_layout->cmd_push(layout.get());
+	}
+
+	/**
+	 *	@brief	Returns a pointer to shader stage
+	 */
+	const device_pipeline_shader_stage* shader_stage(ste_shader_program_stage stage) const {
+		const auto stages_it = stages.find(stage);
+		if (stages_it == stages.end())
+			return nullptr;
+
+		return stages_it->second;
 	}
 
 	auto& get() const { return *layout; }

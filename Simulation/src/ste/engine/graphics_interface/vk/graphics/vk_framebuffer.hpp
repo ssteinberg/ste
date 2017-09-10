@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 #include <vk_render_pass.hpp>
@@ -34,7 +35,8 @@ public:
 	vk_framebuffer(const vk_logical_device<host_allocator> &device,
 				   const vk_render_pass<host_allocator> &render_pass,
 				   const lib::vector<VkImageView> &attachments,
-				   const glm::u32vec2 &extent) : device(device), extent(extent) {
+				   const glm::u32vec2 &extent,
+				   const char *name) : device(device), extent(extent) {
 		VkFramebuffer fb;
 
 		VkFramebufferCreateInfo create_info = {};
@@ -48,10 +50,16 @@ public:
 		create_info.height = extent.y;
 		create_info.layers = 1;
 
-		vk_result res = vkCreateFramebuffer(device, &create_info, &host_allocator::allocation_callbacks(), &fb);
+		const vk_result res = vkCreateFramebuffer(device, &create_info, &host_allocator::allocation_callbacks(), &fb);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										fb,
+										VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT,
+										name);
 
 		this->framebuffer = fb;
 	}

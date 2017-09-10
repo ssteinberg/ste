@@ -13,8 +13,8 @@
 namespace ste {
 namespace graphics {
 
-class scene_geo_cull_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class scene_geo_cull_fragment : public gl::fragment_compute<scene_geo_cull_fragment> {
+	using Base = gl::fragment_compute<scene_geo_cull_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -41,13 +41,21 @@ public:
 		s(s),
 		ls(ls)
 	{
-		dispatch_task.attach_pipeline(pipeline);
+		pipeline()["counter_data"] = gl::bind(s->get_culled_objects_counter());
+		pipeline()["idb_data"] = gl::bind(s->get_idb().get());
+		pipeline()["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
+		pipeline()["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
+
+		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+
+		dispatch_task.attach_pipeline(pipeline());
 	}
 	~scene_geo_cull_fragment() noexcept {}
 
 	scene_geo_cull_fragment(scene_geo_cull_fragment&&) = default;
 
-	static const lib::string& name() { return "geo_cull"; }
+	static lib::string name() { return "geo_cull"; }
 
 	void record(gl::command_recorder &recorder) override final {
 		commit_idbs(recorder);
@@ -57,7 +65,6 @@ public:
 		constexpr int jobs = 128;
 		auto size = (draw_buffers.draw_count() + jobs - 1) / jobs;
 
-		s->clear_indirect_command_buffers(recorder);
 		recorder << dispatch_task(static_cast<std::uint32_t>(size), 1u, 1u);
 	}
 };

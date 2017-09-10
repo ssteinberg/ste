@@ -103,12 +103,14 @@ private:
 public:
 	device_buffer_sparse(const ste_context &ctx,
 						 std::uint64_t count,
-						 const buffer_usage &usage)
+						 const buffer_usage &usage,
+						 const char *name)
 		: device_buffer_sparse(ctor(), ctx,
 							   resource_t(ctx.device(), 
 										  sizeof(T),
 										  count,
-										  static_cast<VkBufferUsageFlags>(usage)))
+										  static_cast<VkBufferUsageFlags>(usage),
+										  name))
 	{}
 	~device_buffer_sparse() noexcept {}
 

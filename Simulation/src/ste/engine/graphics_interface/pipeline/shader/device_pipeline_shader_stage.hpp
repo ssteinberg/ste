@@ -43,7 +43,7 @@ private:
 
 private:
 	static void verify_blob_header_sanity(const ste_shader_blob_header &header) {
-		bool valid_stage =
+		const bool valid_stage =
 			header.type == ste_shader_program_stage::vertex_program ||
 			header.type == ste_shader_program_stage::tessellation_control_program ||
 			header.type == ste_shader_program_stage::tessellation_evaluation_program ||
@@ -97,6 +97,7 @@ private:
 
 		return lib::allocate_unique<const ste_shader_object>(ctx.device(),
 															 code,
+															 name.data(),
 															 stage,
 															 std::move(stage_bindings),
 															 std::move(stage_attachments));

@@ -8,6 +8,7 @@ using namespace ste::graphics;
 material::material(const ste_context &ctx,
 				   material_layer *head_layer)
 	: material_sampler(ctx.device(),
+					   "material sampler",
 					   gl::sampler_parameter::anisotropy(16),
 					   gl::sampler_parameter::address_mode(gl::sampler_address_mode::repeat,
 														   gl::sampler_address_mode::repeat,

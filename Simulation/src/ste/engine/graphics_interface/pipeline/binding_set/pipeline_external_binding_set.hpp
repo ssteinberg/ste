@@ -260,9 +260,11 @@ public:
 	*	@brief	Binds the binding set collection
 	*/
 	auto cmd_bind(VkPipelineBindPoint bind_point,
-				  const vk::vk_pipeline_layout<> *layout) const {
+				  const vk::vk_pipeline_layout<> *layout,
+				  std::uint32_t base_set_index = 0) const {
 		return cmd_bind_t(this,
 						  bind_point,
+						  base_set_index,
 						  layout);
 	}
 
@@ -274,7 +276,7 @@ public:
 	/**
 	 *	@brief	Checks if the binding queue has unwritten resources
 	 */
-	auto has_pending_writes() const { return binding_queue.empty(); }
+	auto has_pending_writes() const { return !binding_queue.empty(); }
 
 	auto set_idx() const { return set_index; }
 	auto& get_set() const { return *set; }

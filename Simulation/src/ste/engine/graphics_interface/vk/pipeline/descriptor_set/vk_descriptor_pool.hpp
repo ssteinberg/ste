@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,8 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
+
 #include <vk_descriptor_set_layout_binding.hpp>
 #include <vk_descriptor_set.hpp>
 #include <vk_descriptor_set_layout.hpp>
@@ -62,7 +64,7 @@ public:
 		create_info.pPoolSizes = set_sizes.data();
 
 		VkDescriptorPool pool;
-		vk_result res = vkCreateDescriptorPool(device, &create_info, &host_allocator::allocation_callbacks(), &pool);
+		const vk_result res = vkCreateDescriptorPool(device, &create_info, &host_allocator::allocation_callbacks(), &pool);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -108,18 +110,28 @@ public:
 
 		lib::vector<VkDescriptorSet> sets;
 		sets.resize(create_info.descriptorSetCount);
-		vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, sets.data());
+		const vk_result res = vkAllocateDescriptorSets(device.get(), &create_info, sets.data());
 		if (!res) {
 			throw vk_exception(res);
 		}
 
 		lib::vector<vk_descriptor_set<host_allocator>> descriptor_sets;
 		descriptor_sets.reserve(sets.size());
-		for (auto &s : sets)
+		for (int i=0; i<set_layouts.size(); ++i) {
+			auto s = sets[i];
+			const auto &l = *set_layouts[i];
+
+			// Set object debug marker
+			vk_debug_marker_set_object_name(device.get(),
+											s,
+											VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT,
+											l.get_name());
+
 			descriptor_sets.emplace_back(vk_descriptor_set<host_allocator>(device,
 																		   s,
 																		   *this,
 																		   allows_freeing_individual_sets()));
+		}
 
 		return descriptor_sets;
 	}

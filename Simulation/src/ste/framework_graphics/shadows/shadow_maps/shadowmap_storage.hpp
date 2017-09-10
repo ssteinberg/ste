@@ -37,7 +37,7 @@ private:
 	mutable signal<> storage_modified_signal;
 
 private:
-	static auto create_shadow_fb_layout(const ste_context &ctx) {
+	static auto create_shadow_fb_layout() {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
 																			 gl::image_layout::depth_stencil_attachment_optimal);
@@ -56,20 +56,29 @@ public:
 							   resource::surface_factory::image_empty_cubemap<gl::format::d32_sfloat>(ctx,
 																									  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																									  gl::image_layout::shader_read_only_optimal,
+																									  "shadow_depth_cube_maps",
 																									  cube_size,
 																									  static_cast<std::uint32_t>(max_active_lights_per_frame))),
 		directional_shadow_maps(ctx,
 								resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
 																								  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																								  gl::image_layout::shader_read_only_optimal,
+																								  "directional_shadow_maps",
 																								  { directional_map_size, directional_map_size },
 																								  static_cast<std::uint32_t>(max_active_directional_lights_per_frame * directional_light_cascades))),
 		shadow_depth_sampler(ctx.device(),
+							 "shadow_depth_sampler",
 							 gl::sampler_parameter::filtering(gl::sampler_filter::linear, gl::sampler_filter::linear, gl::sampler_mipmap_mode::linear),
 							 gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_edge, gl::sampler_address_mode::clamp_to_edge),
 							 gl::sampler_parameter::depth_compare(gl::compare_op::greater)),
-		shadow_depth_cube_map_fbo(ctx, create_shadow_fb_layout(ctx), glm::uvec2{ cube_size, cube_size }),
-		directional_shadow_maps_fbo(ctx, create_shadow_fb_layout(ctx), glm::uvec2{ directional_map_size, directional_map_size })
+		shadow_depth_cube_map_fbo(ctx, 
+								  "shadow_depth_cube_map_fbo",
+								  create_shadow_fb_layout(), 
+								  glm::uvec2{ cube_size, cube_size }),
+		directional_shadow_maps_fbo(ctx,
+									"directional_shadow_maps_fbo",
+									create_shadow_fb_layout(), 
+									glm::uvec2{ directional_map_size, directional_map_size })
 	{
 		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
 		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);
@@ -83,6 +92,7 @@ public:
 																								resource::surface_factory::image_empty_cubemap<gl::format::d32_sfloat>(ctx.get(),
 																																									   gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																																									   gl::image_layout::shader_read_only_optimal,
+																																									   "shadow_depth_cube_maps",
 																																									   cube_size,
 																																									   size));
 		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
@@ -96,6 +106,7 @@ public:
 																							resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx.get(),
 																																							  gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
 																																							  gl::image_layout::shader_read_only_optimal,
+																																							  "directional_shadow_maps",
 																																							  { directional_map_size, directional_map_size },
 																																							  size * directional_light_cascades));
 		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);;
@@ -104,10 +115,10 @@ public:
 	}
 	auto get_directional_maps_count() const { return directional_shadow_maps->get_image().get_layers() / directional_light_cascades; }
 
-	auto& get_cube_fbo() const { return shadow_depth_cube_map_fbo; }
+	auto& get_cube_fbo() { return shadow_depth_cube_map_fbo; }
 	auto& get_cubemaps() const { return *shadow_depth_cube_maps; }
 
-	auto& get_directional_maps_fbo() const { return directional_shadow_maps_fbo; }
+	auto& get_directional_maps_fbo() { return directional_shadow_maps_fbo; }
 	auto& get_directional_maps() const { return *directional_shadow_maps; }
 
 	auto& get_shadow_sampler() const { return shadow_depth_sampler; }

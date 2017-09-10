@@ -48,7 +48,8 @@ void copy_data_buffer(const ste_context &ctx,
 	// Staging buffer
 	staging_buffer_t staging_buffer(ctx,
 									copy_count,
-									buffer_usage::transfer_src);
+									buffer_usage::transfer_src,
+									"copy_data_buffer staging buffer");
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
@@ -103,7 +104,8 @@ void copy_data_buffer_and_resize(const ste_context &ctx,
 	// Staging buffer
 	staging_buffer_t staging_buffer(ctx,
 									copy_count,
-									buffer_usage::transfer_src);
+									buffer_usage::transfer_src,
+									"copy_data_buffer staging buffer");
 	{
 		// Copy to staging
 		auto ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);

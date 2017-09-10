@@ -58,7 +58,6 @@ private:
 														gl::device_pipeline_shader_stage &,
 														gl::device_pipeline_shader_stage &);
 	void bind_pipeline_resources(std::uint32_t);
-	void recreate_pipeline();
 	bool update_glyphs(gl::command_recorder &recorder);
 
 public:
