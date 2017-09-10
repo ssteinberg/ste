@@ -13,8 +13,8 @@
 namespace ste {
 namespace graphics {
 
-class scene_geo_cull_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class scene_geo_cull_fragment : public gl::fragment_compute<scene_geo_cull_fragment> {
+	using Base = gl::fragment_compute<scene_geo_cull_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -55,7 +55,7 @@ public:
 
 	scene_geo_cull_fragment(scene_geo_cull_fragment&&) = default;
 
-	static const lib::string& name() { return "geo_cull"; }
+	static lib::string name() { return "geo_cull"; }
 
 	void record(gl::command_recorder &recorder) override final {
 		commit_idbs(recorder);

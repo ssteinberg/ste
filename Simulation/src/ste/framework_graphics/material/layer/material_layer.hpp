@@ -66,6 +66,7 @@ private:
 																							  std::move(surface),
 																							  gl::image_usage::sampled,
 																							  gl::image_layout::shader_read_only_optimal,
+																							  "material_layer scalar_map",
 																							  false);
 		return gl::texture<gl::image_type::image_2d>(std::move(image).get());
 	}

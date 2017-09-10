@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <ste_resource_pool_traits.hpp>
 
@@ -21,23 +22,33 @@ namespace gl {
 namespace vk {
 
 template <typename host_allocator = vk_host_allocator<>>
-class vk_event : public allow_type_decay<vk_event<host_allocator>, VkEvent>, public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &> {
+class vk_event : 
+	public allow_type_decay<vk_event<host_allocator>, VkEvent>, 
+	public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, const char*> 
+{
 private:
 	optional<VkEvent> event;
 	alias<const vk_logical_device<host_allocator>> device;
 
 public:
-	vk_event(const vk_logical_device<host_allocator> &device) : device(device) {
+	vk_event(const vk_logical_device<host_allocator> &device,
+			 const char *name) : device(device) {
 		VkEventCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 
 		VkEvent event;
-		vk_result res = vkCreateEvent(device, &create_info, &host_allocator::allocation_callbacks(), &event);
+		const vk_result res = vkCreateEvent(device, &create_info, &host_allocator::allocation_callbacks(), &event);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										event,
+										VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT,
+										name);
 
 		this->event = event;
 	}
@@ -68,7 +79,7 @@ public:
 	*	@brief	Returns true if event is signaled
 	*/
 	bool is_signaled() const {
-		vk_result res = vkGetEventStatus(device.get(), *this);
+		const vk_result res = vkGetEventStatus(device.get(), *this);
 		if (res != VK_EVENT_SET &&
 			res != VK_EVENT_RESET) {
 			// Returned error. Throw...
@@ -80,7 +91,7 @@ public:
 	*	@brief	Sets the event, setting its status to signaled
 	*/
 	void set() const {
-		vk_result res = vkSetEvent(device.get(), *this);
+		const vk_result res = vkSetEvent(device.get(), *this);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -89,7 +100,7 @@ public:
 	*	@brief	Resets the event, setting its status to unsignaled
 	*/
 	void reset() override {
-		vk_result res = vkResetEvent(device.get(), *this);
+		const vk_result res = vkResetEvent(device.get(), *this);
 		if (!res) {
 			throw vk_exception(res);
 		}

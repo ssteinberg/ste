@@ -49,7 +49,8 @@ public:
 		photo(resource::surface_factory::image_from_surface_2d<gl::format::r8g8b8a8_unorm>(rs.get_creating_context(),
 																						   resource::surface_convert::convert_2d<gl::format::r8g8b8a8_srgb>(resource::surface_io::load_surface_2d("Data/loading.jpeg", true)),
 																						   gl::image_usage::sampled,
-																						   gl::image_layout::shader_read_only_optimal))
+																						   gl::image_layout::shader_read_only_optimal,
+																						   "loading_background_photo"))
 	{
 		pipeline()["sam"] = gl::bind(gl::pipeline::combined_image_sampler(photo,
 																		  rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
@@ -57,7 +58,7 @@ public:
 		draw_task.attach_pipeline(pipeline());
 	}
 
-	static const lib::string& name() { return "loading_photo_fragment"; }
+	static lib::string name() { return "loading_photo_fragment"; }
 
 	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline().attach_framebuffer(fb);
@@ -103,6 +104,7 @@ private:
 		lib::vector<gl::framebuffer> v;
 		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
 			gl::framebuffer fb(get_creating_context(),
+							   "swap_chain_clear_framebuffer",
 							   create_fb_clear_layout(get_creating_context()),
 							   surface_extent);
 			fb[0] = gl::framebuffer_attachment(swap_image.view, glm::vec4(.0f));
@@ -252,7 +254,8 @@ auto create_light_mesh(const ste_context &ctx,
 	auto tex = scene->properties().material_textures_storage().allocate_texture(resource::surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
 																																					   std::move(light_color_tex),
 																																					   gl::image_usage::sampled,
-																																					   gl::image_layout::shader_read_only_optimal));
+																																					   gl::image_layout::shader_read_only_optimal,
+																																					   "light mesh color texture"));
 
 	mat->set_texture(tex);
 	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
@@ -451,6 +454,7 @@ int main()
 	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
+	device_params.allow_markers = gl_params.debug_context.get();			// Allow debug markers if we have a debug context
 
 	ste_context::gl_device_t device(device_params,
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),

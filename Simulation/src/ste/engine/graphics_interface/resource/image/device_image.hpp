@@ -60,8 +60,10 @@ public:
 				 const image_usage &usage,
 				 std::uint32_t mips,
 				 std::uint32_t layers,
+				 const char *name,
 				 device_image_flags flags = device_image_flags::none)
 		: Base(ctx,
+			   name,
 			   layout,
 			   static_cast<VkFormat>(image_format),
 			   dimensions,

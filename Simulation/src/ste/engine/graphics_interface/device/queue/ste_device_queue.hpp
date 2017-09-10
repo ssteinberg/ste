@@ -211,9 +211,13 @@ public:
 					 std::uint32_t device_family_index,
 					 ste_queue_descriptor descriptor,
 					 queue_index_t queue_index,
-					 ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool)
+					 ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool,
+					 const char *name)
 		: queue_index(queue_index),
-		queue(device, descriptor.family, device_family_index),
+		queue(device, 
+			  descriptor.family, 
+			  device_family_index,
+			  name),
 		descriptor(descriptor),
 		shared_fence_pool(shared_fence_pool),
 		pool(device, descriptor),

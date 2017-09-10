@@ -15,8 +15,8 @@
 namespace ste {
 namespace graphics {
 
-class hdr_compute_histogram_sums_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class hdr_compute_histogram_sums_fragment : public gl::fragment_compute<hdr_compute_histogram_sums_fragment> {
+	using Base = gl::fragment_compute<hdr_compute_histogram_sums_fragment>;
 
 	gl::task<gl::cmd_dispatch> dispatch_task;
 
@@ -42,7 +42,7 @@ public:
 		pipeline()["hdr_lum_resolution_t.hdr_lum_resolution"] = (extent.x / 32) * (extent.y / 32);
 	}
 
-	static const lib::string& name() { return "hdr_compute_histogram_sums"; }
+	static lib::string name() { return "hdr_compute_histogram_sums"; }
 
 	void record(gl::command_recorder &recorder) override final {
 		recorder << dispatch_task(1, 1, 1);

@@ -30,7 +30,7 @@ public:
 	fxaa_postprocess(const gl::rendering_system &rs,
 					  gl::framebuffer_layout &&fb_layout);
 
-	static const lib::string& name() { return "fxaa"; }
+	static lib::string name() { return "fxaa"; }
 
 	/**
 	*	@brief	Sets the input image.

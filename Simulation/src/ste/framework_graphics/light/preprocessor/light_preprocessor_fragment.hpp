@@ -13,8 +13,8 @@
 namespace ste {
 namespace graphics {
 
-class light_preprocessor_fragment : public gl::fragment_compute {
-	using Base = fragment_compute;
+class light_preprocessor_fragment : public gl::fragment_compute<light_preprocessor_fragment> {
+	using Base = fragment_compute<light_preprocessor_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -36,7 +36,7 @@ public:
 
 	light_preprocessor_fragment(light_preprocessor_fragment&&) = default;
 
-	static const lib::string& name() { return "cull_lights"; }
+	static lib::string name() { return "cull_lights"; }
 
 	/**
 	 *	@brief	Updates the fragment's projection planes uniform buffer. 

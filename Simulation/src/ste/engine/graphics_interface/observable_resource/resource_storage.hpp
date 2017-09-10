@@ -119,8 +119,11 @@ protected:
 
 public:
 	resource_storage(const ste_context &ctx,
-					 const buffer_usage &usage)
-		: store(ctx, usage)
+					 const buffer_usage &usage,
+					 const char *name)
+		: store(ctx, 
+				usage, 
+				name)
 	{}
 	virtual ~resource_storage() noexcept {
 		std::unique_lock<std::mutex> l(Base::objects_mutex);

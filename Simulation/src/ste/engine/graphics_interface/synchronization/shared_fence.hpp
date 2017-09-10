@@ -18,7 +18,7 @@ namespace ste {
 namespace gl {
 
 template <typename R>
-class shared_fence : public ste_resource_pool_resetable_trait<const vk::vk_logical_device<> &> {
+class shared_fence : public ste_resource_pool_resetable_trait<const vk::vk_logical_device<> &, const char*> {
 private:
 	vk::vk_fence<> f;
 	std::promise<R> promise;
@@ -33,8 +33,12 @@ public:
 	/**
 	*	@brief	Construct a fence object in unsignaled state
 	*/
-	shared_fence(const vk::vk_logical_device<> &device)
-		: f(device, false), future(promise.get_future().share())
+	shared_fence(const vk::vk_logical_device<> &device,
+				 const char *name)
+		: f(device, 
+			name,
+			false), 
+		future(promise.get_future().share())
 	{}
 	/**
 	*	@brief	Construct a fence object in signaled state holding value 'val'
@@ -42,9 +46,14 @@ public:
 	*	@param	val		Initial value of fence
 	*/
 	template <typename T, typename S = R>
-	shared_fence(const vk::vk_logical_device<> &device, T &&val,
+	shared_fence(const vk::vk_logical_device<> &device,
+				 T &&val,
+				 const char *name,
 				 typename std::enable_if<!std::is_void<S>::value>::type* = nullptr)
-		: f(device, true), future(promise.get_future().share())
+		: f(device,
+			name,
+			true), 
+		future(promise.get_future().share())
 	{
 		promise.set_value(std::forward<T>(val));
 	}
@@ -54,9 +63,14 @@ public:
 	*	@param	signaled	Initial state of the fence
 	*/
 	template <typename S = R>
-	shared_fence(const vk::vk_logical_device<> &device, bool signaled,
+	shared_fence(const vk::vk_logical_device<> &device, 
+				 bool signaled,
+				 const char *name,
 				 typename std::enable_if<std::is_void<S>::value>::type* = nullptr)
-		: f(device, signaled), future(promise.get_future().share())
+		: f(device, 
+			name,
+			signaled), 
+		future(promise.get_future().share())
 	{
 		if (signaled)
 			promise.set_value();

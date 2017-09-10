@@ -36,6 +36,8 @@ struct ste_gl_device_creation_parameters {
 
 	optional<std::uint32_t> simultaneous_presentation_frames;
 	optional<ste_presentation_device_vsync> vsync;
+
+	bool allow_markers{ false };
 };
 
 }

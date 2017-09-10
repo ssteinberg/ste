@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vk_logical_device.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <vk_host_allocator.hpp>
 #include <optional.hpp>
@@ -45,7 +46,9 @@ public:
 	using spec_map = lib::flat_map<std::uint32_t, lib::string>;
 
 public:
-	vk_shader(const vk_logical_device<host_allocator> &device, const lib::string &code) : device(device) {
+	vk_shader(const vk_logical_device<host_allocator> &device, 
+			  const lib::string &code,
+			  const char *name) : device(device) {
 		VkShaderModuleCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		create_info.pNext = nullptr;
@@ -54,10 +57,16 @@ public:
 		create_info.pCode = reinterpret_cast<const std::uint32_t*>(code.data());
 
 		VkShaderModule shader_module;
-		vk_result res = vkCreateShaderModule(device, &create_info, &host_allocator::allocation_callbacks(), &shader_module);
+		const vk_result res = vkCreateShaderModule(device, &create_info, &host_allocator::allocation_callbacks(), &shader_module);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										shader_module,
+										VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT,
+										name);
 
 		this->module = shader_module;
 	}
@@ -102,7 +111,7 @@ public:
 			stage_info.entries.reserve(specializations.size());
 
 			for (auto &s : specializations) {
-				auto entry = VkSpecializationMapEntry{ 
+				const auto entry = VkSpecializationMapEntry{ 
 					s.first, 
 					static_cast<std::uint32_t>(stage_info.all_data.size()),
 					s.second.size()

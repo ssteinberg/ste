@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_handle.hpp>
+#include <vk_ext_debug_marker.hpp>
 
 #include <vk_logical_device.hpp>
 #include <ste_queue_family.hpp>
@@ -34,7 +35,10 @@ private:
 	ste_queue_family queue_family;
 
 public:
-	vk_queue(const vk_logical_device<host_allocator> &device, const ste_queue_family &queue_family, std::uint32_t queue_index)
+	vk_queue(const vk_logical_device<host_allocator> &device, 
+			 const ste_queue_family &queue_family, 
+			 std::uint32_t queue_index,
+			 const char *name)
 		: queue_family(queue_family)
 	{
 		VkQueue q;
@@ -42,6 +46,12 @@ public:
 						 static_cast<std::uint32_t>(queue_family),
 						 queue_index,
 						 &q);
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										q,
+										VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT,
+										name);
 
 		this->queue = q;
 	}

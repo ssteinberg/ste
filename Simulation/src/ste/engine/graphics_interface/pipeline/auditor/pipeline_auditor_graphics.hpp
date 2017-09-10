@@ -124,26 +124,32 @@ public:
 	*	@param	ctx				Context
 	*	@param	external_binding_set	A list of binding set layouts that are assumed to be created and bound by an external system.
 	*									The pipeline will only check compatibility with the provided shader stages.
+	*	@param	name			Pipeline name debug marker
 	*/
 	auto pipeline(const ste_context &ctx,
-				  optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set) const {
+				  optional<std::reference_wrapper<const pipeline_external_binding_set>> external_binding_set,
+				  const char *name) const {
 		auto layout = lib::allocate_unique<pipeline_layout>(ctx,
 															stages(),
-															external_binding_set);
+															external_binding_set,
+															name);
 		return device_pipeline_graphics(device_pipeline_graphics::ctor(),
 										ctx,
 										pipeline_settings,
 										vertex_input_descriptors.get_vk_descriptors(),
 										fb_layout,
 										std::move(layout),
-										external_binding_set);
+										external_binding_set,
+										name);
 	}
 	/**
 	*	@brief	See pipeline().
 	*/
-	auto pipeline(const ste_context &ctx) const {
+	auto pipeline(const ste_context &ctx,
+				  const char *name) const {
 		return pipeline(ctx,
-						none);
+						none,
+						name);
 	}
 
 private:

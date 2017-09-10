@@ -40,7 +40,8 @@ private:
 
 public:
 	external_binding_set_collection_from_shader_stages(const ste_device &device,
-													   shader_stages_input_vector_t &&shader_stages) : device(device)
+													   shader_stages_input_vector_t &&shader_stages,
+													   const char *binding_set_name) : device(device)
 	{
 		if (!shader_stages.size()) {
 			throw pipeline_layout_exception("No shader stages provided");
@@ -51,7 +52,7 @@ public:
 		for (auto &&stage_shader : shader_stages) {
 			// Extract bindings out of shader object
 			auto shader_object = std::move(stage_shader.second).shader_object();
-			auto stages = std::move(stage_shader.first);
+			const auto stages = std::move(stage_shader.first);
 
 			for (auto &&binding : shader_object->stage_bindings) {
 				auto &name = binding.variable->name();
@@ -110,7 +111,8 @@ public:
 		// Create the external binding set layout
 		layout.emplace(device.get(), 
 					   std::move(binding_layouts),
-					   set_idx.get());
+					   set_idx.get(),
+					   binding_set_name);
 	}
 
 	auto generate() && {

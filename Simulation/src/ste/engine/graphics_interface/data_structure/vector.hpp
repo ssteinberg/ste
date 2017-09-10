@@ -66,15 +66,18 @@ private:
 
 public:
 	vector(const ste_context &ctx,
-		   const buffer_usage &usage)
+		   const buffer_usage &usage,
+		   const char *name)
 		: buffer(ctx,
 				 max_sparse_size,
-				 usage | buffer_usage_additional_flags)
+				 usage | buffer_usage_additional_flags,
+				 name)
 	{}
 	vector(const ste_context &ctx,
 		   const lib::vector<T> &initial_data,
-		   const buffer_usage &usage)
-		: vector(ctx, usage)
+		   const buffer_usage &usage,
+		   const char *name)
+		: vector(ctx, usage, name)
 	{
 		host_replica = initial_data;
 
@@ -87,8 +90,9 @@ public:
 	template <std::size_t N>
 	vector(const ste_context &ctx,
 		   const std::array<T, N> &initial_data,
-		   const buffer_usage &usage)
-		: vector(ctx, usage)
+		   const buffer_usage &usage,
+		   const char *name)
+		: vector(ctx, usage, name)
 	{
 		host_replica = lib::vector<T>(initial_data.begin(),
 									  initial_data.end());

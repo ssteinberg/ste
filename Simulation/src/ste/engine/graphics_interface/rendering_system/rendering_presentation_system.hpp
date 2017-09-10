@@ -43,7 +43,8 @@ private:
 		lib::vector<framebuffer> v;
 		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
 			auto l = fb_layout;
-			framebuffer fb(get_creating_context(), 
+			framebuffer fb(get_creating_context(),
+						   "swapchain framebuffer",
 						   std::move(l),
 						   surface_extent,
 						   depth);

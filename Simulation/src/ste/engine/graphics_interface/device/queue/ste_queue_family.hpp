@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <lib/string.hpp>
 
 namespace ste {
 namespace gl {

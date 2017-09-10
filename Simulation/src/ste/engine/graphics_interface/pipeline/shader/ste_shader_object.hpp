@@ -27,11 +27,13 @@ struct ste_shader_object {
 	ste_shader_object() = delete;
 	ste_shader_object(const vk::vk_logical_device<> &device,
 					  const lib::string &shader_code,
+					  const char *name,
 					  const ste_shader_program_stage &stage,
 					  lib::vector<ste_shader_stage_binding> &&stage_bindings,
 					  lib::vector<ste_shader_stage_attachment> &&stage_attachments = {})
 		: shader(device,
-				 shader_code),
+				 shader_code,
+				 name),
 		stage(stage),
 		stage_bindings(std::move(stage_bindings)),
 		stage_attachments(std::move(stage_attachments))

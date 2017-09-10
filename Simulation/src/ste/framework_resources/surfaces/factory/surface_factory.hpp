@@ -24,6 +24,8 @@
 #include <device_image_format_properties.hpp>
 #include <device_image_capabilities_query.hpp>
 
+#include <lib/string.hpp>
+
 namespace ste {
 namespace resource {
 
@@ -35,6 +37,7 @@ private:
 	// Create an image object, fills it with data from input surface and generates mipmap.
 	template <int dimensions, gl::format image_format, typename Surface>
 	static auto _image_from_surface_fill_internal(const ste_context& ctx,
+												  const lib::string &name,
 	                                              Surface&& source,
 	                                              const gl::image_usage& usage,
 	                                              const gl::image_layout& layout,
@@ -80,7 +83,7 @@ private:
 			image(ctx, gl::image_initial_layout::unused,
 			      image_format, extent, gl::image_usage::transfer_dst | gl::image_usage::transfer_src | usage,
 			      mip_levels, layers,
-				  flags);
+				  name.data(), flags);
 
 		// Copy surface to image
 		gl::fill_image(image,
@@ -102,6 +105,7 @@ private:
 	// Create a ste_resource<device_image> object with deferred creation, which loads surface from path and creates the image.
 	template <gl::format image_format, class resource_deferred_policy>
 	static auto _image_from_surface_2d_from_file_async_internal(const ste_context& ctx,
+																const lib::string &name,
 	                                                            const std::experimental::filesystem::path& path,
 	                                                            const gl::image_usage& usage,
 	                                                            const gl::image_layout& layout,
@@ -115,8 +119,8 @@ private:
 		{
 			auto surface = surface_io::load_surface_2d(path, srgb);
 			return _image_from_surface_fill_internal<2, image_format>(ctx,
-			                                                          surface_convert::convert_2d<image_format>(
-				                                                          std::move(surface)),
+																	  name,
+			                                                          surface_convert::convert_2d<image_format>(std::move(surface)),
 			                                                          usage,
 			                                                          layout,
 			                                                          generate_mipmaps);
@@ -131,6 +135,7 @@ private:
 		typename Surface
 	>
 	static auto _image_from_surface_async_internal(const ste_context& ctx,
+												   const lib::string &name,
 	                                               Surface&& surface,
 	                                               const gl::image_usage& usage,
 	                                               const gl::image_layout& layout,
@@ -142,6 +147,7 @@ private:
 			[=, &ctx, surface = std::move(surface)]() mutable
 		{
 			return _image_from_surface_fill_internal<dimensions, image_format>(ctx,
+																			   name,
 			                                                                   std::move(surface),
 			                                                                   usage,
 			                                                                   layout,
@@ -156,6 +162,7 @@ private:
 		class resource_deferred_policy
 	>
 	static auto _image_empty_async_internal(const ste_context& ctx,
+											const lib::string &name,
 	                                        const gl::image_usage& usage,
 	                                        const gl::image_layout& layout,
 	                                        const gl::image_extent_type_t<dimensions>& extent,
@@ -199,7 +206,7 @@ private:
 				ctx, gl::image_initial_layout::unused,
 				image_format, extent, usage,
 				levels, layers, 
-				flags);
+				name.data(), flags);
 
 			// Transfer to primary queue and desired layout
 			gl::access_flags access = gl::access_flags_for_image_layout(layout);
@@ -226,6 +233,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -234,8 +242,10 @@ public:
 	                                  resource::surface_1d<surface_format>&& surface,
 	                                  const gl::image_usage& usage,
 	                                  const gl::image_layout& layout,
+									  const lib::string &name,
 	                                  bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<1, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -250,6 +260,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -258,8 +269,10 @@ public:
 	                                  resource::surface_2d<surface_format>&& surface,
 	                                  const gl::image_usage& usage,
 	                                  const gl::image_layout& layout,
+									  const lib::string &name,
 	                                  bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -274,6 +287,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -282,8 +296,10 @@ public:
 	                                  resource::surface_3d<surface_format>&& surface,
 	                                  const gl::image_usage& usage,
 	                                  const gl::image_layout& layout,
+									  const lib::string &name,
 	                                  bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<3, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -298,6 +314,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -306,8 +323,10 @@ public:
 	                                    resource::surface_cubemap<surface_format>&& surface,
 	                                    const gl::image_usage& usage,
 	                                    const gl::image_layout& layout,
+										const lib::string &name,
 	                                    bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -322,6 +341,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -330,8 +350,10 @@ public:
 	                                        resource::surface_1d_array<surface_format>&& surface,
 	                                        const gl::image_usage& usage,
 	                                        const gl::image_layout& layout,
+											const lib::string &name,
 	                                        bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<1, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -346,6 +368,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -354,8 +377,10 @@ public:
 	                                        resource::surface_2d_array<surface_format>&& surface,
 	                                        const gl::image_usage& usage,
 	                                        const gl::image_layout& layout,
+											const lib::string &name,
 	                                        bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -370,6 +395,7 @@ public:
 	*	@param	surface		Surface to load from
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, gl::format surface_format, class resource_deferred_policy =
@@ -378,8 +404,10 @@ public:
 	                                          resource::surface_cubemap_array<surface_format>&& surface,
 	                                          const gl::image_usage& usage,
 	                                          const gl::image_layout& layout,
+											  const lib::string &name,
 	                                          bool generate_mipmaps = true) {
 		return _image_from_surface_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																							 name,
 		                                                                                     std::move(surface),
 		                                                                                     usage,
 		                                                                                     layout,
@@ -394,6 +422,7 @@ public:
 	*	@param	path			Path to surface
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	*/
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<
@@ -402,8 +431,10 @@ public:
 	                                  const std::experimental::filesystem::path& path,
 	                                  const gl::image_usage& usage,
 	                                  const gl::image_layout& layout,
+									  const lib::string &name,
 	                                  bool generate_mipmaps = true) {
 		return _image_from_surface_2d_from_file_async_internal<image_format, resource_deferred_policy>(ctx,
+																									   name,
 		                                                                                               path,
 		                                                                                               usage,
 		                                                                                               layout,
@@ -420,6 +451,7 @@ public:
 	 *	@param	path			Path to surface
 	 *	@param	usage		Image usage flags
 	 *	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	 *	@param	generate_mipmaps	If set to true, will generate mipmaps for the remainder of the mipmap tail.
 	 */
 	template <gl::format image_format, class resource_deferred_policy = ste_resource_deferred_creation_policy_async<
@@ -428,8 +460,10 @@ public:
 	                                       const std::experimental::filesystem::path& path,
 	                                       const gl::image_usage& usage,
 	                                       const gl::image_layout& layout,
+										   const lib::string &name,
 	                                       bool generate_mipmaps = true) {
 		return _image_from_surface_2d_from_file_async_internal<image_format, resource_deferred_policy>(ctx,
+																									   name,
 		                                                                                               path,
 		                                                                                               usage,
 		                                                                                               layout,
@@ -445,6 +479,7 @@ public:
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	extent		Image extent
 	*	@param	layers		Image layers
 	*	@param	levels		Image mipmap levels
@@ -454,10 +489,12 @@ public:
 	static auto image_empty_1d(const ste_context& ctx,
 	                           const gl::image_usage& usage,
 	                           const gl::image_layout& layout,
+							   const lib::string &name,
 	                           const gl::image_extent_type_t<1>& extent,
 	                           std::uint32_t layers = 1,
 	                           std::uint32_t levels = 1) {
 		return _image_empty_async_internal<1, image_format, resource_deferred_policy>(ctx,
+																					  name,
 		                                                                              usage,
 		                                                                              layout,
 		                                                                              extent,
@@ -474,6 +511,7 @@ public:
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	extent		Image extent
 	*	@param	layers		Image layers
 	*	@param	levels		Image mipmap levels
@@ -483,10 +521,12 @@ public:
 		static auto image_empty_2d(const ste_context& ctx,
 								   const gl::image_usage& usage,
 								   const gl::image_layout& layout,
+								   const lib::string &name,
 								   const gl::image_extent_type_t<2>& extent,
 								   std::uint32_t layers = 1,
 								   std::uint32_t levels = 1) {
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																					  name,
 																					  usage,
 																					  layout,
 																					  extent,
@@ -503,6 +543,7 @@ public:
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	extent		Image extent for both x and y dimensions
 	*	@param	cubemap_layers	Cubemap layers. The returned image will have cubemap_layers*6 total layers.
 	*	@param	levels		Image mipmap levels
@@ -512,11 +553,13 @@ public:
 		static auto image_empty_cubemap(const ste_context& ctx,
 										const gl::image_usage& usage,
 										const gl::image_layout& layout,
+										const lib::string &name,
 										std::uint32_t extent,
 										std::uint32_t cubemap_layers,
 										std::uint32_t levels = 1) {
 		const auto layers = cubemap_layers * 6;
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
+																					  name,
 																					  usage,
 																					  layout,
 																					  { extent, extent },
@@ -533,6 +576,7 @@ public:
 	*	@param	ctx			Context
 	*	@param	usage		Image usage flags
 	*	@param	layout		Image layout. This is the layout the image will be transformed to at the end of the loading process.
+	*	@param	name		Image debug marker
 	*	@param	extent		Image extent
 	*	@param	layers		Image layers
 	*	@param	levels		Image mipmap levels
@@ -542,10 +586,12 @@ public:
 	static auto image_empty_3d(const ste_context& ctx,
 	                           const gl::image_usage& usage,
 	                           const gl::image_layout& layout,
+							   const lib::string &name,
 	                           const gl::image_extent_type_t<3>& extent,
 	                           std::uint32_t layers = 1,
 	                           std::uint32_t levels = 1) {
 		return _image_empty_async_internal<3, image_format, resource_deferred_policy>(ctx,
+																					  name,
 		                                                                              usage,
 		                                                                              layout,
 		                                                                              extent,

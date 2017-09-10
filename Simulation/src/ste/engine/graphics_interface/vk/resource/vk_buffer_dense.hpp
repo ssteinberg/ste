@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -30,29 +30,34 @@ private:
 	std::uint64_t count;
 
 protected:
-	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
-		vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
+	void bind_resource_underlying_memory(const vk_device_memory<host_allocator>& memory, std::uint64_t offset) override {
+		const vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
 		}
 	}
 
 public:
-	vk_buffer_dense(const vk_logical_device<host_allocator> &device,
-					std::uint32_t element_size,
-					std::uint64_t count,
-					const VkBufferUsageFlags &usage)
-		: Base(device, count * element_size, usage, false),
-		vk_resource(),
-		element_size(element_size),
-		count(count)
-	{}
+	vk_buffer_dense(const vk_logical_device<host_allocator>& device,
+	                std::uint32_t element_size,
+	                std::uint64_t count,
+	                const VkBufferUsageFlags& usage,
+	                const char* name)
+		: Base(device,
+		       count * element_size,
+		       usage,
+		       false,
+		       name),
+		  vk_resource(),
+		  element_size(element_size),
+		  count(count) {}
+
 	~vk_buffer_dense() noexcept {}
 
-	vk_buffer_dense(vk_buffer_dense &&) = default;
-	vk_buffer_dense& operator=(vk_buffer_dense &&) = default;
-	vk_buffer_dense(const vk_buffer_dense &) = delete;
-	vk_buffer_dense& operator=(const vk_buffer_dense &) = delete;
+	vk_buffer_dense(vk_buffer_dense&&) = default;
+	vk_buffer_dense& operator=(vk_buffer_dense&&) = default;
+	vk_buffer_dense(const vk_buffer_dense&) = delete;
+	vk_buffer_dense& operator=(const vk_buffer_dense&) = delete;
 
 	VkMemoryRequirements get_memory_requirements() const override {
 		VkMemoryRequirements req;

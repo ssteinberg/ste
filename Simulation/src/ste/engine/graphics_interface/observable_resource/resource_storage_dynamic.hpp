@@ -73,8 +73,11 @@ private:
 
 public:
 	resource_storage_dynamic(const ste_context &ctx,
-							 const buffer_usage &usage)
-		: Base(ctx, usage)
+							 const buffer_usage &usage,
+							 const char *name)
+		: Base(ctx, 
+			   usage,
+			   name)
 	{}
 	virtual ~resource_storage_dynamic() {}
 };

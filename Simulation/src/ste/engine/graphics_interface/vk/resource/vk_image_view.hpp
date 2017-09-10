@@ -72,7 +72,7 @@ protected:
 		create_info.components = swizzle;
 		create_info.subresourceRange = range;
 
-		vk_result res = vkCreateImageView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
+		const vk_result res = vkCreateImageView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
 		if (!res) {
 			throw vk_exception(res);
 		}

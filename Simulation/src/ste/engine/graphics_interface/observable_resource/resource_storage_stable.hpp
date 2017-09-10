@@ -31,7 +31,7 @@ private:
 		return cmd;
 	}
 	lib::unique_ptr<command> deallocate_identifier(std::size_t resource_storage_identifier) override final {
-		int idx = index_of_with_identifier(resource_storage_identifier);
+		const int idx = index_of_with_identifier(resource_storage_identifier);
 		Base::store.tombstone(idx);
 
 		return nullptr;
@@ -39,8 +39,11 @@ private:
 
 public:
 	resource_storage_stable(const ste_context &ctx,
-							const buffer_usage &usage)
-		: Base(ctx, usage)
+							const buffer_usage &usage,
+							const char *name)
+		: Base(ctx, 
+			   usage,
+			   name)
 	{}
 	virtual ~resource_storage_stable() {}
 };

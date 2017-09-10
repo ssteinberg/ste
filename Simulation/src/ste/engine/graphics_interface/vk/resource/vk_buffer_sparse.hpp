@@ -33,8 +33,13 @@ public:
 	vk_buffer_sparse(const vk_logical_device<host_allocator> &device,
 					 std::uint32_t element_size,
 					 std::uint64_t count,
-					 const VkBufferUsageFlags &usage)
-		: Base(device, count * element_size, usage, true),
+					 const VkBufferUsageFlags &usage,
+					 const char *name)
+		: Base(device, 
+			   count * element_size, 
+			   usage, 
+			   true,
+			   name),
 		element_size(element_size),
 		count(count)
 	{}
@@ -115,9 +120,9 @@ public:
 		info.signalSemaphoreCount = static_cast<std::uint32_t>(signal.size());
 		info.pSignalSemaphores = signal.data();
 
-		vk_result res = vkQueueBindSparse(queue,
-										  1, &info,
-										  fence != nullptr ? static_cast<VkFence>(*fence) : vk_null_handle);
+		const vk_result res = vkQueueBindSparse(queue,
+												1, &info,
+												fence != nullptr ? static_cast<VkFence>(*fence) : vk_null_handle);
 		if (!res) {
 			throw vk_exception(res);
 		}

@@ -77,9 +77,11 @@ public:
 	*/
 	template <typename... Params>
 	sampler(const vk::vk_logical_device<> &device,
+			const char *name,
 			Params&& ... params)
 		: s(device,
-			sampler_info(std::forward<Params>(params)...))
+			sampler_info(std::forward<Params>(params)...),
+			name)
 	{}
 	/**
 	*	@brief	Unnormalized sampler ctor.
@@ -88,9 +90,11 @@ public:
 	*	@param unnormalized	Unnomralized sampler parameters
 	*/
 	sampler(const vk::vk_logical_device<> &device,
-			const sampler_parameter::unnormalized &unnormalized)
+			const sampler_parameter::unnormalized &unnormalized,
+			const char *name)
 		: s(device,
-			sampler_info_unnormalized(unnormalized))
+			sampler_info_unnormalized(unnormalized),
+			name)
 	{}
 
 	sampler(sampler&&) = default;

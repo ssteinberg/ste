@@ -71,12 +71,18 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	// Create views and image objects
 	lib::vector<swap_chain_image_t> images;
 	images.reserve(swapchain_vk_image_objects.size());
+	std::uint32_t image_count = 0;
 	for (auto& img : swapchain_vk_image_objects) {
+		// Generate image name
+		auto name = lib::string("swapchain image " + lib::to_string(image_count++));
+
+		// Create image and image view
 		auto image = vk::vk_swapchain_image<>(*presentation_device,
 											  img,
 											  format,
 											  vk::vk_swapchain_image<>::extent_type(size),
-											  layers);
+											  layers,
+											  name.data());
 		auto view = swap_chain_image_view_t(image);
 
 		auto swapchain_image = device_swapchain_image(std::move(image));
@@ -87,9 +93,9 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 	this->swap_chain_images = std::move(images);
 }
 glm::u32vec2 ste_presentation_surface::get_surface_extent() const {
-	glm::u32vec2 extent = { surface_presentation_caps.currentExtent.width, surface_presentation_caps.currentExtent.height };
-	glm::u32vec2 min_extent = { surface_presentation_caps.minImageExtent.width, surface_presentation_caps.minImageExtent.height };
-	glm::u32vec2 max_extent = { surface_presentation_caps.maxImageExtent.width, surface_presentation_caps.maxImageExtent.height };
+	const glm::u32vec2 extent = { surface_presentation_caps.currentExtent.width, surface_presentation_caps.currentExtent.height };
+	const glm::u32vec2 min_extent = { surface_presentation_caps.minImageExtent.width, surface_presentation_caps.minImageExtent.height };
+	const glm::u32vec2 max_extent = { surface_presentation_caps.maxImageExtent.width, surface_presentation_caps.maxImageExtent.height };
 
 	return glm::clamp(extent, min_extent, max_extent);
 }
@@ -213,9 +219,9 @@ void ste_presentation_surface::create_swap_chain() {
 
 	// Swap chain properties
 	auto size = get_surface_extent();
-	std::uint32_t layers = 1;
-	std::uint32_t min_image_count = surface_presentation_caps.minImageCount;
-	std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
+	const std::uint32_t layers = 1;
+	const std::uint32_t min_image_count = surface_presentation_caps.minImageCount;
+	const std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
 		surface_presentation_caps.maxImageCount :
 		std::numeric_limits<std::uint32_t>::max();
 
@@ -248,6 +254,7 @@ void ste_presentation_surface::create_swap_chain() {
 																transform,
 																composite,
 																present_mode,
+																"swapchain",
 																this->swap_chain.get());
 
 	// And acquire the chain's presentation images

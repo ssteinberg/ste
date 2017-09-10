@@ -31,8 +31,12 @@ private:
 
 	public:
 		shadow_projection_data(const ste_context &ctx)
-			: idb(ctx, gl::buffer_usage::storage_buffer),
-			proj_id_to_light_id_translation_table(ctx, gl::buffer_usage::storage_buffer) {}
+			: idb(ctx, 
+				  gl::buffer_usage::storage_buffer,
+				  "shadow_projection_data idb"),
+			proj_id_to_light_id_translation_table(ctx, 
+												  gl::buffer_usage::storage_buffer,
+												  "shadow_projection_data proj_id_to_light_id_translation_table") {}
 
 		object_group_indirect_command_buffer idb;
 		table_buffer_type proj_id_to_light_id_translation_table;
@@ -57,8 +61,13 @@ public:
 	scene(const ste_context &ctx)
 		: objects(ctx),
 		scene_props(ctx),
-		culled_objects_counter(ctx, 1, gl::buffer_usage::storage_buffer),
-		idb(ctx, gl::buffer_usage::storage_buffer),
+		culled_objects_counter(ctx, 
+							   1, 
+							   gl::buffer_usage::storage_buffer,
+							   "culled_objects_counter"),
+		idb(ctx, 
+			gl::buffer_usage::storage_buffer,
+			"indirect draw buffer"),
 		shadow_projection(ctx),
 		directional_shadow_projection(ctx)
 	{}

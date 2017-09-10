@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_buffer.hpp>
+#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
@@ -32,7 +33,8 @@ public:
 	vk_buffer_view(const vk_buffer<host_allocator> &parent,
 				   const VkFormat &format,
 				   std::uint64_t offset_bytes,
-				   std::uint64_t size_bytes)
+				   std::uint64_t size_bytes,
+				   const char *name)
 		: device(parent.get_creating_device()), size_bytes(size_bytes), format(format)
 	{
 		VkBufferView view;
@@ -46,10 +48,17 @@ public:
 		create_info.range = size_bytes;
 		create_info.format = format;
 
-		vk_result res = vkCreateBufferView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
+		const vk_result res = vkCreateBufferView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+
+		// Set object debug marker
+		vk_debug_marker_set_object_name(device,
+										view,
+										VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT,
+										name);
 
 		this->view = view;
 	}

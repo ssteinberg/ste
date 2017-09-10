@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -29,7 +29,7 @@ public:
 	vk_surface(const ste_window &win, const vk_instance<host_allocator> &instance) : instance(&instance) {
 		VkSurfaceKHR surface;
 		auto handle = win.get_window_handle();
-		vk_result res = glfwCreateWindowSurface(instance, handle, &host_allocator::allocation_callbacks(), &surface);
+		const vk_result res = glfwCreateWindowSurface(instance, handle, &host_allocator::allocation_callbacks(), &surface);
 		if (!res) {
 			throw vk_exception(res);
 		}

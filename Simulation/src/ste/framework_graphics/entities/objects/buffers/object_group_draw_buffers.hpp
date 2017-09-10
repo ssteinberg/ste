@@ -21,10 +21,10 @@ private:
 
 public:
 	object_group_draw_buffers(const ste_context& ctx)
-		: mesh_data_bo(ctx, gl::buffer_usage::storage_buffer),
-		  mesh_draw_params_bo(ctx, gl::buffer_usage::storage_buffer),
-		  vbo(ctx, gl::buffer_usage::vertex_buffer),
-		  indices(ctx, gl::buffer_usage::index_buffer) {}
+		: mesh_data_bo(ctx, gl::buffer_usage::storage_buffer, "mesh_data buffer"),
+		  mesh_draw_params_bo(ctx, gl::buffer_usage::storage_buffer, "mesh_draw_params buffer"),
+		  vbo(ctx, gl::buffer_usage::vertex_buffer, "vertex attributes buffer"),
+		  indices(ctx, gl::buffer_usage::index_buffer, "indices buffer") {}
 
 	auto& get_mesh_data_buffer() { return mesh_data_bo; }
 	auto& get_mesh_data_buffer() const { return mesh_data_bo; }
