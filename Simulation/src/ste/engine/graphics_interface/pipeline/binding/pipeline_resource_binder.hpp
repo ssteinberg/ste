@@ -94,8 +94,8 @@ auto bind(const device_buffer<T, a> &buffer,
 *	@param	offset	Buffer offset
 *	@param	range	Buffer range
 */
-template <typename T, std::uint64_t s, class a>
-auto bind(const device_buffer_sparse<T, s, a> &buffer,
+template <typename T, class a>
+auto bind(const device_buffer_sparse<T, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
 	assert(range > 0);
@@ -116,8 +116,8 @@ auto bind(const array<T> &array) {
 *
 *	@param	vec		Vector to bind
 */
-template <typename T, std::uint64_t a, std::uint64_t b>
-auto bind(const vector<T, a, b> &vec) {
+template <typename T, std::uint64_t b>
+auto bind(const vector<T, b> &vec) {
 	return bind(vec.get(),
 				0, vec.sparse_size);
 }
@@ -135,8 +135,8 @@ auto bind(const ring_buffer<T, C> &ring) {
 *
 *	@param	vec		Stable vector to bind
 */
-template <typename T, std::uint64_t a, std::uint64_t b>
-auto bind(const stable_vector<T, a, b> &vec) {
+template <typename T, std::uint64_t b>
+auto bind(const stable_vector<T, b> &vec) {
 	return bind(vec.get(),
 				0, vec.sparse_size);
 }

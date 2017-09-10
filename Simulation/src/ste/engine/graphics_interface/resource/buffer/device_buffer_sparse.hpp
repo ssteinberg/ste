@@ -15,68 +15,55 @@
 #include <vk_queue.hpp>
 #include <host_command.hpp>
 
-#include <optional.hpp>
 #include <range.hpp>
+#include <range_list.hpp>
 #include <lib/vector.hpp>
+#include <lib/flat_map.hpp>
 #include <allow_type_decay.hpp>
 #include <alias.hpp>
 #include <mutex>
+#include <algorithm>
 
 namespace ste {
 namespace gl {
 
 template <
 	typename T,
-	std::uint64_t minimal_atom_size = 65536,
 	class allocation_policy = device_resource_allocation_policy_device
 >
-class device_buffer_sparse : 
+class device_buffer_sparse :
 	public device_buffer_base,
-	public allow_type_decay<device_buffer_sparse<T, minimal_atom_size, allocation_policy>, vk::vk_buffer_sparse<>, false>
-{
+	public allow_type_decay<device_buffer_sparse<T, allocation_policy>, vk::vk_buffer_sparse<>, false> {
 private:
 	struct ctor {};
 
 public:
-	using atom_address_t = std::uint32_t;
-	using atom_bind_range_t = range<atom_address_t>;
 	using bind_range_t = range<std::uint64_t>;
 
 private:
 	using resource_t = vk::vk_buffer_sparse<>;
-	using atom_t = device_memory_heap::allocation_type;
-	using bind_map_t = lib::vector<atom_t>;
+	using alloc_t = device_memory_heap::allocation_type;
 
 private:
 	alias<const ste_context> ctx;
 	resource_t resource;
 	VkMemoryRequirements memory_requirements{};
 
-	bind_map_t bound_atoms_map;
-	std::mutex bound_atoms_map_mutex;
+	lib::flat_map<bind_range_t, alloc_t> bound_ranges;
+	range_list<std::uint64_t> ranges_to_unbind;
+	std::mutex bound_ranges_mutex;
 
 public:
 	auto atom_size() const {
-		return std::max(memory_requirements.alignment, minimal_atom_size);
+		return glm::max<std::size_t>(memory_requirements.alignment, sizeof(T));
 	}
-	atom_bind_range_t atoms_range_contain(const bind_range_t &range) const {
+	
+	bind_range_t align(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
-		atom_bind_range_t ret;
-		ret.start = static_cast<std::uint32_t>(range.start * sizeof(T) / alignment);
-		ret.length = static_cast<std::uint32_t>((range.length * sizeof(T) + alignment - 1) / alignment);
-
-		return ret;
-	}
-	atom_bind_range_t atoms_range_intersect(const bind_range_t &range) const {
-		auto alignment = static_cast<std::size_t>(atom_size());
-
-		auto atom_start = (range.start * sizeof(T) + alignment - 1) / alignment;
-		auto atom_end = (range.start + range.length) / alignment;
-
-		atom_bind_range_t ret;
-		ret.start = static_cast<std::uint32_t>(atom_start);
-		ret.length = static_cast<std::uint32_t>(atom_end);
+		bind_range_t ret;
+		ret.start = range.start * sizeof(T) / alignment * alignment;
+		ret.length = (range.length * sizeof(T) + alignment - 1) / alignment * alignment;
 
 		return ret;
 	}
@@ -91,12 +78,90 @@ private:
 		return vk_sems;
 	}
 
+	auto unbind(const lib::vector<bind_range_t> &unbind_regions) {
+		lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+
+		// Accumulate the unbind ranges
+		for (auto &r : unbind_regions) {
+			const auto aligned_range = align(r);
+			ranges_to_unbind.add(aligned_range);
+		}
+
+		// Attempt to unbind allocations
+		auto pred = [](const std::pair<bind_range_t, alloc_t> &lhs, const bind_range_t &rhs) {
+			return lhs.first < rhs;
+		};
+		auto it_unbind_ranges = ranges_to_unbind.begin();
+		for (auto it = it_unbind_ranges == ranges_to_unbind.end() ? bound_ranges.end() : bound_ranges.lower_bound(*it_unbind_ranges);
+			 it != bound_ranges.end();
+			 it = it_unbind_ranges == ranges_to_unbind.end() ? bound_ranges.end() : std::lower_bound(it, bound_ranges.end(), *it_unbind_ranges, pred)) {
+			if (it_unbind_ranges->contains(it->first)) {
+				// Can unbind
+				vk::vk_sparse_memory_bind b;
+				b.allocation = nullptr;
+				b.resource_offset_bytes = it->first.start;
+				b.size_bytes = it->first.length;
+				memory_binds.push_back(b);
+
+				// Erase allocation
+				it = bound_ranges.erase(it);
+				it_unbind_ranges = ranges_to_unbind.remove(it->first);
+			}
+			else {
+				it_unbind_ranges = std::next(it_unbind_ranges);
+			}
+		}
+
+		return memory_binds;
+	}
+
+	auto bind(const lib::vector<bind_range_t> &bind_regions) {
+		lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+		if (!bind_regions.size())
+			return memory_binds;
+
+		// Accumulate bind ranges
+		range_list<std::uint64_t> ranges_to_bind;
+		std::uint64_t bind_range_top = 0;
+		for (auto &r : bind_regions) {
+			const auto aligned_range = align(r);
+
+			ranges_to_bind.add(aligned_range);
+			bind_range_top = aligned_range.start + aligned_range.length;
+
+			// Remove from pending unbind ranges
+			ranges_to_unbind.remove(aligned_range);
+		}
+
+		// Remove already bound ranges
+		for (auto it = bound_ranges.lower_bound(bind_regions.front());
+				it != bound_ranges.end() && it->first.start < bind_range_top;
+				++it)
+			ranges_to_bind.remove(it->first);
+
+		// Allocate and bind
+		for (auto &r : ranges_to_bind) {
+			const auto size = r.length;
+			auto it = bound_ranges.emplace(r,
+										   device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
+																								 size,
+																								 memory_requirements));
+
+			vk::vk_sparse_memory_bind b;
+			b.allocation = &it.first->second;
+			b.resource_offset_bytes = r.start;
+			b.size_bytes = r.length;
+			memory_binds.push_back(b);
+		}
+
+		return memory_binds;
+	}
+
 	device_buffer_sparse(ctor,
 						 const ste_context &ctx,
 						 resource_t &&resource)
 		: ctx(ctx),
-		resource(std::move(resource))
-	{
+		  resource(std::move(resource)) {
 		memory_requirements = this->resource.get_memory_requirements();
 	}
 
@@ -105,16 +170,17 @@ public:
 						 std::uint64_t count,
 						 const buffer_usage &usage,
 						 const char *name)
-		: device_buffer_sparse(ctor(), ctx,
-							   resource_t(ctx.device(), 
+		: device_buffer_sparse(ctor(),
+							   ctx,
+							   resource_t(ctx.device(),
 										  sizeof(T),
 										  count,
 										  static_cast<VkBufferUsageFlags>(usage),
-										  name))
-	{}
+										  name)) {}
+
 	~device_buffer_sparse() noexcept {}
 
-	const vk::vk_buffer<>& get_buffer_handle() const override final { return *this; }
+	const vk::vk_buffer<> &get_buffer_handle() const override final { return *this; }
 
 	device_buffer_sparse(device_buffer_sparse &&) = default;
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
@@ -124,12 +190,12 @@ public:
 	*			Unbind and bind regions should not overlap.
 	*
 	*	@param	unbind_regions		Buffer regions to unbind
-	*	@param	bind_regions			Buffer regions to bind
+	*	@param	bind_regions		Buffer regions to bind
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 	*	@param	fence				Optional fence, to be signaled when the command has completed execution
 	*	
-	*	@return	A host command to bound/unbound atoms.
+	*	@return	A host command to bind/unbind atoms.
 	*/
 	host_command cmd_bind_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
 										const lib::vector<bind_range_t> &bind_regions,
@@ -137,54 +203,18 @@ public:
 										const lib::vector<const semaphore*> &signal_semaphores,
 										const vk::vk_fence<> *fence = nullptr) {
 		return host_command([=](const vk::vk_queue<> &queue) {
-			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
-			auto size = atom_size();
+			lib::vector<vk::vk_sparse_memory_bind> binds, unbinds;
 
 			{
-				std::unique_lock<std::mutex> l(bound_atoms_map_mutex);
-
-				for (std::size_t i = 0; i < unbind_regions.size(); ++i) {
-					auto &r = unbind_regions[i];
-					auto atoms = atoms_range_intersect(r);
-
-					// Unbind each bound atom individually
-					for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
-						if (bound_atoms_map.size() > p && bound_atoms_map[p]) {
-							bound_atoms_map[p] = atom_t();
-
-							vk::vk_sparse_memory_bind b;
-							b.allocation = nullptr;
-							b.resource_offset_bytes = p * size;
-							b.size_bytes = size;
-
-							memory_binds.push_back(b);
-						}
-					}
-				}
-				for (std::size_t i = 0; i < bind_regions.size(); ++i) {
-					auto &r = bind_regions[i];
-					auto atoms = atoms_range_contain(r);
-
-					if (bound_atoms_map.size() < atoms.start + atoms.length)
-						bound_atoms_map.resize(atoms.start + atoms.length);
-
-					// Bind each bound atom individually
-					for (atom_address_t p = atoms.start; p != atoms.start + atoms.length; ++p) {
-						if (!bound_atoms_map[p]) {
-							bound_atoms_map[p] = device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
-																									   size,
-																									   memory_requirements);
-
-							vk::vk_sparse_memory_bind b;
-							b.allocation = &bound_atoms_map[p];
-							b.resource_offset_bytes = p * size;
-							b.size_bytes = size;
-
-							memory_binds.push_back(b);
-						}
-					}
-				}
+				std::unique_lock<std::mutex> l(bound_ranges_mutex);
+				unbinds = unbind(unbind_regions);
+				binds = bind(bind_regions);
 			}
+
+			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+			memory_binds.reserve(unbinds.size() + binds.size());
+			memory_binds.insert(memory_binds.end(), unbinds.begin(), unbinds.end());
+			memory_binds.insert(memory_binds.end(), binds.begin(), binds.end());
 
 			// Nothing to bind/unbind
 			if (!memory_binds.size())
@@ -199,10 +229,10 @@ public:
 		});
 	}
 
-	resource_t& get() { return resource; }
-	const resource_t& get() const { return resource; }
+	resource_t &get() { return resource; }
+	const resource_t &get() const { return resource; }
 
-	auto& parent_context() const { return ctx.get(); }
+	auto &parent_context() const { return ctx.get(); }
 
 	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
 	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };

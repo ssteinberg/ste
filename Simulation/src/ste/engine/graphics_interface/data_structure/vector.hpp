@@ -24,18 +24,16 @@ namespace gl {
 
 template <
 	typename T,
-	std::uint64_t minimal_atom_size = 65536,
 	std::uint64_t max_sparse_size = 1024 * 1024
 >
 class vector :
 	ste_resource_deferred_create_trait,
-	public allow_type_decay<vector<T, minimal_atom_size, max_sparse_size>, device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>>
+	public allow_type_decay<vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>>
 {
-	static_assert(sizeof(T) <= minimal_atom_size, "minimal_atom_size should be at least the size of a single element");
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
-	using buffer_t = device_buffer_sparse<T, minimal_atom_size, device_resource_allocation_policy_device>;
+	using buffer_t = device_buffer_sparse<T, device_resource_allocation_policy_device>;
 	using bind_range_t = typename buffer_t::bind_range_t;
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
@@ -45,10 +43,10 @@ public:
 	static constexpr bool sparse_container = true;
 	static constexpr auto sparse_size = max_sparse_size;
 
-	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, minimal_atom_size, max_sparse_size>>;
-	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, minimal_atom_size, max_sparse_size>>;
-	using unbind_cmd_t = _internal::vector_cmd_unbind<vector<T, minimal_atom_size, max_sparse_size>>;
-	using update_cmd_t = _internal::vector_cmd_update<vector<T, minimal_atom_size, max_sparse_size>>;
+	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, max_sparse_size>>;
+	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, max_sparse_size>>;
+	using unbind_cmd_t = _internal::vector_cmd_unbind<vector<T, max_sparse_size>>;
+	using update_cmd_t = _internal::vector_cmd_update<vector<T, max_sparse_size>>;
 
 private:
 	buffer_t buffer;

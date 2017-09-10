@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include <deque>
 
 #include <initializer_list>
+#include <algorithm>
 
 namespace ste {
 
@@ -109,16 +110,18 @@ public:
 	/**
 	*	@brief	Remove range
 	*/
-	void remove(const T &r) {
+	auto remove(const T &r) {
 		auto rend = r.start + r.length;
-		for (auto it = list.begin(); it != list.end() && it->start < rend;)
+		auto it = std::lower_bound(begin(), end(), r);
+		while (it != list.end() && it->start < rend)
 			it = split(it, r);
+		return it;
 	}
 	/**
 	*	@brief	Remove range
 	*/
-	void remove(typename list_t::iterator it) {
-		list.erase(it);
+	auto remove(typename list_t::iterator it) {
+		return list.erase(it);
 	}
 
 	void pop_back() {
@@ -175,8 +178,12 @@ public:
 
 	auto begin() const { return list.begin(); }
 	auto end() const { return list.end(); }
-	auto front() const { return list.front(); }
-	auto back() const { return list.back(); }
+	auto& front() const { return list.front(); }
+	auto& back() const { return list.back(); }
+	auto begin() { return list.begin(); }
+	auto end() { return list.end(); }
+	auto& front() { return list.front(); }
+	auto& back() { return list.back(); }
 
 	auto size() const { return list.size(); }
 };
