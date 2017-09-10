@@ -50,6 +50,7 @@ private:
 																			  std::move(hdr_human_vision_properties_data),
 																			  gl::image_usage::sampled,
 																			  gl::image_layout::shader_read_only_optimal,
+																			  "HDR vision properties texture",
 																			  false);
 		return ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, std::move(image));
 	}

@@ -8,7 +8,6 @@
 #include <vulkan/vulkan.h>
 #include <vk_host_allocator.hpp>
 #include <vk_image.hpp>
-#include <vk_ext_debug_marker.hpp>
 #include <vk_result.hpp>
 #include <vk_exception.hpp>
 
@@ -45,7 +44,6 @@ private:
 
 protected:
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t base_mip,
 				  std::uint32_t mips,
@@ -79,12 +77,6 @@ protected:
 			throw vk_exception(res);
 		}
 
-		// Set object debug marker
-		vk_debug_marker_set_object_name(device.get(),
-										view,
-										VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT,
-										name);
-
 		this->view = view;
 	}
 
@@ -101,7 +93,6 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
@@ -109,7 +100,6 @@ public:
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						base_mip,
 						glm::min(parent.get_mips() - base_mip, mips),
@@ -128,14 +118,12 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t mips = all_mip_levels,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						base_layer,
 						0,
@@ -150,12 +138,10 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						0,
 						all_mip_levels,
@@ -174,7 +160,6 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t base_mip,
@@ -183,7 +168,6 @@ public:
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						base_mip,
 						glm::min(parent.get_mips() - base_mip, mips),
@@ -203,14 +187,12 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t base_layer,
 				  std::uint32_t layers,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						base_layer,
 						0,
@@ -227,13 +209,11 @@ public:
 	*/
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  VkFormat image_format,
 				  std::uint32_t layers,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
-						name,
 						image_format,
 						0,
 						layers,
@@ -246,10 +226,8 @@ public:
 	*	@param swizzle		View component swizzling
 	*/
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
-				  const char *name,
 				  const image_view_swizzle &swizzle = image_view_swizzle())
 		: vk_image_view(parent,
-						name,
 						parent.get_format(),
 						0,
 						parent.get_mips(),

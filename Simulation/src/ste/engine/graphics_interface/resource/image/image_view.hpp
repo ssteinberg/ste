@@ -30,30 +30,22 @@ private:
 	vk::vk_image_view<type> view;
 
 public:
-	image_view(const vk::vk_image<> &image,
-			   const char *name)
-		: view(image,
-			   name)
+	image_view(const vk::vk_image<> &image)
+		: view(image)
+	{}
+	image_view(const device_image_base &image)
+		: view(image.get_image_handle())
 	{}
 	image_view(const device_image_base &image,
-			   const char *name)
+			   const format &image_format)
 		: view(image.get_image_handle(),
-			   name)
-	{}
-	image_view(const device_image_base &image,
-			   const format &image_format,
-			   const char *name)
-		: view(image.get_image_handle(),
-			   name,
 			   static_cast<VkFormat>(image_format))
 	{}
 	template <typename... Ts>
 	image_view(const device_image_base &image,
 			   const format &image_format,
-			   const char *name,
 			   Ts&&... ts)
 		: view(image.get_image_handle(),
-			   name,
 			   static_cast<VkFormat>(image_format),
 			   std::forward<Ts>(ts)...)
 	{}

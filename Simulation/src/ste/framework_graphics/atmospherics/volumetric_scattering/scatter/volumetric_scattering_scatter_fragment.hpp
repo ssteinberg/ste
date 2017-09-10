@@ -14,8 +14,8 @@
 namespace ste {
 namespace graphics {
 
-class volumetric_scattering_scatter_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class volumetric_scattering_scatter_fragment : public gl::fragment_compute<volumetric_scattering_scatter_fragment> {
+	using Base = gl::fragment_compute<volumetric_scattering_scatter_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -38,7 +38,7 @@ public:
 
 	volumetric_scattering_scatter_fragment(volumetric_scattering_scatter_fragment&&) = default;
 
-	static const lib::string& name() { return "scatter"; }
+	static lib::string name() { return "scatter"; }
 
 	void record(gl::command_recorder &recorder) override final {
 		static const glm::ivec2 jobs = { 32, 32 };

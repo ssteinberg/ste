@@ -22,7 +22,10 @@ namespace gl {
 namespace vk {
 
 template <typename host_allocator = vk_host_allocator<>>
-class vk_event : public allow_type_decay<vk_event<host_allocator>, VkEvent>, public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &> {
+class vk_event : 
+	public allow_type_decay<vk_event<host_allocator>, VkEvent>, 
+	public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, const char*> 
+{
 private:
 	optional<VkEvent> event;
 	alias<const vk_logical_device<host_allocator>> device;

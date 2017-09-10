@@ -38,7 +38,8 @@ void store_texture(const ste_context &ctx,
 	auto t = surface_factory::image_from_surface_2d<format>(ctx,
 															surface_convert::convert_2d<format>(std::forward<Surface>(surface)),
 															gl::image_usage::sampled,
-															gl::image_layout::shader_read_only_optimal);
+															gl::image_layout::shader_read_only_optimal,
+															lib::string(name.begin(), name.end()));
 	(*texmap)[name] = scene_properties->material_textures_storage().allocate_texture(std::move(t));
 }
 

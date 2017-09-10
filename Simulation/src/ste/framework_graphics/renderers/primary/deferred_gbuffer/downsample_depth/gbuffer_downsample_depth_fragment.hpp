@@ -16,8 +16,8 @@
 namespace ste {
 namespace graphics {
 
-class gbuffer_downsample_depth_fragment : public gl::fragment_compute {
-    using Base = gl::fragment_compute;
+class gbuffer_downsample_depth_fragment : public gl::fragment_compute<gbuffer_downsample_depth_fragment> {
+    using Base = gl::fragment_compute<gbuffer_downsample_depth_fragment>;
 
 private:
     const deferred_gbuffer *gbuffer;
@@ -70,7 +70,7 @@ public:
 
     gbuffer_downsample_depth_fragment(gbuffer_downsample_depth_fragment&&) = default;
 
-    static const lib::string& name() { return "gbuffer_downsample_depth"; }
+    static lib::string name() { return "gbuffer_downsample_depth"; }
 
     void record(gl::command_recorder &recorder) override final {
         constexpr int jobs = 32;

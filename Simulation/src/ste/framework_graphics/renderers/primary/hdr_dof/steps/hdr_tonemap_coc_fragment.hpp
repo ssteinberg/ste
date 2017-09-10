@@ -33,7 +33,7 @@ public:
 
 	hdr_tonemap_coc_fragment(hdr_tonemap_coc_fragment&&) = default;
 
-	static const lib::string& name() { return "hdr_tonemap_coc"; }
+	static lib::string name() { return "hdr_tonemap_coc"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {

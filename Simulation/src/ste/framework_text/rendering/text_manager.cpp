@@ -70,7 +70,8 @@ gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ct
 	auditor.set_vertex_attributes(0, gl::vertex_attributes<glyph_point>());
 	auditor.set_framebuffer_layout(std::move(fb_layout));
 
-	return auditor.pipeline(ctx);
+	return auditor.pipeline(ctx,
+							"text_manager pipeline");
 }
 
 /**

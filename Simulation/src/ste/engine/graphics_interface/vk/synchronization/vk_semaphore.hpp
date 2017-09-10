@@ -22,7 +22,7 @@ namespace gl {
 namespace vk {
 
 template <typename host_allocator = vk_host_allocator<>>
-class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device<host_allocator> &>, public allow_type_decay<vk_semaphore<host_allocator>, VkSemaphore> {
+class vk_semaphore : public ste_resource_pool_const_trait<const vk_logical_device<host_allocator> &, const char*>, public allow_type_decay<vk_semaphore<host_allocator>, VkSemaphore> {
 private:
 	optional<VkSemaphore> semaphore;
 	alias<const vk_logical_device<host_allocator>> device;

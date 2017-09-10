@@ -83,8 +83,7 @@ void ste_presentation_surface::acquire_swap_chain_images() {
 											  vk::vk_swapchain_image<>::extent_type(size),
 											  layers,
 											  name.data());
-		auto view = swap_chain_image_view_t(image,
-											name.data());
+		auto view = swap_chain_image_view_t(image);
 
 		auto swapchain_image = device_swapchain_image(std::move(image));
 

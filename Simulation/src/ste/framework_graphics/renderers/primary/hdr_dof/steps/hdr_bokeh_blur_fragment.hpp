@@ -35,7 +35,7 @@ public:
 
 	hdr_bokeh_blur_fragment(hdr_bokeh_blur_fragment&&) = default;
 
-	static const lib::string& name() { return "hdr_bokeh_blur"; }
+	static lib::string name() { return "hdr_bokeh_blur"; }
 
 	void bind_buffers(const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {
 		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);

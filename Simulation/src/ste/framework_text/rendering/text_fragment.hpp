@@ -107,7 +107,7 @@ public:
 	auto& manager() { return *tm; }
 	const auto& manager() const { return *tm; }
 
-	static const lib::string& name() { return "text_renderer"; }
+	static lib::string name() { return "text_renderer"; }
 };
 
 }

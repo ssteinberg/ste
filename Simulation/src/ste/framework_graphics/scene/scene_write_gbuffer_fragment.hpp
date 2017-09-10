@@ -55,7 +55,7 @@ public:
 		return fb_layout;
 	}
 
-	static const lib::string& name() { return "scene"; }
+	static lib::string name() { return "scene"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {

@@ -545,6 +545,7 @@ public:
 		// Create pipeline layout
 		layout = lib::allocate_unique<vk::vk_pipeline_layout<>>(ctx.get().device(),
 																set_layout_ptrs,
+																layout_name.data(),
 																push_constant_layouts);
 		// Erase invalid flag
 		layout_invalidated_flag.get().store(false, std::memory_order_relaxed);

@@ -79,10 +79,11 @@ public:
 		}
 
 		// Set object debug marker
-		vk_debug_marker_set_object_name(device,
-										sampler,
-										VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT,
-										name);
+		// TODO: nVidia Vulkan bug - goes into infinite loop on 385.12 drivers
+//		vk_debug_marker_set_object_name(device,
+//										sampler,
+//										VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT,
+//										name);
 
 		this->sampler = sampler;
 	}

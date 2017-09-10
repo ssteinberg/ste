@@ -20,6 +20,7 @@ namespace gl {
 /**
 *	@brief	A rendering system fragment with a compute pipeline
 */
+template <typename CRTP>
 class fragment_compute : public fragment {
 private:
 	lib::unique_ptr<device_pipeline_shader_stage> shader_stage;
@@ -27,6 +28,7 @@ private:
 
 private:
 	static auto create_compute_pipeline(const ste_context &ctx,
+										const char *name,
 										const pipeline_external_binding_set* external_binding_sets_collection,
 										device_pipeline_shader_stage &shader_stage) {
 		// Compute pipeline auditor
@@ -35,8 +37,10 @@ private:
 		// Create pipeline
 		auto obj = external_binding_sets_collection ?
 			auditor.pipeline(ctx,
-							 std::ref(*external_binding_sets_collection)) :
-			auditor.pipeline(ctx);
+							 std::ref(*external_binding_sets_collection),
+							 name) :
+			auditor.pipeline(ctx,
+							 name);
 
 		return lib::allocate_unique<device_pipeline_compute>(std::move(obj));
 	}
@@ -46,6 +50,7 @@ protected:
 					 const lib::string &shader_stage_name)
 		: shader_stage(lib::allocate_unique<device_pipeline_shader_stage>(rs.get_creating_context(), shader_stage_name)),
 		pipeline_object(create_compute_pipeline(rs.get_creating_context(),
+												CRTP::name().data(),
 												rs.external_binding_set(),
 												*this->shader_stage))
 	{}
@@ -57,7 +62,7 @@ public:
 	fragment_compute& operator=(fragment_compute&&) = default;
 
 	// Subclasses are expected to declare:
-	//static const lib::string& name();
+	//static lib::string name();
 
 protected:
 	auto& pipeline() { return *pipeline_object; }

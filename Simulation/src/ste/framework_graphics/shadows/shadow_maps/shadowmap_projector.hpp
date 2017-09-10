@@ -44,7 +44,7 @@ public:
 		return fb_layout;
 	}
 
-	static const lib::string& name() { return "shadow_project"; }
+	static lib::string name() { return "shadow_project"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {

@@ -23,10 +23,11 @@ private:
 
 public:
 	object_group_indirect_command_buffer(const ste_context &ctx,
-										 const gl::buffer_usage &usage = static_cast<gl::buffer_usage>(0))
+										 const gl::buffer_usage &usage,
+										 const char *name)
 		: idb(ctx, 
 			  gl::buffer_usage::indirect_buffer | usage,
-			  "indirect draw buffer")
+			  name)
 	{}
 
 	auto &get() { return idb; }

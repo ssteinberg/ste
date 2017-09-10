@@ -9,8 +9,8 @@
 namespace ste {
 namespace graphics {
 
-class linked_light_lists_gen_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class linked_light_lists_gen_fragment : public gl::fragment_compute<linked_light_lists_gen_fragment> {
+	using Base = gl::fragment_compute<linked_light_lists_gen_fragment>;
 
 private:
 	gl::task<gl::cmd_dispatch> dispatch_task;
@@ -30,7 +30,7 @@ public:
 
 	linked_light_lists_gen_fragment(linked_light_lists_gen_fragment&&) = default;
 
-	static const lib::string& name() { return "lll"; }
+	static lib::string name() { return "lll"; }
 
 	void record(gl::command_recorder &recorder) override final {
 		static const glm::ivec2 jobs = { 32, 32 };

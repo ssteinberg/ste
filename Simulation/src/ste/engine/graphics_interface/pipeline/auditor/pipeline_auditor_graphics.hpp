@@ -145,9 +145,11 @@ public:
 	/**
 	*	@brief	See pipeline().
 	*/
-	auto pipeline(const ste_context &ctx) const {
+	auto pipeline(const ste_context &ctx,
+				  const char *name) const {
 		return pipeline(ctx,
-						none);
+						none,
+						name);
 	}
 
 private:

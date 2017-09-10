@@ -92,10 +92,11 @@ public:
 		}
 
 		// Set object debug marker
-		vk_debug_marker_set_object_name(device,
-										swapchain,
-										VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT,
-										name);
+		// TODO: nVidia Vulkan bug - crashes due to wrong reallocation request on 385.12 drivers (passing nullptr as the host allocator does not solve the issue)
+//		vk_debug_marker_set_object_name(device,
+//										swapchain,
+//										VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT,
+//										name);
 
 		this->swapchain = swapchain;
 		swapchain_create_info.oldSwapchain = vk_null_handle;

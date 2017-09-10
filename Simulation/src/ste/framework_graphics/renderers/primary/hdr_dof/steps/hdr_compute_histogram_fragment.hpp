@@ -17,8 +17,8 @@
 namespace ste {
 namespace graphics {
 
-class hdr_compute_histogram_fragment : public gl::fragment_compute {
-	using Base = gl::fragment_compute;
+class hdr_compute_histogram_fragment : public gl::fragment_compute<hdr_compute_histogram_fragment> {
+	using Base = gl::fragment_compute<hdr_compute_histogram_fragment>;
 
 	gl::task<gl::cmd_dispatch> dispatch_task;
 	glm::u32vec2 extent;
@@ -34,7 +34,7 @@ public:
 
 	hdr_compute_histogram_fragment(hdr_compute_histogram_fragment&&) = default;
 
-	static const lib::string& name() { return "hdr_compute_histogram"; }
+	static lib::string name() { return "hdr_compute_histogram"; }
 
 	void bind_buffers(const gl::array<gl::std430<std::uint32_t>> &histogram_data, 
 					  const gl::array<hdr_bokeh_parameters> &hdr_bokeh_parameters_buffer) {

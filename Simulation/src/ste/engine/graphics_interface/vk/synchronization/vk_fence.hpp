@@ -26,7 +26,10 @@ namespace gl {
 namespace vk {
 
 template <typename host_allocator = vk_host_allocator<>>
-class vk_fence : public allow_type_decay<vk_fence<host_allocator>, VkFence>, public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, bool> {
+class vk_fence : 
+	public allow_type_decay<vk_fence<host_allocator>, VkFence>, 
+	public ste_resource_pool_resetable_trait<const vk_logical_device<host_allocator> &, const char*, bool>
+{
 private:
 	optional<VkFence> fence;
 	alias<const vk_logical_device<host_allocator>> device;

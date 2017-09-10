@@ -31,7 +31,8 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	}
 	gl::pipeline_external_binding_set set{
 		gl::external_binding_set_collection_from_shader_stages(ctx.device(),
-		std::move(v)).generate()
+															   std::move(v), 
+															   "primary_renderer common binding set").generate()
 	};
 
 	// Transforms buffer bindings
