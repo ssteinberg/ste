@@ -25,6 +25,8 @@ layout(set=0, binding=4) uniform sampler2D ltc_ggx_amplitude;
 
 #include <deferred_shading.glsl>
 
+layout(location = 0) in vec2 uv;
+
 layout(location = 0) out vec4 frag_color;
 
 g_buffer_element read_gbuffer(ivec2 coords) {

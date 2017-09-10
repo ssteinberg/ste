@@ -6,7 +6,9 @@
 #include <mesh_descriptor.glsl>
 #include <renderer_transform_buffers.glsl>
 
+layout(location = 0) in vec4 tangent_frame_quat;
 layout(location = 1) in vec3 vert;
+layout(location = 2) in vec2 tex_coords;
 
 layout(location = 0) out vs_out {
 	vec3 position;

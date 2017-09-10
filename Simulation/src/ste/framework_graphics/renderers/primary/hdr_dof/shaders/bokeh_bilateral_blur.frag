@@ -16,6 +16,8 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 layout(binding = 0) uniform sampler2D hdr;
 //layout(binding = 3) uniform sampler2D depth_texture;
 
+layout(location = 0) in vec2 uv;
+
 layout(location = 0) out vec3 frag_color;
 
 const int samples = 4;
@@ -88,8 +90,6 @@ vec2 coc(float s, float focal) {
 
 void main() {
 	vec2 size = textureSize(hdr, 0).xy;
-
-	vec2 uv = vec2(gl_FragCoord.xy) / size;
 	vec3 col = texture(hdr, uv).rgb;
 
 	// TODO: Depth

@@ -130,7 +130,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		auto fence = batch->get_fence_ptr();
 
 		// Enqueue mipmap copy on a transfer queue
-		auto f = q.enqueue([&]() {
+		q.enqueue([&]() {
 			// Record and submit a one-time batch
 			{
 				auto recorder = command_buffer.record();
@@ -157,6 +157,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 
 			ste_device_queue::submit_batch(std::move(batch));
 		});
+		(*fence)->get_wait();
 
 		// Transfer ownership
 		pipeline_stage pipeline_stages_for_final_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(final_layout));
@@ -168,7 +169,6 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 													final_layout, pipeline_stages_for_final_layout);
 
 		// Wait for completion
-		(*fence)->get_wait();
 		queue_transfer_future.get();
 	});
 

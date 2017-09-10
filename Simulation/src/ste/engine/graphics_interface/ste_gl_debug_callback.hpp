@@ -8,6 +8,7 @@
 #include <vk_instance.hpp>
 
 #include <lib/string.hpp>
+#include <lib/flat_set.hpp>
 #include <log.hpp>
 
 namespace ste {
@@ -17,13 +18,21 @@ class ste_gl_debug_callback {
 public:
 	void operator()(VkDebugReportFlagsEXT flags,
 					VkDebugReportObjectTypeEXT objectType,
-					uint64_t object,
-					size_t location,
-					int32_t messageCode,
+					std::uint64_t object,
+					std::size_t location,
+					std::int32_t messageCode,
 					const char* pLayerPrefix,
 					const char* pMessage,
 					const void *ctx) const {
+		static const lib::flat_set<std::int32_t> ignored_message_codes = { 10 };
+
+		if (ignored_message_codes.find(messageCode) != ignored_message_codes.end()) {
+			// Ignore message
+			return;
+		}
+
 		const lib::string message = lib::string("Vulkan debug report - ") + pLayerPrefix + ": " + pMessage + "\n";
+
 		switch (flags) {
 		case VK_DEBUG_REPORT_WARNING_BIT_EXT:
 		case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:

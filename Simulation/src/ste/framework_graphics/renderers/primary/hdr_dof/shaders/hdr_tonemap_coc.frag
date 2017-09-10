@@ -15,6 +15,8 @@ layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_buffer
 	hdr_bokeh_parameters params;
 };
 
+layout(location = 0) in vec2 uv;
+
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 
