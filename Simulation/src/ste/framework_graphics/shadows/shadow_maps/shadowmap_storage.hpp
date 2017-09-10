@@ -39,8 +39,8 @@ private:
 private:
 	static auto create_shadow_fb_layout() {
 		gl::framebuffer_layout fb_layout;
-		fb_layout[gl::pipeline_depth_attachment_location] = gl::ignore_store(gl::format::d32_sfloat,
-																			 gl::image_layout::depth_stencil_attachment_optimal);
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
+																			gl::image_layout::depth_stencil_attachment_optimal);
 		return fb_layout;
 	}
 
@@ -80,8 +80,10 @@ public:
 									create_shadow_fb_layout(), 
 									glm::uvec2{ directional_map_size, directional_map_size })
 	{
-		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
-		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);
+		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps,
+																									   glm::vec4(.0f));
+		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps,
+																										 glm::vec4(.0f));
 	}
 	~shadowmap_storage() noexcept {}
 
@@ -95,7 +97,8 @@ public:
 																																									   "shadow_depth_cube_maps",
 																																									   cube_size,
 																																									   size));
-		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps);
+		shadow_depth_cube_map_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*shadow_depth_cube_maps,
+																									   glm::vec4(.0f));
 
 		storage_modified_signal.emit();
 	}
@@ -109,7 +112,8 @@ public:
 																																							  "directional_shadow_maps",
 																																							  { directional_map_size, directional_map_size },
 																																							  size * directional_light_cascades));
-		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps);;
+		directional_shadow_maps_fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(*directional_shadow_maps,
+																										 glm::vec4(.0f));;
 
 		storage_modified_signal.emit();
 	}

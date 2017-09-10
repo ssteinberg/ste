@@ -97,11 +97,11 @@ void light_storage::update_directional_lights_cascades_buffer(gl::command_record
 			const float eye_dist = t.z + cascade_projection_eye_distance;
 			const float proj_far_clip = t.w + eye_dist;
 
-			descriptor.cascades[c].proj_eye_dist = eye_dist;
-			descriptor.cascades[c].proj_far_clip = proj_far_clip;
-			descriptor.cascades[c].recp_vp = recp_vp;
-			descriptor.cascades[c].M = light_cascade_data::generate(x, y, l, eye_dist,
-																	recp_vp, near_clip, far_clip);
+			descriptor.cascades()[c].proj_eye_dist() = eye_dist;
+			descriptor.cascades()[c].proj_far_clip() = proj_far_clip;
+			descriptor.cascades()[c].recp_vp() = recp_vp;
+			descriptor.cascades()[c].M() = light_cascade_data::generate(x, y, l, eye_dist,
+																		recp_vp, near_clip, far_clip);
 		}
 
 		update_data.push_back(descriptor);

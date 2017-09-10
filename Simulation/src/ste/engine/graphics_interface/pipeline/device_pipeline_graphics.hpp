@@ -110,8 +110,11 @@ protected:
 	}
 
 	void bind_pipeline(const command_buffer &, command_recorder &recorder) const override final {
-		const lib::vector<VkClearValue> clear_values(attached_framebuffer->get_fb_clearvalues().begin(),
-													 attached_framebuffer->get_fb_clearvalues().begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
+		const auto &fb_clearvalues = attached_framebuffer->get_fb_clearvalues();
+		assert(fb_layout.get_highest_index_of_attachment_with_load_op() <= fb_clearvalues.size());
+
+		const lib::vector<VkClearValue> clear_values(fb_clearvalues.begin(),
+													 fb_clearvalues.begin() + fb_layout.get_highest_index_of_attachment_with_load_op());
 		auto fb_extent = attached_framebuffer->extent();
 
 		recorder << cmd_begin_render_pass(*attached_framebuffer,

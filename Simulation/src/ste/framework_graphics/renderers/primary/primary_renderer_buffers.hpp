@@ -45,11 +45,6 @@ private:
 																				  const atmospherics_lut_storage &atmospherics_luts,
 																				  const scene *s);
 
-	/**
-	*	@brief		Update the common binding set
-	*/
-	void update_common_binding_set();
-
 private:
 	alias<const ste_context> ctx;
 
@@ -138,10 +133,14 @@ public:
 	}
 
 	/**
+	*	@brief		Update the common binding set
+	*/
+	void update_common_binding_set(scene *s);
+
+	/**
 	*	@brief		Updates common descriptor set's bindings and data
 	*/
 	void update(gl::command_recorder &recorder,
-				scene *s,
 				const camera_t *cam);
 
 	/**

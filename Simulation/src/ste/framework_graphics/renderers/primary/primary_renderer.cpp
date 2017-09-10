@@ -33,7 +33,8 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 				 ctx.device().get_surface().extent()),
 
 	composer(ctx,
-			 *this),
+			 *this,
+			 &buffers.vol_scat_storage.get()),
 	hdr(ctx,
 		*this,
 		ctx.device().get_surface().extent(),
@@ -149,8 +150,7 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 	s->update_scene(recorder);
 
 	// Update buffers
-	buffers.update(recorder,
-				   s, cam);
+	buffers.update(recorder, cam);
 
 	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 															  gl::pipeline_stage::vertex_shader | gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
@@ -189,7 +189,7 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 	}
 
 	// Update common binding set
-	buffers.update_common_binding_set();
+	buffers.update_common_binding_set(s);
 }
 
 void primary_renderer::present() {
@@ -341,14 +341,6 @@ void primary_renderer::present() {
 																								gl::access_flags::shader_read,
 																								gl::access_flags::shader_write)));
 			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::image_memory_barrier(buffers.vol_scat_storage.get().get_volume_texture().get_image(),
-																							   gl::image_layout::shader_read_only_optimal,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_write)));
-			// TODO: Event
 			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 																	  gl::pipeline_stage::compute_shader,
 																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_heads_map().get_image(),
@@ -360,11 +352,6 @@ void primary_renderer::present() {
 																							   gl::image_layout::general,
 																							   gl::image_layout::general,
 																							   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read),
-																	  gl::image_memory_barrier(buffers.gbuffer.get().get_downsampled_depth_target().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::shader_read_only_optimal,
-																							   gl::access_flags::shader_write,
 																							   gl::access_flags::shader_read)));
 
 			// Volumetric scattering
@@ -512,6 +499,24 @@ void primary_renderer::record_prepopulate_depth_backface_fragment(gl::command_re
 }
 
 void primary_renderer::record_volumetric_scattering_fragment(gl::command_recorder &recorder) {
+	// Clear scatter volume
+	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+															  gl::pipeline_stage::transfer,
+															  gl::image_memory_barrier(buffers.vol_scat_storage.get().get_volume_texture().get_image(),
+																					   gl::image_layout::shader_read_only_optimal,
+																					   gl::image_layout::transfer_dst_optimal,
+																					   gl::access_flags::shader_read,
+																					   gl::access_flags::transfer_write)));
+	volumetric_scatterer.get().clear(recorder);
+	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+															  gl::pipeline_stage::compute_shader,
+															  gl::image_memory_barrier(buffers.vol_scat_storage.get().get_volume_texture().get_image(),
+																					   gl::image_layout::transfer_dst_optimal,
+																					   gl::image_layout::general,
+																					   gl::access_flags::transfer_write,
+																					   gl::access_flags::shader_write)));
+
+	// Scatter
 	recorder << volumetric_scatterer.get();
 }
 

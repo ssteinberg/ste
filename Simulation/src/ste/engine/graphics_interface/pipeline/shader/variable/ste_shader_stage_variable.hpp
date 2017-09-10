@@ -61,7 +61,7 @@ struct ste_shader_stage_variable_remove_blocks<B, true> {
 	using type = std::conditional_t<
 		single_element_block,
 		typename ste_shader_stage_variable_remove_blocks<T, is_block_layout_v<T>>::type,
-		error_type
+		B
 	>;
 };
 template <typename T>
@@ -150,6 +150,8 @@ public:
 	*/
 	template <typename T>
 	void validate() const {
+		assert(!is_error_type_v<T>);
+
 		using Type = std::remove_cv_t<std::remove_reference_t<T>>;
 		dispatcher::validate<Type>(this);
 	}

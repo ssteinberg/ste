@@ -1,8 +1,8 @@
 ﻿1. **primary_renderer**
      - <strike>Fragments must conform to ste_resource deferred</strike> 
      - Switch back to atomic counters (GLSL 4.6)
-     - Enumerate resources used for each primary renderer fragment
-     - Primary renderer pipeline barriers
+     - <strike>Enumerate resources used for each primary renderer fragment</strike>
+     - <strike>Primary renderer pipeline barriers</strike>
      - Decouple renderer and presentation engine
      - Light cascades
 2. <strike>Camera: Allow projection change and signal changes</strike>
@@ -31,4 +31,4 @@
 15. Incorporate optimizing GLSL/SPIR-v compiler (LunarGLASS?)
 16. SPIR-v refection: OpSpecConstantOp
 17. <strike>Integrate glslang into StE SPIR-v compiler. Compile all modules in a single go.</strike>
-18. Device resources' debug names via VK_EXT_debug_marker
+18. <strike>Device resources' debug names via VK_EXT_debug_marker</strike>

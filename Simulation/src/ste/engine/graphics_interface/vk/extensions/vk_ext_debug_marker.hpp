@@ -8,6 +8,7 @@
 #include <vk_logical_device.hpp>
 
 #include <vulkan/vulkan.h>
+#include <mutex>
 
 namespace ste {
 namespace gl {
@@ -23,6 +24,8 @@ void vk_debug_marker_set_object_name(const vk_logical_device<A> &device,
 									 const T &t,
 									 VkDebugReportObjectTypeEXT type,
 									 const char *str) {
+	static std::mutex m;
+
 	if (!device.get_extensions_func_pointers().debug_marker().enabled)
 		return;
 
@@ -33,6 +36,8 @@ void vk_debug_marker_set_object_name(const vk_logical_device<A> &device,
 	info.object = reinterpret_cast<std::uint64_t>(t);
 	info.objectType = type;
 
+	// TODO: Mutex is for some concurrency bug in nVidia 385.12 drivers. Multiple concurrent calls to vkDebugMarkerSetObjectNameEXT for unrelated resources causes it to enter an infinite loop.
+	std::unique_lock<std::mutex> l(m);
 	const vk_result res = device.get_extensions_func_pointers().debug_marker().vkDebugMarkerSetObjectNameEXT(device,
 																											 &info);
 	if (!res) {
