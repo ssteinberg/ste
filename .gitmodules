@@ -35,9 +35,9 @@
 [submodule "manual_packages/kalman"]
 	path = Simulation/third_party/manual_packages/kalman
 	url = https://github.com/mherb/kalman
-[submodule "manual_packages/rpmalloc"]
-	path = Simulation/third_party/manual_packages/rpmalloc
-	url = https://github.com/ssteinberg/rpmalloc
+[submodule "manual_packages/ltalloc"]
+	path = Simulation/third_party/manual_packages/ltalloc
+	url = https://github.com/ssteinberg/ltalloc
 
 [submodule "ste_spirv_compiler/glslang"]
 	path = Simulation/Tools/ste_spirv_compiler/glslang
