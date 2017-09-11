@@ -130,7 +130,43 @@ public:
 	}
 	~loading_renderer() noexcept {}
 
-	void render() override final {}
+	void render(gl::command_recorder &recorder) override final {
+		{
+			using namespace text::attributes;
+
+			const text::attributed_wstring str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
+														azure(large(L"Loading...\n")) +
+														orange(regular(L"By Shlomi Steinberg")));
+			auto surface_extent = device().get_surface().extent();
+
+			auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
+			auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
+			auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+
+			auto workers_active = get_creating_context().engine().task_scheduler().get_thread_pool()->get_active_workers_count();
+			auto workers_sleep = get_creating_context().engine().task_scheduler().get_thread_pool()->get_sleeping_workers_count();
+			auto pending_requests = get_creating_context().engine().task_scheduler().get_thread_pool()->get_pending_requests_count();
+
+			title_text_frag.update_text(recorder, { surface_extent.x / 2, surface_extent.y / 2 + 100 }, str);
+			footer_text_frag.update_text(recorder, { 10, 50 },
+										 line_height(32)(vsmall(b(L"VRAM ") +
+																b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
+																  purple(lib::to_wstring(commited_vram)) + L" / " +
+																  stroke(blue, 1)(sky_blue(lib::to_wstring(total_vram))) + L" MB")) + L"\n" +
+														 vsmall(b(L"Thread pool workers: ") +
+																olive(lib::to_wstring(workers_active)) + L" busy, " +
+																olive(lib::to_wstring(workers_sleep)) + L" sleeping | " +
+																orange(lib::to_wstring(pending_requests) + L" pending requests"))));
+		}
+
+		recorder
+			<< photo_fragment
+
+			// Render text
+			<< title_text_frag
+			<< footer_text_frag;
+	}
+
 	void present() override final {
 		auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
 
@@ -148,35 +184,81 @@ public:
 				title_text_frag.manager().attach_framebuffer(fb);
 				photo_fragment.attach_framebuffer(swap_chain_clear_framebuffers[batch->presentation_image_index()]);
 
-				{
-					using namespace text::attributes;
-
-					text::attributed_wstring str = center(stroke(blue_violet, 2)(purple(vvlarge(b(L"Global Illumination\n")))) +
-														  azure(large(L"Loading...\n")) +
-														  orange(regular(L"By Shlomi Steinberg")));
-					auto total_vram = 0;// lib::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-					auto free_vram = 0;// lib::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
-
-					auto workers_active = get_creating_context().engine().task_scheduler().get_thread_pool()->get_active_workers_count();
-					auto workers_sleep = get_creating_context().engine().task_scheduler().get_thread_pool()->get_sleeping_workers_count();
-					auto pending_requests = get_creating_context().engine().task_scheduler().get_thread_pool()->get_pending_requests_count();
-
-					title_text_frag.update_text(recorder, { fb.extent().x / 2, fb.extent().y / 2 + 100 }, str);
-					footer_text_frag.update_text(recorder, { 10, 50 },
-												 line_height(32)(vsmall(b(blue_violet(lib::to_wstring(free_vram)) + L" / " + stroke(red, 1)(dark_red(lib::to_wstring(total_vram))) + L" MB")) + L"\n" +
-																 vsmall(b(L"Thread pool workers: ") +
-																		olive(lib::to_wstring(workers_active)) + L" busy, " +
-																		olive(lib::to_wstring(workers_sleep)) + L" sleeping | " +
-																		orange(lib::to_wstring(pending_requests) + L" pending requests"))));
-				}
-
+				render(recorder);
 				recorder
-					<< photo_fragment
+					// Prepare framebuffer for presentation
+					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
+																	 gl::pipeline_stage::bottom_of_pipe,
+																	 gl::image_layout_transform_barrier(swapchain_image,
+																										gl::image_layout::color_attachment_optimal,
+																										gl::image_layout::present_src_khr)));
+			}
 
-					// Render text
-					<< title_text_frag
-					<< footer_text_frag
+			// Submit command buffer and present
+			presentation.get().submit_and_present(std::move(batch));
+		});
+	}
+};
 
+class gi_renderer : public gl::rendering_presentation_system {
+	using Base = gl::rendering_presentation_system;
+
+private:
+	std::reference_wrapper<gl::presentation_engine> presentation;
+	graphics::primary_renderer r;
+
+	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
+
+private:
+	static auto fb_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
+										gl::image_layout::color_attachment_optimal);
+		return fb_layout;
+	}
+
+public:
+	gi_renderer(const ste_context &ctx,
+				gl::presentation_engine &presentation,
+				const graphics::primary_renderer::camera_t *cam,
+				graphics::scene *s,
+				const graphics::atmospherics_properties<double> &atmospherics_prop)
+		: Base(ctx,
+			   fb_layout(ctx)),
+		presentation(presentation),
+		r(ctx, fb_layout(ctx), cam, s, atmospherics_prop)
+	{}
+	~gi_renderer() noexcept {}
+
+	auto &renderer() { return r; }
+	auto &renderer() const { return r; }
+
+	void render(gl::command_recorder &recorder) override final {
+		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
+		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
+		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+
+		r.render(recorder);
+	}
+
+	void present() override final {
+		auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
+
+		// Acquire presentation comand batch
+		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+
+		// Record and submit a batch
+		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
+			auto& command_buffer = batch->acquire_command_buffer();
+			{
+				auto recorder = command_buffer.record();
+				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
+				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
+
+				r.attach_framebuffer(fb);
+
+				render(recorder);
+				recorder
 					// Prepare framebuffer for presentation
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
 																	 gl::pipeline_stage::bottom_of_pipe,
@@ -221,10 +303,10 @@ void display_loading_screen_until(ste_context &ctx,
 		ctx.tick();
 		ste_window::poll_events();
 
-		if (window.should_close() || !lambda())
+		if (!lambda())
 			break;
 
-		r.render_and_present();
+		r.present();
 	}
 
 	ctx.device().wait_idle();
@@ -312,7 +394,7 @@ auto create_quad_light_object(const ste_context &ctx,
 	std::uint32_t ind[6] = { 0,1,2,0,2,3 };
 	graphics::object_vertex_data vertices[4];
 	vertices[0].p() = points[0]; vertices[1].p() = points[1]; vertices[2].p() = points[2]; vertices[3].p() = points[3];
-	glm::vec3 b = glm::cross(t, n);
+	const glm::vec3 b = glm::cross(t, n);
 	for (auto &v : vertices)
 		v.tangent_frame_from_tbn(t, b, n);
 	quad->set_vertices(vertices, 4);
@@ -392,12 +474,9 @@ void load_scene(ste_context &ctx,
 																	 mat_editor_layers,
 																	 &mat_editor_objects));
 
-//	display_loading_screen_until(ctx, presentation, text_manager, window, [&]() -> bool {
-//		return !loading_futures.ready_all();
-//	});
-	while (!loading_futures.ready_all()) {
-		ctx.tick();
-	}
+	display_loading_screen_until(ctx, presentation, text_manager, window, [&]() -> bool {
+		return !loading_futures.ready_all();
+	});
 }
 
 #ifdef _MSC_VER
@@ -511,14 +590,14 @@ int main()
 	*	Create scene and primary render
 	*/
 	graphics::scene scene(ctx);
-	lib::unique_ptr<graphics::primary_renderer> renderer;
+	lib::unique_ptr<gi_renderer> presenter;
 	auto renderer_loader_task_future = ctx.engine().task_scheduler().schedule_now([&]() {
 		// Create renderer
-		renderer = lib::allocate_unique<graphics::primary_renderer>(ctx,
-																	presentation,
-																	&camera,
-																	&scene,
-																	atmosphere);
+		presenter = lib::allocate_unique<gi_renderer>(ctx,
+													  presentation,
+													  &camera,
+													  &scene,
+													  atmosphere);
 	});
 
 
@@ -548,10 +627,14 @@ int main()
 				   mat_editor_materials,
 				   mat_editor_layers,
 				   mat_editor_objects);
+
+		if (window.should_close()) {
+			return 0;
+		}
 	}
 
 	// Configure
-	renderer->set_aperture_parameters(35e-3f, 25e-3f);
+	presenter->renderer().set_aperture_parameters(35e-3f, 25e-3f);
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
@@ -562,18 +645,11 @@ int main()
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
 																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 
-	device.wait_idle();
-	if (window.should_close()) {
-		return 0;
-	}
-
 
 	/*
 	*	Main loop
 	*/
 
-	float f = .0f;
-	auto last_tick_time = std::chrono::high_resolution_clock::now();
 	for (;;) {
 		ctx.tick();
 		ste_window::poll_events();
@@ -586,7 +662,7 @@ int main()
 		float frame_time_ms = frame_time_predictor.predicted_value();
 		window.set_title(lib::to_string(frame_time_ms).c_str());
 
-		renderer->render_and_present();
+		presenter->present();
 	}
 
 	device.wait_idle();

@@ -161,6 +161,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 
 			ste_device_queue::submit_batch(std::move(batch), wait_semaphores, { &semaphore.get() });
 		});
+		copy_to_image_future.get();
 
 		// Transfer ownership
 		pipeline_stage pipeline_stages_for_final_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(final_layout));
@@ -174,7 +175,6 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 													signal_semaphores);
 
 		// Wait for completion
-		copy_to_image_future.get();
 		queue_transfer_future.get();
 	});
 

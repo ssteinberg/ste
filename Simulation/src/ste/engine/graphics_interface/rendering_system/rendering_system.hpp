@@ -6,6 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <ste_resource_traits.hpp>
+#include <command_recorder.hpp>
 
 #include <pipeline_external_binding_set.hpp>
 
@@ -66,7 +67,8 @@ public:
 		std::unique_lock<std::mutex> l(m);
 
 		// Find a storage with tag
-		auto it = std::lower_bound(storages.begin(), storages.end(), tag, [](const storage_map_t::value_type &pair, storage_tag tag) {
+		auto it = std::lower_bound(storages.begin(), storages.end(), tag, 
+								   [](const storage_map_t::value_type &pair, storage_tag tag) {
 			return pair.second->tag < tag;
 		});
 		if (it != storages.end() && it->first == tag) {
@@ -85,11 +87,6 @@ public:
 		return storage;
 	}
 
-	/**
-	*	@brief	Implementations should use this to build a primary command queue and dispatch.
-	*/
-	virtual void render() = 0;
-
 	auto& get_creating_context() const { return ctx.get(); }
 	auto& device() const { return ctx.get().device(); }
 
@@ -97,6 +94,12 @@ public:
 	*	@brief	Implementations can use this hook to provide all fragments that use this rendering system with a collection of external binding sets.
 	*/
 	virtual const pipeline_external_binding_set* external_binding_set() const { return nullptr; }
+
+protected:
+	/**
+	*	@brief	Implementations should use this to record rendering to a command queue.
+	*/
+	virtual void render(gl::command_recorder &) = 0;
 };
 
 }

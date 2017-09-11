@@ -164,7 +164,9 @@ public:
 			throw ste_device_creation_exception("queue_descriptors is empty");
 		}
 	}
-	~ste_device() noexcept {}
+	~ste_device() noexcept {
+		wait_idle();
+	}
 
 	/**
 	*	@brief	Performs schedules work, cleans up resources, etc.

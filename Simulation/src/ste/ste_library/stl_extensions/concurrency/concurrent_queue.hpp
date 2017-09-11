@@ -197,9 +197,9 @@ public:
 		}
 	}
 
-	bool is_empty_hint() const {
-		counted_node_ptr h = head.load(std::memory_order_relaxed);
-		counted_node_ptr t = tail.load(std::memory_order_relaxed);
+	bool is_empty_hint(std::memory_order order = std::memory_order_acquire) const {
+		counted_node_ptr h = head.load(order);
+		counted_node_ptr t = tail.load(order);
 		return h.get() == t.get();
 	}
 };

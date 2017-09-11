@@ -76,17 +76,15 @@ public:
 	const auto& presentation_framebuffer_layout() const { return fb_layout; }
 
 	/**
-	*	@brief	Shortcut method for rendering and presenting.
-	*/
-	void render_and_present() {
-		render();
-		present();
-	}
-
-	/**
 	 *	@brief	Implementations should perform presentation here.
 	 */
 	virtual void present() = 0;
+
+protected:
+	/**
+	*	@brief	Implementations should use this to record rendering to a command queue.
+	*/
+	virtual void render(gl::command_recorder &) override {}
 };
 
 }

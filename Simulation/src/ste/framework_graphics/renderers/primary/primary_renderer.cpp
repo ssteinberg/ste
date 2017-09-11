@@ -5,22 +5,13 @@
 using namespace ste;
 using namespace ste::graphics;
 
-gl::framebuffer_layout primary_renderer::create_fb_layout(const ste_context &ctx) {
-	gl::framebuffer_layout fb_layout;
-	fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
-									gl::image_layout::color_attachment_optimal);
-	return fb_layout;
-}
-
 primary_renderer::primary_renderer(const ste_context &ctx,
-								   gl::presentation_engine &presentation,
+								   gl::framebuffer_layout &&fb_layout,
 								   const camera_t *cam,
 								   scene *s,
 								   const atmospherics_properties<double> &atmospherics_prop)
-	: Base(ctx,
-		   create_fb_layout(ctx)),
+	: Base(ctx),
 
-	presentation(presentation),
 	cam(cam),
 	s(s),
 
@@ -41,7 +32,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 		gl::framebuffer_layout(framebuffers.fxaa_input_fb.get_layout())),
 	fxaa(ctx,
 		 *this,
-		 gl::framebuffer_layout(create_fb_layout(ctx))),
+		 std::move(fb_layout)),
 
 	downsample_depth(ctx,
 					 *this,
@@ -192,212 +183,184 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 	buffers.update_common_binding_set(s);
 }
 
-void primary_renderer::present() {
-	auto selector = gl::make_queue_selector(gl::ste_queue_type::primary_queue);
+void primary_renderer::render(gl::command_recorder &recorder) {
+	// Update data
+	update(recorder);
 
-	// Acquire presentation comand batch
-	auto batch = presentation.get().allocate_presentation_command_batch(selector);
+	// Render
 
-	// Record and submit a batch
-	device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
-		auto& command_buffer = batch->acquire_command_buffer();
-		{
-			auto recorder = command_buffer.record();
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
+//																gl::pipeline_stage::compute_shader,
+//																gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll(),
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write)));
+//
+//	// Light preprocess
+//	record_light_preprocess_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::compute_shader,
+//																gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll(),
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read),
+//																gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll_counter(),
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read),
+//																gl::buffer_memory_barrier(s->properties().lights_storage().buffer(),
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Scene geometry cull
+//	record_scene_geometry_cull_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::draw_indirect,
+//																gl::buffer_memory_barrier(s->get_shadow_projection_buffers().idb.get().get(),
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::indirect_command_read)));
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::geometry_shader,
+//																gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Shadow cubemaps project
+//	record_shadow_projector_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::draw_indirect,
+//																gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().idb.get().get(),
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::indirect_command_read)));
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::geometry_shader,
+//																gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Directional shadow maps project
+//	record_directional_shadow_projector_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::draw_indirect,
+//																gl::buffer_memory_barrier(s->get_idb().get(),
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::indirect_command_read)));
+//
+//	// Prepopulate depth
+//	record_prepopulate_depth_fragment(recorder);
+//
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::compute_shader,
+//																gl::image_memory_barrier(buffers.gbuffer.get().get_downsampled_depth_target().get_image(),
+//																						gl::image_layout::shader_read_only_optimal,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_write)));
+//
+//	// Downsample depth
+//	record_downsample_depth_fragment(recorder);
+//
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
+//																gl::pipeline_stage::compute_shader,
+//																gl::image_memory_barrier(buffers.gbuffer.get().get_downsampled_depth_target().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::shader_read_only_optimal,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read),
+//																gl::buffer_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_buffer(),
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_write),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_heads_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_size_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_heads_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_size_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write)));
+//
+//	// Linked-light-list generator
+//	record_linked_light_list_generator_fragment(recorder);
+//
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::draw_indirect,
+//																gl::buffer_memory_barrier(s->get_idb().get(),
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::indirect_command_read)));
+//
+//	// Draw scene to gbuffer
+//	record_scene_fragment(recorder);
+//
+//	// Prepopulate back-face depth buffer
+//	record_prepopulate_depth_backface_fragment(recorder);
+//
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
+//																gl::buffer_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_buffer(),
+//																						gl::access_flags::shader_read,
+//																						gl::access_flags::shader_write)));
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::compute_shader,
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_heads_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_size_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Volumetric scattering
+//	record_volumetric_scattering_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::fragment_shader,
+//																gl::image_memory_barrier(buffers.vol_scat_storage.get().get_volume_texture().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::shader_read_only_optimal,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//	// TODO: Event
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//																gl::pipeline_stage::fragment_shader,
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_heads_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read),
+//																gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_size_map().get_image(),
+//																						gl::image_layout::general,
+//																						gl::image_layout::general,
+//																						gl::access_flags::shader_read | gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Deferred compose
+//	record_deferred_composer_fragment(recorder);
 
-			// Attach swap chain framebuffer to last stage, fxaa
-			auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
-			fxaa->attach_framebuffer(fb);
-
-			// Update data
-			update(recorder);
-
-			// Render
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll(),
-																								gl::access_flags::shader_read,
-																								gl::access_flags::shader_read | gl::access_flags::shader_write)));
-
-			// Light preprocess
-			record_light_preprocess_fragment(recorder);
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll(),
-																								gl::access_flags::shader_read | gl::access_flags::shader_write,
-																								gl::access_flags::shader_read),
-																	  gl::buffer_memory_barrier(s->properties().lights_storage().get_active_ll_counter(),
-																								gl::access_flags::shader_read | gl::access_flags::shader_write,
-																								gl::access_flags::shader_read),
-																	  gl::buffer_memory_barrier(s->properties().lights_storage().buffer(),
-																								gl::access_flags::shader_read | gl::access_flags::shader_write,
-																								gl::access_flags::shader_read)));
-
-			// Scene geometry cull
-			record_scene_geometry_cull_fragment(recorder);
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::draw_indirect,
-																	  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().idb.get().get(),
-																								gl::access_flags::shader_write,
-																								gl::access_flags::indirect_command_read)));
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::geometry_shader,
-																	  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-																								gl::access_flags::shader_write,
-																								gl::access_flags::shader_read)));
-
-			// Shadow cubemaps project
-			record_shadow_projector_fragment(recorder);
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::draw_indirect,
-																	  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().idb.get().get(),
-																								gl::access_flags::shader_write,
-																								gl::access_flags::indirect_command_read)));
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::geometry_shader,
-																	  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-																								gl::access_flags::shader_write,
-																								gl::access_flags::shader_read)));
-
-			// Directional shadow maps project
-			record_directional_shadow_projector_fragment(recorder);
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::draw_indirect,
-																	  gl::buffer_memory_barrier(s->get_idb().get(),
-																								gl::access_flags::shader_write,
-																								gl::access_flags::indirect_command_read)));
-
-			// Prepopulate depth
-			record_prepopulate_depth_fragment(recorder);
-
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::image_memory_barrier(buffers.gbuffer.get().get_downsampled_depth_target().get_image(),
-																							   gl::image_layout::shader_read_only_optimal,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_write)));
-
-			// Downsample depth
-			record_downsample_depth_fragment(recorder);
-
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::image_memory_barrier(buffers.gbuffer.get().get_downsampled_depth_target().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::shader_read_only_optimal,
-																							   gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read),
-																	  gl::buffer_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_buffer(),
-																								gl::access_flags::shader_read,
-																								gl::access_flags::shader_write),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_heads_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_size_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_heads_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_size_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write)));
-
-			// Linked-light-list generator
-			record_linked_light_list_generator_fragment(recorder);
-
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::draw_indirect,
-																	  gl::buffer_memory_barrier(s->get_idb().get(),
-																								gl::access_flags::shader_write,
-																								gl::access_flags::indirect_command_read)));
-
-			// Draw scene to gbuffer
-			record_scene_fragment(recorder);
-
-			// Prepopulate back-face depth buffer
-			record_prepopulate_depth_backface_fragment(recorder);
-
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
-																	  gl::buffer_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_buffer(),
-																								gl::access_flags::shader_read,
-																								gl::access_flags::shader_write)));
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::compute_shader,
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_heads_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_low_detail_size_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read)));
-
-			// Volumetric scattering
-			record_volumetric_scattering_fragment(recorder);
-
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::fragment_shader,
-																	  gl::image_memory_barrier(buffers.vol_scat_storage.get().get_volume_texture().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::shader_read_only_optimal,
-																							   gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read)));
-			// TODO: Event
-			recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-																	  gl::pipeline_stage::fragment_shader,
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_heads_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read),
-																	  gl::image_memory_barrier(buffers.linked_light_list_storage.get().linked_light_lists_size_map().get_image(),
-																							   gl::image_layout::general,
-																							   gl::image_layout::general,
-																							   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																							   gl::access_flags::shader_read)));
-
-			// Deferred compose
-			record_deferred_composer_fragment(recorder);
-
-			// Post-process, HDR tonemapping and FXAA
-			recorder
-				<< hdr
-				<< fxaa;
-
-			recorder
-				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
-																 gl::pipeline_stage::bottom_of_pipe,
-																 gl::image_layout_transform_barrier(swap_chain_image(batch->presentation_image_index()).image,
-																									gl::image_layout::color_attachment_optimal,
-																									gl::image_layout::present_src_khr)));
-				
-		}
-
-		// Submit command buffer and present
-		presentation.get().submit_and_present(std::move(batch));
-	});
+	// Post-process, HDR tonemapping and FXAA
+	recorder
+		<< hdr.get()
+		<< fxaa.get();
 }
 
 void primary_renderer::record_light_preprocess_fragment(gl::command_recorder &recorder) {

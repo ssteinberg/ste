@@ -3,8 +3,8 @@
      - Switch back to atomic counters (GLSL 4.6)
      - <strike>Enumerate resources used for each primary renderer fragment</strike>
      - <strike>Primary renderer pipeline barriers</strike>
-     - Decouple renderer and presentation engine
-     - Light cascades
+     - <strike>Decouple renderer and presentation engine</strike>
+     - <strike>Light cascades</strike>
 2. <strike>Camera: Allow projection change and signal changes</strike>
 3. Pipeline layouts' exceptions: Mention offending variable names
 4. <strike><font color="lightgray">ste_resource: uninitialized resource.</font></strike>
@@ -32,3 +32,6 @@
 16. SPIR-v refection: OpSpecConstantOp
 17. <strike>Integrate glslang into StE SPIR-v compiler. Compile all modules in a single go.</strike>
 18. <strike>Device resources' debug names via VK_EXT_debug_marker</strike>
+19. Sponza Vulkan demo UI and ImGUI
+20. Profiler
+21. Units, meters, km, kelvin, bytes, kb, etc.

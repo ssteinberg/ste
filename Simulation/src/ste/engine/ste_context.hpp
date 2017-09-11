@@ -37,7 +37,18 @@ public:
 		gl_device(device),
 		engine_device_memory_allocator(device)
 	{}
-	~ste_context_impl() noexcept {}
+	~ste_context_impl() noexcept {
+		// Finish processing
+		wait_idle();
+	}
+
+	/**
+	*	@brief	Waits idly for the engine task pool and gl context device instance until all pending requests have finished processing
+	*/
+	void wait_idle() {
+		engine_reference.task_scheduler().wait_idle();
+		gl_device.wait_idle();
+	}
 
 	/**
 	*	@brief	Performs schedules work.
