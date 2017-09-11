@@ -454,7 +454,7 @@ int main()
 	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
-	device_params.allow_markers = gl_params.debug_context.get();			// Allow debug markers if we have a debug context
+	device_params.allow_markers = false;
 
 	ste_context::gl_device_t device(device_params,
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
@@ -559,8 +559,8 @@ int main()
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
 																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
 
+	device.wait_idle();
 	if (window.should_close()) {
-		device.wait_idle();
 		return 0;
 	}
 

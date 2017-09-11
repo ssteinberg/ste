@@ -54,7 +54,9 @@ auto inline queue_transfer(const ste_context &ctx,
 						   access_flags src_access,
 						   image_layout dst_layout,
 						   pipeline_stage dst_stage,
-						   access_flags dst_access) {
+						   access_flags dst_access,
+						   const lib::vector<wait_semaphore> &wait_semaphores = {},
+						   const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = src_queue.queue_descriptor().family;
@@ -83,7 +85,7 @@ auto inline queue_transfer(const ste_context &ctx,
 																			   dst_access));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
-			ste_device_queue::submit_batch(std::move(acquire_batch));
+			ste_device_queue::submit_batch(std::move(acquire_batch), wait_semaphores, signal_semaphores);
 		});
 
 		return future;
@@ -115,7 +117,7 @@ auto inline queue_transfer(const ste_context &ctx,
 		}
 
 		const semaphore &sem = *release_batch->user_data();
-		ste_device_queue::submit_batch(std::move(release_batch), {}, { &sem });
+		ste_device_queue::submit_batch(std::move(release_batch), wait_semaphores, { &sem });
 		release_acquire_boundary->signal();
 	});
 	auto dst_future = dst_queue.enqueue([=, &image]() {
@@ -140,7 +142,7 @@ auto inline queue_transfer(const ste_context &ctx,
 		// Wait for release command to be submitted
 		release_acquire_boundary->get();
 		const semaphore &sem = *acquire_batch->user_data();
-		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, {});
+		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, signal_semaphores);
 	});
 
 	return dst_future;
@@ -161,13 +163,16 @@ auto inline queue_transfer(const ste_context &ctx,
 						   image_layout src_layout,
 						   pipeline_stage src_stage,
 						   image_layout dst_layout,
-						   pipeline_stage dst_stage) {
+						   pipeline_stage dst_stage,
+						   const lib::vector<wait_semaphore> &wait_semaphores = {},
+						   const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return queue_transfer(ctx,
 						  image,
 						  src_queue,
 						  dst_queue,
 						  src_layout, src_stage, access_flags_for_image_layout(src_layout),
-						  dst_layout, dst_stage, access_flags_for_image_layout(dst_layout));
+						  dst_layout, dst_stage, access_flags_for_image_layout(dst_layout),
+						  wait_semaphores, signal_semaphores);
 }
 
 /**
@@ -181,7 +186,9 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   pipeline_stage stage,
 								   image_layout src_layout,
 								   image_layout dst_layout,
-								   access_flags dst_access) {
+								   access_flags dst_access,
+								   const lib::vector<wait_semaphore> &wait_semaphores = {},
+								   const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
 	const ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
@@ -204,7 +211,7 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 		}
 
 		// Wait for release command to be submitted
-		ste_device_queue::submit_batch(std::move(acquire_batch));
+		ste_device_queue::submit_batch(std::move(acquire_batch), wait_semaphores, signal_semaphores);
 	});
 
 	return future;
@@ -223,14 +230,17 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   const ste_queue_selector<ste_queue_selector_policy_strict> &dst_queue_selector,
 								   pipeline_stage stage,
 								   image_layout src_layout,
-								   image_layout dst_layout) {
+								   image_layout dst_layout,
+								   const lib::vector<wait_semaphore> &wait_semaphores = {},
+								   const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return queue_transfer_discard(ctx,
 								  image,
 								  dst_queue_selector,
 								  stage,
 								  src_layout, 
 								  dst_layout, 
-								  access_flags_for_image_layout(dst_layout));
+								  access_flags_for_image_layout(dst_layout),
+								  wait_semaphores, signal_semaphores);
 }
 
 }
