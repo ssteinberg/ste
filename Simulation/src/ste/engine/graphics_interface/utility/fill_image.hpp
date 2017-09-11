@@ -82,12 +82,12 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		}
 
 		// Create staging buffer
+		using staging_buffer_t = device_buffer<block_type, device_resource_allocation_policy_host_visible>;
 		const auto blocks = surface.blocks_layer() * layers;
-		device_buffer<block_type, device_resource_allocation_policy_host_visible>
-			staging_buffer(ctx,
-						   blocks,
-						   gl::buffer_usage::transfer_src,
-						   "fill_image staging buffer");
+		staging_buffer_t staging_buffer(ctx,
+										blocks,
+										gl::buffer_usage::transfer_src,
+										"fill_image staging buffer");
 
 		// Copy to destination image
 		{
@@ -127,14 +127,15 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		auto &q = ctx.device().select_queue(queue_selector);
 
 		// Create a batch
-		auto batch = q.allocate_batch();
-		auto& command_buffer = batch->acquire_command_buffer();
-		auto fence = batch->get_fence_ptr();
+		auto batch = q.allocate_batch<staging_buffer_t>(std::move(staging_buffer));
 		auto semaphore = ctx.device().get_sync_primitives_pools().semaphores().claim();
 
 		// Enqueue mipmap copy on a transfer queue
-		q.enqueue([&]() {
+		auto copy_to_image_future = q.enqueue([&]() {
 			// Record and submit a one-time batch
+			auto& command_buffer = batch->acquire_command_buffer();
+
+			const auto& dst_buffer = batch->user_data();
 			{
 				auto recorder = command_buffer.record();
 
@@ -146,20 +147,20 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 																	 image_layout::transfer_dst_optimal,
 																	 access_flags::none,
 																	 access_flags::transfer_write),
-												buffer_memory_barrier(staging_buffer,
+												buffer_memory_barrier(dst_buffer,
 																	  access_flags::host_write,
 																	  access_flags::transfer_read));
 				recorder << cmd_pipeline_barrier(barrier);
 
 				// Copy to image
-				recorder << cmd_copy_buffer_to_image(staging_buffer,
+				recorder << cmd_copy_buffer_to_image(dst_buffer,
 													 image,
 													 image_layout::transfer_dst_optimal,
 													 regions);
 			}
 
 			ste_device_queue::submit_batch(std::move(batch), wait_semaphores, { &semaphore.get() });
-		}).get();
+		});
 
 		// Transfer ownership
 		pipeline_stage pipeline_stages_for_final_layout = all_possible_pipeline_stages_for_access_flags(access_flags_for_image_layout(final_layout));
@@ -173,8 +174,8 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 													signal_semaphores);
 
 		// Wait for completion
+		copy_to_image_future.get();
 		queue_transfer_future.get();
-		(*fence)->get_wait();
 	});
 
 	return make_job(std::move(future));

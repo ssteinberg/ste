@@ -29,7 +29,7 @@ private:
 
 public:
 	glyph_factory_ft_lib() {
-		auto error = FT_Init_FreeType(&library);
+		const auto error = FT_Init_FreeType(&library);
 		if (error) {
 			throw std::runtime_error("Couldn't init FreeType");
 		}
@@ -62,10 +62,10 @@ private:
 
 public:
 	glyph_factory_font(const font &font, FT_Library ft_lib) {
-		auto error = FT_New_Face(ft_lib,
-								 font.get_path().string().c_str(),
-								 0,
-								 &face);
+		const auto error = FT_New_Face(ft_lib,
+									   font.get_path().string().c_str(),
+									   0,
+									   &face);
 		if (error) {
 			face = nullptr;
 			throw std::runtime_error("Failed loading FreeType font");
@@ -99,7 +99,8 @@ struct glyph_factory_impl {
 	auto& get_factory_font(const font &font) {
 		auto it = fonts.lower_bound(font);
 		if (it == fonts.end() || it->first != font)
-			it = fonts.emplace_hint(it, std::make_pair(font, glyph_factory_font(font, lib.get_lib())));
+			it = fonts.emplace_hint(it, 
+									std::make_pair(font, glyph_factory_font(font, lib.get_lib())));
 		return it->second;
 	}
 
@@ -114,7 +115,7 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 
 	auto face = get_factory_font(font).get_face();
 
-	FT_UInt glyph_index = FT_Get_Char_Index(face, codepoint);
+	const FT_UInt glyph_index = FT_Get_Char_Index(face, codepoint);
 	FT_Set_Pixel_Sizes(face, 0, px_size);
 	FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
 	FT_Render_Glyph(face->glyph, FT_RENDER_MODE_LIGHT);
@@ -127,8 +128,8 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	w = bm.width + 2 * glyph::padding;
 	h = bm.rows + 2 * glyph::padding;
 
-	int padding_w = std::max<int>(0, (w - bm.width) >> 1);
-	int padding_h = std::max<int>(0, (h - bm.rows) >> 1);
+	const int padding_w = std::max<int>(0, (w - bm.width) >> 1);
+	const int padding_h = std::max<int>(0, (h - bm.rows) >> 1);
 
 	unsigned char *glyph_buf = lib::default_alloc<unsigned char[]>::make(w*h);
 	memset(glyph_buf, 0, w * h);
@@ -148,7 +149,7 @@ glyph_factory::~glyph_factory() {
 glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	glyph g;
 	int start_x = 0, start_y = 0, w = 0, h = 0;
-	int px_size = glyph::ttf_pixel_size;
+	const int px_size = glyph::ttf_pixel_size;
 
 	unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
 	g.metrics.start_x = start_x;
@@ -173,8 +174,8 @@ std::uint32_t glyph_factory::read_kerning(const font &font, const std::pair<wcha
 	glyph_factory_font &fac_font = pimpl->get_factory_font(font);
 	auto face = fac_font.get_face();
 
-	FT_UInt left_index = FT_Get_Char_Index(face, p.first);
-	FT_UInt right_index = FT_Get_Char_Index(face, p.second);
+	const FT_UInt left_index = FT_Get_Char_Index(face, p.first);
+	const FT_UInt right_index = FT_Get_Char_Index(face, p.second);
 	FT_Set_Pixel_Sizes(face, 0, pixel_size);
 	FT_Load_Glyph(face, left_index, FT_LOAD_DEFAULT);
 

@@ -71,6 +71,11 @@ private:
 		return gl::texture<gl::image_type::image_2d>(std::move(image).get());
 	}
 
+	/**
+	 *	@brief	Assigns default values to roughness, metallicity, anisotropy and thickness maps.
+	 */
+	void set_default_maps();
+
 public:
 	/**
 	*	@brief	Convert material anisotropy value to ratio which is used to adjust anisotropic roughness values
@@ -97,7 +102,7 @@ public:
 	void set_albedo(const rgb &rgb) {
 		albedo = rgb;
 
-		glm::vec3 v = rgb;
+		const glm::vec3 v = rgb;
 		descriptor.set_albedo(glm::vec4{ v.r, v.g, v.b, 1.f });
 		Base::notify();
 	}
@@ -163,7 +168,7 @@ public:
 *
 * 	@param m	Metallicity - range: [0,1]
 */
-	void set_metallic(float m) {
+	void set_metallicity(float m) {
 		metallicity_map = textures_storage->allocate_texture(create_scalar_map(m));
 		descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
 
@@ -176,7 +181,7 @@ public:
 	*
 	* 	@param map	Metallicity map
 	*/
-	void set_metallic(const material_texture &map) {
+	void set_metallicity(const material_texture &map) {
 		metallicity_map = map;
 		descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
 		Base::notify();
@@ -290,7 +295,9 @@ public:
 
 	auto *get_next_layer() const { return next_layer; }
 
-	material_layer_descriptor get_descriptor() const override final { return descriptor; }
+	material_layer_descriptor get_descriptor() const override final {
+		return descriptor;
+	}
 };
 
 }

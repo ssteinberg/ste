@@ -392,9 +392,12 @@ void load_scene(ste_context &ctx,
 																	 mat_editor_layers,
 																	 &mat_editor_objects));
 
-	display_loading_screen_until(ctx, presentation, text_manager, window, [&]() -> bool {
-		return !loading_futures.ready_all();
-	});
+//	display_loading_screen_until(ctx, presentation, text_manager, window, [&]() -> bool {
+//		return !loading_futures.ready_all();
+//	});
+	while (!loading_futures.ready_all()) {
+		ctx.tick();
+	}
 }
 
 #ifdef _MSC_VER

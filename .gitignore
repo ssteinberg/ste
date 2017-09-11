@@ -217,12 +217,17 @@ Simulation/build/
 Simulation/bin/
 Simulation/temp/
 Simulation/Log/
-Simulation/My Amplifier XE Results - Simulation/
-Simulation/My Inspector XE Results - Simulation/
 Simulation/Cache/
 Simulation/Screenshots/*
 !Simulation/Screenshots/history
+
+Simulation/My Amplifier XE Results - Simulation/
+Simulation/My Inspector XE Results - Simulation/
 Simulation/My Advisor XE Results - Simulation/
+
+My Amplifier Results - StE/
+My Inspector Results - StE/
+My Advisor Results - StE/
 
 !.vscode
 

@@ -222,7 +222,7 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 		if (opacity_map)	mat->set_mask_map(opacity_map);
 
 		if (roughness_map)	layer->set_roughness(roughness_map);
-		if (metallic_map)	layer->set_metallic(metallic_map);
+		if (metallic_map)	layer->set_metallicity(metallic_map);
 //		if (anisotropy_map)	layer->set_anisotropy(anisotropy_map);
 		if (thickness_map)	layer->set_layer_thickness(thickness_map);
 
