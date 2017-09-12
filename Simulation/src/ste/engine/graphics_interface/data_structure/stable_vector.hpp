@@ -8,7 +8,7 @@
 #include <ste_resource_traits.hpp>
 #include <buffer_usage.hpp>
 #include <buffer_view.hpp>
-#include <copy_data_buffer.hpp>
+#include <host_write_buffer.hpp>
 #include <vector_common.hpp>
 
 #include <cmd_update_buffer.hpp>
@@ -33,8 +33,7 @@ template <
 >
 class stable_vector :
 	ste_resource_deferred_create_trait,
-	public allow_type_decay<stable_vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>>
-{
+	public allow_type_decay<stable_vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
@@ -71,41 +70,42 @@ public:
 		: buffer(ctx,
 				 max_sparse_size,
 				 usage | buffer_usage_additional_flags,
-				 name)
-	{}
+				 name) {}
+
 	stable_vector(const ste_context &ctx,
 				  const lib::vector<T> &initial_data,
 				  const buffer_usage &usage,
 				  const char *name)
-		: stable_vector(ctx, usage, name)
-	{
+		: stable_vector(ctx, usage, name) {
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx,
-									*this,
-									initial_data.data(),
-									initial_data.size());
+		_internal::host_write_buffer(ctx,
+									 *this,
+									 initial_data.data(),
+									 initial_data.size());
 		elements.store(initial_data.size());
 	}
+
 	template <std::size_t N>
 	stable_vector(const ste_context &ctx,
 				  const std::array<T, N> &initial_data,
 				  const buffer_usage &usage,
 				  const char *name)
-		: stable_vector(ctx, usage, name)
-	{
+		: stable_vector(ctx, usage, name) {
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx,
-									*this,
-									initial_data.data(),
-									initial_data.size());
+		_internal::host_write_buffer(ctx,
+									 *this,
+									 initial_data.data(),
+									 initial_data.size());
 		elements.store(initial_data.size());
 	}
+
 	~stable_vector() noexcept {}
 
 	stable_vector(stable_vector &&o) noexcept : buffer(std::move(o.buffer)), elements(o.elements.load()) {
 		std::unique_lock<std::mutex> lt(o.tombstones_mutex);
 		tombstones = std::move(o.tombstones);
 	}
+
 	stable_vector &operator=(stable_vector &&o) noexcept {
 		std::unique_lock<std::mutex> lock1(tombstones_mutex, std::defer_lock);
 		std::unique_lock<std::mutex> lock2(o.tombstones_mutex, std::defer_lock);
@@ -168,6 +168,7 @@ public:
 		location = elements.fetch_add(data.size());
 		return insert_cmd_t(data, location, this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will insert data into the vector in an empty slot.
 	*			If needed, memory will be bound sprasely to the buffer.
@@ -194,6 +195,7 @@ public:
 							idx,
 							this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
 	*
@@ -216,6 +218,7 @@ public:
 
 		return insert_cmd_t(data, location, this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
 	*			If needed, memory will be bound sprasely to the buffer.
@@ -225,6 +228,7 @@ public:
 	auto push_back_cmd(const T &data) {
 		return push_back_cmd(lib::vector<T>{ data });
 	}
+
 	/**
 	*	@brief	Returns a device command that will erase some of the elements from the back the vector.
 	*			If possible, memory will be unbound sprasely from the buffer.
@@ -254,8 +258,8 @@ public:
 
 	auto size() const { return elements.load(); }
 
-	auto& get() { return buffer; }
-	auto& get() const { return buffer; }
+	auto &get() { return buffer; }
+	auto &get() const { return buffer; }
 };
 
 }

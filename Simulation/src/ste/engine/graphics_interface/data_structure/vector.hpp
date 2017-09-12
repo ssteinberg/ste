@@ -8,7 +8,7 @@
 #include <ste_resource_traits.hpp>
 #include <buffer_usage.hpp>
 #include <buffer_view.hpp>
-#include <copy_data_buffer.hpp>
+#include <host_write_buffer.hpp>
 #include <vector_common.hpp>
 
 #include <device_buffer_sparse.hpp>
@@ -28,8 +28,7 @@ template <
 >
 class vector :
 	ste_resource_deferred_create_trait,
-	public allow_type_decay<vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>>
-{
+	public allow_type_decay<vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
 	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
@@ -59,8 +58,7 @@ private:
 	 *	@brief	Move constructor that hold a lock
 	 */
 	vector(std::unique_lock<std::mutex> &&guard, vector &&o) noexcept
-		: buffer(std::move(o.buffer)), host_replica(std::move(o.host_replica))
-	{}
+		: buffer(std::move(o.buffer)), host_replica(std::move(o.host_replica)) {}
 
 public:
 	vector(const ste_context &ctx,
@@ -69,41 +67,42 @@ public:
 		: buffer(ctx,
 				 max_sparse_size,
 				 usage | buffer_usage_additional_flags,
-				 name)
-	{}
+				 name) {}
+
 	vector(const ste_context &ctx,
 		   const lib::vector<T> &initial_data,
 		   const buffer_usage &usage,
 		   const char *name)
-		: vector(ctx, usage, name)
-	{
+		: vector(ctx, usage, name) {
 		host_replica = initial_data;
 
 		// Copy initial static data
-		_internal::copy_data_buffer_and_resize(ctx,
-											   *this,
-											   host_replica.data(),
-											   host_replica.size());
+		_internal::host_write_buffer_and_resize(ctx,
+												*this,
+												host_replica.data(),
+												host_replica.size());
 	}
+
 	template <std::size_t N>
 	vector(const ste_context &ctx,
 		   const std::array<T, N> &initial_data,
 		   const buffer_usage &usage,
 		   const char *name)
-		: vector(ctx, usage, name)
-	{
+		: vector(ctx, usage, name) {
 		host_replica = lib::vector<T>(initial_data.begin(),
 									  initial_data.end());
 
 		// Copy initial static data
-		_internal::copy_data_buffer_and_resize(ctx,
-											   *this,
-											   host_replica.data(),
-											   host_replica.size());
+		_internal::host_write_buffer_and_resize(ctx,
+												*this,
+												host_replica.data(),
+												host_replica.size());
 	}
+
 	~vector() noexcept {}
 
 	vector(vector &&o) noexcept : vector(std::unique_lock<std::mutex>(o.mutex), std::move(o)) {}
+
 	vector &operator=(vector &&o) noexcept {
 		std::unique_lock<std::mutex> lock1(mutex, std::defer_lock);
 		std::unique_lock<std::mutex> lock2(o.mutex, std::defer_lock);
@@ -135,6 +134,7 @@ public:
 							idx,
 							this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
 	*
@@ -182,6 +182,7 @@ public:
 
 		return insert_cmd_t(data, location, this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
 	*			If needed, memory will be bound sprasely to the buffer.
@@ -191,6 +192,7 @@ public:
 	auto push_back_cmd(const T &data) {
 		return push_back_cmd(lib::vector<T>{ data });
 	}
+
 	/**
 	*	@brief	Returns a device command that will erase some of the elements from the back the vector.
 	*			If possible, memory will be unbound sprasely from the buffer.
@@ -233,8 +235,8 @@ public:
 
 	auto size() const { return host_replica.size(); }
 
-	auto& get() { return buffer; }
-	auto& get() const { return buffer; }
+	auto &get() { return buffer; }
+	auto &get() const { return buffer; }
 };
 
 }

@@ -1304,9 +1304,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\task\task_pipeline_policy.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\copy_data_buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\fill.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1983,6 +1980,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_extensions_proc_addr.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_write_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

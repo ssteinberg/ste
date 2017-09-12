@@ -27,7 +27,7 @@ public:
 		: src_buffer(src_buffer), dst_buffer(dst_buffer), ranges(ranges)
 	{
 		if (this->ranges.size() == 0) {
-			VkBufferCopy c = {
+			const VkBufferCopy c = {
 				0, 0,
 				std::min(src_buffer.get_elements_count() * src_buffer.get_element_size_bytes(),
 						 dst_buffer.get_elements_count() * dst_buffer.get_element_size_bytes())
@@ -36,6 +36,9 @@ public:
 		}
 	}
 	virtual ~cmd_copy_buffer() noexcept {}
+
+	cmd_copy_buffer(cmd_copy_buffer&&) = default;
+	cmd_copy_buffer &operator=(cmd_copy_buffer&&) = default;
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {

@@ -567,6 +567,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_capabilities_query.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_format_properties.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_extensions_proc_addr.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
@@ -679,7 +680,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera.hpp" />
     <ClInclude Include="Simulation\src\ste\math_additions\rect.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\array.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\copy_data_buffer.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_write_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\ring_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\stable_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\pipeline_cache\ste_device_pipeline_cache.hpp" />
