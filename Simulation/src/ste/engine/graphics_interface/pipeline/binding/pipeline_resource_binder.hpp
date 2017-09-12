@@ -94,8 +94,8 @@ auto bind(const device_buffer<T, a> &buffer,
 *	@param	offset	Buffer offset
 *	@param	range	Buffer range
 */
-template <typename T, std::uint64_t s, class a>
-auto bind(const device_buffer_sparse<T, s, a> &buffer,
+template <typename T, class a>
+auto bind(const device_buffer_sparse<T, a> &buffer,
 		  std::uint64_t offset,
 		  std::uint64_t range) {
 	assert(range > 0);
@@ -116,8 +116,8 @@ auto bind(const array<T> &array) {
 *
 *	@param	vec		Vector to bind
 */
-template <typename T, std::uint64_t a, std::uint64_t b>
-auto bind(const vector<T, a, b> &vec) {
+template <typename T, std::uint64_t b>
+auto bind(const vector<T, b> &vec) {
 	return bind(vec.get(),
 				0, vec.sparse_size);
 }
@@ -135,8 +135,8 @@ auto bind(const ring_buffer<T, C> &ring) {
 *
 *	@param	vec		Stable vector to bind
 */
-template <typename T, std::uint64_t a, std::uint64_t b>
-auto bind(const stable_vector<T, a, b> &vec) {
+template <typename T, std::uint64_t b>
+auto bind(const stable_vector<T, b> &vec) {
 	return bind(vec.get(),
 				0, vec.sparse_size);
 }
@@ -160,8 +160,6 @@ auto inline bind(const pipeline::image &img) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const lib::vector<pipeline::image> &images) {
-	assert(images.size());
-
 	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(images.size());
 	for (auto &img : images) {
@@ -176,7 +174,6 @@ auto inline bind(std::uint32_t array_element,
 *	@param	images			Images to bind
 */
 auto inline bind(const lib::vector<pipeline::image> &images) {
-	assert(images.size());
 	return bind(0, images);
 }
 /**
@@ -186,8 +183,6 @@ auto inline bind(const lib::vector<pipeline::image> &images) {
 *	@param	array_element_images_pairs	A vector of pairs of array indices and a vector of images to bind starting at each those indices
 */
 auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<pipeline::image>>> &array_element_images_pairs) {
-	assert(array_element_images_pairs.size());
-
 	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, image_view_generic>> resource_binders;
 	resource_binders.reserve(array_element_images_pairs.size());
 	for (auto &pair : array_element_images_pairs) {
@@ -222,8 +217,6 @@ auto inline bind(const pipeline::combined_image_sampler& cis) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const lib::vector<pipeline::combined_image_sampler> &ciss) {
-	assert(ciss.size());
-
 	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(ciss.size());
 	for (auto &p : ciss) {
@@ -242,7 +235,6 @@ auto inline bind(std::uint32_t array_element,
 *	@param	ciss		Combined-image-samplers to bind
 */
 auto inline bind(const lib::vector<pipeline::combined_image_sampler> &ciss) {
-	assert(ciss.size());
 	return bind(0, ciss);
 }
 /**
@@ -253,8 +245,6 @@ auto inline bind(const lib::vector<pipeline::combined_image_sampler> &ciss) {
 *										bind starting at each those indices
 */
 auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<pipeline::combined_image_sampler>>> &array_element_ciss_pairs) {
-	assert(array_element_ciss_pairs.size());
-
 	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, pipeline::combined_image_sampler>> resource_binders;
 	resource_binders.reserve(array_element_ciss_pairs.size());
 	for (auto &pair : array_element_ciss_pairs) {
@@ -284,8 +274,6 @@ auto inline bind(const sampler &sam) {
 */
 auto inline bind(std::uint32_t array_element,
 				 const lib::vector<const sampler*> &samplers) {
-	assert(samplers.size());
-
 	lib::vector<vk::vk_descriptor_set_write_image> writes;
 	writes.reserve(samplers.size());
 	for (auto &p : samplers)
@@ -298,7 +286,6 @@ auto inline bind(std::uint32_t array_element,
 *	@param	samplers	Sampelrs to bind
 */
 auto inline bind(const lib::vector<const sampler*> &samplers) {
-	assert(samplers.size());
 	return bind(0, samplers);
 }
 /**
@@ -309,8 +296,6 @@ auto inline bind(const lib::vector<const sampler*> &samplers) {
 *											bind starting at each those indices
 */
 auto inline bind(const lib::vector<std::pair<std::uint32_t, lib::vector<const sampler*>>> &array_element_samplers_pairs) {
-	assert(array_element_samplers_pairs.size());
-
 	lib::vector<pipeline_resource_binder<vk::vk_descriptor_set_write_image, sampler>> resource_binders;
 	resource_binders.reserve(array_element_samplers_pairs.size());
 	for (auto &pair : array_element_samplers_pairs) {

@@ -28,7 +28,7 @@ private:
 
 public:
 	fxaa_postprocess(const gl::rendering_system &rs,
-					  gl::framebuffer_layout &&fb_layout);
+					 gl::framebuffer_layout &&fb_layout);
 
 	static lib::string name() { return "fxaa"; }
 

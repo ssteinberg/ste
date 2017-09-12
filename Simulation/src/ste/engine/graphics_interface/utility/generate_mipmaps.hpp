@@ -33,7 +33,9 @@ template <int dimensions, class allocation_policy>
 auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					  image_layout initial_layout,
 					  image_layout final_layout,
-					  std::uint32_t start_level = 1) {
+					  std::uint32_t start_level,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	auto future = image.parent_context().engine().task_scheduler().schedule_now([=, &image]() {
 		const ste_context &ctx = image.parent_context();
 
@@ -128,7 +130,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 
-			ste_device_queue::submit_batch(std::move(batch));
+			ste_device_queue::submit_batch(std::move(batch), wait_semaphores, signal_semaphores);
 		});
 
 		enqueue_future.get();

@@ -136,8 +136,8 @@ private:
 				if (!it->stages.exists(stage))
 					continue;
 
-				std::uint32_t offset = it->offset;
-				std::uint32_t size = it->variable->size_bytes();
+				const std::uint32_t offset = it->offset;
+				const std::uint32_t size = it->variable->size_bytes();
 
 				stage_range_start = std::min(stage_range_start, offset);
 				stage_range_end =	std::max(stage_range_end,	offset + size);
@@ -147,7 +147,7 @@ private:
 			auto r = stage_range{ ste_shader_program_stage_to_stage_flag(stage), range<>(stage_range_start, stage_range_end - stage_range_start) };
 
 			// Insert range for stage, sorted.
-			auto it = std::upper_bound(ranges.begin(), ranges.end(), r, [](const auto &lhs, const auto &rhs) {
+			const auto it = std::upper_bound(ranges.begin(), ranges.end(), r, [](const auto &lhs, const auto &rhs) {
 				return lhs.r.start < rhs.r.start;
 			});
 			ranges.insert(it, std::move(r));

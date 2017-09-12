@@ -7,8 +7,7 @@
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
 
-#include <rendering_presentation_system.hpp>
-#include <presentation_engine.hpp>
+#include <rendering_system.hpp>
 #include <pipeline_external_binding_set.hpp>
 
 #include <scene.hpp>
@@ -36,13 +35,13 @@
 namespace ste {
 namespace graphics {
 
-class primary_renderer : public gl::rendering_presentation_system {
-	using Base = gl::rendering_presentation_system;
+class primary_renderer : public gl::rendering_system {
+	using Base = gl::rendering_system;
 
+public:
 	using camera_t = primary_renderer_camera;
 
 private:
-	std::reference_wrapper<gl::presentation_engine> presentation;
 	const camera_t *cam;
 	scene *s;
 
@@ -75,8 +74,6 @@ private:
 	optional<atmospherics_properties<double>> atmospherics_properties_update;
 
 private:
-	static gl::framebuffer_layout create_fb_layout(const ste_context &ctx);
-
 	void reattach_framebuffers();
 
 	/**
@@ -102,7 +99,7 @@ private:
 	
 public:
 	primary_renderer(const ste_context &ctx,
-					 gl::presentation_engine &presentation,
+					 gl::framebuffer_layout &&fb_layout,
 					 const camera_t *cam,
 					 scene *s,
 					 const atmospherics_properties<double> &atmospherics_prop);
@@ -125,12 +122,17 @@ public:
 	 */
 	void set_aperture_parameters(float diameter, float focal_length) { hdr->set_aperture_parameters(diameter, focal_length); }
 
-protected:
+	/*
+	 *	@brief		Attaches output framebuffer
+	 */
+	void attach_framebuffer(gl::framebuffer &fb) {
+		fxaa->attach_framebuffer(fb);
+	}
+
 	/**
 	 *	@brief		Performs rendering and presentation.
 	 */
-	void present() override final;
-	void render() override final {}
+	void render(gl::command_recorder &) override final;
 };
 
 }

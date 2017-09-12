@@ -51,6 +51,25 @@ public:
 	task_scheduler &operator=(task_scheduler &&) = delete;
 
 	/**
+	*	@brief	Checks if all requests have finished processing
+	*/
+	bool is_idle() const {
+		return 
+			pool.get_pending_requests_count() == 0 &&
+			pool.get_active_workers_count() == 0;
+	}
+
+	/**
+	*	@brief	Waits idly for the pool until all requests are finished processing
+	*/
+	void wait_idle() {
+		while (!is_idle()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			tick();
+		}
+	}
+
+	/**
 	*	@brief	Load balances thread pool and enqueues delayed tasks
 	*/
 	void tick() {

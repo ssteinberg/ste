@@ -46,9 +46,8 @@ struct block_layout_type_base_alignment_impl {
 	}
 	template <typename S = T>
 	static constexpr auto alignment(std::enable_if_t<is_matrix<S>::value>* = nullptr) {
-		using row_t = std::remove_reference_t<decltype(std::declval<T>()[0])>;
-		static constexpr std::size_t rows_alignment = block_layout_type_base_alignment_impl<row_t>::template alignment<>();
-		static constexpr std::size_t value = rows_alignment * matrix_columns_count<T>::value * sizeof(remove_extents<S>::type);
+		using row_t = std::remove_reference_t<decltype(std::declval<S>()[0])>;
+		static constexpr std::size_t value = block_layout_type_base_alignment_impl<row_t>::template alignment<>();
 		return value;
 	}
 	template <typename S = T>

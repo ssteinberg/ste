@@ -74,7 +74,7 @@ protected:
 	*/
 	template <typename T, typename ... Ts>
 	lib::unique_ptr<T> allocate_resource(Ts&&... args) {
-		static_assert(std::is_base_of<resource_type, T>::value, "T must derive from Core::observable_resource<Descriptor> !");
+		static_assert(std::is_base_of<resource_type, T>::value, "T must derive from gl::observable_resource<Descriptor> !");
 
 		// Craete new resource
 		auto ptr = lib::allocate_unique<T>(std::forward<Ts>(args)...);
@@ -128,7 +128,7 @@ public:
 	virtual ~resource_storage() noexcept {
 		std::unique_lock<std::mutex> l(Base::objects_mutex);
 		for (auto &res : Base::objects)
-			erase_resource(res);
+			res->storage_ptr = nullptr;
 	}
 
 	/**

@@ -61,37 +61,51 @@ public:
 																														  gl::image_layout::shader_read_only_optimal,
 																														  "Microfacet refraction fit LuT",
 																														  false)),
-		microfacet_transmission_fit_lut(ctx,
-										resource::surface_factory::image_from_surface_2d_array<gl::format::r32g32b32a32_sfloat>(ctx,
-																																load_lut<microfacet_transmission_fit_v4>()(transmission_fit_path),
-																																gl::image_usage::sampled,
-																																gl::image_layout::shader_read_only_optimal,
-																																"Microfacet transmission fit LuT",
-																																false)),
-		ltc_ggx_fit(ctx,
-					resource::surface_factory::image_from_surface_2d<gl::format::r32g32b32a32_sfloat>(ctx,
-																									  ggx_tab_path,
-																									  gl::image_usage::sampled,
-																									  gl::image_layout::shader_read_only_optimal,
-																									  "LTC GGX fit LuT",
-																									  false)),
-		ltc_ggx_amplitude(ctx,
-						  resource::surface_factory::image_from_surface_2d<gl::format::r32g32b32a32_sfloat>(ctx,
-																											ggx_amp_path,
-																											gl::image_usage::sampled,
-																											gl::image_layout::shader_read_only_optimal,
-																											"LTC GGX amplitude LuT",
-																											false))
-	{}
+		  microfacet_transmission_fit_lut(ctx,
+										  resource::surface_factory::image_from_surface_2d_array<gl::format::r32g32b32a32_sfloat>(ctx,
+																																  load_lut<microfacet_transmission_fit_v4>()(transmission_fit_path),
+																																  gl::image_usage::sampled,
+																																  gl::image_layout::shader_read_only_optimal,
+																																  "Microfacet transmission fit LuT",
+																																  false)),
+		  ltc_ggx_fit(ctx,
+					  resource::surface_factory::image_from_surface_2d<gl::format::r32g32b32a32_sfloat>(ctx,
+																										ggx_tab_path,
+																										gl::image_usage::sampled,
+																										gl::image_layout::shader_read_only_optimal,
+																										"LTC GGX fit LuT",
+																										false)),
+		  ltc_ggx_amplitude(ctx,
+							resource::surface_factory::image_from_surface_2d<gl::format::r32g32b32a32_sfloat>(ctx,
+																											  ggx_amp_path,
+																											  gl::image_usage::sampled,
+																											  gl::image_layout::shader_read_only_optimal,
+																											  "LTC GGX amplitude LuT",
+																											  false)) {}
 
-	// Use nearest_clamp sampler
-	auto& get_microfacet_refraction_fit_lut() const { return microfacet_refraction_fit_lut.get(); }
-	// Use nearest_clamp sampler
-	auto& get_microfacet_transmission_fit_lut()const { return microfacet_transmission_fit_lut.get(); }
-	// Use linear_clamp sampler
-	auto& get_ltc_ggx_fit()const { return ltc_ggx_fit.get(); }
-	// Use linear_clamp sampler
-	auto& get_ltc_ggx_amplitude()const { return ltc_ggx_amplitude.get(); }
+	/**
+	 *	@brief	Returns a reference to the Microfacet refraction fit look-up-table.
+	 *			Expects a nearest_clamp sampler.
+	 */
+	auto &get_microfacet_refraction_fit_lut() const { return microfacet_refraction_fit_lut.get(); }
+
+	/**
+	*	@brief	Returns a reference to the Microfacet transmission fit look-up-table.
+	*			Expects a nearest_clamp sampler.
+	*/
+	auto &get_microfacet_transmission_fit_lut() const { return microfacet_transmission_fit_lut.get(); }
+
+	/**
+	*	@brief	Returns a reference to the LTC GGX fit look-up-table.
+	*			Expects a linear_clamp sampler.
+	*/
+	auto &get_ltc_ggx_fit() const { return ltc_ggx_fit.get(); }
+
+	/**
+	*	@brief	Returns a reference to the LTC GGX amplitude look-up-table.
+	*			Expects a linear_clamp sampler.
+	*/
+	auto &get_ltc_ggx_amplitude() const { return ltc_ggx_amplitude.get(); }
 };
 
 }

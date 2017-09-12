@@ -6,7 +6,7 @@
 using namespace ste;
 
 void task_scheduler::enqueue_delayed() {
-	auto now = std::chrono::high_resolution_clock::now();
+	const auto now = std::chrono::high_resolution_clock::now();
 	for (auto it = delayed_tasks_list.begin(); it != delayed_tasks_list.end();) {
 		if (now >= it->run_at) {
 			schedule_now([f = std::move(it->f)](){ (*f)(); });

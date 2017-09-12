@@ -9,6 +9,8 @@ const int blur_samples_count = 8;
 layout(binding = 0) uniform sampler2D unblured_hdr;
 layout(binding = 1) uniform sampler2D hdr;
 
+layout(location = 0) in vec2 uv;
+
 layout(location = 0) out vec3 frag_color;
 
 void main() {

@@ -85,18 +85,31 @@ private:
 			      mip_levels, layers,
 				  name.data(), flags);
 
-		// Copy surface to image
-		gl::fill_image(image,
-		               std::move(surface),
-		               layout,
-		               gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::primary_queue));
 
 		if (m < mip_levels) {
+			auto semaphore = ctx.device().get_sync_primitives_pools().semaphores().claim();
+
+			// Copy surface to image
+			gl::fill_image(image,
+						   std::move(surface),
+						   layout,
+						   gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::primary_queue),
+						   lib::vector<gl::wait_semaphore>{}, 
+						   { &semaphore.get() });
+
 			// Generate mipmaps
 			gl::generate_mipmaps(image,
-			                     layout,
-			                     layout,
-			                     m);
+								 layout,
+								 layout,
+								 m,
+								 { gl::wait_semaphore(&semaphore.get(), gl::pipeline_stage::bottom_of_pipe) });
+		}
+		else {
+			// Copy surface to image
+			gl::fill_image(image,
+						   std::move(surface),
+						   layout,
+						   gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::primary_queue));
 		}
 
 		return image;
@@ -213,8 +226,7 @@ private:
 			gl::pipeline_stage pipeline_stages = gl::all_possible_pipeline_stages_for_access_flags(access);
 			auto future = gl::queue_transfer_discard(ctx,
 			                                         image,
-			                                         gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(
-				                                         gl::ste_queue_type::primary_queue),
+			                                         gl::ste_queue_selector<gl::ste_queue_selector_policy_strict>(gl::ste_queue_type::primary_queue),
 			                                         pipeline_stages,
 			                                         gl::image_layout::undefined,
 			                                         layout, access);

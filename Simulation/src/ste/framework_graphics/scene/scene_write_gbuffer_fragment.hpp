@@ -46,7 +46,7 @@ public:
 	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[gl::pipeline_depth_attachment_location] = gl::load_store(gl::format::d32_sfloat,
-																		   gl::image_layout::depth_stencil_attachment_optimal,
+																		   gl::image_layout::shader_read_only_optimal,
 																		   gl::image_layout::shader_read_only_optimal);
 		fb_layout[0] = gl::ignore_store(gl::format::r32g32b32a32_sfloat,
 										gl::image_layout::shader_read_only_optimal);
@@ -79,10 +79,8 @@ public:
 
 	void record(gl::command_recorder &recorder) override final {
 		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
-		const auto stride = sizeof(gl::draw_indexed_indirect_command_std430_t);
 		
-		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
-							  static_cast<std::uint32_t>(stride));
+		recorder << draw_task(static_cast<std::uint32_t>(draw_count));
 	}
 };
 

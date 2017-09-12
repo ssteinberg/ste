@@ -61,32 +61,36 @@ private:
 	future_type future;
 
 private:
+	void try_exec_task() const {
+		const auto task_ptr_copy = task;
+		if (task_ptr_copy != nullptr)
+			(*task_ptr_copy)();
+	}
+
 	// Helper get/wait methods. Try to lock read mutex and get or wait for future using specified timeouts.
 	template <typename Future>
 	auto future_get(Future &f) {
-		if (task != nullptr)
-			(*task)();
+		try_exec_task();
 
 		write_lock_type rl(mutex);
 		return f.get();
 	}
 	template <typename Future>
 	auto future_wait(const Future &f) const {
-		if (task != nullptr)
-			(*task)();
+		try_exec_task();
 
 		read_lock_type rl(mutex);
 		return f.wait();
 	}
 	template <typename Future, class Rep, class Period>
 	auto future_wait_for(const Future &f, std::chrono::duration<Rep,Period> timeout_duration) const {
-		auto start = std::chrono::high_resolution_clock::now();
+		const auto start = std::chrono::high_resolution_clock::now();
 
 		read_lock_type rl(mutex, std::defer_lock);
 		if (!rl.try_lock_for(timeout_duration))
 			return std::future_status::timeout;
 
-		auto end = std::chrono::high_resolution_clock::now();
+		const auto end = std::chrono::high_resolution_clock::now();
 		auto elapsed = std::chrono::duration_cast<decltype(timeout_duration)>(end - start);
 		timeout_duration -= elapsed;
 

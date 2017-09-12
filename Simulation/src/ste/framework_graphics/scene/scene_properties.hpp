@@ -15,31 +15,31 @@ namespace graphics {
 
 class scene_properties {
 private:
+	material_textures_storage material_textures;
+
 	material_storage materials;
 	material_layer_storage material_layers;
-
-	material_textures_storage material_textures;
 
 	light_storage lights;
 
 public:
-	scene_properties(const ste_context &ctx) 
-		: materials(ctx),
-		material_layers(ctx,
-						material_textures),
-		lights(ctx)
-	{}
+	scene_properties(const ste_context &ctx)
+		: material_textures(ctx),
+		  materials(ctx),
+		  material_layers(ctx,
+						  material_textures),
+		  lights(ctx) {}
 
-	auto& materials_storage() { return materials; }
-	auto& materials_storage() const { return materials; }
-	auto& material_layers_storage() { return material_layers; }
-	auto& material_layers_storage() const { return material_layers; }
+	auto &materials_storage() { return materials; }
+	auto &materials_storage() const { return materials; }
+	auto &material_layers_storage() { return material_layers; }
+	auto &material_layers_storage() const { return material_layers; }
 
-	auto& material_textures_storage() { return material_textures; }
-	auto& material_textures_storage() const { return material_textures; }
+	auto &material_textures_storage() { return material_textures; }
+	auto &material_textures_storage() const { return material_textures; }
 
-	auto& lights_storage() { return lights; }
-	auto& lights_storage() const { return lights; }
+	auto &lights_storage() { return lights; }
+	auto &lights_storage() const { return lights; }
 
 	void update(gl::command_recorder &recorder) {
 		materials.update(recorder);

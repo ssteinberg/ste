@@ -72,10 +72,8 @@ public:
 
 	void record(gl::command_recorder &recorder) override final {
 		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
-		const auto stride = sizeof(gl::draw_indexed_indirect_command_std430_t);
 
-		recorder << draw_task(static_cast<std::uint32_t>(draw_count),
-							  static_cast<std::uint32_t>(stride));
+		recorder << draw_task(static_cast<std::uint32_t>(draw_count));
 	}
 };
 

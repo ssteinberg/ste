@@ -25,15 +25,21 @@ material_layer::material_layer(const ste_context &ctx,
 	descriptor.set_next_layer_id(material_layer_none);
 	descriptor.set_albedo(glm::vec4{ 1.f });
 
-	roughness_map = this->textures_storage->allocate_texture(create_scalar_map(.5f));
+	set_default_maps();
+}
+
+void material_layer::set_default_maps() {
+	auto blank = this->textures_storage->blank_texture();
+
+	roughness_map = blank;
 	descriptor.set_roughness_map_handle(roughness_map.texture_index());
 
-//	anisotropy_map = this->textures_storage->allocate_texture(create_scalar_map(.0f));
+//	anisotropy_map = blank;
 //	descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
 
-	metallicity_map = this->textures_storage->allocate_texture(create_scalar_map(.0f));
+	metallicity_map = blank;
 	descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
 
-	thickness_map = this->textures_storage->allocate_texture(create_scalar_map(.0f));
+	thickness_map = blank;
 	descriptor.set_thickness_map_handle(thickness_map.texture_index());
 }

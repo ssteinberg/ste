@@ -62,6 +62,7 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	set["linked_light_list_binding"] = gl::bind(linked_light_list_storage.linked_light_lists_buffer());
 
 	set["cascades_depths_uniform_binding"] = gl::bind(s->properties().lights_storage().get_cascade_depths_uniform_buffer());
+	set["light_cascades_binding"] = gl::bind(s->properties().lights_storage().get_directional_lights_cascades_buffer());
 
 	// G-Buffer
 	set["downsampled_depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get_downsampled_depth_target(),
@@ -97,7 +98,12 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	return set;
 }
 
-void primary_renderer_buffers::update_common_binding_set() {
+void primary_renderer_buffers::update_common_binding_set(scene *s) {
+	// Update material bindings, if materials were mutated
+	common_binding_set_collection["material_textures_count"] = s->properties().material_textures_storage().size();
+	common_binding_set_collection["material_textures"] = s->properties().material_textures_storage().binder();
+
+	// Recreate common binding set, if invalidated.
 	gl::device_pipeline_resources_marked_for_deletion old_resources;
 	if (common_binding_set_collection.is_invalidated()) {
 		old_resources.external_binding_set = common_binding_set_collection.recreate_set(ctx.get().device(),
@@ -113,12 +119,7 @@ void primary_renderer_buffers::update_common_binding_set() {
 }
 
 void primary_renderer_buffers::update(gl::command_recorder &recorder,
-									  scene *s,
 									  const camera_t *cam) {
-	// Update material bindings, if materials were mutated
-	common_binding_set_collection["material_textures_count"] = s->properties().material_textures_storage().size();
-	common_binding_set_collection["material_textures"] = s->properties().material_textures_storage().binder();
-
 	// Upload new camera transform data
 	transform_buffers.update_view_data(recorder, *cam);
 

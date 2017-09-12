@@ -80,19 +80,22 @@ gl::device_pipeline_graphics text_manager::create_pipeline(const ste_context &ct
 void text_manager::bind_pipeline_resources(std::uint32_t first_offset) {
 	pipeline["glyph_sampler"] = gl::bind(gm.sampler());
 
-	std::uint32_t texture_count = static_cast<std::uint32_t>(gm.textures().size());
+	{
+		std::unique_lock<std::mutex> l(gm.mutex);
 
-	if (texture_count) {
-		pipeline["glyph_texture_count"] = texture_count;
-		pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
+		std::uint32_t texture_count = static_cast<std::uint32_t>(gm.glyph_textures.size());
+		if (texture_count) {
+			pipeline["glyph_texture_count"] = texture_count;
+			pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
 
-		lib::vector<gl::pipeline::image> textures;
-		textures.reserve(texture_count);
-		for (std::uint32_t i = first_offset; i < texture_count; ++i) {
-			auto &glyph_texture = gm.textures()[i];
-			textures.emplace_back(glyph_texture);
+			lib::vector<gl::pipeline::image> textures;
+			textures.reserve(texture_count);
+			for (std::uint32_t i = first_offset; i < texture_count; ++i) {
+				auto &glyph_texture = gm.glyph_textures[i];
+				textures.emplace_back(glyph_texture);
+			}
+			pipeline["glyph_textures"] = gl::bind(textures);
 		}
-		pipeline["glyph_textures"] = gl::bind(textures);
 	}
 }
 
@@ -208,20 +211,24 @@ bool text_manager::update_glyphs(gl::command_recorder &recorder) {
 	if (!updated_range.length)
 		return false;
 
-	std::uint32_t texture_count = static_cast<std::uint32_t>(gm.textures().size());
+	{
+		std::unique_lock<std::mutex> l(gm.mutex);
 
-	pipeline["glyph_texture_count"] = texture_count;
-	pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
+		std::uint32_t texture_count = static_cast<std::uint32_t>(gm.glyph_textures.size());
 
-	lib::vector<gl::pipeline::image> textures;
-	textures.reserve(static_cast<std::size_t>(updated_range.length));
-	for (auto i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
-		auto tex_idx = static_cast<std::size_t>(i);
-		auto &glyph_texture = gm.textures()[tex_idx];
-		textures.emplace_back(glyph_texture);
+		pipeline["glyph_texture_count"] = texture_count;
+		pipeline["glyph_data"] = gl::bind(gm.ssbo().get(), 0, texture_count);
+
+		lib::vector<gl::pipeline::image> textures;
+		textures.reserve(static_cast<std::size_t>(updated_range.length));
+		for (auto i = updated_range.start; i < updated_range.start + updated_range.length; ++i) {
+			const auto tex_idx = static_cast<std::size_t>(i);
+			auto &glyph_texture = gm.glyph_textures[tex_idx];
+			textures.emplace_back(glyph_texture);
+		}
+		pipeline["glyph_textures"] = gl::bind(static_cast<std::uint32_t>(updated_range.start),
+											  textures);
 	}
-	pipeline["glyph_textures"] = gl::bind(static_cast<std::uint32_t>(updated_range.start),
-										  textures);
 
 	return true;
 }

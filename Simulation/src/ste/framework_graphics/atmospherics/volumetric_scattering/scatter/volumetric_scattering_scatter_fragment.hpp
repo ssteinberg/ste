@@ -11,6 +11,8 @@
 
 #include <cmd_clear_color_image.hpp>
 
+#include <connection.hpp>
+
 namespace ste {
 namespace graphics {
 
@@ -23,6 +25,13 @@ private:
 	const volumetric_scattering_storage *vss;
 	const light_storage *ls;
 
+	signal<>::connection_type volumetric_scattering_storage_change;
+
+private:
+	void attach_scatter_volume() {
+		pipeline()["scattering_volume"] = gl::bind(gl::pipeline::storage_image(vss->get_volume_texture()));
+	}
+
 public:
 	volumetric_scattering_scatter_fragment(const gl::rendering_system &rs,
 										   const volumetric_scattering_storage *vss,
@@ -33,6 +42,11 @@ public:
 		ls(ls)
 	{
 		dispatch_task.attach_pipeline(pipeline());
+
+		attach_scatter_volume();
+		volumetric_scattering_storage_change = make_connection(vss->get_storage_modified_signal(), [this]() {
+			attach_scatter_volume();
+		});
 	}
 	~volumetric_scattering_scatter_fragment() noexcept {}
 
@@ -40,15 +54,18 @@ public:
 
 	static lib::string name() { return "scatter"; }
 
+	void clear(gl::command_recorder &recorder)  {
+		static const glm::vec4 clear_data = { .0f, .0f, .0f, .0f };
+		recorder << gl::cmd_clear_color_image(vss->get_volume_texture().get_image(),
+											  gl::image_layout::transfer_dst_optimal,
+											  clear_data);
+	}
+
 	void record(gl::command_recorder &recorder) override final {
 		static const glm::ivec2 jobs = { 32, 32 };
-		static const glm::vec4 clear_data = { .0f, .0f, .0f, .0f };
 
 		const auto size = (glm::ivec2{ vss->get_tiles_extent().x, vss->get_tiles_extent().y } + jobs - glm::ivec2(1)) / jobs;
 
-		recorder << gl::cmd_clear_color_image(vss->get_volume_texture().get_image(), 
-											  gl::image_layout::transfer_dst_optimal, 
-											  clear_data);
 		recorder << dispatch_task(static_cast<std::uint32_t>(size.x), 
 								  static_cast<std::uint32_t>(size.y),
 								  1u);

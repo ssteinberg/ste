@@ -24,7 +24,7 @@ layout(set=2, binding=32) uniform cascades_depths_uniform_binding {
 };
 
 layout(std430, set=2, binding=12) restrict readonly buffer light_cascades_binding {
-	light_cascades_descriptor light_cascades[max_active_directional_lights_per_frame];
+	light_cascades_descriptor light_cascades[];
 };
 
 /*
