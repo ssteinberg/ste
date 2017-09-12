@@ -257,8 +257,8 @@ Self sufficient
 
 **renderer_transform_buffers**
 
-buffer 0 --- view transform<br/>
-buffer 1 --- projection transform<br/>
+uniform buffer 0 --- view transform<br/>
+uniform buffer 1 --- projection transform<br/>
 
 ****
 **mesh**
@@ -312,7 +312,7 @@ uniform 26 -- directional shadow cascades (sampler2DArray)<br/>
 ****
 **Atmospherics**
 
-buffer 27 --- atmospherics descriptor<br/>
+uniform buffer 27 --- atmospherics descriptor<br/>
 uniform 28 -- atmospheric optical length lut (sampler2DArray)<br/>
 uniform 29 -- atmospheric mie0 scattering lut (sampler3D)<br/>
 uniform 30 -- atmospheric ambient lut (sampler3D)<br/>

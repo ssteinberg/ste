@@ -10,7 +10,9 @@
 #include <object_group_draw_buffers.hpp>
 
 #include <command_recorder.hpp>
+
 #include <lib/unordered_map.hpp>
+#include <mutex>
 
 namespace ste {
 namespace graphics {
@@ -30,10 +32,8 @@ private:
 	object_group_draw_buffers draw_buffers;
 	objects_map_type objects;
 
-	std::uint32_t total_vertices{ 0 };
-	std::uint32_t total_indices{ 0 };
-
 	mutable lib::vector<object*> signalled_objects;
+	mutable std::mutex m;
 
 public:
 	object_group(const ste_context &ctx) : draw_buffers(ctx) {}
@@ -47,7 +47,7 @@ public:
 	auto& get_draw_buffers() { return draw_buffers; }
 	auto& get_draw_buffers() const { return draw_buffers; }
 
-	std::size_t total_objects() const { return objects.size(); }
+	auto draw_count() const { return objects.size(); }
 };
 
 }

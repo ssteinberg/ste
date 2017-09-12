@@ -14,30 +14,29 @@ layout(local_size_x = 128) in;
 
 #include <mesh_descriptor.glsl>
 
-
-layout(std430, binding = 0) restrict buffer counter_data {
-	uint counter;
-};
-
-layout(std430, binding = 1) restrict writeonly buffer idb_data {
+layout(std430, binding = 0) restrict writeonly buffer idb_data {
 	indirect_multi_draw_elements_command idb[];
 };
-layout(std430, binding = 2) restrict writeonly buffer sidb_data {
+layout(std430, binding = 1) restrict writeonly buffer sidb_data {
 	indirect_multi_draw_elements_command sidb[];
 };
-layout(std430, binding = 3) restrict writeonly buffer dsidb_data {
+layout(std430, binding = 2) restrict writeonly buffer dsidb_data {
 	indirect_multi_draw_elements_command dsidb[];
 };
-layout(std430, binding = 4) restrict writeonly buffer drawid_to_lightid_ttl_data {
+layout(std430, binding = 3) restrict writeonly buffer drawid_to_lightid_ttl_data {
 	drawid_to_lightid_ttl ttl[];
 };
-layout(std430, binding = 5) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
+layout(std430, binding = 4) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl d_ttl[];
+};
+
+layout(push_constant) uniform mesh_descriptors_count_t {
+	uint mesh_count;
 };
 
 void main() {
 	int draw_id = int(gl_GlobalInvocationID.x);
-	if (draw_id >= mesh_descriptor_buffer.length())
+	if (draw_id >= mesh_count)
 		return;
 
 	mesh_descriptor md = mesh_descriptor_buffer[draw_id];
@@ -87,27 +86,18 @@ void main() {
 		}
 	}
 
-	// Write to scene and shadows indirect draw buffers
-	if (shadow_instance_count > 0 || dir_shadow_instance_count > 0) {
-		uint idx = atomicAdd(counter, 1);
-
-		indirect_multi_draw_elements_command c;
-		c.index_count = mesh_draw_params_buffer[draw_id].count;
-		c.instance_count = 1;
-		c.first_index = mesh_draw_params_buffer[draw_id].first_index;
-		c.vertex_offset = mesh_draw_params_buffer[draw_id].vertex_offset;
-		c.base_instance = draw_id;
-
-		idb[idx] = c;
-
-		if (shadow_instance_count > 0) {
-			c.instance_count = shadow_instance_count;
-			sidb[idx] = c;
-		}
-
-		if (dir_shadow_instance_count > 0) {
-			c.instance_count = dir_shadow_instance_count;
-			dsidb[idx] = c;
-		}
-	}
+	// Generate indirect draw command
+	indirect_multi_draw_elements_command c;
+	c.index_count = shadow_instance_count > 0 || dir_shadow_instance_count > 0 ? mesh_draw_params_buffer[draw_id].count : 0;
+	c.instance_count = 1;
+	c.first_index = mesh_draw_params_buffer[draw_id].first_index;
+	c.vertex_offset = mesh_draw_params_buffer[draw_id].vertex_offset;
+	c.base_instance = draw_id;
+	
+	// Write to scene and shadow indirect draw buffers
+	idb[draw_id] = c;
+	c.instance_count = shadow_instance_count;
+	sidb[draw_id] = c;
+	c.instance_count = dir_shadow_instance_count;
+	dsidb[draw_id] = c;
 }

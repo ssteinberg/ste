@@ -11,8 +11,10 @@
 #include <object_group.hpp>
 #include <light_storage.hpp>
 
+#include <vector.hpp>
+#include <std430.hpp>
+
 #include <command_recorder.hpp>
-#include <cmd_fill_buffer.hpp>
 
 namespace ste {
 namespace graphics {
@@ -31,10 +33,10 @@ private:
 
 	public:
 		shadow_projection_data(const ste_context &ctx)
-			: idb(ctx, 
+			: idb(ctx,
 				  gl::buffer_usage::storage_buffer,
 				  "shadow_projection_data idb"),
-			proj_id_to_light_id_translation_table(ctx, 
+			proj_id_to_light_id_translation_table(ctx,
 												  gl::buffer_usage::storage_buffer,
 												  "shadow_projection_data proj_id_to_light_id_translation_table") {}
 
@@ -51,7 +53,6 @@ private:
 	object_group objects;
 	scene_properties scene_props;
 
-	mutable gl::array<gl::std430<std::uint32_t>> culled_objects_counter;
 	mutable object_group_indirect_command_buffer idb;
 
 	mutable shadow_projection_data<shadow_pltt_size> shadow_projection;
@@ -61,11 +62,7 @@ public:
 	scene(const ste_context &ctx)
 		: objects(ctx),
 		scene_props(ctx),
-		culled_objects_counter(ctx, 
-							   1, 
-							   gl::buffer_usage::storage_buffer,
-							   "culled_objects_counter"),
-		idb(ctx, 
+		idb(ctx,
 			gl::buffer_usage::storage_buffer,
 			"indirect draw buffer"),
 		shadow_projection(ctx),
@@ -85,7 +82,6 @@ public:
 	const object_group &get_object_group() const { return objects; }
 
 	auto &get_idb() const { return idb; }
-	auto &get_culled_objects_counter() const { return culled_objects_counter; }
 
 	auto &get_shadow_projection_buffers() const { return shadow_projection; }
 	auto &get_directional_shadow_projection_buffers() const { return directional_shadow_projection; }
@@ -95,13 +91,6 @@ public:
 		recorder << idb->resize_cmd(size);
 		shadow_projection.resize(recorder, size);
 		directional_shadow_projection.resize(recorder, size);
-	}
-	void clear_indirect_command_buffers(gl::command_recorder &recorder) const {
-		recorder
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(idb.get().get()), 0u)
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(shadow_projection.idb.get().get()), 0u)
-			<< gl::cmd_fill_buffer(static_cast<gl::device_buffer_base&>(directional_shadow_projection.idb.get().get()), 0u)
-			<< gl::cmd_fill_buffer(culled_objects_counter.get(), 0u);
 	}
 };
 

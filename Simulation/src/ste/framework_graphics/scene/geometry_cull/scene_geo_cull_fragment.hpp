@@ -25,7 +25,7 @@ private:
 
 private:
 	void commit_idbs(gl::command_recorder &recorder) {
-		auto size = s->get_object_group().get_draw_buffers().draw_count();
+		auto size = s->get_object_group().draw_count();
 		if (size != old_object_group_size) {
 			old_object_group_size = size;
 			s->resize_indirect_command_buffers(recorder, size);
@@ -41,7 +41,6 @@ public:
 		s(s),
 		ls(ls)
 	{
-		pipeline()["counter_data"] = gl::bind(s->get_culled_objects_counter());
 		pipeline()["idb_data"] = gl::bind(s->get_idb().get());
 		pipeline()["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
 		pipeline()["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
@@ -60,10 +59,12 @@ public:
 	void record(gl::command_recorder &recorder) override final {
 		commit_idbs(recorder);
 
-		auto& draw_buffers = s->get_object_group().get_draw_buffers();
+		auto draw_count = s->get_object_group().draw_count();
 
 		constexpr int jobs = 128;
-		auto size = (draw_buffers.draw_count() + jobs - 1) / jobs;
+		auto size = (draw_count + jobs - 1) / jobs;
+
+		pipeline()["mesh_descriptors_count_t.mesh_count"] = static_cast<std::uint32_t>(draw_count);
 
 		recorder << dispatch_task(static_cast<std::uint32_t>(size), 1u, 1u);
 	}

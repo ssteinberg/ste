@@ -143,8 +143,13 @@ private:
 		return std::max<unsigned>(std::thread::hardware_concurrency(), 1u);
 	}
 
+	unsigned max_worker_threads() const {
+		assert(std::thread::hardware_concurrency());
+		return std::max<unsigned>(std::thread::hardware_concurrency() * 4, 1u);
+	}
+
 public:
-	balanced_thread_pool(float idle_time_threshold_for_new_worker = .05f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .15f)
+	balanced_thread_pool(float idle_time_threshold_for_new_worker = .1f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .15f)
 		: idle_time_threshold_for_new_worker(idle_time_threshold_for_new_worker),
 		  kernel_time_thershold_for_despawn_extra_worker(kernel_time_thershold_for_despawn_extra_worker),
 		  idle_time_threshold_for_despawn_surplus_worker(idle_time_threshold_for_despawn_surplus_worker) {
@@ -204,6 +209,7 @@ public:
 	auto get_workers_count() const { return workers.size(); }
 	auto get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_acquire); }
 	auto get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_acquire); }
+
 	auto get_sleeping_workers_count() const {
 		auto count = static_cast<std::int32_t>(workers.size() - get_active_workers_count());
 		return static_cast<std::uint32_t>(std::max<std::int32_t>(0, count));
@@ -258,8 +264,10 @@ public:
 		const unsigned min_threads = min_worker_threads();
 		const auto req = get_pending_requests_count();
 		const auto threads_sleeping = get_sleeping_workers_count();
+		const auto total_workers_count = get_workers_count();
 		if (threads_sleeping == 0 &&
-			idle_frac > idle_time_threshold_for_new_worker) {
+			idle_frac > idle_time_threshold_for_new_worker &&
+			total_workers_count < max_worker_threads()) {
 			spawn_worker();
 		}
 		else if (workers.size() > min_threads &&

@@ -29,9 +29,8 @@ private:
 private:
 	auto& emplace_child(const ste_shader_stage_variable *element,
 						std::uint32_t parent_offset) {
-		auto offset = parent_offset + element->offset();
 		auto pair = children.emplace(element->name(), push_constant_descriptor(element,
-																			   offset));
+																			   parent_offset));
 
 		return pair.first->second;
 	}
