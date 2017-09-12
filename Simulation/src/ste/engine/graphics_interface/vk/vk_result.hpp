@@ -58,7 +58,7 @@ public:
 	bool operator==(const vk_result &res) const { return code == res.code; }
 
 	auto operator!() const { return code != VK_SUCCESS; }
-	operator bool() const { return code == VK_SUCCESS; }
+	operator bool() const { return !!*this; }
 	operator VkResult() const { return get(); }
 	explicit operator lib::string() const { return string(); }
 };

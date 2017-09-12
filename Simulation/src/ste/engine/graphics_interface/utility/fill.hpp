@@ -32,8 +32,8 @@ auto fill(array<T> &dst,
 	return make_job(std::move(future));
 }
 
-template <typename T, std::uint64_t minimal_atom_size, std::uint64_t max_sparse_size>
-auto fill(stable_vector<T, minimal_atom_size, max_sparse_size> &dst,
+template <typename T, std::uint64_t max_sparse_size>
+auto fill(stable_vector<T, max_sparse_size> &dst,
 		  lib::vector<T> &&data,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
@@ -48,8 +48,8 @@ auto fill(stable_vector<T, minimal_atom_size, max_sparse_size> &dst,
 	return make_job(std::move(future));
 }
 
-template <typename T, std::uint64_t minimal_atom_size, std::uint64_t max_sparse_size>
-auto fill(vector<T, minimal_atom_size, max_sparse_size> &dst,
+template <typename T, std::uint64_t max_sparse_size>
+auto fill(vector<T, max_sparse_size> &dst,
 		  lib::vector<T> &&data,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();

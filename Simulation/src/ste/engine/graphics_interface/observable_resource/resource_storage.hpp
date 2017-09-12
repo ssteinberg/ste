@@ -128,7 +128,7 @@ public:
 	virtual ~resource_storage() noexcept {
 		std::unique_lock<std::mutex> l(Base::objects_mutex);
 		for (auto &res : Base::objects)
-			erase_resource(res);
+			res->storage_ptr = nullptr;
 	}
 
 	/**

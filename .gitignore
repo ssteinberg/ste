@@ -212,6 +212,7 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 Simulation/third_party/build/work/
+Simulation/Tools/ste_spirv_compiler/glslang_build/
 
 Simulation/build/
 Simulation/bin/
