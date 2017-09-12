@@ -39,3 +39,4 @@
 23. Queue transfer, correctly, in time.
 24. Get rid of host commands altogether.
 25. Fix bind sparse mess.
+26. Host read-back, buffers and images.
