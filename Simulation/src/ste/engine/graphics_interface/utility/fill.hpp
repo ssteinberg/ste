@@ -7,7 +7,7 @@
 #include <ste_context.hpp>
 #include <job.hpp>
 
-#include <copy_data_buffer.hpp>
+#include <host_write_buffer.hpp>
 
 #include <array.hpp>
 #include <vector.hpp>
@@ -22,11 +22,11 @@ auto fill(array<T> &dst,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
-		_internal::copy_data_buffer(dst->parent_context(),
-									dst,
-									data.data(),
-									data.size(),
-									offset);
+		_internal::host_write_buffer(dst->parent_context(),
+									 dst,
+									 data.data(),
+									 data.size(),
+									 offset);
 	});
 
 	return make_job(std::move(future));
@@ -38,11 +38,11 @@ auto fill(stable_vector<T, max_sparse_size> &dst,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
-		_internal::copy_data_buffer_and_resize(dst->parent_context(),
-											   dst,
-											   data.data(),
-											   data.size(),
-											   offset);
+		_internal::host_write_buffer_and_resize(dst->parent_context(),
+												dst,
+												data.data(),
+												data.size(),
+												offset);
 	});
 
 	return make_job(std::move(future));
@@ -54,11 +54,11 @@ auto fill(vector<T, max_sparse_size> &dst,
 		  std::size_t offset = 0) {
 	const auto &ctx = dst->parent_context();
 	auto future = ctx.engine().task_scheduler().schedule_now([&dst, data = std::move(data), offset]() {
-		_internal::copy_data_buffer_and_resize(dst->parent_context(),
-											   dst,
-											   data.data(),
-											   data.size(),
-											   offset);
+		_internal::host_write_buffer_and_resize(dst->parent_context(),
+												dst,
+												data.data(),
+												data.size(),
+												offset);
 	});
 
 	return make_job(std::move(future));

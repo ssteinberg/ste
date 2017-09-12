@@ -16,6 +16,11 @@ private:
 	const vk::vk_query<> &query;
 
 public:
+	cmd_end_query(cmd_end_query&&) = default;
+	cmd_end_query(const cmd_end_query&) = default;
+	cmd_end_query &operator=(cmd_end_query&&) = default;
+	cmd_end_query &operator=(const cmd_end_query&) = default;
+
 	cmd_end_query(const vk::vk_query<> &query) : query(query) {}
 	virtual ~cmd_end_query() noexcept {}
 

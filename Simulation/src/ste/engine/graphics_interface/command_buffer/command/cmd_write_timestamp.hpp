@@ -17,8 +17,14 @@ private:
 	VkPipelineStageFlagBits stage;
 
 public:
+	cmd_write_timestamp(cmd_write_timestamp &&) = default;
+	cmd_write_timestamp(const cmd_write_timestamp&) = default;
+	cmd_write_timestamp &operator=(cmd_write_timestamp &&) = default;
+	cmd_write_timestamp &operator=(const cmd_write_timestamp&) = default;
+
 	cmd_write_timestamp(const vk::vk_query<> &query,
 						VkPipelineStageFlagBits stage) : query(query), stage(stage) {}
+
 	virtual ~cmd_write_timestamp() noexcept {}
 
 private:

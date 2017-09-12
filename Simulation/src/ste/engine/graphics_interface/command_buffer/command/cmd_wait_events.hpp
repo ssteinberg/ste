@@ -23,6 +23,11 @@ private:
 	lib::vector<VkImageMemoryBarrier> image_barriers;
 
 public:
+	cmd_wait_events(cmd_wait_events&&) = default;
+	cmd_wait_events(const cmd_wait_events&) = default;
+	cmd_wait_events &operator=(cmd_wait_events&&) = default;
+	cmd_wait_events &operator=(const cmd_wait_events&) = default;
+
 	cmd_wait_events(const std::initializer_list<VkEvent> &events,
 					const pipeline_barrier &barrier)
 		: barrier(barrier)
