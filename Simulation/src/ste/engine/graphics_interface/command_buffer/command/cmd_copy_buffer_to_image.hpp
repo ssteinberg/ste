@@ -18,19 +18,23 @@ namespace gl {
 
 class cmd_copy_buffer_to_image : public command {
 private:
-	std::reference_wrapper<const device_buffer_base> src_buffer;
-	std::reference_wrapper<const device_image_base> dst_image;
+	VkBuffer src_buffer;
+	VkImage dst_image;
 	image_layout layout;
 
 	lib::vector<VkBufferImageCopy> ranges;
 
 public:
+	cmd_copy_buffer_to_image(cmd_copy_buffer_to_image &&) = default;
+	cmd_copy_buffer_to_image(const cmd_copy_buffer_to_image&) = default;
+	cmd_copy_buffer_to_image &operator=(cmd_copy_buffer_to_image &&) = default;
+	cmd_copy_buffer_to_image &operator=(const cmd_copy_buffer_to_image&) = default;
+
 	cmd_copy_buffer_to_image(const device_buffer_base &src_buffer,
 							 const device_image_base &dst_image,
 							 const image_layout &layout,
 							 const lib::vector<VkBufferImageCopy> &ranges = {})
-		: src_buffer(src_buffer), dst_image(dst_image), layout(layout), ranges(ranges)
-	{
+		: src_buffer(src_buffer.get_buffer_handle()), dst_image(dst_image.get_image_handle()), layout(layout), ranges(ranges) {
 		if (this->ranges.size() == 0) {
 			VkBufferImageCopy c = {
 				0, 0, 0,
@@ -41,13 +45,17 @@ public:
 			this->ranges.push_back(c);
 		}
 	}
+
 	virtual ~cmd_copy_buffer_to_image() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdCopyBufferToImage(command_buffer, src_buffer.get().get_buffer_handle(),
-							   dst_image.get().get_image_handle(), static_cast<VkImageLayout>(layout),
-							   static_cast<std::uint32_t>(ranges.size()), ranges.data());
+		vkCmdCopyBufferToImage(command_buffer,
+							   src_buffer,
+							   dst_image,
+							   static_cast<VkImageLayout>(layout),
+							   static_cast<std::uint32_t>(ranges.size()),
+							   ranges.data());
 	}
 };
 

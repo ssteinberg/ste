@@ -12,14 +12,23 @@ namespace gl {
 
 class cmd_reset_query_pool : public command {
 private:
-	const vk::vk_query_pool<> &pool;
+	VkQueryPool pool;
 	std::uint32_t first;
 	std::uint32_t count;
 
 public:
+	cmd_reset_query_pool(cmd_reset_query_pool &&) = default;
+	cmd_reset_query_pool(const cmd_reset_query_pool&) = default;
+	cmd_reset_query_pool &operator=(cmd_reset_query_pool &&) = default;
+	cmd_reset_query_pool &operator=(const cmd_reset_query_pool&) = default;
+
 	cmd_reset_query_pool(const vk::vk_query_pool<> &pool,
 						 std::uint32_t first,
-						 std::uint32_t count) : pool(pool), first(first), count(count) {}
+						 std::uint32_t count)
+		: pool(pool),
+		  first(first),
+		  count(count) {}
+
 	virtual ~cmd_reset_query_pool() noexcept {}
 
 private:

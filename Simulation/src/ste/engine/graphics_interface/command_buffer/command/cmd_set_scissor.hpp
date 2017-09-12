@@ -18,6 +18,11 @@ private:
 	std::uint32_t first_scissor_index;
 
 public:
+	cmd_set_scissor(cmd_set_scissor &&) = default;
+	cmd_set_scissor(const cmd_set_scissor&) = default;
+	cmd_set_scissor &operator=(cmd_set_scissor &&) = default;
+	cmd_set_scissor &operator=(const cmd_set_scissor&) = default;
+
 	cmd_set_scissor(const lib::vector<i32rect> &scissors,
 					std::uint32_t first_scissor_index = 0) : first_scissor_index(first_scissor_index) {
 		this->scissors.reserve(scissors.size());
@@ -31,16 +36,17 @@ public:
 			this->scissors.push_back(t);
 		}
 	}
+
 	cmd_set_scissor(const i32rect &scissor,
 					std::uint32_t first_scissor_index = 0)
-		: cmd_set_scissor(lib::vector<i32rect>{ scissor }, first_scissor_index)
-	{}
+		: cmd_set_scissor(lib::vector<i32rect>{ scissor }, first_scissor_index) {}
+
 	virtual ~cmd_set_scissor() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdSetScissor(command_buffer, 
-						first_scissor_index, 
+		vkCmdSetScissor(command_buffer,
+						first_scissor_index,
 						static_cast<std::uint32_t>(scissors.size()),
 						scissors.data());
 	}

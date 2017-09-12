@@ -17,27 +17,34 @@ public:
 	static constexpr std::size_t maximal_update_bytes = 65536;
 
 private:
-	buffer_view buffer;
+	VkBuffer buffer;
+	std::size_t offset;
 	lib::blob data;
 
 public:
+	cmd_update_buffer(cmd_update_buffer &&) = default;
+	cmd_update_buffer(const cmd_update_buffer&) = default;
+	cmd_update_buffer &operator=(cmd_update_buffer &&) = default;
+	cmd_update_buffer &operator=(const cmd_update_buffer&) = default;
+
 	template <typename Blob>
 	cmd_update_buffer(const buffer_view &buffer,
-					  Blob&& data)
-		: buffer(buffer),
-		data(std::forward<Blob>(data))
-	{
+					  Blob &&data)
+		: buffer(buffer->get_buffer_handle()),
+		  offset(buffer.offset_bytes()),
+		  data(std::forward<Blob>(data)) {
 		assert(this->data.size() <= buffer.range_bytes());
 	}
+
 	virtual ~cmd_update_buffer() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		VkBuffer handle = buffer.get().get_buffer_handle();
-		vkCmdUpdateBuffer(command_buffer, 
-						  handle,
-						  buffer.offset_bytes(), 
-						  data.size(), 
+
+		vkCmdUpdateBuffer(command_buffer,
+						  buffer,
+						  offset,
+						  data.size(),
 						  data.data());
 	}
 };

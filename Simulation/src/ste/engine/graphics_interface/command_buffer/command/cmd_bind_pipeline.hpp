@@ -17,10 +17,13 @@ private:
 	VkPipelineBindPoint bind_point;
 
 public:
-	cmd_bind_pipeline(const vk::vk_pipeline_compute<> &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_COMPUTE)
-	{}
-	cmd_bind_pipeline(const vk::vk_pipeline_graphics<> &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_GRAPHICS)
-	{}
+	cmd_bind_pipeline(cmd_bind_pipeline &&) = default;
+	cmd_bind_pipeline(const cmd_bind_pipeline&) = default;
+	cmd_bind_pipeline &operator=(cmd_bind_pipeline &&) = default;
+	cmd_bind_pipeline &operator=(const cmd_bind_pipeline&) = default;
+
+	cmd_bind_pipeline(const vk::vk_pipeline_compute<> &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_COMPUTE) {}
+	cmd_bind_pipeline(const vk::vk_pipeline_graphics<> &pipeline) : pipeline(pipeline), bind_point(VK_PIPELINE_BIND_POINT_GRAPHICS) {}
 	virtual ~cmd_bind_pipeline() noexcept {}
 
 private:

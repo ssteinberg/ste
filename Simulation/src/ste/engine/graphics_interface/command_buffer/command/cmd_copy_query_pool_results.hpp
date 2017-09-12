@@ -13,8 +13,8 @@ namespace gl {
 
 class cmd_copy_query_pool_results : public command {
 private:
-	std::reference_wrapper<const vk::vk_query_pool<>> pool;
-	std::reference_wrapper<const device_buffer_base> buffer;
+	VkQueryPool pool;
+	VkBuffer buffer;
 	std::uint32_t first;
 	std::uint32_t count;
 	std::uint64_t offset;
@@ -22,6 +22,11 @@ private:
 	VkQueryResultFlags flags;
 
 public:
+	cmd_copy_query_pool_results(cmd_copy_query_pool_results &&) = default;
+	cmd_copy_query_pool_results(const cmd_copy_query_pool_results&) = default;
+	cmd_copy_query_pool_results &operator=(cmd_copy_query_pool_results &&) = default;
+	cmd_copy_query_pool_results &operator=(const cmd_copy_query_pool_results&) = default;
+
 	cmd_copy_query_pool_results(const vk::vk_query_pool<> &pool,
 								const device_buffer_base &buffer,
 								std::uint32_t first_query,
@@ -30,22 +35,22 @@ public:
 								std::uint64_t stride,
 								VkQueryResultFlags flags)
 		: pool(pool),
-		buffer(buffer),
-		first(first_query),
-		count(queries_count),
-		offset(buffer_offset * buffer.get_element_size_bytes()),
-		stride(stride * buffer.get_element_size_bytes()),
-		flags(flags)
-	{}
+		  buffer(buffer.get_buffer_handle()),
+		  first(first_query),
+		  count(queries_count),
+		  offset(buffer_offset * buffer.get_element_size_bytes()),
+		  stride(stride * buffer.get_element_size_bytes()),
+		  flags(flags) {}
+
 	virtual ~cmd_copy_query_pool_results() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdCopyQueryPoolResults(command_buffer,
-								  pool.get(),
+								  pool,
 								  first,
 								  count,
-								  buffer.get().get_buffer_handle(),
+								  buffer,
 								  offset,
 								  stride,
 								  flags);

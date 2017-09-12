@@ -15,24 +15,32 @@ namespace gl {
 
 class cmd_push_constants : public command {
 private:
-	const vk::vk_pipeline_layout<> *layout;
+	VkPipelineLayout layout;
 	stage_flag stage;
 	std::uint32_t offset;
 	lib::string data;
 
 public:
+	cmd_push_constants(cmd_push_constants &&) = default;
+	cmd_push_constants(const cmd_push_constants&) = default;
+	cmd_push_constants &operator=(cmd_push_constants &&) = default;
+	cmd_push_constants &operator=(const cmd_push_constants&) = default;
+
 	cmd_push_constants(const vk::vk_pipeline_layout<> *layout,
 					   stage_flag stage,
 					   std::uint32_t offset,
 					   lib::string data)
-		: layout(layout), stage(stage), offset(offset), data(data)
-	{}
+		: layout(*layout),
+		  stage(stage),
+		  offset(offset),
+		  data(data) {}
+
 	virtual ~cmd_push_constants() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
 		vkCmdPushConstants(command_buffer,
-						   *layout,
+						   layout,
 						   static_cast<VkShaderStageFlags>(stage),
 						   offset,
 						   static_cast<std::uint32_t>(data.size()),
