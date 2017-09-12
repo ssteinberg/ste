@@ -9,7 +9,7 @@
 
 #include <primary_renderer_camera.hpp>
 #include <array.hpp>
-#include <std430.hpp>
+#include <std140.hpp>
 
 #include <glm/gtx/dual_quaternion.hpp>
 
@@ -18,7 +18,7 @@ namespace graphics {
 
 class renderer_transform_buffers {
 private:
-	struct view_data : gl::std430<gl::std430<glm::quat, glm::quat>, gl::std430<glm::quat, glm::quat>, glm::vec4> {
+	struct view_data : gl::std140<gl::std140<glm::quat, glm::quat>, gl::std140<glm::quat, glm::quat>, glm::vec4> {
 		void set_view_transform(const glm::dualquat &q) {
 			get<0>().get<0>() = q.real;
 			get<0>().get<1>() = q.dual;
@@ -33,7 +33,7 @@ private:
 
 		auto& eye_position() { return get<2>(); }
 	};
-	struct proj_data : gl::std430<glm::vec4, glm::u32vec2, float, float> {
+	struct proj_data : gl::std140<glm::vec4, glm::u32vec2, float, float> {
 		auto& proj_xywz() { return get<0>(); }
 		auto& backbuffer_size() { return get<1>(); }
 		auto& tan_half_fovy() { return get<2>(); }
@@ -51,11 +51,11 @@ public:
 	renderer_transform_buffers(const ste_context &ctx)
 		: view_buffer(ctx, 
 					  1, 
-					  gl::buffer_usage::storage_buffer,
+					  gl::buffer_usage::uniform_buffer,
 					  "renderer_transform_buffers::view_buffer"),
 		proj_buffer(ctx, 
 					1, 
-					gl::buffer_usage::storage_buffer,
+					gl::buffer_usage::uniform_buffer,
 					"renderer_transform_buffers::proj_buffer")
 	{}
 

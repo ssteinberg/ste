@@ -19,7 +19,7 @@ struct light_cascades_descriptor {
 	light_cascade_data cascades[directional_light_cascades];
 };
 
-layout(set=2, binding=32) uniform cascades_depths_uniform_binding {
+layout(std140, set=2, binding=32) restrict readonly uniform cascades_depths_uniform_binding {
 	float cascades_depths[directional_light_cascades];
 };
 
