@@ -35,3 +35,7 @@
 19. Sponza Vulkan demo UI and ImGUI
 20. Profiler
 21. Units, meters, km, kelvin, bytes, kb, etc.
+22. Task scheduler and thread pool. Deal with blocking calls on workers better.
+23. Queue transfer, correctly, in time.
+24. Get rid of host commands altogether.
+25. Fix bind sparse mess.

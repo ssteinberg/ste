@@ -48,6 +48,8 @@ public:
 		constexpr int jobs = 128;
 		const auto size = (ls->size() + jobs - 1) / jobs;
 
+		pipeline()["push_t.lights_length"] = static_cast<std::uint32_t>(ls->size());
+
 		recorder << dispatch_task(static_cast<std::uint32_t>(size), 1u, 1u);
 	}
 };

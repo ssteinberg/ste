@@ -87,8 +87,8 @@ public:
 	template <bool shared, typename F>
 	task_future_impl<typename function_traits<F>::result_t, shared> schedule_now(F &&f) {
 		using R = typename function_traits<F>::result_t;
+
 		auto task = lib::allocate_shared<thread_pool_task<R>>(std::forward<F>(f));
-		
 		auto future = pool.enqueue(task);
 		
 		return { std::move(future), this, lib::shared_ptr<functor<>>(std::move(task)) };

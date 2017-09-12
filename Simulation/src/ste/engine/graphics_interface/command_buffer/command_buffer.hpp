@@ -17,7 +17,6 @@
 
 #include <allow_type_decay.hpp>
 #include <lib/vector.hpp>
-#include "ste_device_queue_secondary_command_buffer.hpp"
 
 namespace ste {
 namespace gl {

@@ -57,7 +57,7 @@ public:
 	auto atom_size() const {
 		return glm::max<std::size_t>(memory_requirements.alignment, sizeof(T));
 	}
-	
+
 	bind_range_t align(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
@@ -135,8 +135,8 @@ private:
 
 		// Remove already bound ranges
 		for (auto it = bound_ranges.lower_bound(bind_regions.front());
-				it != bound_ranges.end() && it->first.start < bind_range_top;
-				++it)
+			 it != bound_ranges.end() && it->first.start < bind_range_top;
+			 ++it)
 			ranges_to_bind.remove(it->first);
 
 		// Allocate and bind
