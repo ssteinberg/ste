@@ -49,7 +49,7 @@ struct atmospherics_descriptor {
 	float Hr_max;
 };
 
-layout(std430, set=2, binding=27) restrict readonly buffer atmospherics_descriptor_binding {
+layout(std140, set=2, binding=27) restrict readonly uniform atmospherics_descriptor_binding {
 	atmospherics_descriptor atmospherics_descriptor_data;
 };
 

@@ -17,6 +17,11 @@ private:
 	lib::vector<VkCommandBuffer> buffers;
 
 public:
+	cmd_execute_commands(cmd_execute_commands&&) = default;
+	cmd_execute_commands(const cmd_execute_commands&) = default;
+	cmd_execute_commands &operator=(cmd_execute_commands&&) = default;
+	cmd_execute_commands &operator=(const cmd_execute_commands&) = default;
+
 	cmd_execute_commands(const command_buffer &buffer) {
 		buffers.push_back(buffer);
 	}

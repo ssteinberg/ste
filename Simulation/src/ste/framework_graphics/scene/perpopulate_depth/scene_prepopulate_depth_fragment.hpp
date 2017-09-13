@@ -71,7 +71,7 @@ public:
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		const auto draw_count = s->get_object_group().get_draw_buffers().draw_count();
+		const auto draw_count = s->get_object_group().draw_count();
 
 		recorder << draw_task(static_cast<std::uint32_t>(draw_count));
 	}

@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <ste_resource.hpp>
-#include <copy_data_buffer.hpp>
+#include <host_write_buffer.hpp>
 #include <vector_common.hpp>
 
 #include <buffer_usage.hpp>
@@ -48,52 +48,52 @@ public:
 		: buffer(ctx,
 				 count,
 				 usage | buffer_usage_additional_flags,
-				 name)
-	{}
+				 name) {}
+
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const lib::vector<T> &initial_data,
 		  const buffer_usage &usage,
 		  const char *name)
-		: array(ctx, count, usage, name)
-	{
+		: array(ctx, count, usage, name) {
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, 
-									*this, 
-									initial_data.data(), 
-									initial_data.size());
+		_internal::host_write_buffer(ctx,
+									 *this,
+									 initial_data.data(),
+									 initial_data.size());
 	}
+
 	array(const ste_context &ctx,
 		  const lib::vector<T> &initial_data,
 		  const buffer_usage &usage,
 		  const char *name)
-		: array(ctx, initial_data.size(), initial_data, usage, name)
-	{}
+		: array(ctx, initial_data.size(), initial_data, usage, name) {}
+
 	template <std::size_t N>
 	array(const ste_context &ctx,
 		  std::uint64_t count,
 		  const std::array<T, N> &initial_data,
 		  const buffer_usage &usage,
 		  const char *name)
-		: array(ctx, count, usage, name)
-	{
+		: array(ctx, count, usage, name) {
 		// Copy initial static data
-		_internal::copy_data_buffer(ctx, 
-									*this, 
-									initial_data.data(), 
-									initial_data.size());
+		_internal::host_write_buffer(ctx,
+									 *this,
+									 initial_data.data(),
+									 initial_data.size());
 	}
+
 	template <std::size_t N>
 	array(const ste_context &ctx,
 		  const std::array<T, N> &initial_data,
 		  const buffer_usage &usage,
 		  const char *name)
-		: array(ctx, initial_data.size(), initial_data, usage, name)
-	{}
+		: array(ctx, initial_data.size(), initial_data, usage, name) {}
+
 	~array() noexcept {}
 
 	array(array &&o) = default;
-	array &operator=(array&&) = default;
+	array &operator=(array &&) = default;
 
 
 	/**
@@ -110,6 +110,7 @@ public:
 							idx,
 							this);
 	}
+
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
 	*
@@ -123,8 +124,8 @@ public:
 
 	auto size() const { return buffer.get().get_elements_count(); }
 
-	auto& get() { return buffer; }
-	auto& get() const { return buffer; }
+	auto &get() { return buffer; }
+	auto &get() const { return buffer; }
 };
 
 }

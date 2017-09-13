@@ -17,8 +17,14 @@ private:
 	bool precise;
 
 public:
+	cmd_begin_query(cmd_begin_query &&) = default;
+	cmd_begin_query(const cmd_begin_query&) = default;
+	cmd_begin_query &operator=(cmd_begin_query &&) = default;
+	cmd_begin_query &operator=(const cmd_begin_query&) = default;
+
 	cmd_begin_query(const vk::vk_query<> &query,
 					bool precise = false) : query(query), precise(precise) {}
+
 	virtual ~cmd_begin_query() noexcept {}
 
 private:

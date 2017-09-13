@@ -24,6 +24,11 @@ private:
 public:
 	blob() = default;
 
+	blob(blob&&) = default;
+	blob(const blob&) = default;
+	blob &operator=(blob&&) = default;
+	blob &operator=(const blob&) = default;
+
 	blob(const std::string &str) : storage(str) {}
 	blob(std::string &&str) : storage(std::move(str)) {}
 

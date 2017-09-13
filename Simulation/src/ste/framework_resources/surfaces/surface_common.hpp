@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <surface_utilities.hpp>
 
 #include <format.hpp>
 #include <format_type_traits.hpp>
@@ -88,17 +89,6 @@ public:
 	surface_base &operator=(const surface_base&) = delete;
 
 	/**
-	 *	@brief	Computes maximal amount of mipmap levels, i.e. the count of levels to create a complete mipmap-chain.
-	 */
-	static constexpr std::size_t max_levels(const extent_type &extent) {
-		auto max_comp = extent.x;
-		if constexpr (dimensions > 1)	max_comp = glm::max(max_comp, extent.y);
-		if constexpr (dimensions > 2)	max_comp = glm::max(max_comp, extent.z);
-
-		return static_cast<std::size_t>(glm::log2<float>(static_cast<float>(max_comp)) + 1);
-	}
-
-	/**
 	*	@brief	Returns a pointer to the surface data
 	*/
 	virtual block_type* data() = 0;
@@ -109,12 +99,18 @@ public:
 
 	/**
 	*	@brief	Returns a pointer to the surface layer's level data
+	*	
+	*	@param	layer			Surface layer
+	*	@param	level			Surface level
 	*/
 	block_type* data_at(std::size_t layer, std::size_t level = 0) {
 		return data() + offset_blocks(layer, level);
 	}
 	/**
 	*	@brief	Returns a pointer to the surface layer's level data
+	*	
+	*	@param	layer			Surface layer
+	*	@param	level			Surface level
 	*/
 	const block_type* data_at(std::size_t layer, std::size_t level = 0) const {
 		return data() + offset_blocks(layer, level);
@@ -126,8 +122,8 @@ public:
 	*	@param	level	Surface level
 	*/
 	auto extent(std::size_t level = 0) const {
-		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
-						surface_extent >> static_cast<typename extent_type::value_type>(level));
+		return surface_utilities::extent(surface_extent,
+										 level);
 	}
 	/**
 	*	@brief	Returns the extent size, in blocks, of a level
@@ -135,12 +131,8 @@ public:
 	*	@param	level	Surface level
 	*/
 	auto extent_in_blocks(std::size_t level = 0) const {
-		auto extent = surface_extent;
-		extent.x /= block_extent().x;
-		if constexpr (dimensions > 1) extent.y /= block_extent().y;
-
-		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
-						extent >> static_cast<typename extent_type::value_type>(level));
+		return surface_utilities::extent_in_blocks<format>(surface_extent,
+														   level);
 	}
 	/**
 	*	@brief	Returns the levels count in the surface
@@ -178,56 +170,55 @@ public:
 	*	@brief	Returns the block count in a single surface level
 	*/
 	auto blocks(std::size_t level) const {
-		assert(level < levels());
-
-		std::size_t b = 1;
-		for (std::remove_cv_t<decltype(dimensions)> i = 0; i < dimensions; ++i)
-			b *= extent(level)[i];
-
-		return b;
+		return surface_utilities::blocks<format>(surface_extent, 
+												 level);
 	}
 
 	/**
 	*	@brief	Returns the count of blocks that compose the whole mipmap chain of a layer
 	*/
 	auto blocks_layer() const {
-		std::size_t b = 0;
-		for (std::size_t l = 0; l < levels(); ++l)
-			b += blocks(l);
-
-		return b;
+		return surface_utilities::blocks_layer<format>(surface_extent, 
+													   levels());
 	}
 
 	/**
 	*	@brief	Computes the offset, in blocks, to a specified level of a specified layer of the surface
+	*	
+	*	@param	layer			Surface layer
+	*	@param	level			Surface level
 	*/
 	std::size_t offset_blocks(std::size_t layer, std::size_t level) const {
-		std::size_t level_offset = 0;
-		for (std::size_t l = 0; l < level; ++l)
-			level_offset += blocks(l);
-
-		return blocks_layer() * layer + level_offset;
+		return surface_utilities::offset_blocks<format>(surface_extent, 
+														levels(),
+														layer,
+														level);
 	}
 
 	/**
 	*	@brief	Returns the size, in bytes, of a block
 	*/
 	static constexpr auto block_bytes() {
-		return traits::block_bytes;
+		return surface_utilities::block_bytes<format>();
 	}
 
 	/**
 	*	@brief	Returns the size, in bytes, of the surface data
 	*/
 	auto bytes() const {
-		return block_bytes() * blocks_layer() * layers();
+		return surface_utilities::bytes<format>(surface_extent,
+												levels(),
+												layers());
 	}
 
 	/**
 	*	@brief	Returns the size, in bytes, of the surface layer's level
+	*	
+	*	@param	level			Surface level
 	*/
 	auto bytes(std::size_t level) const {
-		return block_bytes() * blocks(level);
+		return surface_utilities::bytes<format>(surface_extent,
+												level);
 	}
 
 	static constexpr auto get_format_traits() { return traits(); }

@@ -14,10 +14,15 @@ private:
 	std::uint32_t x, y, z;
 
 public:
+	cmd_dispatch(cmd_dispatch &&) = default;
+	cmd_dispatch(const cmd_dispatch&) = default;
+	cmd_dispatch &operator=(cmd_dispatch &&) = default;
+	cmd_dispatch &operator=(const cmd_dispatch&) = default;
+
 	cmd_dispatch(std::uint32_t x,
 				 std::uint32_t y = 1,
-				 std::uint32_t z = 1) : x(x), y(y), z(z)
-	{}
+				 std::uint32_t z = 1) : x(x), y(y), z(z) {}
+
 	virtual ~cmd_dispatch() noexcept {}
 
 private:

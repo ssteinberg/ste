@@ -19,6 +19,11 @@ private:
 	std::uint32_t first_viewport_index;
 
 public:
+	cmd_set_viewport(cmd_set_viewport &&) = default;
+	cmd_set_viewport(const cmd_set_viewport&) = default;
+	cmd_set_viewport &operator=(cmd_set_viewport &&) = default;
+	cmd_set_viewport &operator=(const cmd_set_viewport&) = default;
+
 	cmd_set_viewport(const lib::vector<std::pair<rect, depth_range>> &viewports,
 					 std::uint32_t first_viewport_index = 0) : first_viewport_index(first_viewport_index) {
 		this->viewports.reserve(viewports.size());
@@ -34,11 +39,12 @@ public:
 			this->viewports.push_back(t);
 		}
 	}
+
 	cmd_set_viewport(const rect &viewport,
 					 const depth_range &depth,
 					 std::uint32_t first_viewport_index = 0)
-		: cmd_set_viewport(lib::vector<std::pair<rect, depth_range>>{ std::make_pair(viewport, depth) }, first_viewport_index)
-	{}
+		: cmd_set_viewport(lib::vector<std::pair<rect, depth_range>>{ std::make_pair(viewport, depth) }, first_viewport_index) {}
+
 	virtual ~cmd_set_viewport() noexcept {}
 
 private:

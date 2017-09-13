@@ -5,9 +5,9 @@
 
 #include <stdafx.hpp>
 #include <ste_context.hpp>
+#include <ste_queue_type.hpp>
 
 #include <buffer_usage.hpp>
-#include <boundary.hpp>
 #include <device_buffer.hpp>
 #include <device_buffer_sparse.hpp>
 #include <device_resource_allocation_policy.hpp>
@@ -27,11 +27,11 @@ namespace gl {
 namespace _internal {
 
 template <typename Container>
-void copy_data_buffer(const ste_context &ctx,
-					  Container &gl_container,
-					  const typename Container::value_type* data,
-					  std::size_t size,
-					  std::size_t offset = 0) {
+void host_write_buffer(const ste_context &ctx,
+					   Container &gl_container,
+					   const typename Container::value_type* data,
+					   std::size_t size,
+					   std::size_t offset = 0) {
 	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible>;
 
@@ -50,7 +50,7 @@ void copy_data_buffer(const ste_context &ctx,
 	staging_buffer_t staging_buffer(ctx,
 									copy_count,
 									buffer_usage::transfer_src,
-									"copy_data_buffer staging buffer");
+									"host_write_buffer staging buffer");
 
 	{
 		// Copy to staging
@@ -91,11 +91,11 @@ void copy_data_buffer(const ste_context &ctx,
 }
 
 template <typename Container, typename = typename std::enable_if<Container::sparse_container>::type>
-void copy_data_buffer_and_resize(const ste_context &ctx,
-								 Container &gl_container,
-								 const typename Container::value_type* data,
-								 std::size_t size,
-								 std::size_t offset = 0) {
+void host_write_buffer_and_resize(const ste_context &ctx,
+								  Container &gl_container,
+								  const typename Container::value_type* data,
+								  std::size_t size,
+								  std::size_t offset = 0) {
 	using T = typename Container::value_type;
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible>;
 
@@ -114,7 +114,7 @@ void copy_data_buffer_and_resize(const ste_context &ctx,
 	staging_buffer_t staging_buffer(ctx,
 									copy_count,
 									buffer_usage::transfer_src,
-									"copy_data_buffer staging buffer");
+									"host_write_buffer_and_resize staging buffer");
 
 	{
 		// Copy to staging

@@ -11,8 +11,13 @@ layout(local_size_x = 128) in;
 #include <atmospherics.glsl>
 #include <light.glsl>
 
-layout(push_constant) uniform clip_planes {
+struct clip_planes_t {
 	vec4 np, rp, lp, tp, bp;
+};
+
+layout(push_constant) uniform push_t {
+	clip_planes_t clip_planes;
+	uint lights_length;
 };
 
 void add_to_ll(int light_idx) {
@@ -21,8 +26,10 @@ void add_to_ll(int light_idx) {
 }
 
 void main() {
+	ll[120] = lights_length;
+
 	int light_idx = int(gl_GlobalInvocationID.x);
-	if (light_idx >= light_buffer.length())
+	if (light_idx >= lights_length)
 		return;
 
 	light_descriptor ld = light_buffer[light_idx];
@@ -50,7 +57,11 @@ void main() {
 		vec3 c = transformed_light_pos.xyz;
 
 		if (collision_sphere_infinite_frustum(c, r,
-											  np, rp, lp, tp, bp))
+											  clip_planes.np, 
+											  clip_planes.rp, 
+											  clip_planes.lp,  
+											  clip_planes.tp,  
+											  clip_planes.bp))
 			add_light = true;
 	}
 

@@ -12,16 +12,20 @@ namespace gl {
 
 class cmd_bind_index_buffer : public command {
 private:
-	std::reference_wrapper<const device_buffer_base> buffer;
+	VkBuffer buffer;
 	std::uint64_t offset;
 	VkIndexType index_type;
 
 public:
+	cmd_bind_index_buffer(cmd_bind_index_buffer &&) = default;
+	cmd_bind_index_buffer(const cmd_bind_index_buffer&) = default;
+	cmd_bind_index_buffer &operator=(cmd_bind_index_buffer &&) = default;
+	cmd_bind_index_buffer &operator=(const cmd_bind_index_buffer&) = default;
+
 	cmd_bind_index_buffer(const device_buffer_base &buffer,
 						  std::uint64_t offset = 0)
-		: buffer(buffer), 
-		offset(offset), index_type(VK_INDEX_TYPE_UINT32)
-	{
+		: buffer(buffer.get_buffer_handle()),
+		  offset(offset), index_type(VK_INDEX_TYPE_UINT32) {
 		if (buffer.get_element_size_bytes() == 2)
 			index_type = VK_INDEX_TYPE_UINT16;
 		else if (buffer.get_element_size_bytes() == 4)
@@ -29,11 +33,12 @@ public:
 		else
 			assert(false && "Expected a uint16 or uint32 buffer");
 	}
+
 	virtual ~cmd_bind_index_buffer() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
-		vkCmdBindIndexBuffer(command_buffer, buffer.get().get_buffer_handle(), offset, index_type);
+		vkCmdBindIndexBuffer(command_buffer, buffer, offset, index_type);
 	}
 };
 

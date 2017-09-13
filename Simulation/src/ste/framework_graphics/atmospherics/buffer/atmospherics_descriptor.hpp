@@ -4,7 +4,7 @@
 #pragma once
 
 #include <atmospherics_properties.hpp>
-#include <std430.hpp>
+#include <std140.hpp>
 
 namespace ste {
 namespace graphics {
@@ -21,7 +21,7 @@ struct atmospherics_descriptor_padder<T, 0> {};
 class atmospherics_descriptor {
 public:
 	using Properties = atmospherics_properties<double>;
-	struct descriptor_data : gl::std430<glm::vec4, glm::vec4, float, float, float, float, float, float, float, float> {
+	struct descriptor_data : gl::std140<glm::vec4, glm::vec4, float, float, float, float, float, float, float, float> {
 		auto& center_radius() { return get<0>(); }
 
 		auto& scattering_coefficients() { return get<1>(); }

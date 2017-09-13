@@ -17,6 +17,11 @@ private:
 public:
 	command() = default;
 	virtual ~command() noexcept {}
+
+	command(command&&) = default;
+	command(const command&) = default;
+	command &operator=(command&&) = default;
+	command &operator=(const command&) = default;
 };
 
 }

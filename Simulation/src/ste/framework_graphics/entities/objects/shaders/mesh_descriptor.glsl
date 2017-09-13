@@ -16,8 +16,6 @@ struct mesh_draw_params {
 	uint count;
 	uint first_index;
 	int vertex_offset;
-
-	float _unused;
 };
 
 vec3 transform_model(mesh_descriptor mesh, vec3 v) {
