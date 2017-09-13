@@ -40,7 +40,7 @@ class glyph_manager {
 
 private:
 	struct buffer_glyph_descriptor : gl::std430<std::uint32_t, std::uint32_t, std::int32_t, std::int32_t, std::uint32_t> {
-		const glyph::glyph_metrics& metrics() const {
+		const glyph::glyph_metrics &metrics() const {
 			glyph::glyph_metrics m;
 			m.width = get<0>();
 			m.height = get<1>();
@@ -49,10 +49,12 @@ private:
 
 			return m;
 		}
-		const auto& glyph_index() const { return get<4>(); }
+
+		const auto &glyph_index() const { return get<4>(); }
 
 		buffer_glyph_descriptor() = default;
-		buffer_glyph_descriptor(const glyph::glyph_metrics& metrics,
+
+		buffer_glyph_descriptor(const glyph::glyph_metrics &metrics,
 								std::uint32_t glyph_index) {
 			get<0>() = metrics.width;
 			get<1>() = metrics.height;
@@ -153,7 +155,7 @@ private:
 	auto finalize_glyph_load(glyph_loader_data &&data) {
 		// Insert into pending glyph buffer
 		const auto index = static_cast<std::uint32_t>(glyph_textures.size());
-		
+
 		// Add to glyph textures
 		if (data.texture)
 			glyph_textures.push_back(std::move(data.texture.get()));
@@ -173,18 +175,17 @@ private:
 
 public:
 	glyph_manager(const ste_context &context)
-		: context(context), 
-		buffer(context, 
-			   gl::buffer_usage::storage_buffer,
-			   "glyph_manager buffer"),
-		text_glyph_sampler(context.device(),
-						   "glyph_manager sampler",
-						   gl::sampler_parameter::filtering(gl::sampler_filter::linear, 
-															gl::sampler_filter::linear),
-						   gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_border, 
-															   gl::sampler_address_mode::clamp_to_border),
-						   gl::sampler_parameter::anisotropy(16.f))
-	{}
+		: context(context),
+		  buffer(context,
+				 gl::buffer_usage::storage_buffer,
+				 "glyph_manager buffer"),
+		  text_glyph_sampler(context.device(),
+							 "glyph_manager sampler",
+							 gl::sampler_parameter::filtering(gl::sampler_filter::linear,
+															  gl::sampler_filter::linear),
+							 gl::sampler_parameter::address_mode(gl::sampler_address_mode::clamp_to_border,
+																 gl::sampler_address_mode::clamp_to_border),
+							 gl::sampler_parameter::anisotropy(16.f)) {}
 
 	/**
 	*	@brief	Returns the glyph descriptor for a specific font and codepoint. If not available, will load asynchronously and return none.
@@ -215,18 +216,20 @@ public:
 
 			// task_scheduler uses low-priority workers. 
 			// Use regular priority async tasks here.
-			auto future = std::async(std::launch::async, [=]() {
-				// Load glyph
-				return this->glyph_loader(font, codepoint);
-			});
-			glyph_futures.emplace_hint(future_it, std::piecewise_construct,
-									   std::forward_as_tuple(k), 
+			auto future = std::async(std::launch::async,
+									 [=]() {
+									 // Load glyph
+									 return this->glyph_loader(font, codepoint);
+								 });
+			glyph_futures.emplace_hint(future_it,
+									   std::piecewise_construct,
+									   std::forward_as_tuple(k),
 									   std::forward_as_tuple(std::move(future)));
 
 			return none;
 		}
 
-		const auto* ptr = &glyphit->second;
+		const auto *ptr = &glyphit->second;
 		return ptr;
 	}
 
@@ -288,7 +291,8 @@ public:
 					// Load glyph
 					return this->glyph_loader(font, codepoint);
 				}).get_future();
-				future_it = glyph_futures.emplace_hint(future_it, std::piecewise_construct,
+				future_it = glyph_futures.emplace_hint(future_it,
+													   std::piecewise_construct,
 													   std::forward_as_tuple(k),
 													   std::forward_as_tuple(std::move(future)));
 
