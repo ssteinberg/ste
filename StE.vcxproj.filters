@@ -1988,6 +1988,9 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -2082,5 +2085,6 @@
     <None Include="Simulation\src\loading.frag" />
     <None Include="Simulation\docs\primary_renderer.md" />
     <None Include="Simulation\docs\todo.md" />
+    <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
   </ItemGroup>
 </Project>

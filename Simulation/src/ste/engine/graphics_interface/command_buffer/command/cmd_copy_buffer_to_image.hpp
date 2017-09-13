@@ -35,6 +35,12 @@ public:
 							 const image_layout &layout,
 							 const lib::vector<VkBufferImageCopy> &ranges = {})
 		: src_buffer(src_buffer.get_buffer_handle()), dst_image(dst_image.get_image_handle()), layout(layout), ranges(ranges) {
+		for (auto &c : this->ranges) {
+			c.bufferImageHeight *= src_buffer.get_element_size_bytes();
+			c.bufferOffset *= src_buffer.get_element_size_bytes();
+			c.bufferRowLength *= src_buffer.get_element_size_bytes();
+		}
+
 		if (this->ranges.size() == 0) {
 			VkBufferImageCopy c = {
 				0, 0, 0,
