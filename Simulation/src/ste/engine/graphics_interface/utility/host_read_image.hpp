@@ -174,6 +174,7 @@ auto host_read_image(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -182,13 +183,14 @@ auto host_read_image_1d(const ste_context &ctx,
 						const device_image<1, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+						std::uint32_t layer = 0,
 						const lib::vector<wait_semaphore> &wait_semaphores = {},
 						const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
 																	wait_semaphores,
 																	signal_semaphores);
@@ -202,6 +204,7 @@ auto host_read_image_1d(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -210,13 +213,14 @@ auto host_read_image_2d(const ste_context &ctx,
 						const device_image<2, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+						std::uint32_t layer = 0,
 						const lib::vector<wait_semaphore> &wait_semaphores = {},
 						const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
 																	wait_semaphores,
 																	signal_semaphores);
@@ -230,6 +234,7 @@ auto host_read_image_2d(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -238,13 +243,14 @@ auto host_read_image_3d(const ste_context &ctx,
 						const device_image<3, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+						std::uint32_t layer = 0,
 						const lib::vector<wait_semaphore> &wait_semaphores = {},
 						const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_3d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
 																	wait_semaphores,
 																	signal_semaphores);

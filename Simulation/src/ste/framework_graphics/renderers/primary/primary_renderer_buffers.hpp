@@ -96,7 +96,7 @@ public:
 																		   *this->atmospherics_luts,
 																		   s))
 	{
-		projection_data_up_to_date_flag.test_and_set(std::memory_order_release);
+		projection_data_up_to_date_flag.clear(std::memory_order_release);
 
 		// gbuffer resize signal
 		gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this]() {

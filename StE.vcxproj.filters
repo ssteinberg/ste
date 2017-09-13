@@ -2006,7 +2006,6 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\indirect.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\passthrough.vert" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_cubemap.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\object.frag" />
     <None Include="Simulation\src\ste\framework_graphics\scene\perpopulate_depth\shaders\scene_prepopulate_depth.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
@@ -2086,5 +2085,6 @@
     <None Include="Simulation\docs\primary_renderer.md" />
     <None Include="Simulation\docs\todo.md" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
+    <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_write_gbuffer.frag" />
   </ItemGroup>
 </Project>

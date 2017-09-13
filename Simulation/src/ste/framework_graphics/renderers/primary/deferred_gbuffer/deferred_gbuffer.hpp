@@ -59,7 +59,7 @@ public:
 											  zero);
 	}
 
-	auto& get_gbuffer() const { return gbuffer.get(); }
+	auto& get_gbuffer() const { return gbuffer; }
 
 	auto& get_extent() const { return extent; }
 	

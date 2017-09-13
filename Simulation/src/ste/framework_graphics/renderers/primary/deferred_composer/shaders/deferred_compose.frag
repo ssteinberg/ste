@@ -42,10 +42,8 @@ void main() {
 	ivec2 coord = ivec2(gl_FragCoord.xy);
 
 	g_buffer_element g_frag = read_gbuffer(coord);
-
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
-
 	frag_color = vec4(xyY, 1);
 }

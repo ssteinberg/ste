@@ -37,7 +37,6 @@ public:
 
 		const auto size = (glm::ivec2{ lll->get_extent().x, lll->get_extent().y } + jobs - glm::ivec2(1)) / jobs;
 
-		lll->clear(recorder);
 		recorder << dispatch_task(static_cast<std::uint32_t>(size.x), 
 								  static_cast<std::uint32_t>(size.y),
 								  1u);

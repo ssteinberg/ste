@@ -43,7 +43,7 @@ public:
 	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
-																			gl::image_layout::shader_read_only_optimal);
+																			front_face ? gl::image_layout::depth_stencil_read_only_optimal : gl::image_layout::shader_read_only_optimal);
 		return fb_layout;
 	}
 
