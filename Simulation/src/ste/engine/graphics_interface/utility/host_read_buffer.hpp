@@ -33,7 +33,9 @@ template <typename T>
 auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer_base &buffer,
 					  std::size_t copy_count,
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible>;
 
 	// Select queue
@@ -59,8 +61,8 @@ auto host_read_buffer(const ste_context &ctx,
 	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
-	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd)]() mutable {
-		auto& command_buffer = batch->acquire_command_buffer();
+	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores, signal_semaphores]() mutable {
+		auto &command_buffer = batch->acquire_command_buffer();
 
 		// Record and submit a one-time batch
 		{
@@ -75,7 +77,7 @@ auto host_read_buffer(const ste_context &ctx,
 																			   access_flags::transfer_write,
 																			   access_flags::host_read)));
 		}
-		ste_device_queue::submit_batch(std::move(batch));
+		ste_device_queue::submit_batch(std::move(batch), wait_semaphores, signal_semaphores);
 	});
 
 	// Return future that reads from the device buffer
@@ -90,7 +92,9 @@ auto host_read_buffer(const ste_context &ctx,
 		// Invalidate caches
 		staging_ptr->invalidate_ranges({ vk::vk_mapped_memory_range{ 0, copy_count } });
 		// Copy from staging
-		std::memcpy(dst.data(), staging_ptr->get_mapped_ptr(), static_cast<std::size_t>(copy_count * sizeof(T)));
+		std::memcpy(dst.data(),
+					staging_ptr->get_mapped_ptr(),
+					static_cast<std::size_t>(copy_count * sizeof(T)));
 
 		return dst;
 	});
@@ -100,114 +104,144 @@ auto host_read_buffer(const ste_context &ctx,
 
 /*
 *	@brief	Reads data from a device buffer to host.
-*			Asynchrnous call, returns a future. Buffer must have transfer_src usage flag.
+*			Asynchronous call, returns a future. Buffer must have transfer_src usage flag.
 *
 *	@param	ctx			Context
-*	@param	buffer		Device buffer to read from
-*	@param	elements	Elements count to read
+*	@param	buffer		Device buffer to copy from
+*	@param	elements	Elements count to copy
 *	@param	offset		Offset in source buffer to start reading from
+*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <typename T, class allocation_policy>
 auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer<T, allocation_policy> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
 	return _internal::host_read_buffer<T>(ctx,
 										  buffer,
 										  copy_count,
-										  offset);
+										  offset,
+										  wait_semaphores,
+										  signal_semaphores);
 }
 
 /*
 *	@brief	Reads data from a device buffer to host.
-*			Asynchrnous call, returns a future. Buffer must have transfer_src usage flag.
+*			Asynchronous call, returns a future. Buffer must have transfer_src usage flag.
 *
 *	@param	ctx			Context
-*	@param	buffer		Device buffer to read from
-*	@param	elements	Elements count to read
+*	@param	buffer		Device buffer to copy from
+*	@param	elements	Elements count to copy
 *	@param	offset		Offset in source buffer to start reading from
+*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <typename T, class allocation_policy>
 auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer_sparse<T, allocation_policy> &buffer,
 					  std::size_t elements,
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
 	return _internal::host_read_buffer<T>(ctx,
 										  buffer,
 										  copy_count,
-										  offset);
+										  offset,
+										  wait_semaphores,
+										  signal_semaphores);
 }
 
 /*
 *	@brief	Reads data from a device buffer to host.
-*			Asynchrnous call, returns a future. Buffer must have transfer_src usage flag.
+*			Asynchronous call, returns a future. Buffer must have transfer_src usage flag.
 *
 *	@param	ctx			Context
-*	@param	buffer		Device buffer to read from
-*	@param	elements	Elements count to read
+*	@param	buffer		Device buffer to copy from
+*	@param	elements	Elements count to copy
 *	@param	offset		Offset in source buffer to start reading from
+*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <typename T>
 auto host_read_buffer(const ste_context &ctx,
 					  const array<T> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	return host_read_buffer(ctx,
 							buffer.get(),
 							elements,
-							offset);
+							offset,
+							wait_semaphores,
+							signal_semaphores);
 }
 
 /*
 *	@brief	Reads data from a device buffer to host.
-*			Asynchrnous call, returns a future. Buffer must have transfer_src usage flag.
+*			Asynchronous call, returns a future. Buffer must have transfer_src usage flag.
 *
 *	@param	ctx			Context
-*	@param	buffer		Device buffer to read from
-*	@param	elements	Elements count to read
+*	@param	buffer		Device buffer to copy from
+*	@param	elements	Elements count to copy
 *	@param	offset		Offset in source buffer to start reading from
+*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <typename T, std::uint64_t max_sparse_size>
 auto host_read_buffer(const ste_context &ctx,
 					  const vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 
 	return host_read_buffer(ctx,
 							buffer.get(),
 							elements,
-							offset);
+							offset,
+							wait_semaphores,
+							signal_semaphores);
 }
 
 /*
 *	@brief	Reads data from a device buffer to host.
-*			Asynchrnous call, returns a future. Buffer must have transfer_src usage flag.
+*			Asynchronous call, returns a future. Buffer must have transfer_src usage flag.
 *
 *	@param	ctx			Context
-*	@param	buffer		Device buffer to read from
-*	@param	elements	Elements count to read
+*	@param	buffer		Device buffer to copy from
+*	@param	elements	Elements count to copy
 *	@param	offset		Offset in source buffer to start reading from
+*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
+*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <typename T, std::uint64_t max_sparse_size>
 auto host_read_buffer(const ste_context &ctx,
 					  const stable_vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
-					  std::size_t offset = 0) {
+					  std::size_t offset = 0,
+					  const lib::vector<wait_semaphore> &wait_semaphores = {},
+					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 
 	return host_read_buffer(ctx,
 							buffer.get(),
 							elements,
-							offset);
+							offset,
+							wait_semaphores,
+							signal_semaphores);
 }
 
 }

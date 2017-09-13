@@ -184,6 +184,14 @@ public:
 	        std::size_t levels = 1)
 		: Base(extent, levels) {}
 
+	// For signature compatability with surface_array
+	surface(const extent_type& extent,
+			std::size_t layers,
+			std::size_t levels)
+		: Base(extent, levels) {
+		assert(layers == 1);
+	}
+
 	surface(const extent_type& extent,
 	        std::size_t levels,
 	        const surface_storage<block_type>& storage)

@@ -10,6 +10,7 @@
 
 #include <surface_io.hpp>
 #include <surface.hpp>
+#include <surface_utilities.hpp>
 #include <surface_convert.hpp>
 #include <surface_type_traits.hpp>
 
@@ -59,7 +60,7 @@ private:
 		auto extent = surface.extent();
 
 		auto m = static_cast<std::uint32_t>(surface.levels());
-		auto mip_levels = generate_mipmaps ? static_cast<std::uint32_t>(Surface::max_levels(extent)) : m;
+		auto mip_levels = generate_mipmaps ? static_cast<std::uint32_t>(surface_utilities::max_levels(extent)) : m;
 
 		gl::device_image_flags flags = gl::device_image_flags::none;
 		if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
