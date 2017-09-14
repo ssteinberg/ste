@@ -45,9 +45,8 @@ public:
 
 	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
-		fb_layout[gl::pipeline_depth_attachment_location] = gl::load_store(gl::format::d32_sfloat,
-																		   gl::image_layout::depth_stencil_read_only_optimal,
-																		   gl::image_layout::depth_stencil_read_only_optimal,
+		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
+																		   gl::image_layout::depth_stencil_attachment_optimal,
 																		   gl::image_layout::shader_read_only_optimal);
 		fb_layout[0] = gl::ignore_store(gl::format::r32g32b32a32_sfloat,
 										gl::image_layout::shader_read_only_optimal);
@@ -63,8 +62,9 @@ public:
 		auditor.set_framebuffer_layout(create_fb_layout());
 
 		gl::device_pipeline_graphics_configurations config;
-		config.depth_op = gl::depth_operation(gl::compare_op::equal,
-											  false);
+//		config.depth_op = gl::depth_operation(gl::compare_op::equal,
+//											  false);
+		config.depth_op = gl::depth_operation(gl::compare_op::greater);
 		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::front_bit,
 														gl::front_face::ccw);
 		auditor.set_pipeline_settings(std::move(config));

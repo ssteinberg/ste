@@ -526,6 +526,7 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\presentation_engine\frame_time_predictor\presentation_frame_time_predictor.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\rendering_system\storage.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\format\format_rtti.cpp" />
+    <ClCompile Include="Simulation\src\ste\engine\graphics_interface\ste_gl_context.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\log\log.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\scheduling\balanced_thread_pool.cpp" />
     <ClCompile Include="Simulation\src\ste\engine\window\ste_window.cpp" />
@@ -572,6 +573,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_extensions_proc_addr.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\window\hid\keyboard.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\window\hid\pointer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\entities\objects\object.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.hpp" />
@@ -1002,8 +1005,6 @@
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache_cacheable.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache_index.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\window\hid\hid.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\window\hid\Keyboard.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\window\hid\Pointer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_class.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_entry.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\log\log_ostream.hpp" />

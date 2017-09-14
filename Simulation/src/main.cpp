@@ -689,8 +689,8 @@ int main()
 	 //	bool running = true;
 	 //	bool mouse_down = false;
 	 //	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
-	 //		[&](HID::keyboard::K key, int scanline, HID::Status status, HID::ModifierBits mods) {
-	 //		using namespace HID;
+	 //		[&](hid::keyboard::K key, int scanline, hid::Status status, hid::ModifierBits mods) {
+	 //		using namespace hid;
 	 //		auto time_delta = ctx.time_per_frame().count();
 	 //
 	 //		if (status != Status::KeyDown)
@@ -702,8 +702,8 @@ int main()
 	 //			ctx.capture_screenshot();
 	 //	});
 	 //	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
-	 //		[&](HID::pointer::B b, HID::Status status, HID::ModifierBits mods) {
-	 //		using namespace HID;
+	 //		[&](hid::pointer::B b, hid::Status status, hid::ModifierBits mods) {
+	 //		using namespace hid;
 	 //
 	 //		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
 	 //	});
@@ -844,7 +844,7 @@ int main()
 	 //		if (ctx.window_active()) {
 	 //			auto time_delta = ctx.time_per_frame().count();
 	 //
-	 //			using namespace HID;
+	 //			using namespace hid;
 	 //			constexpr float movement_factor = 155.f;
 	 //			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
 	 //				camera.step_forward(time_delta*movement_factor);

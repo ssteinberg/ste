@@ -66,7 +66,7 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 	depth_buffer_levels(depth_buffer_levels),
 	extent(extent)
 {
-	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
+	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get(), glm::vec4(.0f));
 	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
 	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
 
