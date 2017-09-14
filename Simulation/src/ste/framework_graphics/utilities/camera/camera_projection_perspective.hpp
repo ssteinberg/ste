@@ -35,7 +35,7 @@ public:
 								  const T &near_clip_plane, 
 								  const T &far_clip_plane)
 		: fovy(fovy), aspect(aspect), near_clip_plane(near_clip_plane), far_clip_plane(far_clip_plane),
-		proj_mat(glm::perspectiveRH(fovy, aspect, near_clip_plane, far_clip_plane))
+		proj_mat(glm::perspectiveLH(fovy, aspect, near_clip_plane, far_clip_plane))
 	{
 		assert(aspect > 0);
 		assert(fovy > 0);

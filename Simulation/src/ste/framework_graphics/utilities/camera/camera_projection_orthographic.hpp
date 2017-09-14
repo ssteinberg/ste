@@ -35,7 +35,7 @@ public:
 								   const T &near_clip_plane,
 								   const T &far_clip_plane)
 		: left_bottom(left_bottom), right_top(right_top), near_clip_plane(near_clip_plane), far_clip_plane(far_clip_plane),
-		proj_mat(glm::orthoRH(left_bottom.x, right_top.x, left_bottom.y, right_top.y, near_clip_plane, far_clip_plane))
+		proj_mat(glm::orthoLH(left_bottom.x, right_top.x, left_bottom.y, right_top.y, near_clip_plane, far_clip_plane))
 	{
 		assert(right_top.x > left_bottom.x);
 		assert(right_top.y > left_bottom.y);

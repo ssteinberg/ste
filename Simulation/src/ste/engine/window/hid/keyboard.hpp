@@ -25,7 +25,7 @@ public:
 	}
 
 	/**
-	*	@brief	Queries keyboard key status
+	*	@brief	Queries keyboard key status by scancode
 	*
 	*	@param	window		Window
 	*	@param	scancode	Key scancode

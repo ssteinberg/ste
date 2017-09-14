@@ -4,6 +4,9 @@
 #include <presentation_engine.hpp>
 #include <presentation_frame_time_predictor.hpp>
 
+#include <keyboard.hpp>
+#include <pointer.hpp>
+
 #include <cmd_pipeline_barrier.hpp>
 
 #include <model_factory.hpp>
@@ -206,7 +209,7 @@ class gi_renderer : public gl::rendering_presentation_system {
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 	graphics::primary_renderer r;
-
+	
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
 private:
@@ -270,6 +273,10 @@ public:
 			// Submit command buffer and present
 			presentation.get().submit_and_present(std::move(batch));
 		});
+
+		//		(*f)->get_wait();
+		//
+		//		r.debug();
 	}
 };
 
@@ -647,6 +654,40 @@ int main()
 
 
 	/*
+	 *	GUI
+	 */
+	float sun_zenith = .0f;
+
+
+	/*
+	 *	Input handlers
+	 */
+
+	bool running = true;
+	bool mouse_down = false;
+	glm::vec2 pointer_pos = { .0, .0 }, last_pointer_pos;
+
+	auto keyboard_connection = ste::make_connection(window.get_signals().signal_keyboard(),
+													[&](auto key, auto scanline, auto status, auto mods) {
+		if (status != hid::status::down)
+			return;
+
+		if (key == hid::key::KeyESCAPE)
+			running = false;
+		//		if (key == hid::key::KeyPRINT_SCREEN || key == hid::key::KeyF12)
+		//			capture_screenshot();
+	});
+	auto pointer_button_connection = ste::make_connection(window.get_signals().signal_pointer_button(),
+														  [&](auto b, auto status, auto mods) {
+		mouse_down = b == hid::button::Left && status == hid::status::down;
+	});
+	auto pointer_movement_connection = ste::make_connection(window.get_signals().signal_pointer_movement(),
+															[&](auto pos) {
+		pointer_pos = glm::vec2(pos);
+	});
+
+
+	/*
 	*	Main loop
 	*/
 
@@ -654,14 +695,55 @@ int main()
 		ctx.tick();
 		ste_window::poll_events();
 
-		if (window.should_close()) {
+		if (window.should_close() || !running) {
 			break;
 		}
 
+		// Calculate predicted next frame time
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
 		window.set_title(lib::to_string(frame_time_ms).c_str());
 
+		if (window.is_window_focused()) {
+			// Handle movement input
+			constexpr float movement_factor = 1.55f;
+			if (hid::keyboard::key_status(window, hid::key::KeyW) == hid::status::down)
+				camera.step_forward(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyS) == hid::status::down)
+				camera.step_backward(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyA) == hid::status::down)
+				camera.step_left(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyD) == hid::status::down)
+				camera.step_right(frame_time_ms * movement_factor);
+
+			// Handle camera rotation input
+			constexpr float rotation_factor = .0009f;
+			bool rotate_camera = mouse_down;
+			if (mouse_down/* && !debug_gui_dispatchable->is_gui_active()*/) {
+				const auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pointer_pos) * frame_time_ms * rotation_factor;
+				camera.pitch_and_yaw(diff_v.y, diff_v.x);
+			}
+			last_pointer_pos = pointer_pos;
+		}
+
+		// Update scene objects
+#ifdef STATIC_SCENE
+		glm::vec3 lp = light0_pos;
+		glm::vec3 sun_dir = sun_direction;
+#else
+		const float angle = frame_time_ms * glm::pi<float>() / 2.5f;
+		const glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+
+		const glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()),
+															-glm::cos(sun_zenith + glm::pi<float>()),
+															.15f });
+
+		light0.first->set_position(lp);
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		sun_light->set_direction(sun_dir);
+#endif
+
+		// Present
 		presenter->present();
 	}
 

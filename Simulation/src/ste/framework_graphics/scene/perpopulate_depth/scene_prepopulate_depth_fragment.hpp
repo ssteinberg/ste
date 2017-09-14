@@ -43,7 +43,7 @@ public:
 	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[gl::pipeline_depth_attachment_location] = gl::clear_store(gl::format::d32_sfloat,
-																			front_face ? gl::image_layout::depth_stencil_read_only_optimal : gl::image_layout::shader_read_only_optimal);
+																			gl::image_layout::shader_read_only_optimal);
 		return fb_layout;
 	}
 
@@ -54,11 +54,11 @@ public:
 		auditor.set_framebuffer_layout(create_fb_layout());
 
 		gl::device_pipeline_graphics_configurations config;
-		config.depth_op = gl::depth_operation(gl::compare_op::greater);
+		config.depth_op = gl::depth_operation(gl::compare_op::less);
 		config.rasterizer_op = gl::rasterizer_operation(front_face ?
 														gl::cull_mode::back_bit :
 														gl::cull_mode::front_bit,
-														gl::front_face::ccw);
+														gl::front_face::cw);
 		auditor.set_pipeline_settings(std::move(config));
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<object_vertex_data>());
 	}

@@ -59,7 +59,7 @@ private:
 
 private:
 	void create_presentation_fences_storage() {
-		auto count = device->get_swap_chain_images_count();
+		const auto count = device->get_swap_chain_images_count();
 
 		lib::vector<image_presentation_sync_t> v;
 		v.reserve(count);
@@ -78,9 +78,9 @@ private:
 	}
 
 	void tick() {
-		auto now = std::chrono::high_resolution_clock::now();
-		auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
-		auto prev_ns = shared_data->last_acquire_time_ns.load(std::memory_order_acquire);
+		const auto now = std::chrono::high_resolution_clock::now();
+		const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+		const auto prev_ns = shared_data->last_acquire_time_ns.load(std::memory_order_acquire);
 
 		shared_data->frame_time_ns.store(ns - prev_ns, std::memory_order_release);
 		shared_data->last_acquire_time_ns.store(ns, std::memory_order_release);
@@ -172,7 +172,7 @@ public:
 	*	@brief	Creates the presentation engine
 	*
 	*	@param device			Parent device
-	*	@param max_frame_lag		Maximal allowed count of outstanding presentations. Intrinsically limited to the amount of swap
+	*	@param max_frame_lag	Maximal allowed count of outstanding presentations. Intrinsically limited to the amount of swap
 	*							chain images. Must be positive.
 	*/
 	presentation_engine(const ste_device &device,

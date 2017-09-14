@@ -40,10 +40,10 @@ public:
 		assert(near_clip_plane > 0);
 
 		tan_half_fovy = glm::tan(fovy / static_cast<T>(2));
-		float one_over_tan_half_fovy = static_cast<T>(1) / tan_half_fovy;
-		float one_over_aspect_tan_half_fovy = static_cast<T>(1) / (aspect * tan_half_fovy);
+		const float one_over_tan_half_fovy = static_cast<T>(1) / tan_half_fovy;
+		const float one_over_aspect_tan_half_fovy = static_cast<T>(1) / (aspect * tan_half_fovy);
 
-		proj_xywz = { one_over_aspect_tan_half_fovy, one_over_tan_half_fovy, near_clip_plane, static_cast<T>(-1) };
+		proj_xywz = { one_over_aspect_tan_half_fovy, -one_over_tan_half_fovy, near_clip_plane, static_cast<T>(-1) };
 	}
 	~camera_projection_reversed_infinite_perspective() noexcept {}
 
@@ -56,7 +56,7 @@ public:
 	*	@brief	Projects a eye space position to homogeneous clip coordinates.
 	*/
 	glm::tvec4<T> project(const glm::tvec4<T> &v) const final override {
-		return glm::tvec4<T>{ v.x, v.y, v.w, v.z } *proj_xywz;
+		return glm::tvec4<T>{ v.x, v.y, v.w, v.z } * proj_xywz;
 	}
 
 	/*
@@ -113,7 +113,7 @@ public:
 
 	/*
 	*	@brief	Returns a pre-computed xywz vector used for fast reversed-infinite-persepective projection.
-	*			xywz = ( 1 / (aspect * tan_fovy_over_two), 1 / tan_fovy_over_two, near, -1 )
+	*			xywz = ( 1 / (aspect * tan_fovy_over_two), -1 / tan_fovy_over_two, near, -1 )
 	*			
 	*			Projecting a vector v=(x,y,z,1) is simply: proj(v) = v.xywz * xywz
 	*/
