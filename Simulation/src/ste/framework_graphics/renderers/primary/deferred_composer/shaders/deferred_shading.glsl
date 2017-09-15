@@ -28,7 +28,7 @@ float get_thickness(ivec2 coord,
 	float fz = unproject_depth(fd);
 	float bz = unproject_depth(texelFetch(back_face_depth, coord, 0).x);
 
-	has_geometry = fd < 1.f;
+	has_geometry = fd > .0f;
 
 	return fz - bz;
 }

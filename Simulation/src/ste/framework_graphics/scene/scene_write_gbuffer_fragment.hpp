@@ -62,7 +62,7 @@ public:
 		auditor.set_framebuffer_layout(create_fb_layout());
 
 		gl::device_pipeline_graphics_configurations config;
-		config.depth_op = gl::depth_operation(gl::compare_op::less);
+		config.depth_op = gl::depth_operation(gl::compare_op::greater);
 		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::front_bit,
 														gl::front_face::cw);
 		auditor.set_pipeline_settings(std::move(config));

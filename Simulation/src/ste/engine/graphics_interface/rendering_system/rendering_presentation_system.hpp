@@ -59,7 +59,7 @@ private:
 public:
 	rendering_presentation_system(const ste_context &ctx,
 								  gl::framebuffer_layout &&fb_layout,
-								  const depth_range &depth = depth_range::one_to_zero())
+								  const depth_range &depth = depth_range::zero_to_one())
 		: rendering_system(ctx),
 		fb_layout(std::move(fb_layout)),
 		depth(depth)

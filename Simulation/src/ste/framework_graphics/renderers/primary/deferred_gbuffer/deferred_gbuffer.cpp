@@ -126,7 +126,7 @@ void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 										 extent);
 
 	// Reattach framebuffer attachments
-	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get());
+	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get(), glm::vec4(.0f));
 	fbo[0] = gl::framebuffer_attachment(gbuffer_level_0);
 	fbo[1] = gl::framebuffer_attachment(gbuffer_level_1);
 
