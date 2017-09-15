@@ -23,7 +23,7 @@ struct queue_create_descriptor {
 };
 
 class ste_device_queues_protocol {
-private:
+public:
 	using queue_create_info_t = lib::unordered_map<ste_queue_type, queue_create_descriptor>;
 
 private:

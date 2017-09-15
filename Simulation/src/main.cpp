@@ -33,6 +33,7 @@
 //#include <debug_gui.hpp>
 
 //#define STATIC_SCENE
+#define RENDER_DOC
 
 using namespace ste;
 
@@ -273,10 +274,6 @@ public:
 			// Submit command buffer and present
 			presentation.get().submit_and_present(std::move(batch));
 		});
-
-		//		(*f)->get_wait();
-		//
-		//		r.debug();
 	}
 };
 
@@ -545,8 +542,18 @@ int main()
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 	device_params.allow_markers = false;
 
+#ifdef RENDER_DOC
+	// RenderDoc only supports one Vulkan queue (as of Sep 2017...)
+	gl::ste_device_queues_protocol::queue_create_info_t params;
+	params[gl::ste_queue_type::all] = { 1, 1.f };
+#endif
+
 	ste_context::gl_device_t device(device_params,
+#ifdef RENDER_DOC
+									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device, params),
+#else
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
+#endif
 									engine,
 									gl_ctx,
 									window);
