@@ -56,8 +56,8 @@ public:
 		gl::device_pipeline_graphics_configurations config;
 		config.depth_op = gl::depth_operation(gl::compare_op::greater);
 		config.rasterizer_op = gl::rasterizer_operation(front_face ?
-														gl::cull_mode::back_bit :
-														gl::cull_mode::front_bit,
+														gl::cull_mode::front_bit :
+														gl::cull_mode::back_bit,
 														gl::front_face::cw);
 		auditor.set_pipeline_settings(std::move(config));
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<object_vertex_data>());

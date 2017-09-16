@@ -6,7 +6,7 @@
 #include <stdafx.hpp>
 
 #include <ste_window.hpp>
-#include <ste_gl_context_creation_parameters.hpp>
+#include <ste_presentation_surface_creation_parameters.hpp>
 
 #include <ste_gl_context.hpp>
 #include <vk_surface.hpp>
@@ -37,12 +37,14 @@ public:
 	static constexpr std::uint32_t default_min_swap_chain_images = 3;
 
 	using swap_chain_image_view_t = image_view<image_type::image_2d>;
+
 	struct swap_chain_image_t {
 		device_swapchain_image image;
 		swap_chain_image_view_t view;
 
 		swap_chain_image_t() = delete;
 	};
+
 	struct acquire_next_image_return_t {
 		const swap_chain_image_t *image{ nullptr };
 		std::uint32_t image_index{ 0 };
@@ -55,7 +57,7 @@ public:
 	};
 
 private:
-	const ste_gl_device_creation_parameters parameters;
+	const ste_presentation_surface_creation_parameters parameters;
 	const vk::vk_logical_device<> *presentation_device;
 	const ste_window &presentation_window;
 
@@ -73,6 +75,8 @@ private:
 	VkPresentModeKHR get_surface_presentation_mode() const;
 	VkSurfaceFormatKHR get_surface_format() const;
 	VkSurfaceTransformFlagBitsKHR get_transform() const;
+	VkCompositeAlphaFlagBitsKHR get_composite_alpha() const;
+
 	void acquire_swap_chain_images();
 	void read_device_caps();
 	void create_swap_chain();
@@ -91,27 +95,28 @@ public:
 	*	@throws ste_device_presentation_unsupported_exception	If presentation is not supported with supplied parameters
 	*	@throws vk_exception	On Vulkan error
 	*
-	*	@param parameters			Device creation parameters
+	*	@param parameters			Presentation surface creation parameters
+	*	@param physical_device		Creating device
 	*	@param presentation_device	The logical device that owns the surface
 	*	@param presentation_window	Window to present to
 	*	@param instance				Vulkan instance that owns the presentation device
 	*/
-	ste_presentation_surface(const ste_gl_device_creation_parameters parameters,
+	ste_presentation_surface(const ste_presentation_surface_creation_parameters parameters,
+							 const vk::vk_physical_device_descriptor &physical_device,
 							 const vk::vk_logical_device<> *presentation_device,
 							 const ste_window &presentation_window,
 							 const vk::vk_instance<> &instance)
 		: parameters(parameters),
-		presentation_device(presentation_device),
-		presentation_window(presentation_window),
-		presentation_surface(presentation_window, instance)
-	{
+		  presentation_device(presentation_device),
+		  presentation_window(presentation_window),
+		  presentation_surface(presentation_window, instance) {
 		assert(presentation_device && "Can not be null");
-		
+
 		// Check surface support
 		bool has_present_support = false;
-		for (unsigned i = 0; i < parameters.physical_device.queue_family_properties.size(); ++i) {
+		for (unsigned i = 0; i < physical_device.queue_family_properties.size(); ++i) {
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(parameters.physical_device.device, 0, presentation_surface, &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(physical_device.device, 0, presentation_surface, &supported);
 
 			if ((has_present_support |= supported != 0))
 				break;
@@ -128,6 +133,7 @@ public:
 		shared_data->swap_chain_optimal_flag.test_and_set();
 		connect_signals();
 	}
+
 	~ste_presentation_surface() noexcept {}
 
 	ste_presentation_surface(ste_presentation_surface &&) = default;
@@ -163,6 +169,7 @@ public:
 											&presentation_image_ready_semaphore,
 											nullptr);
 	}
+
 	/**
 	*	@brief	Acquires the next swap-chain presentation image.
 	*			Call result might be success, suboptimal, out-of-date, timeout or error.
@@ -229,7 +236,8 @@ public:
 	/**
 	 *	@brief	Returns swap chain images count
 	 */
-	auto& get_swap_chain_images() const { return swap_chain_images; }
+	auto &get_swap_chain_images() const { return swap_chain_images; }
+
 	/**
 	*	@brief	Returns the maximal count of acquired swap chain images at any given time.
 	*			See Vulkan specifications: https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#vkAcquireNextImageKHR
@@ -241,7 +249,7 @@ public:
 		return images - min_surface_images + 1;
 	}
 
-	auto& get_presentation_window() const { return presentation_window; }
+	auto &get_presentation_window() const { return presentation_window; }
 
 	auto extent() const { return swap_chain->get_extent(); }
 	auto surface_format() const { return static_cast<format>(swap_chain->get_format()); }

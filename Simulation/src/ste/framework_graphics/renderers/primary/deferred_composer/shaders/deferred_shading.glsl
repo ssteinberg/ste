@@ -248,9 +248,9 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 			continue;
 
 		// Shadow query
-		float shdw = deferred_evaluate_shadowing(frag,
+		float shdw = 1.f;/*deferred_evaluate_shadowing(frag,
 												 light,
-												 cascade);
+												 cascade);*/
 		float occlusion = max(.0f, cavity * shdw);
 
 		// For simple materials, bail is fully shadowed

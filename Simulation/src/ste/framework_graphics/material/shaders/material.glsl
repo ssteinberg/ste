@@ -134,6 +134,7 @@ void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout v
 							uv, 
 							duvdx, 
 							duvdy).xy * 2.f - 1.f;
+		nm.y *= -1.f;
 		nm.z = sqrt(1.f - clamp(dot(nm.xy,nm.xy), .0f, 1.f));
 		
 		n = transform * normalize(nm);

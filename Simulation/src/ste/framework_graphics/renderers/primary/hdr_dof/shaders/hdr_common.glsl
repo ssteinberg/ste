@@ -1,9 +1,10 @@
 
 #include <common.glsl>
+#include <srgb.glsl>
 
-const int bins = 128;
+const int bins = 1024;
 const float fbins = float(bins);
-const float min_luminance = .000001f;
+const float min_luminance = 1e-9f;
 
 struct hdr_bokeh_parameters {
 	int lum_min, lum_max;
@@ -40,18 +41,17 @@ float monochromaticity(float lum) {
 float hdr_bin(float max_lum, float min_lum, float l) {
 	float range = max_lum - min_lum;
 	float bin_size = range / fbins;
-	float r = (l - min_lum) / bin_size;
-	return clamp(r, 0.f, fbins - .0000001f);
+	return (l - min_lum) / bin_size;
 }
 
 float hdr_lum(float l) {
-	return log(l + 1.f);// / log(10.f);
+	return l;//log(l + 1.f);
 }
 
 float hdr_lum_to_luminance(float l) {
-	return exp(l) - 1.f;
+	return l;//exp(l) - 1.f;
 }
 
 float tonemap(float l) {
-	return l;
+	return linear_to_sRGB(l);
 }

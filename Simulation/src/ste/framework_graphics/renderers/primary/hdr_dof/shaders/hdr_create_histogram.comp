@@ -23,5 +23,7 @@ void main() {
 	float max_lum = intBitsToFloat(params.lum_max);
 
 	int bin = int(hdr_bin(max_lum, min_lum, l));
+	bin = clamp(bin, 0, bins - 1);
+
 	atomicAdd(histogram[bin], 1);
 }

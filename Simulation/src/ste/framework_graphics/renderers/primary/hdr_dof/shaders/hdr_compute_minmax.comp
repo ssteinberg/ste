@@ -12,21 +12,14 @@ layout(r32f, binding = 1) restrict writeonly uniform image2D hdr_lums;
 layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
-//layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_prev_buffer {
-//	hdr_bokeh_parameters prev_params;
-//};
-
-//uniform time_t {
-//	float time;
-//};
 
 void main() {
 	vec2 ts = textureSize(hdr, 0);
 
-	vec4 lums0 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,0)) / ts + vec2(.5, .5), 2);
-	vec4 lums1 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,0)) / ts + vec2(.5, .5), 2);
-	vec4 lums2 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,2)) / ts + vec2(.5, .5), 2);
-	vec4 lums3 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,2)) / ts + vec2(.5, .5), 2);
+	vec4 lums0 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,0) + vec2(.5, .5)) / ts, 2);
+	vec4 lums1 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,0) + vec2(.5, .5)) / ts, 2);
+	vec4 lums2 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,2) + vec2(.5, .5)) / ts, 2);
+	vec4 lums3 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,2) + vec2(.5, .5)) / ts, 2);
 	vec4 ls = vec4(dot(lums0, vec4(.25f)),
 				   dot(lums1, vec4(.25f)),
 				   dot(lums2, vec4(.25f)),
@@ -39,18 +32,4 @@ void main() {
 	int int_l = floatBitsToInt(l);
 	atomicMin(params.lum_min, int_l);
 	atomicMax(params.lum_max, int_l);
-
-	/*memoryBarrierShared();
-	barrier();
-	
-	if (gl_GlobalInvocationID.xy == ivec2(0,0)) {
-		float t = clamp(.1f * time, .0f, 1.f);
-
-		float min_lum = mix(intBitsToFloat(prev_params.lum_min), intBitsToFloat(params.lum_min), t);
-		float max_lum = mix(intBitsToFloat(prev_params.lum_max), intBitsToFloat(params.lum_max), t);
-		max_lum = prev_params.lum_max != 0x7FFFFFFF ? max(max_lum, min_lum + min_luminance) : intBitsToFloat(params.lum_max);
-
-		params.lum_min = floatBitsToInt(min_lum);
-		params.lum_max = floatBitsToInt(max_lum);
-	}*/
 }

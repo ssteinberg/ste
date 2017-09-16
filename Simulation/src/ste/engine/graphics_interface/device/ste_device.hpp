@@ -124,7 +124,8 @@ public:
 					 engine,
 					 gl_ctx)
 	{
-		presentation_surface = lib::allocate_unique<ste_presentation_surface>(parameters,
+		presentation_surface = lib::allocate_unique<ste_presentation_surface>(parameters.presentation_surface_parameters,
+																			  parameters.physical_device,
 																			  &device,
 																			  presentation_window,
 																			  gl_ctx.instance());

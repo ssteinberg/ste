@@ -27,6 +27,7 @@ class hdr_dof_postprocess_storage : public gl::storage<hdr_dof_postprocess_stora
 private:
 	static hdr_bokeh_parameters parameters_initial;
 	static constexpr float vision_properties_max_lum = 10.f;
+	static constexpr std::uint32_t bins = 1024;
 
 	ste_resource<gl::texture<gl::image_type::image_2d>> create_hdr_vision_properties_texture(const ste_context &ctx) {
 		static constexpr auto format = gl::format::r32g32b32a32_sfloat;
@@ -59,7 +60,7 @@ public:
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_vision_properties_texture;
 
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
-	//	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
+		gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
 	gl::array<gl::std430<std::uint32_t>> histogram;
 	gl::array<gl::std430<std::uint32_t>> histogram_sums;
 
@@ -72,13 +73,17 @@ public:
 							   { parameters_initial }, 
 							   gl::buffer_usage::storage_buffer,
 							   "hdr_bokeh_param_buffer"),
-//		hdr_bokeh_param_buffer_prev(ctx, 1, { parameters_initial }, gl::buffer_usage::storage_buffer),
+		hdr_bokeh_param_buffer_prev(ctx, 
+									1, 
+									{ parameters_initial }, 
+									gl::buffer_usage::storage_buffer,
+									"hdr_bokeh_param_buffer_prev"),
 		histogram(ctx, 
-				  128, 
+				  bins,
 				  gl::buffer_usage::storage_buffer,
 				  "histogram"),
 		histogram_sums(ctx, 
-					   128, 
+					   bins,
 					   gl::buffer_usage::storage_buffer,
 					   "histogram_sums")
 	{}

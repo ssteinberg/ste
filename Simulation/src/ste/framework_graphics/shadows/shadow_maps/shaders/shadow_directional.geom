@@ -54,7 +54,7 @@ void process(int cascade, uint cascade_idx, vec3 vertices[3], float f) {
 		float z = min(-n - 1e-8f, vertices[j].z);
 		
 		// Orthographic projection
-		gl_Position.xy = vertices[j].xy;
+		gl_Position.xy = vertices[j].xy * vec2(1,-1);
 		gl_Position.z = project_depth_linear(z, n, f);
 		gl_Position.w = 1.f;
 

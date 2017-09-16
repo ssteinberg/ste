@@ -1,23 +1,18 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
 #include <vk_physical_device_descriptor.hpp>
+
+#include <ste_presentation_surface_creation_parameters.hpp>
 
 #include <optional.hpp>
 #include <lib/vector.hpp>
 
 namespace ste {
 namespace gl {
-
-enum class ste_presentation_device_vsync {
-	immediate,
-	fifo,
-	mailbox,
-};
 
 struct ste_gl_context_creation_parameters {
 	const char* client_name;
@@ -34,10 +29,9 @@ struct ste_gl_device_creation_parameters {
 	VkPhysicalDeviceFeatures requested_device_features{ 0 };
 	lib::vector<const char*> additional_device_extensions;
 
-	optional<std::uint32_t> simultaneous_presentation_frames;
-	optional<ste_presentation_device_vsync> vsync;
-
 	bool allow_markers{ false };
+
+	ste_presentation_surface_creation_parameters presentation_surface_parameters;
 };
 
 }

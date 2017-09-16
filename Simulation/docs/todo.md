@@ -37,6 +37,6 @@
 21. Units, meters, km, kelvin, bytes, kb, etc.
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
 23. Queue transfer, correctly, in time.
-24. Get rid of host commands altogether.
+24. <strike>Get rid of host commands altogether.</strike>
 25. Fix bind sparse mess.
 26. Host read-back, buffers and images.

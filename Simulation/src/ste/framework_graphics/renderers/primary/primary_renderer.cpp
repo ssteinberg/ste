@@ -37,9 +37,6 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	downsample_depth(ctx,
 					 *this,
 					 &buffers.gbuffer.get()),
-	prepopulate_depth(ctx,
-					  *this,
-					  this->s),
 	prepopulate_backface_depth(ctx,
 							   *this,
 							   this->s),
@@ -101,7 +98,6 @@ void primary_renderer::reattach_framebuffers() {
 	directional_shadows_projector->attach_framebuffer(buffers.shadows_storage->get_directional_maps_fbo());
 
 	// Attach gbuffer framebuffers
-	prepopulate_depth->attach_framebuffer(buffers.gbuffer->get_depth_fbo());
 	prepopulate_backface_depth->attach_framebuffer(buffers.gbuffer->get_depth_backface_fbo());
 	scene_write_gbuffer->attach_framebuffer(buffers.gbuffer->get_fbo());
 
@@ -234,40 +230,32 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 
 	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 															  gl::pipeline_stage::draw_indirect,
+															  gl::buffer_memory_barrier(s->get_idb().get(),
+																						gl::access_flags::shader_write,
+																						gl::access_flags::indirect_command_read),
 															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().idb.get(),
 																						gl::access_flags::shader_write,
-																						gl::access_flags::indirect_command_read)));
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-															  gl::pipeline_stage::geometry_shader,
-															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-																						gl::access_flags::shader_write,
-																						gl::access_flags::shader_read)));
-
-	// Shadow cubemaps project
-	record_shadow_projector_fragment(recorder);
-
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-															  gl::pipeline_stage::draw_indirect,
+																						gl::access_flags::indirect_command_read),
 															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().idb.get(),
 																						gl::access_flags::shader_write,
 																						gl::access_flags::indirect_command_read)));
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-															  gl::pipeline_stage::geometry_shader,
-															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-																						gl::access_flags::shader_write,
-																						gl::access_flags::shader_read)));
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//															  gl::pipeline_stage::geometry_shader,
+//															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
 
-	// Directional shadow maps project
-	record_directional_shadow_projector_fragment(recorder);
-
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-															  gl::pipeline_stage::draw_indirect,
-															  gl::buffer_memory_barrier(s->get_idb().get(),
-																						gl::access_flags::shader_write,
-																						gl::access_flags::indirect_command_read)));
-
-	// Prepopulate depth
-//	record_prepopulate_depth_fragment(recorder);
+	// Shadow cubemaps project
+//	record_shadow_projector_fragment(recorder);
+//
+//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+//															  gl::pipeline_stage::geometry_shader,
+//															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
+//																						gl::access_flags::shader_write,
+//																						gl::access_flags::shader_read)));
+//
+//	// Directional shadow maps project
+//	record_directional_shadow_projector_fragment(recorder);
 
 	// Draw scene to gbuffer
 	record_scene_fragment(recorder);
@@ -403,10 +391,6 @@ void primary_renderer::record_shadow_projector_fragment(gl::command_recorder &re
 
 void primary_renderer::record_directional_shadow_projector_fragment(gl::command_recorder &recorder) {
 	recorder << directional_shadows_projector.get();
-}
-
-void primary_renderer::record_prepopulate_depth_fragment(gl::command_recorder &recorder) {
-	recorder << prepopulate_depth.get();
 }
 
 void primary_renderer::record_downsample_depth_fragment(gl::command_recorder &recorder) {

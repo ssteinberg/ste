@@ -1,0 +1,67 @@
+
+#type compute
+#version 450
+
+#include <hdr_common.glsl>
+
+layout(local_size_x = 1, local_size_y = 1) in;
+
+layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
+	hdr_bokeh_parameters params;
+};
+layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_buffer_prev {
+	hdr_bokeh_parameters prev_params;
+};
+
+layout(push_constant) uniform time_push_t {
+	float time_ms;
+};
+
+float adaptation_down_coef(float field_intensity) {
+	// I >= 2:			3 sec adaptation
+	// I -> -inf:		5 min adaptation
+	const float threshold = 2.f;
+	const float adaptation0 = 1.f / 3e+3f;
+	const float adaptation1 = 1.f / (5 * 60e+3f);
+
+	const float scale = 2.f;
+
+	float I = min(field_intensity, threshold) / threshold * scale; // in (-inf, scale]
+	return mix(adaptation1, adaptation0, exp(I) / exp(scale));
+}
+
+float adaptation_up_coef(float field_intensity) {
+	// I >= 0:		.1sec adaptation
+	// I -> -inf:	10sec adaptation
+	const float threshold = .01f;
+	const float adaptation0 = 1.f / 1e+2f;
+	const float adaptation1 = 1.f / 10e+3f;
+
+	const float scale = 2.f;
+
+	float I = min(field_intensity, threshold) / threshold * scale; // in (-inf, scale]
+	return mix(adaptation1, adaptation0, exp(I) / exp(scale));
+}
+
+float adapt(float target, float lum) {
+	float field_intensity = lum;
+	float adaptation_coef = target > lum ? adaptation_up_coef(lum) : adaptation_down_coef(lum);
+
+	return clamp(adaptation_coef * time_ms, .0f, 1.f);
+}
+
+void main() {	
+	float min_lum = intBitsToFloat(params.lum_min);
+	float max_lum = intBitsToFloat(params.lum_max);
+
+	if (prev_params.lum_min != 0x7FFFFFFF) {
+		float a = adapt(max_lum, intBitsToFloat(prev_params.lum_max));
+		float b = adapt(min_lum, intBitsToFloat(prev_params.lum_min));
+
+		min_lum = mix(intBitsToFloat(prev_params.lum_min), min_lum, a);
+		max_lum = mix(intBitsToFloat(prev_params.lum_max), max_lum, b);
+	}
+
+	params.lum_min = floatBitsToInt(min_lum);
+	params.lum_max = floatBitsToInt(max_lum);
+}

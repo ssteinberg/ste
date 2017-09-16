@@ -237,6 +237,10 @@ public:
 	auto &renderer() { return r; }
 	auto &renderer() const { return r; }
 
+	void tick(float frame_time_ms) {
+		r.tick(frame_time_ms);
+	}
+
 	void render(gl::command_recorder &recorder) override final {
 		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
 		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
@@ -326,7 +330,7 @@ auto create_light_mesh(const ste_context &ctx,
 					   lib::vector<lib::unique_ptr<graphics::material_layer>> &layers) {
 	auto light_obj = lib::allocate_shared<graphics::object>(std::move(mesh));
 
-	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), light_pos)));
 
 	resource::surface_2d<gl::format::r8g8b8a8_unorm> light_color_tex{ { 1, 1 } };
 	auto c = glm::clamp(static_cast<glm::vec3>(color) / color.luminance(), glm::vec3(.0f), glm::vec3(1.f));
@@ -350,7 +354,7 @@ auto create_light_mesh(const ste_context &ctx,
 
 	// Create a batch
 	auto fence = ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
-												   [&](gl::command_recorder &recorder) {
+												   [=](gl::command_recorder &recorder) {
 		scene->get_object_group().add_object(recorder, light_obj);
 	});
 
@@ -537,10 +541,11 @@ int main()
 	gl::ste_gl_device_creation_parameters device_params;
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
-	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
-	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 	device_params.allow_markers = false;
+	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
+	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
+	device_params.presentation_surface_parameters.required_format = gl::format::b8g8r8a8_unorm;
 
 #ifdef RENDER_DOC
 	// RenderDoc only supports one Vulkan queue (as of Sep 2017...)
@@ -577,7 +582,7 @@ int main()
 	/*
 	*	Create camera
 	*/
-	constexpr float clip_near = 1.f;
+	constexpr float clip_near = .1f;
 	const float fovy = glm::pi<float>() * .225f;
 	const float aspect = static_cast<float>(ctx.device().get_surface().extent().x) / static_cast<float>(ctx.device().get_surface().extent().y);
 	graphics::camera<float, graphics::camera_projection_reversed_infinite_perspective> camera(graphics::camera_projection_reversed_infinite_perspective<float>(fovy, aspect, clip_near));
@@ -648,7 +653,7 @@ int main()
 	}
 
 	// Configure
-	presenter->renderer().set_aperture_parameters(35e-3f, 25e-3f);
+	presenter->renderer().set_aperture_parameters(8e-3f, 25e-3f);
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
@@ -698,6 +703,7 @@ int main()
 	*	Main loop
 	*/
 
+	float time_elapsed = .0f;
 	for (;;) {
 		ctx.tick();
 		ste_window::poll_events();
@@ -713,7 +719,7 @@ int main()
 
 		if (window.is_window_focused()) {
 			// Handle movement input
-			constexpr float movement_factor = 1.55f;
+			constexpr float movement_factor = .4f;
 			if (hid::keyboard::key_status(window, hid::key::KeyW) == hid::status::down)
 				camera.step_forward(frame_time_ms * movement_factor);
 			if (hid::keyboard::key_status(window, hid::key::KeyS) == hid::status::down)
@@ -724,7 +730,7 @@ int main()
 				camera.step_right(frame_time_ms * movement_factor);
 
 			// Handle camera rotation input
-			constexpr float rotation_factor = .0009f;
+			constexpr float rotation_factor = .0002f;
 			bool rotate_camera = mouse_down;
 			if (mouse_down/* && !debug_gui_dispatchable->is_gui_active()*/) {
 				const auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pointer_pos) * frame_time_ms * rotation_factor;
@@ -738,7 +744,7 @@ int main()
 		glm::vec3 lp = light0_pos;
 		glm::vec3 sun_dir = sun_direction;
 #else
-		const float angle = frame_time_ms * glm::pi<float>() / 2.5f;
+		const float angle = time_elapsed * glm::pi<float>() *.00025f;
 		const glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
 
 		const glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()),
@@ -746,11 +752,14 @@ int main()
 															.15f });
 
 		light0.first->set_position(lp);
-		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
 		sun_light->set_direction(sun_dir);
+
+		time_elapsed += frame_time_ms;
 #endif
 
 		// Present
+		presenter->tick(frame_time_ms);
 		presenter->present();
 	}
 
@@ -811,9 +820,9 @@ int main()
 	 //	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	 //	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 	 //
-	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(1.f), glm::vec3{ 3.5f });
 	 //	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(1.f), glm::vec3{ .0f, .0f, -50.f });
 	 //	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
 	 //	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	 //	for (auto &o : mat_editor_objects)
@@ -967,7 +976,7 @@ int main()
 	 //													  .15f});
 	 //
 	 //		light0.first->set_position(lp);
-	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
 	 //		sun_light->set_direction(sun_dir);
 	 //#endif
 	 //

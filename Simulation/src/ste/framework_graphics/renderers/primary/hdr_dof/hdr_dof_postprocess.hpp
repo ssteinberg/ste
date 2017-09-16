@@ -18,6 +18,7 @@
 #include <hdr_tonemap_coc_fragment.hpp>
 #include <hdr_compute_histogram_fragment.hpp>
 #include <hdr_compute_histogram_sums_fragment.hpp>
+#include <hdr_adaptation_fragment.hpp>
 #include <hdr_compute_minmax_fragment.hpp>
 
 #include <command_recorder.hpp>
@@ -45,6 +46,7 @@ private:
 
 	hdr_compute_minmax_fragment compute_minmax_task;
 	hdr_compute_histogram_fragment create_histogram_task;
+	hdr_adaptation_fragment adaptation_task;
 	hdr_compute_histogram_sums_fragment compute_histogram_sums_task;
 	hdr_tonemap_coc_fragment tonemap_coc_task;
 	hdr_bloom_blur_x_fragment bloom_blurx_task;
@@ -55,6 +57,7 @@ private:
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
+	float tick_time_ms{ .0f };
 	bool invalidated{ true };
 
 private:
@@ -96,6 +99,14 @@ public:
 		assert(focal_length > .0f && "Focal length must be positive");
 
 		bokeh_blur_task.set_aperture_parameters(diameter, focal_length);
+	}
+
+	/*
+	 *	@brief	For HDR adaptation, set every frame to expected frame time. 
+	 *			Leave at 0 for no adaptation.
+	 */
+	void set_tick_time_ms(float tick_time_ms) {
+		this->tick_time_ms = tick_time_ms;
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {

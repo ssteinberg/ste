@@ -61,6 +61,8 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 	compute_histogram_sums_task.bind_buffers(s->histogram_sums, s->histogram, s->hdr_bokeh_param_buffer);
 	compute_histogram_sums_task.set_source(lums_extent);
 
+	adaptation_task.bind_buffers(s->hdr_bokeh_param_buffer, s->hdr_bokeh_param_buffer_prev);
+
 	compute_minmax_task.bind_buffers(s->hdr_bokeh_param_buffer);
 	compute_minmax_task.set_source(gl::pipeline::combined_image_sampler(*input, samp_no_clamp));
 	compute_minmax_task.set_destination(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
@@ -96,6 +98,7 @@ hdr_dof_postprocess::hdr_dof_postprocess(gl::rendering_system &rs,
 	// Fragments
 	compute_minmax_task(rs),
 	create_histogram_task(rs),
+	adaptation_task(rs),
 	compute_histogram_sums_task(rs),
 	tonemap_coc_task(rs),
 	bloom_blurx_task(rs),
@@ -164,13 +167,25 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 		invalidated = false;
 	}
 
+	adaptation_task.set_tick_time_ms(tick_time_ms);
+
 	recorder
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 														 gl::pipeline_stage::transfer,
 														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
 																				   gl::access_flags::shader_read,
 																				   gl::access_flags::transfer_write)))
-//		<< gl::cmd_copy_buffer(hdr_bokeh_param_buffer.get(), hdr_bokeh_param_buffer_prev.get())
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+														 gl::pipeline_stage::transfer,
+														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer_prev,
+																				   gl::access_flags::shader_read,
+																				   gl::access_flags::transfer_write)))
+		<< gl::cmd_copy_buffer(s->hdr_bokeh_param_buffer.get(), s->hdr_bokeh_param_buffer_prev.get())
+		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+														 gl::pipeline_stage::transfer,
+														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
+																				   gl::access_flags::transfer_read,
+																				   gl::access_flags::transfer_write)))
 		<< s->hdr_bokeh_param_buffer.overwrite_cmd(0, s->parameters_initial);
 
 	recorder
@@ -178,7 +193,10 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 														 gl::pipeline_stage::compute_shader,
 														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
 																				   gl::access_flags::transfer_write,
-																				   gl::access_flags::shader_write)))
+																				   gl::access_flags::shader_write),
+														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer_prev,
+																				   gl::access_flags::transfer_write,
+																				   gl::access_flags::shader_read)))
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 														 gl::pipeline_stage::compute_shader,
 														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
@@ -202,22 +220,22 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 														 gl::pipeline_stage::compute_shader,
 														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
-																				   gl::access_flags::shader_write,
-																				   gl::access_flags::shader_read),
+																				   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																				   gl::access_flags::shader_read | gl::access_flags::shader_write),
 														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
 																							gl::image_layout::general, gl::image_layout::general,
 																							gl::access_flags::shader_write, gl::access_flags::shader_read)))
 		<< create_histogram_task;
 
 	recorder
+		<< adaptation_task;
+
+	recorder
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 														 gl::pipeline_stage::compute_shader,
 														 gl::buffer_memory_barrier(s->histogram,
 																				   gl::access_flags::shader_write,
-																				   gl::access_flags::shader_read),
-														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
-																				   gl::access_flags::shader_read,
-																				   gl::access_flags::shader_write)))
+																				   gl::access_flags::shader_read)))
 		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 														 gl::pipeline_stage::compute_shader,
 														 gl::buffer_memory_barrier(s->histogram_sums,

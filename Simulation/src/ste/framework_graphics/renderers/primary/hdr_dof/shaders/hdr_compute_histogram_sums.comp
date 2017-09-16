@@ -4,6 +4,9 @@
 
 #include <hdr_common.glsl>
 
+#include <renderer_transform_buffers.glsl>
+#include <gbuffer.glsl>
+
 layout(local_size_x = bins / 2, local_size_y = 1) in;
 
 layout(std430, binding = 0) restrict writeonly buffer histogram_sums {
@@ -20,8 +23,6 @@ layout(push_constant) uniform hdr_lum_resolution_t {
 	uint hdr_lum_resolution;
 };
 
-//layout(binding = 3) uniform sampler2D depth_texture;
-
 shared uint shared_data[bins];
 
 void main() {
@@ -34,16 +35,8 @@ void main() {
 	for (int j=0; j<2; ++j) {
 		int h = int(histogram[id * 2 + j]);
 
-		int trim = max(0, h - bin_ceil);
+		int trim = 0;//max(0, h - bin_ceil);
 		shared_data[id * 2 + j] = uint(h - trim);
-	}
-
-	if (id == 0) {
-		// TODO: Depth
-		float d = .0f;//texelFetch(depth_texture, textureSize(depth_texture, 0) >> 1, 0).x;
-		float z_lin = 1.f;//unproject_depth(d);
-
-		params.focus = z_lin;
 	}
 
 	memoryBarrierShared();
@@ -63,4 +56,11 @@ void main() {
 
 	sums[id * 2] = shared_data[id * 2];
 	sums[id * 2 + 1] = shared_data[id * 2 + 1];
+
+	if (id == 0) {
+		float d = texelFetch(depth_map, textureSize(depth_map, 0) >> 1, 0).x;
+		float z_lin = unproject_depth(d);
+
+		params.focus = z_lin;
+	}
 }

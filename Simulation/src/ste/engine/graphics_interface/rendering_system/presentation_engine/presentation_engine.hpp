@@ -183,7 +183,7 @@ public:
 		// Otherwise use the user selected simultaneous_presentation_frames value, if exists.
 		// Otherwise unlimited.
 		if (!max_frame_lag)
-			max_frame_lag = device.get_creation_parameters().simultaneous_presentation_frames;
+			max_frame_lag = device.get_creation_parameters().presentation_surface_parameters.simultaneous_presentation_frames;
 		this->max_frame_lag = max_frame_lag ?
 			max_frame_lag.get() :
 			std::numeric_limits<std::uint32_t>::max();

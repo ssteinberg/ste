@@ -69,9 +69,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\entities\objects\object_group.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_resources\models\model_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -465,9 +462,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\light\light_entities\directional_light.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\scene_properties.hpp">
@@ -1994,6 +1988,18 @@
     <ClInclude Include="Simulation\src\ste\engine\window\hid\keyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface_creation_parameters.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\presentation_surface_transform.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\presentation_surface_composite_alpha.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_adaptation_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -2089,5 +2095,7 @@
     <None Include="Simulation\docs\todo.md" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_write_gbuffer.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\srgb.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_adaptation.comp" />
   </ItemGroup>
 </Project>

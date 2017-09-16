@@ -558,6 +558,9 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\image_vector.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\vector.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\data_structure\vector_common.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\presentation_surface_composite_alpha.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\presentation_surface_transform.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface_creation_parameters.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\observable_resource.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\observable_resource_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage.hpp" />
@@ -584,6 +587,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\sphere.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\srgb.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_adaptation_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_camera.hpp" />
@@ -960,9 +964,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1079,7 +1080,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_composer\deferred_composer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\deferred_gbuffer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\downsample_depth\gbuffer_downsample_depth_fragment.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\global_illumination\gi_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_bloom_blur_x_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_bloom_blur_y_fragment.hpp" />
@@ -1237,6 +1237,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\chromaticity.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\srgb.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\dual_quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\erf.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\rand\fast_rand.glsl" />
@@ -1283,6 +1284,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\deferred_gbuffer\shaders\gbuffer_store.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\bokeh_bilateral_blur.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_adaptation.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_bloom_blur_x.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_bloom_blur_y.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_blur.glsl" />

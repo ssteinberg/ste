@@ -7,26 +7,27 @@
 #include <hdr_common.glsl>
 #include <fast_rand.glsl>
 
-//#include <renderer_transform_buffers.glsl>
+#include <renderer_transform_buffers.glsl>
+#include <shadow.glsl>
+#include <gbuffer.glsl>
 
 layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
 layout(binding = 0) uniform sampler2D hdr;
-//layout(binding = 3) uniform sampler2D depth_texture;
 
 layout(location = 0) in vec2 uv;
 
 layout(location = 0) out vec3 frag_color;
 
-const int samples = 4;
-const int max_rings = 7;
-const float max_blur_texels_radius = 4.f;
+const int samples = 6;
+const int max_rings = 10;
+const float max_blur_texels_radius = 6.f;
 
 const float blur_coef = 1.0;
 const float threshold = 0.5f; 	// highlight threshold
-const float gain = 2.f; 		// highlight gain
+const float gain = 1.25f; 		// highlight gain
 
 const float bias = 0.5f; 		// bokeh edge bias
 const float fringe = 1.f; 		// bokeh chromatic aberration/fringing
@@ -68,15 +69,12 @@ vec2 coc(float s, float focal) {
 
 	if (s1 == s2)
 		return vec2(0);
-		
-	// TODO
-	return vec2(0);
-	/*
+
 	// Circle of confusion diameter in world space
 	float C = A * abs(s1 - s2) / s2;
 
 	// Project onto near clip plane
-	vec4 projected = project(vec3(C,0,s1));
+	vec4 projected = project(vec3(C,0,-s1));
 	float c = projected.x / projected.w;
 
 	// Normalize to screen texture space
@@ -85,16 +83,14 @@ vec2 coc(float s, float focal) {
 	vec2 norm_coc = c / vec2(aperture_w, aperture_h);
 
 	return .5f * norm_coc;
-	*/
 }
 
 void main() {
 	vec2 size = textureSize(hdr, 0).xy;
 	vec3 col = texture(hdr, uv).rgb;
 
-	// TODO: Depth
-	float d = .0f;//texelFetch(depth_texture, ivec2(gl_FragCoord.xy), 0).x;
-	float z = 1.f;//unproject_depth(d);
+	float d = texelFetch(depth_map, ivec2(gl_FragCoord.xy), 0).x;
+	float z = unproject_depth(d);
 	float focal = params.focus;
 
 	vec2 coc_size = coc(z, focal);

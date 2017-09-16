@@ -49,7 +49,10 @@ public:
 	}
 
 	void record(gl::command_recorder &recorder) override final {
-		recorder << dispatch_task(extent.x / 32, extent.y / 32, 1);
+		const std::uint32_t workgroup = 32;
+		const auto jobs = (extent + glm::u32vec2(workgroup - 1)) / workgroup;
+
+		recorder << dispatch_task(jobs.x, jobs.y, 1);
 	}
 };
 
