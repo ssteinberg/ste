@@ -19,24 +19,14 @@ layout(std430, binding = 2) restrict writeonly buffer hdr_bokeh_parameters_buffe
 	hdr_bokeh_parameters params;
 };
 
-layout(push_constant) uniform hdr_lum_resolution_t {
-	uint hdr_lum_resolution;
-};
-
 shared uint shared_data[bins];
 
 void main() {
 	uint id = gl_LocalInvocationID.x;
 
-	float N = fbins;
-	float T = 1.25f / (N);
-	int bin_ceil = int(hdr_lum_resolution * T);
-
 	for (int j=0; j<2; ++j) {
 		int h = int(histogram[id * 2 + j]);
-
-		int trim = 0;//max(0, h - bin_ceil);
-		shared_data[id * 2 + j] = uint(h - trim);
+		shared_data[id * 2 + j] = uint(h);
 	}
 
 	memoryBarrierShared();

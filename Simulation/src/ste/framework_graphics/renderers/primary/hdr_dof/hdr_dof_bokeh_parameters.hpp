@@ -9,8 +9,8 @@
 namespace ste {
 namespace graphics {
 
-struct hdr_bokeh_parameters : gl::std430<std::int32_t, std::int32_t, float> {
-	using Base = gl::std430<std::int32_t, std::int32_t, float>;
+struct hdr_bokeh_parameters : gl::std430<std::uint32_t, std::uint32_t, float> {
+	using Base = gl::std430<std::uint32_t, std::uint32_t, float>;
 	using Base::Base;
 
 	auto& lum_min() { return get<0>(); }

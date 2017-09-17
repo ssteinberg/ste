@@ -237,10 +237,6 @@ public:
 	auto &renderer() { return r; }
 	auto &renderer() const { return r; }
 
-	void tick(float frame_time_ms) {
-		r.tick(frame_time_ms);
-	}
-
 	void render(gl::command_recorder &recorder) override final {
 		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
 		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
@@ -428,10 +424,10 @@ void add_scene_lights(const ste_context &ctx,
 					 glm::vec3{  885, 153,  552} }) {
 #ifdef STATIC_SCENE
 		const graphics::rgb color = graphics::kelvin(1800);
-		const float lums = 6500.f;
+		const float lums = 4500.f;
 #else
 		const graphics::rgb color = graphics::kelvin(std::uniform_real_distribution<float>(1300, 4500)(gen));
-		const float lums = std::uniform_real_distribution<float>(1200, 3000)(gen) / color.luminance();
+		const float lums = std::uniform_real_distribution<float>(3000, 4000)(gen) / color.luminance();
 #endif
 		auto wall_lamp = create_sphere_light_object(ctx, &scene, color, lums, 1.f, v, materials, layers);
 
@@ -545,7 +541,7 @@ int main()
 	device_params.allow_markers = false;
 	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
-	device_params.presentation_surface_parameters.required_format = gl::format::b8g8r8a8_unorm;
+	device_params.presentation_surface_parameters.required_format = gl::format::b8g8r8a8_srgb;
 
 #ifdef RENDER_DOC
 	// RenderDoc only supports one Vulkan queue (as of Sep 2017...)
@@ -658,7 +654,7 @@ int main()
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = create_sphere_light_object(ctx, &scene, graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 8000.f, 4.f, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
@@ -759,7 +755,6 @@ int main()
 #endif
 
 		// Present
-		presenter->tick(frame_time_ms);
 		presenter->present();
 	}
 

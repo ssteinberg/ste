@@ -17,13 +17,15 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 };
 
 void main() {
+	if (any(greaterThanEqual(gl_GlobalInvocationID.xy, imageSize(hdr_lums))))
+		return;
+
 	float l = imageLoad(hdr_lums, ivec2(gl_GlobalInvocationID.xy)).x;
 
-	float min_lum = intBitsToFloat(params.lum_min);
-	float max_lum = intBitsToFloat(params.lum_max);
+	float min_lum = hdr_lum_from_hdr_params(params.lum_min);
+	float max_lum = hdr_lum_from_hdr_params(params.lum_max);
 
+	// Add a sample to relevant bin
 	int bin = int(hdr_bin(max_lum, min_lum, l));
-	bin = clamp(bin, 0, bins - 1);
-
-	atomicAdd(histogram[bin], 1);
+	atomicAdd(histogram[min(bin, bins-1)], 1);
 }

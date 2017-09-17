@@ -57,7 +57,7 @@ private:
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
 
-	float tick_time_ms{ .0f };
+//	float tick_time_ms{ .0f };
 	bool invalidated{ true };
 
 private:
@@ -99,14 +99,6 @@ public:
 		assert(focal_length > .0f && "Focal length must be positive");
 
 		bokeh_blur_task.set_aperture_parameters(diameter, focal_length);
-	}
-
-	/*
-	 *	@brief	For HDR adaptation, set every frame to expected frame time. 
-	 *			Leave at 0 for no adaptation.
-	 */
-	void set_tick_time_ms(float tick_time_ms) {
-		this->tick_time_ms = tick_time_ms;
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {

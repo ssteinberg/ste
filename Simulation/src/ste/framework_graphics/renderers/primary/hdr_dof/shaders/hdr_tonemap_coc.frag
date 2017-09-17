@@ -23,65 +23,77 @@ layout(location = 1) out vec4 bloomout;
 const float bloom_cutoff = .666f;
 const float vision_properties_max_lum = 10.f;
 
-vec4 hdr_bloom(vec4 RGBL, vec3 XYZ, float mesopic) {
-	if (XYZ.y > bloom_cutoff) {
-		float x = pow((XYZ.y - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
-		return vec4(RGBL.rgb, x);
+vec4 hdr_bloom(vec3 rgb, float luminance, float mesopic) {
+	if (luminance > bloom_cutoff) {
+		float x = pow((luminance - bloom_cutoff) / (1.f - bloom_cutoff), 8) * (1.f - mesopic);
+		return vec4(rgb, x);
 	}
 	else
 		return vec4(0);
 }
 
-float hdr_tonemap(float l) {
+float hdr_tonemap(float luminance) {
 	const float T = float(histogram[bins - 1]);
 
-	float min_lum = intBitsToFloat(params.lum_min);
-	float max_lum = intBitsToFloat(params.lum_max);
+	float l = hdr_lum(luminance);
+	
+	// Read bins-range (logarithmic) luminance and linear luminance
+	float min_lum = hdr_lum_from_hdr_params(params.lum_min);
+	float max_lum = hdr_lum_from_hdr_params(params.lum_max);
 
+	// Compute bin for incoming luminance
 	float fbin = max(hdr_bin(max_lum, min_lum, l), .0f);
-	if (fbin >= fbins)
+	int bin = int(fbin);
+	if (bin >= bins)
 		return tonemap(1.f);
 
-	int bin = int(fbin);
-	float frac = fract(fbin);
+	// Calculate linear luminance on bin's low and high-end
+	uint toned_bin_start = bin > 0 ? histogram[bin - 1] : 0;
+	uint toned_bin_end = histogram[bin];
+	vec2 bin_range = vec2(toned_bin_start, toned_bin_end) / T;
 
-	float toned_bin_start = bin > 0 ? float(histogram[bin - 1]) / T : .0f;
-	float toned_bin_end = float(histogram[bin]) / T;
+	vec2 bin_hdr_lum_range = mix(min_lum.xx, max_lum.xx, vec2(bin, bin+1) / fbins);
+	vec2 bin_luminance_range = hdr_lum_to_luminance(bin_hdr_lum_range);
 
-	float toned_l = mix(toned_bin_start, toned_bin_end, frac);
+	// Calculate relative position inside bin
+	float frac = (luminance - bin_luminance_range.x) / (bin_luminance_range.y - bin_luminance_range.x);
 
+	// Tonemap
+	float toned_l = mix(bin_range.x, bin_range.y, frac);
 	return tonemap(toned_l);
 }
 
 void main() {
-	vec3 hdr_texel = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
-	float x = hdr_texel.z;
+	vec3 xyY = texelFetch(hdr, ivec2(gl_FragCoord.xy), 0).rgb;
+	float x = xyY.z;
 
+	// Read precomputed vision properties
 	float vision_properties_coord = (x - min_luminance) / (vision_properties_max_lum - min_luminance);
-	vec4 vision_properties = texture(hdr_vision_properties_texture, vec2(vision_properties_coord, 0.5f));
+	vec2 vision_properties = texture(hdr_vision_properties_texture, vec2(vision_properties_coord, .5f)).xy;
 	float scotopic = vision_properties.x;
 	float mesopic = vision_properties.y;
-	float monochr = vision_properties.z;
-	float acuity = vision_properties.w;
 	float red_coef = red_response(scotopic);
-
-	// Tonemap
-	float l = hdr_lum(x);
-	hdr_texel.z = hdr_tonemap(l) * mix(1.f, .666f, mesopic);
+	float monochrm = monochromaticity(scotopic);
 
 	// Red response
-	vec3 XYZ = xyYtoXYZ(hdr_texel);
-	vec3 RGB = XYZtoRGB(XYZ);
-	RGB.r *= red_coef;
-	vec3 red_corrected_XYZ = RGBtoXYZ(RGB);
-	red_corrected_XYZ.y = XYZ.y;
-	RGB = XYZtoRGB(red_corrected_XYZ);
+	vec3 rgb = XYZtoRGB(xyYtoXYZ(xyY));
+	rgb.r *= red_coef;
+	xyY = XYZtoxyY(RGBtoXYZ(rgb));
 
-	RGB = mix(RGB, XYZ.yyy, monochr);
-	vec4 RGBL = clamp(vec4(RGB, XYZ.y), vec4(0.f), vec4(1.f));
+	// Tonemap
+	float tonemapped_luminance = hdr_tonemap(x);// * mix(1.f, .666f, mesopic);
 
-	vec4 bloom = hdr_bloom(RGBL, XYZ, mesopic);
+	xyY.z = tonemapped_luminance;
+	rgb = XYZtoRGB(xyYtoXYZ(xyY));
 
-	rgbout = RGBL;
+	// Monochromaticity
+	rgb = mix(rgb, tonemapped_luminance.xxx, monochrm);
+	vec4 rgb_lum = clamp(vec4(rgb, tonemapped_luminance), 0.f, 1.f);
+
+	// Bloom
+	vec4 bloom = hdr_bloom(rgb_lum.rgb, tonemapped_luminance, .0f);
+
+	// Write output
+	rgbout = rgb_lum;
 	bloomout = bloom;
 }

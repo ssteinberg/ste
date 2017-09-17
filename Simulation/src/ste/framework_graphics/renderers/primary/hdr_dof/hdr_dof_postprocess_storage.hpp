@@ -30,7 +30,7 @@ private:
 	static constexpr std::uint32_t bins = 1024;
 
 	ste_resource<gl::texture<gl::image_type::image_2d>> create_hdr_vision_properties_texture(const ste_context &ctx) {
-		static constexpr auto format = gl::format::r32g32b32a32_sfloat;
+		static constexpr auto format = gl::format::r32g32_sfloat;
 
 		auto hdr_human_vision_properties_data = resource::surface_2d<format>(glm::tvec2<std::size_t>{ 4096, 1 });
 		auto level = hdr_human_vision_properties_data[0];
@@ -42,8 +42,6 @@ private:
 										 x);
 				level.at({ i, 0 }).r() = ste::graphics::human_vision_properties::scotopic_vision(l);
 				level.at({ i, 0 }).g() = ste::graphics::human_vision_properties::mesopic_vision(l);
-				level.at({ i, 0 }).b() = ste::graphics::human_vision_properties::monochromaticity(l);
-				level.at({ i, 0 }).a() = ste::graphics::human_vision_properties::visual_acuity(l);
 			}
 		}
 
@@ -60,7 +58,7 @@ public:
 	ste_resource<gl::texture<gl::image_type::image_2d>> hdr_vision_properties_texture;
 
 	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer;
-		gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
+	gl::array<hdr_bokeh_parameters> hdr_bokeh_param_buffer_prev;
 	gl::array<gl::std430<std::uint32_t>> histogram;
 	gl::array<gl::std430<std::uint32_t>> histogram_sums;
 

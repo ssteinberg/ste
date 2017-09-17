@@ -2097,5 +2097,6 @@
     <None Include="Simulation\src\ste\framework_graphics\scene\shaders\scene_write_gbuffer.frag" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\srgb.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_adaptation.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\sfloat_to_uint_order_preserving.glsl" />
   </ItemGroup>
 </Project>

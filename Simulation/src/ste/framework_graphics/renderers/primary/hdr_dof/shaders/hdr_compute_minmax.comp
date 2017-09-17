@@ -2,6 +2,7 @@
 #type compute
 #version 450
 
+#include <common.glsl>
 #include <hdr_common.glsl>
 
 layout(local_size_x = 32, local_size_y = 32) in;
@@ -14,22 +15,38 @@ layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 };
 
 void main() {
+	if (any(greaterThanEqual(gl_GlobalInvocationID.xy, imageSize(hdr_lums))))
+		return;
+
 	vec2 ts = textureSize(hdr, 0);
 
-	vec4 lums0 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,0) + vec2(.5, .5)) / ts, 2);
-	vec4 lums1 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,0) + vec2(.5, .5)) / ts, 2);
-	vec4 lums2 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(2,2) + vec2(.5, .5)) / ts, 2);
-	vec4 lums3 = textureGather(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(0,2) + vec2(.5, .5)) / ts, 2);
-	vec4 ls = vec4(dot(lums0, vec4(.25f)),
-				   dot(lums1, vec4(.25f)),
-				   dot(lums2, vec4(.25f)),
-				   dot(lums3, vec4(.25f)));
-	float x = dot(ls, vec4(.25f));
+	// Read 4x4 texels' luminance values
+	vec4 lums0 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(0,0), 2);
+	vec4 lums1 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(2,0), 2);
+	vec4 lums2 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(2,2), 2);
+	vec4 lums3 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(0,2), 2);
+	
+	// Take maximum, minimum and average
+	float max_lum = max_element(vec4(max_element(lums0),
+									 max_element(lums1), 
+									 max_element(lums2), 
+									 max_element(lums3)));
+	float min_lum = min_element(vec4(min_element(lums0), 
+									 min_element(lums1), 
+									 min_element(lums2), 
+									 min_element(lums3)));
+	vec4 t = vec4(.25f);
+	float lum = dot(vec4(dot(lums0,t),
+						 dot(lums1,t),
+						 dot(lums2,t),
+						 dot(lums3,t)), 
+					t);
 
-	float l = hdr_lum(max(min_luminance, x));
+	// Create luminance value from average and write to luminance image
+	float l = hdr_lum(max(min_luminance, lum));
 	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), l.xxxx);
 
-	int int_l = floatBitsToInt(l);
-	atomicMin(params.lum_min, int_l);
-	atomicMax(params.lum_max, int_l);
+	// Update min and max luminance bounds
+	atomicMax(params.lum_max, luminance_to_hdr_params_lum(max_lum));
+	atomicMin(params.lum_min, luminance_to_hdr_params_lum(min_lum));
 }

@@ -127,13 +127,6 @@ public:
 		fxaa->attach_framebuffer(fb);
 	}
 
-	/*
-	 *	@brief		Call each frame
-	 */
-	void tick(float frame_time_ms) {
-		hdr->set_tick_time_ms(frame_time_ms);
-	}
-
 	/**
 	 *	@brief		Performs rendering and presentation.
 	 */

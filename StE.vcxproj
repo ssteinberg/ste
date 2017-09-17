@@ -1234,6 +1234,7 @@
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\buffer\shaders\atmospherics_descriptor.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\encode.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\encoding\sfloat_to_uint_order_preserving.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\chromaticity.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />

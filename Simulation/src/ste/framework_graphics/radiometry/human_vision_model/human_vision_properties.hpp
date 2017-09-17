@@ -36,7 +36,7 @@ public:
 	}
 
 	static float monochromaticity(float lum) {
-		return glm::smoothstep(1.0f, .0f, mesopic_vision(lum));
+		return glm::smoothstep(.0f, 1.f, mesopic_vision(lum));
 	}
 };
 
