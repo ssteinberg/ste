@@ -95,7 +95,6 @@ private:
 		// Acquire a couple of semaphores and a fence
 		auto semaphores = presentation_engine_sync_semaphores(device->get_sync_primitives_pools().semaphores().claim(),
 															  device->get_sync_primitives_pools().semaphores().claim());
-		auto fence = lib::allocate_shared<batch_fence_ptr_t::element_type>(device->get_sync_primitives_pools().shared_fences().claim());
 
 		// Wait for outstanding presentations
 		auto max_outstanding = std::min<std::uint32_t>(max_frame_lag,
@@ -118,20 +117,19 @@ private:
 
 		// Wait for previous presentation to this image index to end
 		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
-		if (sync.fence_ptr != nullptr)
+		if (sync.fence_ptr != nullptr) {
 			(*sync.fence_ptr)->get_wait();
+			sync.fence_ptr = nullptr;
+		}
 
-		// Hold onto new presentation semaphores, and fence. Releasing old.
+		// Hold onto new presentation semaphores. Releasing old.
 		sync.semaphores = std::move(semaphores);
-		sync.fence_ptr = std::move(fence);
 
 		return std::make_pair(std::reference_wrapper<image_presentation_sync_t>(sync), next_image_descriptor);
 	}
 
 	template <typename BatchUserData>
-	void internal_submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-									 const lib::vector<wait_semaphore> &wait_semaphores,
-									 const lib::vector<const semaphore*> &signal_semaphores) {
+	void internal_submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch) {
 		if (!ste_device_queue::is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
@@ -140,20 +138,17 @@ private:
 		auto presentation_semaphores = presentation_batch->semaphores;
 
 		// Synchronize submission with presentation
-		auto wait = wait_semaphores;
-		auto signal = signal_semaphores;
+		auto &wait = presentation_batch->wait_semaphores;
+		auto &signal = presentation_batch->signal_semaphores;
 
-		const semaphore &swapchain_image_ready_semaphore = presentation_semaphores->swapchain_image_ready_semaphore;
 		const semaphore &rendering_finished_semaphore = presentation_semaphores->rendering_finished_semaphore;
 
-		wait.push_back(wait_semaphore(&swapchain_image_ready_semaphore,
+		wait.push_back(wait_semaphore(std::move(presentation_semaphores->swapchain_image_ready_semaphore),
 									  pipeline_stage::color_attachment_output));
 		signal.push_back(&rendering_finished_semaphore);
 
 		// Submit
-		ste_device_queue::submit_batch<BatchUserData>(std::move(presentation_batch),
-													  wait,
-													  signal);
+		ste_device_queue::submit_batch(std::move(presentation_batch));
 
 		// Present
 		if (acquired_presentation_image.image != nullptr) {
@@ -226,11 +221,12 @@ public:
 
 		// Allocate batch and pass it next presentation image information
 		using batch_t = device_queue_presentation_batch<UserData>;
-		auto batch = queue.template allocate_batch_custom<batch_t>(batch_t::batch_ctor(),
-																   next_image.second,
-																   &next_image.first.semaphores,
-																   next_image.first.fence_ptr,
-																   std::forward<UserDataArgs>(user_data_args)...);
+		auto batch = queue.template allocate_batch_pool_custom<batch_t>(next_image.second,
+																		&next_image.first.semaphores,
+																		std::forward<UserDataArgs>(user_data_args)...);
+
+		// Save fence
+		next_image.first.fence_ptr = batch->get_fence_ptr();
 
 		return batch;
 	}
@@ -245,16 +241,10 @@ public:
 	*	@throws ste_device_not_queue_thread_exception	If not called form a queue thread
 	*
 	*	@param presentation_batch	Command batch which does the rendering to the acquired image
-	*	@param wait_semaphores		See vk_queue::submit
-	*	@param signal_semaphores	See vk_queue::submit
 	*/
 	template <typename BatchUserData>
-	void submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch,
-							const lib::vector<wait_semaphore> &wait_semaphores = {},
-							const lib::vector<const semaphore*> &signal_semaphores = {}) {
-		internal_submit_and_present(std::move(presentation_batch),
-									wait_semaphores,
-									signal_semaphores);
+	void submit_and_present(lib::unique_ptr<device_queue_presentation_batch<BatchUserData>> &&presentation_batch) {
+		internal_submit_and_present(std::move(presentation_batch));
 	}
 
 	/**

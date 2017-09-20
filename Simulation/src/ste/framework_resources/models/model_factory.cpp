@@ -50,8 +50,9 @@ void model_factory::add_object_to_object_group(const ste_context &ctx,
 											   const lib::shared_ptr<graphics::object> &obj) {
 	// Enqueue object add command on a transfer queue
 	ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
-									  [&](gl::command_recorder &recorder) {
-		object_group->add_object(recorder,
+									  [=, &ctx](gl::command_recorder &recorder) {
+		object_group->add_object(ctx,
+								 recorder,
 								 obj);
 	});
 }

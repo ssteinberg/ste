@@ -4,16 +4,16 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <device_resource_memory_allocator.hpp>
 
 #include <ste_context.hpp>
+#include <device_resource_memory_allocator.hpp>
+
 #include <vk_buffer_sparse.hpp>
 #include <device_buffer_base.hpp>
-
 #include <buffer_usage.hpp>
 
-#include <vk_queue.hpp>
-#include <host_command.hpp>
+#include <device_sparse_memory_bind.hpp>
+#include <device_sparse_binding_batch.hpp>
 
 #include <range.hpp>
 #include <range_list.hpp>
@@ -79,7 +79,7 @@ private:
 	}
 
 	auto unbind(const lib::vector<bind_range_t> &unbind_regions) {
-		lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+		lib::vector<device_sparse_memory_bind> memory_binds;
 
 		// Accumulate the unbind ranges
 		for (auto &r : unbind_regions) {
@@ -97,7 +97,7 @@ private:
 			 it = it_unbind_ranges == ranges_to_unbind.end() ? bound_ranges.end() : std::lower_bound(it, bound_ranges.end(), *it_unbind_ranges, pred)) {
 			if (it_unbind_ranges->contains(it->first)) {
 				// Can unbind
-				vk::vk_sparse_memory_bind b;
+				device_sparse_memory_bind b;
 				b.allocation = nullptr;
 				b.resource_offset_bytes = it->first.start;
 				b.size_bytes = it->first.length;
@@ -116,7 +116,7 @@ private:
 	}
 
 	auto bind(const lib::vector<bind_range_t> &bind_regions) {
-		lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+		lib::vector<device_sparse_memory_bind> memory_binds;
 		if (!bind_regions.size())
 			return memory_binds;
 
@@ -147,7 +147,7 @@ private:
 																								 size,
 																								 memory_requirements));
 
-			vk::vk_sparse_memory_bind b;
+			device_sparse_memory_bind b;
 			b.allocation = &it.first->second;
 			b.resource_offset_bytes = r.start;
 			b.size_bytes = r.length;
@@ -186,32 +186,32 @@ public:
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
 
 	/**
-	*	@brief	Creates a host command to bind sparse memory.
+	*	@brief	Binds sparse memory.
+	*			Must be called from an enqueued device queue task
 	*			Unbind and bind regions should not overlap.
 	*
 	*	@param	unbind_regions		Buffer regions to unbind
 	*	@param	bind_regions		Buffer regions to bind
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
-	*	@param	fence				Optional fence, to be signaled when the command has completed execution
 	*	
-	*	@return	A host command to bind/unbind atoms.
+	*	@return	Future to enqueued task
 	*/
-	host_command cmd_bind_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
-										const lib::vector<bind_range_t> &bind_regions,
-										const lib::vector<const semaphore*> &wait_semaphores,
-										const lib::vector<const semaphore*> &signal_semaphores,
-										const vk::vk_fence<> *fence = nullptr) {
-		return host_command([=](const vk::vk_queue<> &queue) {
-			lib::vector<vk::vk_sparse_memory_bind> binds, unbinds;
+	auto bind_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
+							const lib::vector<bind_range_t> &bind_regions,
+							lib::vector<wait_semaphore> &&wait_semaphores = {},
+							lib::vector<const semaphore*> &&signal_semaphores = {}) {
+		auto &q = ctx.get().device().select_queue(ste_queue_selector<ste_queue_selector_policy_flexible>(ste_queue_type::data_transfer_sparse_queue));
 
+		return q.enqueue([=, wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
+			lib::vector<device_sparse_memory_bind> binds, unbinds;
 			{
 				std::unique_lock<std::mutex> l(bound_ranges_mutex);
 				unbinds = unbind(unbind_regions);
 				binds = bind(bind_regions);
 			}
 
-			lib::vector<vk::vk_sparse_memory_bind> memory_binds;
+			lib::vector<device_sparse_memory_bind> memory_binds;
 			memory_binds.reserve(unbinds.size() + binds.size());
 			memory_binds.insert(memory_binds.end(), unbinds.begin(), unbinds.end());
 			memory_binds.insert(memory_binds.end(), binds.begin(), binds.end());
@@ -220,12 +220,18 @@ public:
 			if (!memory_binds.size())
 				return;
 
+			// Allocate sparse binding batch
+			using batch_t = device_sparse_binding_batch<>;
+			auto batch = ste_device_queue::thread_allocate_batch_custom<batch_t>();
+
+			batch->signal_semaphores = std::move(signal_semaphores);
+			batch->wait_semaphores = std::move(wait_semaphores);
+
+			// Set bind regions
+			batch->bind(*this, memory_binds);
+
 			// Queue sparse binding command
-			resource.cmd_bind_sparse_memory(queue,
-											memory_binds,
-											vk_semaphores(wait_semaphores),
-											vk_semaphores(signal_semaphores),
-											fence);
+			ste_device_queue::submit_batch(std::move(batch));
 		});
 	}
 

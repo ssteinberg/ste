@@ -42,7 +42,7 @@ private:
 		virtual ~device_pipeline_cmd_bind() noexcept {}
 
 	private:
-		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
+		void operator()(const command_buffer &buffer, command_recorder &recorder) && override final {
 			// Bind pipeline's binding sets
 			recorder << pipeline->binding_sets.cmd_bind(pipeline->get_pipeline_vk_bind_point(),
 														0);
@@ -73,7 +73,7 @@ private:
 		virtual ~device_pipeline_cmd_unbind() noexcept {}
 
 	private:
-		void operator()(const command_buffer &buffer, command_recorder &recorder) const override final {
+		void operator()(const command_buffer &buffer, command_recorder &recorder) && override final {
 			pipeline->unbind_pipeline(buffer, recorder);
 		}
 	};

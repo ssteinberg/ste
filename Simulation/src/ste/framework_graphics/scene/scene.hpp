@@ -43,9 +43,11 @@ private:
 		object_group_indirect_command_buffer idb;
 		table_buffer_type proj_id_to_light_id_translation_table;
 
-		void resize(gl::command_recorder &recorder, std::size_t size) {
-			recorder << idb.get().resize_cmd(size);
-			recorder << proj_id_to_light_id_translation_table.resize_cmd(size);
+		void resize(const ste_context &ctx,
+					gl::command_recorder &recorder, 
+					std::size_t size) {
+			recorder << idb.get().resize_cmd(ctx, size);
+			recorder << proj_id_to_light_id_translation_table.resize_cmd(ctx, size);
 		}
 	};
 
@@ -86,11 +88,14 @@ public:
 	auto &get_shadow_projection_buffers() const { return shadow_projection; }
 	auto &get_directional_shadow_projection_buffers() const { return directional_shadow_projection; }
 
-	void resize_indirect_command_buffers(gl::command_recorder &recorder,
+	void resize_indirect_command_buffers(const ste_context &ctx,
+										 gl::command_recorder &recorder,
 										 std::size_t size) {
-		recorder << idb->resize_cmd(size);
-		shadow_projection.resize(recorder, size);
-		directional_shadow_projection.resize(recorder, size);
+		recorder << idb->resize_cmd(ctx,
+									size);
+
+		shadow_projection.resize(ctx, recorder, size);
+		directional_shadow_projection.resize(ctx, recorder, size);
 	}
 };
 

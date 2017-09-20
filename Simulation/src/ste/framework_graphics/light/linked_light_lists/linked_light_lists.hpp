@@ -42,7 +42,7 @@ private:
 	glm::uvec2 extent;
 	std::atomic_flag up_to_date;
 
-	void resize_internal(gl::command_recorder &recorder);
+	void resize_buffers_internal(gl::command_recorder &recorder);
 
 public:
 	linked_light_lists(const ste_context &ctx,
@@ -55,8 +55,8 @@ public:
 	auto& get_extent() const { return extent; }
 
 	void clear(gl::command_recorder &recorder) {
-		if (up_to_date.test_and_set(std::memory_order_acquire))
-			resize_internal(recorder);
+		if (!up_to_date.test_and_set(std::memory_order_acquire))
+			resize_buffers_internal(recorder);
 
 		const lll_counter_element zero = lll_counter_element(std::make_tuple<std::uint32_t>(0));
 		recorder << lll_counter.overwrite_cmd(0, zero);

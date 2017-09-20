@@ -11,12 +11,12 @@
 #include <vk_command_buffers.hpp>
 #include <vk_command_pool.hpp>
 #include <vk_queue.hpp>
+#include <wait_semaphore.hpp>
 
-#include <host_command.hpp>
 #include <command_recorder.hpp>
 
-#include <allow_type_decay.hpp>
 #include <lib/vector.hpp>
+#include <allow_type_decay.hpp>
 
 namespace ste {
 namespace gl {
@@ -26,53 +26,38 @@ class ste_device_queue;
 class command_buffer : public allow_type_decay<command_buffer, vk::vk_command_buffer> {
 	friend command_recorder;
 	friend ste_device_queue;
-
-public:
-	using commands_t = lib::vector<host_command>;
+	template <typename UserData>
+	friend class ste_device_queue_batch;
 
 protected:
 	vk::vk_command_buffers<> buffers;
 	vk::vk_command_buffer_type type;
 	ste_queue_descriptor queue_descriptor;
 
-	mutable commands_t commands;
+	lib::vector<wait_semaphore> dependencies;
 
 protected:
 	command_buffer(const vk::vk_command_pool<> &pool,
 				   const vk::vk_command_buffer_type &type,
 				   const ste_queue_descriptor &queue_descriptor)
 		: buffers(pool.allocate_buffers(1, type)),
-		type(type),
-		queue_descriptor(queue_descriptor)
-	{}
+		  type(type),
+		  queue_descriptor(queue_descriptor) {}
 
 	virtual VkCommandBufferUsageFlags record_flags() const = 0;
 
-	auto& get() { return buffers[0]; }
-	void push_command(host_command &&command) {
-		commands.emplace_back(std::move(command));
-	}
-
-	virtual void host_commands_reset_on_submit_if_needed() const = 0;
-	void host_commands_reset() const {
-		commands.clear();
-	}
-	void submit_host_commands(const vk::vk_queue<> &queue) const {
-		for (auto &cmd : commands)
-			cmd(queue);
-		host_commands_reset_on_submit_if_needed();
-	}
+	auto &get() { return buffers[0]; }
 
 	template <typename... Args>
-	static auto create_recorder(Args&&... args) {
+	static auto create_recorder(Args &&... args) {
 		return command_recorder(std::forward<Args>(args)...);
 	}
 
 public:
 	virtual ~command_buffer() noexcept {}
 
-	command_buffer(command_buffer&&) = default;
-	command_buffer &operator=(command_buffer&& o) = default;
+	command_buffer(command_buffer &&) = default;
+	command_buffer &operator=(command_buffer &&o) = default;
 
 	/**
 	*	@brief	Creates a recorder which records the command buffer
@@ -86,16 +71,16 @@ public:
 
 	auto &get_queue_descriptor() const { return queue_descriptor; }
 	auto get_type() const { return type; }
-	auto& get() const { return buffers[0]; }
+	auto &get() const { return buffers[0]; }
 
 private:
 	/**
 	*	@brief	Starts recording the command buffer
 	*/
 	virtual void begin() {
-		host_commands_reset();
 		get().begin(record_flags(), nullptr);
 	}
+
 	/**
 	*	@brief	Ends recording the command buffer, moving it to pending state. A pending command buffer is consumed 
 	*			by submitting it to a device queue.
@@ -108,7 +93,7 @@ private:
 namespace _internal {
 
 template <
-	VkCommandBufferUsageFlags flags, 
+	VkCommandBufferUsageFlags flags,
 	vk::vk_command_buffer_type buffer_type,
 	bool resetable,
 	bool oneshot
@@ -127,23 +112,15 @@ protected:
 						const ste_queue_descriptor &queue_descriptor)
 		: Base(pool,
 			   type,
-			   queue_descriptor)
-	{}
+			   queue_descriptor) {}
 
 	VkCommandBufferUsageFlags record_flags() const override final {
 		return flags;
 	}
 
-private:
-	void host_commands_reset_on_submit_if_needed() const override final {
-		// If this is a one-shot buffer, clear out commands
-		if (oneshot)
-			host_commands_reset();
-	}
-
 public:
-	command_buffer_impl(command_buffer_impl&&) = default;
-	command_buffer_impl &operator=(command_buffer_impl&& o) = default;
+	command_buffer_impl(command_buffer_impl &&) = default;
+	command_buffer_impl &operator=(command_buffer_impl &&o) = default;
 
 	/**
 	*	@brief	Resets the command buffer
@@ -153,9 +130,9 @@ public:
 		typename = std::enable_if_t<b>
 	>
 	void reset() {
-		host_commands_reset();
 		get().reset();
 	}
+
 	/**
 	*	@brief	Resets the command buffer and releases all the resources allocated by the command buffer back to the system.
 	*/
@@ -164,7 +141,6 @@ public:
 		typename = std::enable_if_t<b>
 	>
 	void reset_release() {
-		host_commands_reset();
 		get().reset_release();
 	}
 };
@@ -182,8 +158,8 @@ private:
 	using Base::record;
 
 public:
-	command_buffer_secondary_impl(command_buffer_secondary_impl&&) = default;
-	command_buffer_secondary_impl &operator=(command_buffer_secondary_impl&& o) = default;
+	command_buffer_secondary_impl(command_buffer_secondary_impl &&) = default;
+	command_buffer_secondary_impl &operator=(command_buffer_secondary_impl &&o) = default;
 
 	/**
 	*	@brief	Creates a recorder which records the command buffer
@@ -207,18 +183,13 @@ private:
 		VkCommandBufferInheritanceInfo inheritance_info = {};
 		inheritance_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 		inheritance_info.pNext = nullptr;
-		inheritance_info.framebuffer = inheritance.framebuffer ? 
-			static_cast<VkFramebuffer>(*inheritance.framebuffer) : 
-			vk::vk_null_handle;
-		inheritance_info.renderPass = inheritance.render_pass ? 
-			static_cast<VkRenderPass>(*inheritance.render_pass) : 
-			vk::vk_null_handle;
+		inheritance_info.framebuffer = inheritance.framebuffer ? static_cast<VkFramebuffer>(*inheritance.framebuffer) : vk::vk_null_handle;
+		inheritance_info.renderPass = inheritance.render_pass ? static_cast<VkRenderPass>(*inheritance.render_pass) : vk::vk_null_handle;
 		inheritance_info.subpass = inheritance.subpass;
 		inheritance_info.occlusionQueryEnable = inheritance.occlusion_query_enable;
 		inheritance_info.queryFlags = inheritance.query_flags;
 		inheritance_info.pipelineStatistics = inheritance.pipeline_statistics;
 
-		Base::host_commands_reset();
 		Base::get().begin(Base::record_flags(), &inheritance_info);
 	}
 };
@@ -227,14 +198,14 @@ private:
 
 template <bool resetable>
 using command_buffer_primary = _internal::command_buffer_impl<
-	VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, 
+	VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 	vk::vk_command_buffer_type::primary,
 	resetable,
 	true
 >;
 template <bool resetable>
 using command_buffer_primary_multishot = _internal::command_buffer_impl<
-	VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, 
+	VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
 	vk::vk_command_buffer_type::primary,
 	resetable,
 	false

@@ -112,14 +112,14 @@ public:
 			auto &q = ctx.device().select_queue(queue_selector);
 
 			// Enqueue execute command
-			auto enqueue_future = q.enqueue([&]() {
+			auto enqueue_future = q.enqueue([cmd = std::move(cmd)]() mutable {
 				auto batch = ste_device_queue::thread_allocate_batch();
 				auto& command_buffer = batch->acquire_command_buffer();
 
 				// Record and submit a one-time batch
 				{
 					auto recorder = command_buffer.record();
-					recorder << cmd;
+					recorder << std::move(cmd);
 				}
 
 				ste_device_queue::submit_batch(std::move(batch));

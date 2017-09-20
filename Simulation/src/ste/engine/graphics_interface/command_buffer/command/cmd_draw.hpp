@@ -31,7 +31,7 @@ public:
 	virtual ~cmd_draw() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdDraw(command_buffer, vertex_count, instance_count, first_vertex, first_instance);
 	}
 };

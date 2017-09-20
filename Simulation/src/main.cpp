@@ -151,8 +151,10 @@ public:
 			auto workers_sleep = get_creating_context().engine().task_scheduler().get_thread_pool()->get_sleeping_workers_count();
 			auto pending_requests = get_creating_context().engine().task_scheduler().get_thread_pool()->get_pending_requests_count();
 
-			title_text_frag.update_text(recorder, { surface_extent.x / 2, surface_extent.y / 2 + 100 }, str);
-			footer_text_frag.update_text(recorder, { 10, 50 },
+			title_text_frag.update_text(get_creating_context(),
+										recorder, { surface_extent.x / 2, surface_extent.y / 2 + 100 }, str);
+			footer_text_frag.update_text(get_creating_context(), 
+										 recorder, { 10, 50 },
 										 line_height(32)(vsmall(b(L"VRAM ") +
 																b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
 																  purple(lib::to_wstring(commited_vram)) + L" / " +
@@ -350,8 +352,8 @@ auto create_light_mesh(const ste_context &ctx,
 
 	// Create a batch
 	auto fence = ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
-												   [=](gl::command_recorder &recorder) {
-		scene->get_object_group().add_object(recorder, light_obj);
+												   [=, &ctx](gl::command_recorder &recorder) {
+		scene->get_object_group().add_object(ctx, recorder, light_obj);
 	});
 
 	materials.push_back(std::move(mat));
@@ -390,7 +392,8 @@ auto create_quad_light_object(const ste_context &ctx,
 	auto light = scene->properties().lights_storage().allocate_shaped_light<graphics::quad_light_onesided>(color, intensity, light_pos);
 	ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
 									  [&](gl::command_recorder &recorder) {
-		light->set_points(recorder,
+		light->set_points(ctx, 
+						  recorder,
 						  points);
 	});
 

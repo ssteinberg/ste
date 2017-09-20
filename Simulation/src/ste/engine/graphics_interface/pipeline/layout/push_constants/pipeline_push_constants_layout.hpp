@@ -50,7 +50,7 @@ private:
 		virtual ~pipeline_push_constants_layout_cmd_push_constants() noexcept {}
 
 	private:
-		void operator()(const command_buffer &, command_recorder &recorder) const override final {
+		void operator()(const command_buffer &, command_recorder &recorder) && override final {
 			for (auto &r : p->push_ranges) {
 				auto push_layout = r.get_layout();
 				auto offset = push_layout.offset;

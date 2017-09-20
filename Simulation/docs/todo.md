@@ -37,8 +37,10 @@
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
 23. Queue transfer, correctly, in time.
 24. <strike>Get rid of host commands altogether.</strike>
-25. Fix bind sparse mess.
+25. <strike>Fix bind sparse mess.</strike>
 26. <strike>Host read-back, buffers and images.</strike>
 27. Switch back to atomic counters (GLSL 4.6)
 28. <strike>HDR: Temporal stablity of histogram tonemap.</strike>
 29. HDR: Adaptation
+30. Multi-submit command batch
+31. Sparse images/opaque images

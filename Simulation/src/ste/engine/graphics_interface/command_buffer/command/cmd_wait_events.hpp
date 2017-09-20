@@ -59,7 +59,7 @@ public:
 	virtual ~cmd_wait_events() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdWaitEvents(command_buffer, 
 						static_cast<std::uint32_t>(events.size()), events.data(),
 						static_cast<VkPipelineStageFlags>(barrier.get_src_stage()),

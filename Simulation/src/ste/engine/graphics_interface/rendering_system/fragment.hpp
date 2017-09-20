@@ -4,8 +4,11 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <command_recorder.hpp>
 #include <ste_resource_traits.hpp>
+
+#include <alias.hpp>
 
 namespace ste {
 namespace gl {
@@ -17,8 +20,11 @@ class fragment : ste_resource_deferred_create_trait {
 public:
 	using fragment_command_buffer_t = command_buffer_secondary<false>;
 
+private:
+	alias<const ste_context> ctx;
+
 protected:
-	fragment() {}
+	fragment(const ste_context &ctx) : ctx(ctx) {}
 
 public:
 	virtual ~fragment() noexcept {}
@@ -35,6 +41,9 @@ public:
 	*	@brief	Records the fragment's commands
 	*/
 	virtual void record(command_recorder &) = 0;
+
+	auto& get_creating_context() const { return ctx.get(); }
+	auto& device() const { return ctx.get().device(); }
 };
 
 inline auto &operator<<(command_recorder &recorder, fragment &frag) {

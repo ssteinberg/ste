@@ -18,6 +18,7 @@
 
 #include <resource_storage_dynamic.hpp>
 #include <array.hpp>
+#include <vector.hpp>
 #include <stable_vector.hpp>
 #include <std430.hpp>
 #include <std140.hpp>
@@ -43,11 +44,13 @@ public:
 	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
 
 private:
-	using lights_ll_type = gl::device_buffer_sparse<gl::std430<std::uint32_t>>;
+	using lights_ll_type = gl::vector<gl::std430<std::uint32_t>, max_ll_buffer_size>;
 	using directional_lights_cascades_type = gl::array<light_cascades_descriptor>;
 	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
 
 private:
+	alias<const ste_context> ctx;
+
 	gl::array<gl::std430<std::uint32_t>> active_lights_ll_counter;
 
 	lights_ll_type active_lights_ll;
@@ -76,12 +79,12 @@ public:
 		: Base(ctx, 
 			   gl::buffer_usage::storage_buffer,
 			   "light_storage"),
+		ctx(ctx),
 		active_lights_ll_counter(ctx, 
 								 1, 
 								 gl::buffer_usage::storage_buffer,
 								 "active_lights_ll_counter"),
-		active_lights_ll(ctx, 
-						 max_ll_buffer_size, 
+		active_lights_ll(ctx,
 						 gl::buffer_usage::storage_buffer,
 						 "active_lights_ll"),
 		directional_lights_cascades_buffer(ctx, 
@@ -183,7 +186,8 @@ public:
 
 	void update(gl::command_recorder &recorder) override final {
 		if (!active_lights_ll_resize.test_and_set(std::memory_order_acquire))
-			recorder << active_lights_ll.cmd_bind_sparse_memory({}, { range<std::uint64_t>(0, Base::size()) }, {}, {});
+			recorder << active_lights_ll.resize_cmd(ctx.get(),
+													Base::size());
 
 		Base::update(recorder);
 	}

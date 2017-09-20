@@ -1,5 +1,5 @@
 //	StE
-// � Shlomi Steinberg 2015-2017
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -68,7 +68,7 @@ private:
 
 	ste_device_sync_primitives_pools::shared_fence_pool_t *shared_fence_pool;
 
-	lib::list<lib::unique_ptr<_detail::ste_device_queue_batch_base>> submitted_batches;
+	lib::list<lib::unique_ptr<ste_device_queue_batch_base>> submitted_batches;
 
 	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
@@ -83,15 +83,6 @@ private:
 
 private:
 	static auto& thread_device_queue() { return *static_device_queue_ptr; }
-
-	static auto vk_semaphores(const lib::vector<const semaphore*> &s) {
-		lib::vector<VkSemaphore> vk_sems;
-		vk_sems.reserve(s.size());
-		for (auto &sem : s)
-			vk_sems.push_back(*sem);
-
-		return vk_sems;
-	}
 
 public:
 	/**
@@ -120,20 +111,33 @@ public:
 	template <typename UserData = void, typename... UserDataArgs>
 	static auto thread_allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
-		return lib::allocate_unique<batch_t>(thread_queue_index(),
+		return lib::allocate_unique<batch_t>(batch_t::ctor{},
+											 thread_queue_index(),
 											 thread_device_queue().pool.claim(),
 											 lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
 											 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
-	*			Batch should be a ste_device_queue_batch_oneshot or ste_device_queue_batch_multishot derived type.
 	*			Must be called from an enqueued task.
 	*/
 	template <typename Batch, typename... Args>
 	static auto thread_allocate_batch_custom(Args&&... custom_args) {
-		return lib::allocate_unique<Batch>(thread_queue_index(),
+		return lib::allocate_unique<Batch>(Batch::ctor{},
+										   thread_queue_index(),
+										   lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
+										   std::forward<Args>(custom_args)...);
+	}
+	/**
+	*	@brief	Allocates a new command batch.
+	*			Must be called from an enqueued task.
+	*/
+	template <typename Batch, typename... Args>
+	static auto thread_allocate_batch_pool_custom(Args&&... custom_args) {
+		return lib::allocate_unique<Batch>(Batch::ctor{},
+										   thread_queue_index(),
 										   thread_device_queue().pool.claim(),
+										   lib::allocate_shared<shared_fence_t>(thread_device_queue().shared_fence_pool->claim()),
 										   std::forward<Args>(custom_args)...);
 	}
 
@@ -152,39 +156,17 @@ public:
 	*	@throws	ste_device_not_queue_thread_exception	If thread not a queue thread
 	*	@throws	ste_device_exception	If batch was not created on this queue, batch's fence will be set to a ste_device_exception.
 	*
-	*	@param	batch				Command batch to submit
-	*	@param	wait_semaphores		See vk_queue::submit
-	*	@param	signal_semaphores	See vk_queue::submit
+	*	@param	batch			Command batch to submit
 	*/
-	template <typename UserData>
-	static void submit_batch(lib::unique_ptr<ste_device_queue_batch<UserData>> &&batch,
-							 const lib::vector<wait_semaphore> &wait_semaphores = {},
-							 const lib::vector<const semaphore*> &signal_semaphores = {}) {
+	static void submit_batch(lib::unique_ptr<ste_device_queue_batch_base> &&batch) {
 		if (!is_queue_thread()) {
 			throw ste_device_not_queue_thread_exception();
 		}
 
-		// Copy command buffers' handles for submission
-		lib::vector<vk::vk_command_buffer> command_buffers;
-		command_buffers.reserve(batch->command_buffers.size());
-		for (auto &b : *batch)
-			command_buffers.push_back(static_cast<vk::vk_command_buffer>(b));
-
-		auto& fence = batch->get_fence_ptr();
-
 		try {
 			if (batch->queue_index == thread_queue_index()) {
-				// Submit host commands, in order
-				for (auto &cmd_buf : *batch)
-					cmd_buf.submit_host_commands(thread_queue());
-				// Submit finalized buffers
-				thread_queue().submit(command_buffers,
-									  lib::vector<vk::vk_queue<>::wait_semaphore_t>(wait_semaphores.begin(), wait_semaphores.end()),
-									  vk_semaphores(signal_semaphores),
-									  &(*fence)->get_fence());
-
-				// Signal fence future
-				(*fence)->signal();
+				// Submit
+				batch->submit(thread_queue());
 				// And set submitted flag
 				batch->submitted = true;
 
@@ -196,7 +178,7 @@ public:
 			}
 		}
 		catch (...) {
-			(*fence)->set_exception(std::current_exception());
+			(*batch->get_fence_ptr())->set_exception(std::current_exception());
 		}
 	}
 
@@ -261,19 +243,31 @@ public:
 	template <typename UserData = void, typename... UserDataArgs>
 	auto allocate_batch(UserDataArgs&&... user_data_args) {
 		using batch_t = ste_device_queue_batch<UserData>;
-		return lib::allocate_unique<batch_t>(queue_index,
+		return lib::allocate_unique<batch_t>(batch_t::ctor{},
+											 queue_index,
 											 pool.claim(),
 											 lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
 											 std::forward<UserDataArgs>(user_data_args)...);
 	}
 	/**
 	*	@brief	Allocates a new command batch.
-	*			Batch should be a ste_device_queue_batch_oneshot derived type.
 	*/
 	template <typename Batch, typename... Args>
 	auto allocate_batch_custom(Args&&... custom_args) {
-		return lib::allocate_unique<Batch>(queue_index,
+		return lib::allocate_unique<Batch>(Batch::ctor{},
+										   queue_index,
+										   lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
+										   std::forward<Args>(custom_args)...);
+	}
+	/**
+	*	@brief	Allocates a new command batch with a command pool.
+	*/
+	template <typename Batch, typename... Args>
+	auto allocate_batch_pool_custom(Args&&... custom_args) {
+		return lib::allocate_unique<Batch>(Batch::ctor{},
+										   queue_index,
 										   pool.claim(),
+										   lib::allocate_shared<shared_fence_t>(shared_fence_pool->claim()),
 										   std::forward<Args>(custom_args)...);
 	}
 

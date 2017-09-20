@@ -86,7 +86,7 @@ void linked_light_lists::resize(const glm::uvec2 &extent) {
 																																			 extent));
 }
 
-void linked_light_lists::resize_internal(gl::command_recorder &recorder) {
+void linked_light_lists::resize_buffers_internal(gl::command_recorder &recorder) {
 	std::atomic_thread_fence(std::memory_order_acquire);
 
 	recorder << lll.resize_cmd(extent.x * extent.y * total_max_active_lights_per_frame);

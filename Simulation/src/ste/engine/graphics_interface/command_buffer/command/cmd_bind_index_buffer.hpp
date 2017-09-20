@@ -37,7 +37,7 @@ public:
 	virtual ~cmd_bind_index_buffer() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdBindIndexBuffer(command_buffer, buffer, offset, index_type);
 	}
 };

@@ -25,7 +25,7 @@ public:
 	virtual ~cmd_end_query() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdEndQuery(command_buffer,
 					  query.get_pool(),
 					  query.ge_query_index());

@@ -20,23 +20,29 @@ private:
 	gl::vector<std::uint32_t> indices;
 
 public:
-	object_group_draw_buffers(const ste_context& ctx)
-		: mesh_data_bo(ctx, gl::buffer_usage::storage_buffer, "mesh_data buffer"),
-		  mesh_draw_params_bo(ctx, gl::buffer_usage::storage_buffer, "mesh_draw_params buffer"),
-		  vbo(ctx, gl::buffer_usage::vertex_buffer, "vertex attributes buffer"),
-		  indices(ctx, gl::buffer_usage::index_buffer, "indices buffer") {}
+	object_group_draw_buffers(const ste_context &ctx)
+		: mesh_data_bo(ctx, 
+					   gl::buffer_usage::storage_buffer,
+					   "mesh_data buffer"),
+		  mesh_draw_params_bo(ctx, 
+							  gl::buffer_usage::storage_buffer,
+							  "mesh_draw_params buffer"),
+		  vbo(ctx, 
+			  gl::buffer_usage::vertex_buffer,
+			  "vertex attributes buffer"),
+		  indices(ctx, 
+				  gl::buffer_usage::index_buffer,
+				  "indices buffer") {}
 
-	auto& get_mesh_data_buffer() { return mesh_data_bo; }
-	auto& get_mesh_data_buffer() const { return mesh_data_bo; }
-	auto& get_mesh_draw_params_buffer() { return mesh_draw_params_bo; }
-	auto& get_mesh_draw_params_buffer() const { return mesh_draw_params_bo; }
+	auto &get_mesh_data_buffer() { return mesh_data_bo; }
+	auto &get_mesh_data_buffer() const { return mesh_data_bo; }
+	auto &get_mesh_draw_params_buffer() { return mesh_draw_params_bo; }
+	auto &get_mesh_draw_params_buffer() const { return mesh_draw_params_bo; }
 
-	auto& get_vertex_buffer() { return vbo; }
-	auto& get_vertex_buffer() const { return vbo; }
-	auto& get_index_buffer() { return indices; }
-	auto& get_index_buffer() const { return indices; }
-
-	auto draw_count() const { return mesh_data_bo.size(); }
+	auto &get_vertex_buffer() { return vbo; }
+	auto &get_vertex_buffer() const { return vbo; }
+	auto &get_index_buffer() { return indices; }
+	auto &get_index_buffer() const { return indices; }
 };
 
 }

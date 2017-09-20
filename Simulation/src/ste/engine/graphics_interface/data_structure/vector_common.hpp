@@ -42,42 +42,69 @@ public:
 
 	virtual ~vector_cmd_update_buffer() noexcept {}
 
+	vector_cmd_update_buffer(vector_cmd_update_buffer&&) = default;
+	vector_cmd_update_buffer &operator=(vector_cmd_update_buffer&&) = default;
+
 private:
-	void operator()(const command_buffer&, command_recorder& recorder) const override final {
+	void operator()(const command_buffer&, command_recorder& recorder) && override final {
 		// Copy data
-		for (auto& cmd : update_commands)
-			recorder << cmd;
+		for (auto&& cmd : update_commands)
+			recorder << std::move(cmd);
 	}
 };
 
 // Resize command
 template <class vector>
 class vector_cmd_resize : public command {
+	alias<const ste_context> ctx;
+
 	std::uint64_t old_size;
 	std::uint64_t new_size;
 	vector* v;
 
 public:
-	vector_cmd_resize(std::uint64_t old_size,
+	vector_cmd_resize(const ste_context &ctx,
+					  std::uint64_t old_size,
 	                  std::uint64_t new_size,
 	                  vector* v)
-		: old_size(old_size),
+		: ctx(ctx),
+		  old_size(old_size),
 		  new_size(new_size),
 		  v(v) {}
 
 	virtual ~vector_cmd_resize() noexcept {}
 
+	vector_cmd_resize(vector_cmd_resize&&) = default;
+	vector_cmd_resize &operator=(vector_cmd_resize&&) = default;
+
 private:
-	void operator()(const command_buffer&, command_recorder& recorder) const override final {
-		// (Un)bind sparse (if needed) and update vector size
-		if (new_size > old_size) {
-			const range<std::uint64_t> bind = { old_size, new_size - old_size };
-			recorder << v->get().cmd_bind_sparse_memory({}, { bind }, {}, {});
-		}
-		else if (new_size < old_size) {
-			const range<std::uint64_t> unbind = { new_size, old_size - new_size };
-			recorder << v->get().cmd_bind_sparse_memory({ unbind }, {}, {}, {});
-		}
+	void operator()(const command_buffer&, command_recorder& recorder) && override final {
+		// Command creates a sparse binding batch, submits and creates a dependency
+
+		// (Un)bind sparse, if needed
+		lib::vector<range<std::uint64_t>> unbind_regions;
+		lib::vector<range<std::uint64_t>> bind_regions;
+		if (new_size > old_size)
+			bind_regions.emplace_back(old_size, new_size - old_size);
+		else if (new_size < old_size)
+			unbind_regions.emplace_back(new_size, old_size - new_size);
+		else
+			return;
+
+		// Dependency semaphore
+		auto sem = ctx.get().device().get_sync_primitives_pools().semaphores().claim();
+
+		// Enqueue task
+		lib::vector<const semaphore*> signal_semaphores;
+		signal_semaphores.emplace_back(&sem.get());
+		v->get().bind_sparse_memory(unbind_regions,
+									bind_regions,
+									{},
+									std::move(signal_semaphores)).get();
+
+		// Add dependency
+		this->add_dependency(wait_semaphore(std::move(sem), 
+											pipeline_stage::bottom_of_pipe));
 	}
 };
 
@@ -85,82 +112,32 @@ private:
 template <class vector>
 class vector_cmd_insert : public command {
 	vector_cmd_update_buffer<vector> overwrite_cmd;
-	std::uint64_t data_size;
-	std::uint64_t location;
-	vector* v;
+	vector_cmd_resize<vector> resize_cmd;
 
 public:
-	vector_cmd_insert(const lib::vector<typename vector::value_type>& data_copy,
+	vector_cmd_insert(const ste_context &ctx,
+					  const lib::vector<typename vector::value_type>& data_copy,
 	                  std::uint64_t location,
 	                  vector* v)
 		: overwrite_cmd(data_copy,
 		                location,
 		                v),
-		  data_size(static_cast<std::uint64_t>(data_copy.size())),
-		  location(location),
-		  v(v) {}
+		resize_cmd(ctx,
+				   location,
+				   location + static_cast<std::uint64_t>(data_copy.size()),
+				   v) {}
 
 	virtual ~vector_cmd_insert() noexcept {}
 
+	vector_cmd_insert(vector_cmd_insert&&) = default;
+	vector_cmd_insert &operator=(vector_cmd_insert&&) = default;
+
 private:
-	void operator()(const command_buffer&, command_recorder& recorder) const override final {
+	void operator()(const command_buffer&, command_recorder& recorder) && override final {
 		// Bind sparse (if needed) and update vector size
-		const range<std::uint64_t> bind = { location, data_size };
-		recorder << v->get().cmd_bind_sparse_memory({}, { bind }, {}, {});
-
+		recorder << std::move(resize_cmd);
 		// Copy data
-		recorder << overwrite_cmd;
-	}
-};
-
-// Update (like insert but never bind memory) command
-template <class vector>
-class vector_cmd_update : public command {
-	vector_cmd_update_buffer<vector> overwrite_cmd;
-	std::uint64_t location;
-	vector* v;
-
-public:
-	vector_cmd_update(const lib::vector<typename vector::value_type>& data_copy,
-	                  std::uint64_t location,
-	                  vector* v)
-		: overwrite_cmd(data_copy,
-		                location,
-		                v),
-		  location(location),
-		  v(v) {}
-
-	virtual ~vector_cmd_update() noexcept {}
-
-private:
-	void operator()(const command_buffer&, command_recorder& recorder) const override final {
-		// Copy data
-		recorder << overwrite_cmd;
-	}
-};
-
-// Unbind sprase memory command
-template <class vector>
-class vector_cmd_unbind : public command {
-	vector* v;
-	std::uint64_t location;
-	std::uint64_t count;
-
-public:
-	vector_cmd_unbind(std::uint64_t location,
-	                  std::uint64_t count,
-	                  vector* v)
-		: v(v),
-		  location(location),
-		  count(count) {}
-
-	virtual ~vector_cmd_unbind() noexcept {}
-
-private:
-	void operator()(const command_buffer&, command_recorder& recorder) const override final {
-		// Unbind sparse (if possible) and update vector size
-		const range<std::uint64_t> unbind = { location, count };
-		recorder << v->get().cmd_bind_sparse_memory({ unbind }, {}, {}, {});
+		recorder << std::move(overwrite_cmd);
 	}
 };
 

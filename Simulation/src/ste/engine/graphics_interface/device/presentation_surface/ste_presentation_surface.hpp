@@ -243,8 +243,8 @@ public:
 	*			See Vulkan specifications: https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#vkAcquireNextImageKHR
 	*/
 	auto get_max_allowed_acquired_swap_chain_images() const {
-		auto images = static_cast<std::uint32_t>(get_swap_chain_images().size());
-		auto min_surface_images = surface_presentation_caps.minImageCount;
+		const auto images = static_cast<std::uint32_t>(get_swap_chain_images().size());
+		const auto min_surface_images = surface_presentation_caps.minImageCount;
 
 		return images - min_surface_images + 1;
 	}

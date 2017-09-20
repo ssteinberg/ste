@@ -1,8 +1,9 @@
-// StE
-// � Shlomi Steinberg, 2015-201
+//	StE
+// © Shlomi Steinberg, 2015-2017
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 #include <light.hpp>
 
 #include <std430.hpp>
@@ -39,7 +40,8 @@ protected:
 		descriptor.set_polygonal_light_points(0, 0);
 	}
 
-	void set_points(gl::command_recorder &recorder,
+	void set_points(const ste_context &ctx,
+					gl::command_recorder &recorder,
 					const glm::vec3 *points,
 					std::size_t size,
 					float surface_area,
@@ -75,7 +77,7 @@ protected:
 			if (current_count < size) {
 				// Erase old points and insert new
 				storage_info.storage->tombstone(idx, current_count);
-				recorder << storage_info.storage->insert_cmd(points_copy, idx);
+				recorder << storage_info.storage->insert_cmd(ctx, points_copy, idx);
 			}
 			else {
 				// Overwrite
@@ -88,7 +90,7 @@ protected:
 			}
 		}
 		else {
-			recorder << storage_info.storage->insert_cmd(points_copy, idx);
+			recorder << storage_info.storage->insert_cmd(ctx, points_copy, idx);
 		}
 
 		const float sqrt_surface_area = glm::sqrt(surface_area);

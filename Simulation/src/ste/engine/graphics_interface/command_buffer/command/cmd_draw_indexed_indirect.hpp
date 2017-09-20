@@ -35,7 +35,7 @@ public:
 	virtual ~cmd_draw_indexed_indirect() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdDrawIndexedIndirect(command_buffer, buffer, offset, draw_count, stride);
 	}
 };

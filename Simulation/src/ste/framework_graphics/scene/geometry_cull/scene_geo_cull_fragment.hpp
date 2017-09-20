@@ -28,7 +28,9 @@ private:
 		auto size = s->get_object_group().draw_count();
 		if (size != old_object_group_size) {
 			old_object_group_size = size;
-			s->resize_indirect_command_buffers(recorder, size);
+			s->resize_indirect_command_buffers(get_creating_context(), 
+											   recorder, 
+											   size);
 		}
 	}
 

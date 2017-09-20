@@ -24,7 +24,7 @@ private:
 	lib::unique_ptr<command> allocate_identifier(const typename Base::descriptor_type &descriptor,
 												 std::size_t &identifier_out) override final {
 		std::uint64_t location;
-		auto cmd = lib::allocate_unique<Base::storage_type::insert_cmd_t>(Base::store.insert_cmd(descriptor, location));
+		auto cmd = lib::allocate_unique<Base::storage_type::insert_cmd_t>(Base::store.insert_cmd(Base::ctx, descriptor, location));
 
 		identifier_out = static_cast<std::size_t>(location);
 

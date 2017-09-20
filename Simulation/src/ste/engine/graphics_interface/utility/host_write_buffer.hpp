@@ -104,11 +104,11 @@ void host_write_buffer_and_resize(const ste_context &ctx,
 		throw ste_engine_exception("Buffer overflow");
 	}
 
-	auto copy_count = size;
+	const auto copy_count = size;
 
 	// Select queue (might need to sparse bind)
-	auto queue_type = ste_queue_type::data_transfer_sparse_queue;
-	auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
+	const auto queue_type = ste_queue_type::data_transfer_sparse_queue;
+	const auto queue_selector = ste_queue_selector<ste_queue_selector_policy_flexible>(queue_type);
 
 	// Staging buffer
 	staging_buffer_t staging_buffer(ctx,

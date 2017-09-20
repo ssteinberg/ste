@@ -256,7 +256,7 @@ public:
 		ret.length = pending_glyphs.size();
 
 		// Update
-		recorder << buffer.push_back_cmd(pending_glyphs);
+		recorder << buffer.push_back_cmd(context.get(), pending_glyphs);
 		pending_glyphs.clear();
 
 		return ret;

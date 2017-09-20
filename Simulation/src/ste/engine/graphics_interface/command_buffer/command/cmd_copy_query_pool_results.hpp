@@ -45,7 +45,7 @@ public:
 	virtual ~cmd_copy_query_pool_results() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdCopyQueryPoolResults(command_buffer,
 								  pool,
 								  first,

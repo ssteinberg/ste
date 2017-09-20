@@ -27,7 +27,7 @@ public:
 	virtual ~cmd_bind_pipeline() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdBindPipeline(command_buffer, bind_point, pipeline);
 	}
 };

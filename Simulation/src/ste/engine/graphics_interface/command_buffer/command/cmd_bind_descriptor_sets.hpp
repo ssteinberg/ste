@@ -45,7 +45,7 @@ public:
 	virtual ~cmd_bind_descriptor_sets() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdBindDescriptorSets(command_buffer,
 								bind_point,
 								pipeline_layout,

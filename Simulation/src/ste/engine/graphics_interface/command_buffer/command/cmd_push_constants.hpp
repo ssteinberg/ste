@@ -38,7 +38,7 @@ public:
 	virtual ~cmd_push_constants() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdPushConstants(command_buffer,
 						   layout,
 						   static_cast<VkShaderStageFlags>(stage),

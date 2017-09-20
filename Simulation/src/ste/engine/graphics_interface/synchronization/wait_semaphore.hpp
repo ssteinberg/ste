@@ -4,21 +4,28 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <semaphore.hpp>
+#include <ste_device_sync_primitives_pools.hpp>
 #include <pipeline_stage.hpp>
 
 namespace ste {
 namespace gl {
 
 struct wait_semaphore {
-	const semaphore *sem{ nullptr };
+	using semaphore_t = ste_device_sync_primitives_pools::semaphore_pool_t::resource_t;
+
+	semaphore_t sem;
 	pipeline_stage stage{ pipeline_stage::top_of_pipe };
 
-	wait_semaphore() = default;
-	wait_semaphore(const semaphore *sem, pipeline_stage stage) : sem(sem), stage(stage) {}
+	wait_semaphore(semaphore_t &&sem, pipeline_stage stage)
+		: sem(std::move(sem)),
+		  stage(stage) {}
 
 	operator std::pair<VkSemaphore, VkPipelineStageFlags>() const {
-		return std::make_pair(static_cast<VkSemaphore>(*sem), static_cast<VkPipelineStageFlags>(stage));
+		return std::make_pair(static_cast<VkSemaphore>(sem.get()), static_cast<VkPipelineStageFlags>(stage));
+	}
+
+	operator VkSemaphore() const {
+		return static_cast<VkSemaphore>(sem.get());
 	}
 };
 

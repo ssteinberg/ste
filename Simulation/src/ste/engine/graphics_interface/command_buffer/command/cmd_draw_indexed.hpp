@@ -37,7 +37,7 @@ public:
 	virtual ~cmd_draw_indexed() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdDrawIndexed(command_buffer,
 						 index_count,
 						 instance_count,

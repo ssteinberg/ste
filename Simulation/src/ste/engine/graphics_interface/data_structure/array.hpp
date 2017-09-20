@@ -35,7 +35,7 @@ private:
 public:
 	using value_type = T;
 
-	using update_cmd_t = _internal::vector_cmd_update<array<T>>;
+	using update_cmd_t = _internal::vector_cmd_update_buffer<array<T>>;
 
 private:
 	buffer_t buffer;

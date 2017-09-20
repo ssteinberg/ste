@@ -33,7 +33,7 @@ public:
 	virtual ~cmd_execute_commands() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdExecuteCommands(command_buffer, buffers.size(), buffers.data());
 	}
 };

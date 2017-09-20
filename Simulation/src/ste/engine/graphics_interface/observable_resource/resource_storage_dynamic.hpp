@@ -52,7 +52,7 @@ private:
 		}
 
 		// Create push_back command
-		auto cmd = Base::store.push_back_cmd(descriptor);
+		auto cmd = Base::store.push_back_cmd(Base::ctx, descriptor);
 		return lib::allocate_unique<decltype(cmd)>(std::move(cmd));
 	}
 	lib::unique_ptr<command> deallocate_identifier(std::size_t resource_storage_identifier) override final {

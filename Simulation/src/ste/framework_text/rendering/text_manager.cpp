@@ -234,5 +234,5 @@ bool text_manager::update_glyphs(gl::command_recorder &recorder) {
 }
 
 text_fragment text_manager::create_fragment() {
-	return text_fragment(this);
+	return text_fragment(context, this);
 }

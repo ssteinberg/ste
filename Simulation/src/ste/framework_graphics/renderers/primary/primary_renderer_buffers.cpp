@@ -49,8 +49,7 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	// Light bindings
 	set["light_binding"] = gl::bind(s->properties().lights_storage().buffer());
 	set["light_list_counter_binding"] = gl::bind(s->properties().lights_storage().get_active_ll_counter());
-	set["light_list_binding"] = gl::bind(s->properties().lights_storage().get_active_ll(),
-										 0, light_storage::max_ll_buffer_size);
+	set["light_list_binding"] = gl::bind(s->properties().lights_storage().get_active_ll());
 	set["shaped_lights_points_binding"] = gl::bind(s->properties().lights_storage().get_shaped_lights_points_buffer());
 
 	set["linked_light_list_size"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.linked_light_lists_size_map()));

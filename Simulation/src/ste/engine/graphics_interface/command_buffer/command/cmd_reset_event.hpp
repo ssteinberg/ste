@@ -28,7 +28,7 @@ public:
 	virtual ~cmd_reset_event() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdResetEvent(command_buffer,
 						event,
 						static_cast<VkPipelineStageFlags>(stage));
