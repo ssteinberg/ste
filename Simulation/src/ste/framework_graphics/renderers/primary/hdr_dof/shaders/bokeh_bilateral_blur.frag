@@ -8,7 +8,6 @@
 #include <fast_rand.glsl>
 
 #include <renderer_transform_buffers.glsl>
-#include <shadow.glsl>
 #include <gbuffer.glsl>
 
 layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer {

@@ -119,7 +119,9 @@ public:
 		}
 
 		// Append to map
-		std::copy(vk_binds.begin(), vk_binds.end(), buffer_bind_map[buffer].end());
+		std::copy(vk_binds.begin(), 
+				  vk_binds.end(), 
+				  std::back_inserter(buffer_bind_map[buffer]));
 	}
 };
 

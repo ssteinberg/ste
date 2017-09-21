@@ -90,6 +90,14 @@ private:
 			unbind_regions.emplace_back(new_size, old_size - new_size);
 		else
 			return;
+		
+		// Allocate memory for the sparse binding
+		auto allocated_memory_for_sparse_binding = v->get().allocate_sparse_memory(unbind_regions,
+																				   bind_regions);
+		if (!allocated_memory_for_sparse_binding) {
+			// Nothing needs to be (un)bound.
+			return;
+		}
 
 		// Dependency semaphore
 		auto sem = ctx.get().device().get_sync_primitives_pools().semaphores().claim();
@@ -97,14 +105,13 @@ private:
 		// Enqueue task
 		lib::vector<const semaphore*> signal_semaphores;
 		signal_semaphores.emplace_back(&sem.get());
-		v->get().bind_sparse_memory(unbind_regions,
-									bind_regions,
+		v->get().bind_sparse_memory(std::move(allocated_memory_for_sparse_binding),
 									{},
 									std::move(signal_semaphores)).get();
 
 		// Add dependency
 		this->add_dependency(wait_semaphore(std::move(sem), 
-											pipeline_stage::bottom_of_pipe));
+											pipeline_stage::all_commands));
 	}
 };
 

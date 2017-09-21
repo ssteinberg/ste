@@ -40,9 +40,30 @@ private:
 public:
 	using bind_range_t = range<std::uint64_t>;
 
+	/*
+	 *	@brief	Result returned from allocate_sparse_memory.
+	 *			Must be passed to bind_sparse_memory.
+	 */
+	struct allocate_sparse_memory_result_t {
+		friend class device_buffer_sparse;
+	private:
+		lib::vector<device_sparse_memory_bind> memory_binds;
+
+		allocate_sparse_memory_result_t() = default;
+	public:
+		allocate_sparse_memory_result_t(allocate_sparse_memory_result_t&&) = default;
+		allocate_sparse_memory_result_t &operator=(allocate_sparse_memory_result_t&&) = default;
+		allocate_sparse_memory_result_t(const allocate_sparse_memory_result_t&) = delete;
+		allocate_sparse_memory_result_t &operator=(const allocate_sparse_memory_result_t&) = delete;
+
+		operator bool() const { return memory_binds.size(); }
+	};
+
 private:
 	using resource_t = vk::vk_buffer_sparse<>;
 	using alloc_t = device_memory_heap::allocation_type;
+
+	static constexpr auto element_size = static_cast<bind_range_t::value_type>(sizeof(T));
 
 private:
 	alias<const ste_context> ctx;
@@ -55,17 +76,15 @@ private:
 
 public:
 	auto atom_size() const {
-		return glm::max<std::size_t>(memory_requirements.alignment, sizeof(T));
+		return glm::max<std::size_t>(memory_requirements.alignment, 
+									 element_size);
 	}
 
 	bind_range_t align(const bind_range_t &range) const {
 		auto alignment = static_cast<std::size_t>(atom_size());
 
-		bind_range_t ret;
-		ret.start = range.start * sizeof(T) / alignment * alignment;
-		ret.length = (range.length * sizeof(T) + alignment - 1) / alignment * alignment;
-
-		return ret;
+		bind_range_t ret = range * element_size;
+		return ret.align(alignment);
 	}
 
 private:
@@ -134,10 +153,12 @@ private:
 		}
 
 		// Remove already bound ranges
-		for (auto it = bound_ranges.lower_bound(bind_regions.front());
-			 it != bound_ranges.end() && it->first.start < bind_range_top;
-			 ++it)
-			ranges_to_bind.remove(it->first);
+		{
+			auto it = bound_ranges.lower_bound(bind_regions.front());
+			if (it != bound_ranges.begin()) it = std::prev(it);
+			for (; it != bound_ranges.end() && it->first.start < bind_range_top; ++it)
+				ranges_to_bind.remove(it->first);
+		}
 
 		// Allocate and bind
 		for (auto &r : ranges_to_bind) {
@@ -173,7 +194,7 @@ public:
 		: device_buffer_sparse(ctor(),
 							   ctx,
 							   resource_t(ctx.device(),
-										  sizeof(T),
+										  element_size,
 										  count,
 										  static_cast<VkBufferUsageFlags>(usage),
 										  name)) {}
@@ -186,40 +207,49 @@ public:
 	device_buffer_sparse &operator=(device_buffer_sparse &&) = default;
 
 	/**
-	*	@brief	Binds sparse memory.
-	*			Must be called from an enqueued device queue task
+	*	@brief	Allocates memory for sparse binding.
 	*			Unbind and bind regions should not overlap.
 	*
 	*	@param	unbind_regions		Buffer regions to unbind
 	*	@param	bind_regions		Buffer regions to bind
+	*
+	*	@return	An object describing the allocated memory, which must be passed to bind_sparse_memory() to perform the binding.
+	*/
+	auto allocate_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
+								const lib::vector<bind_range_t> &bind_regions) {
+		lib::vector<device_sparse_memory_bind> binds, unbinds;
+		{
+			std::unique_lock<std::mutex> l(bound_ranges_mutex);
+			unbinds = unbind(unbind_regions);
+			binds = bind(bind_regions);
+		}
+
+		allocate_sparse_memory_result_t result;
+		result.memory_binds.reserve(unbinds.size() + binds.size());
+		std::copy(unbinds.begin(), unbinds.end(), std::back_inserter(result.memory_binds));
+		std::copy(binds.begin(), binds.end(), std::back_inserter(result.memory_binds));
+
+		return result;
+	}
+
+	/**
+	*	@brief	Binds sparse memory.
+	*
+	*	@param	allocation			Object allcoated by and returned from allocate_sparse_memory()
 	*	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 	*	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 	*	
-	*	@return	Future to enqueued task
+	*	@return	Future to enqueued task.
 	*/
-	auto bind_sparse_memory(const lib::vector<bind_range_t> &unbind_regions,
-							const lib::vector<bind_range_t> &bind_regions,
+	auto bind_sparse_memory(allocate_sparse_memory_result_t &&allocation,
 							lib::vector<wait_semaphore> &&wait_semaphores = {},
 							lib::vector<const semaphore*> &&signal_semaphores = {}) {
+		if (!allocation) {
+			assert(false);
+		}
+
 		auto &q = ctx.get().device().select_queue(ste_queue_selector<ste_queue_selector_policy_flexible>(ste_queue_type::data_transfer_sparse_queue));
-
-		return q.enqueue([=, wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
-			lib::vector<device_sparse_memory_bind> binds, unbinds;
-			{
-				std::unique_lock<std::mutex> l(bound_ranges_mutex);
-				unbinds = unbind(unbind_regions);
-				binds = bind(bind_regions);
-			}
-
-			lib::vector<device_sparse_memory_bind> memory_binds;
-			memory_binds.reserve(unbinds.size() + binds.size());
-			memory_binds.insert(memory_binds.end(), unbinds.begin(), unbinds.end());
-			memory_binds.insert(memory_binds.end(), binds.begin(), binds.end());
-
-			// Nothing to bind/unbind
-			if (!memory_binds.size())
-				return;
-
+		return q.enqueue([=, allocation = std::move(allocation), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 			// Allocate sparse binding batch
 			using batch_t = device_sparse_binding_batch<>;
 			auto batch = ste_device_queue::thread_allocate_batch_custom<batch_t>();
@@ -228,7 +258,8 @@ public:
 			batch->wait_semaphores = std::move(wait_semaphores);
 
 			// Set bind regions
-			batch->bind(*this, memory_binds);
+			batch->bind(*this, 
+						allocation.memory_binds);
 
 			// Queue sparse binding command
 			ste_device_queue::submit_batch(std::move(batch));
@@ -241,7 +272,7 @@ public:
 	auto &parent_context() const { return ctx.get(); }
 
 	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
-	std::uint32_t get_element_size_bytes() const override final { return sizeof(T); };
+	std::uint32_t get_element_size_bytes() const override final { return element_size; };
 	bool is_sparse() const override final { return true; };
 };
 

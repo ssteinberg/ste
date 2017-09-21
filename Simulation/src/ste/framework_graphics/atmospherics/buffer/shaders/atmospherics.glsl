@@ -2,10 +2,10 @@
 #include <light_transport.glsl>
 #include <common.glsl>
 
-layout(set=2, binding=28) uniform sampler2DArray atmospheric_optical_length_lut;
-layout(set=2, binding=29) uniform sampler3D atmospheric_mie0_scattering_lut;
-layout(set=2, binding=30) uniform sampler3D atmospheric_ambient_lut;
-layout(set=2, binding=31) uniform sampler3D atmospheric_scattering_lut;
+layout(set=2, binding=21) uniform sampler2DArray atmospheric_optical_length_lut;
+layout(set=2, binding=22) uniform sampler3D atmospheric_mie0_scattering_lut;
+layout(set=2, binding=23) uniform sampler3D atmospheric_ambient_lut;
+layout(set=2, binding=24) uniform sampler3D atmospheric_scattering_lut;
 
 #include <atmospherics_descriptor.glsl>
 

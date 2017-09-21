@@ -287,33 +287,35 @@ buffer 10 --- linked-light-list buffer<br/>
 
 uniform 15 -- per-tile linked-light-lists size map (storage image)<br/>
 uniform 16 -- per-tile linked-light-lists heads map (storage image)<br/>
-uniform 17 -- per-tile linked-light-lists low-detail size map (storage image)<br/>
-uniform 18 -- per-tile linked-light-lists low-detail heads map (storage image)<br/>
 
-buffer 12 --- Directional light cascades<br/>
-uniform buffer 32 -- Directional light cascade depths<br/>
+(inactive)<br/>
+uniform - -- per-tile linked-light-lists low-detail size map (storage image)<br/>
+uniform - -- per-tile linked-light-lists low-detail heads map (storage image)<br/>
+
+buffer - --- Directional light cascades<br/>
+uniform buffer - -- Directional light cascade depths<br/>
 
 ****
 **gbuffer**
 
+uniform 17 -- gbuffer (sampler2DArray)<br/>
+uniform 18 -- scene depth map (sampler2D)<br/>
 uniform 19 -- downsampled scene depth map (sampler2D)<br/>
-uniform 20 -- scene depth map (sampler2D)<br/>
-uniform 21 -- scene back-face depth map (sampler2D)<br/>
-uniform 22 -- gbuffer (sampler2DArray)<br/>
+uniform 20 -- scene back-face depth map (sampler2D)<br/>
 
 ****
-**shadows**
+**shadows (inactive)**
 
-uniform 23 -- shadow depth cubemaps (samplerCubeArrayShadow)<br/>
-uniform 24 -- shadow cubemaps (samplerCubeArray)<br/>
-uniform 25 -- directional shadow depth cascades (sampler2DArrayShadow)<br/>
-uniform 26 -- directional shadow cascades (sampler2DArray)<br/>
+uniform - -- shadow depth cubemaps (samplerCubeArrayShadow)<br/>
+uniform - -- shadow cubemaps (samplerCubeArray)<br/>
+uniform - -- directional shadow depth cascades (sampler2DArrayShadow)<br/>
+uniform - -- directional shadow cascades (sampler2DArray)<br/>
 
 ****
 **Atmospherics**
 
-uniform buffer 27 --- atmospherics descriptor<br/>
-uniform 28 -- atmospheric optical length lut (sampler2DArray)<br/>
-uniform 29 -- atmospheric mie0 scattering lut (sampler3D)<br/>
-uniform 30 -- atmospheric ambient lut (sampler3D)<br/>
-uniform 31 -- atmospheric scattering lut (sampler3D)<br/>
+uniform buffer 12 --- atmospherics descriptor<br/>
+uniform 21 -- atmospheric optical length lut (sampler2DArray)<br/>
+uniform 22 -- atmospheric mie0 scattering lut (sampler3D)<br/>
+uniform 23 -- atmospheric ambient lut (sampler3D)<br/>
+uniform 24 -- atmospheric scattering lut (sampler3D)<br/>

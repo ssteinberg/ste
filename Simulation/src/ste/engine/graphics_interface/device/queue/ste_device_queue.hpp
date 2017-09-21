@@ -287,16 +287,21 @@ public:
 	template <typename L>
 	std::future<typename function_traits<L>::result_t> enqueue(L &&task) {
 		using R = typename function_traits<L>::result_t;
-
 		static_assert(function_traits<L>::arity == 0,
 					  "task must take no arguments");
 
-		// Enqueue
+		// Create task
 		enqueue_task_t<R> f(std::forward<L>(task));
 		auto future = f.get_future();
 
-		shared_data->task_queue.push(std::move(f));
-		shared_data->notifier.notify_one();
+		// If we are trying to enqueue from the very same queue thread, execute in-place, otherwise enqueue.
+		if (thread_queue_index() == queue_index) {
+			f();
+		}
+		else {
+			shared_data->task_queue.push(std::move(f));
+			shared_data->notifier.notify_one();
+		}
 
 		return future;
 	}

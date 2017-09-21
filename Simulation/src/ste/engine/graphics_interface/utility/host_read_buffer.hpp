@@ -70,7 +70,7 @@ auto host_read_buffer(const ste_context &ctx,
 
 			// Copy to staging buffer
 			recorder
-				<< cpy_cmd
+				<< std::move(cpy_cmd)
 				<< cmd_pipeline_barrier(pipeline_barrier(pipeline_stage::transfer,
 														 pipeline_stage::host,
 														 buffer_memory_barrier(batch->user_data(),

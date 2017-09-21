@@ -44,7 +44,7 @@ private:
 		for (auto it = text_attribs.begin(); it != end; ++it) {
 			if (r.start + r.length < it->first.start)
 				break;
-			if (it->second.type() == id && it->first.overlaps(r))
+			if (it->second.type() == id && it->first.intersects(r))
 				return it;
 		}
 

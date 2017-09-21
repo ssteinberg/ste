@@ -1,4 +1,4 @@
-// StE
+//	StE
 // © Shlomi Steinberg, 2015-2017
 
 #pragma once
@@ -21,10 +21,6 @@
 #include <hdr_adaptation_fragment.hpp>
 #include <hdr_compute_minmax_fragment.hpp>
 
-#include <command_recorder.hpp>
-
-#include <alias.hpp>
-
 namespace ste {
 namespace graphics {
 
@@ -34,7 +30,6 @@ private:
 	static constexpr float default_aperature_focal_ln = 23e-3f;
 
 private:
-	alias<const ste_context> ctx;
 	glm::u32vec2 extent;
 	gl::rendering_system::storage_ptr<hdr_dof_postprocess_storage> s;
 

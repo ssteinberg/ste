@@ -9,12 +9,12 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 #include <light_transport.glsl>
 #include <light.glsl>
-#include <light_cascades.glsl>
+//#include <light_cascades.glsl>
 #include <linked_light_lists.glsl>
 #include <linearly_transformed_cosines.glsl>
 
 #include <gbuffer.glsl>
-#include <shadow.glsl>
+//#include <shadow.glsl>
 
 #include <project.glsl>
 #include <fast_rand.glsl>
@@ -100,14 +100,14 @@ vec3 scatter_light(vec2 slice_coords,
 				   light_descriptor ld,
 				   uint shadowmap_idx) {
 	vec3 l = w_pos - ld.position;
-	float shadow = shadow_test(shadow_depth_maps,
+	float shadow = 1.f;/*shadow_test(shadow_depth_maps,
 							   shadowmap_idx,
 							   l,
 							   vec3(0,1,0), vec3(0,1,0),
 							   ld.radius,
 							   light_effective_range(ld));
 	if (shadow <= .0f)
-		return vec3(0);
+		return vec3(0);*/
 
 	float l_dist = length(l);
 	vec3 atten = integrate_light_cross_section(w_pos, ld, l_dist, l/l_dist); 
@@ -123,16 +123,16 @@ vec3 scatter_directional_light(vec2 slice_coords,
 							   vec3 position,
 							   vec3 w_pos,
 							   float thickness,
-							   light_descriptor ld,
-							   light_cascade_data cascade_data,
-							   int shadowmap_idx) {	
-	float shadow = shadow_test(directional_shadow_depth_maps,
+							   light_descriptor ld) {
+							   //light_cascade_data cascade_data,
+							   //int shadowmap_idx) {	
+	float shadow = 1.f;/*shadow_test(directional_shadow_depth_maps,
 							   shadowmap_idx,
 							   position,
 							   vec3(0,1,0), vec3(0,1,0),
 							   cascade_data);
 	if (shadow <= .0f)
-		return vec3(0);
+		return vec3(0);*/
 
 	float atten = integrate_cosine_distribution_sphere_cross_section(light_directional_distance(ld), ld.radius);
 	vec3 lux = irradiance(ld) * atten;
@@ -173,8 +173,8 @@ bool generate_sample(vec2 slice_coords, float s,
 }
 
 vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
-			 light_descriptor ld, uint light_idx, uint ll_idx,
-			 uint cascade_idx, inout int cascade, inout float current_cascade_far_clip) {
+			 light_descriptor ld, uint light_idx, uint ll_idx
+			 /*uint cascade_idx, inout int cascade, inout float current_cascade_far_clip*/) {
 	float z0 = unproject_depth(depth);
 	float z2 = unproject_depth(depth_next_tile);
 	float thickness = abs(z0 - z2);
@@ -185,10 +185,10 @@ vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 	vec3 scattered = vec3(0);
 	if (light_type_is_directional(ld.type)) {
 		// For directional lights, first update cascade if needed
-		if (-z0 >= current_cascade_far_clip) {
+		/*if (-z0 >= current_cascade_far_clip) {
 			++cascade;
 			current_cascade_far_clip = cascades_depths[cascade];
-		}
+		}*/
 		
 		for (float s = 0; s < samples; ++s) {
 			generate_sample(slice_coords, s, 
@@ -200,9 +200,9 @@ vec3 scatter(float depth, float depth_next_tile, ivec2 slice_coords,
 												   position,
 												   w_pos,
 												   thickness,
-												   ld,
-												   light_cascades[cascade_idx].cascades[cascade],
-												   light_get_cascade_shadowmap_idx(ld, cascade));
+												   ld);
+												   //light_cascades[cascade_idx].cascades[cascade],
+												   //light_get_cascade_shadowmap_idx(ld, cascade));
 		}
 	}
 	else {
@@ -240,8 +240,8 @@ void main() {
 	float effective_tiles_end = min(volumetric_scattering_tile_for_depth(depth_buffer_d_min) + 1.f, float(volumetric_scattering_depth_tiles));
 	
 	// Loop through per-pixel linked-light-list
-	uint lll_start = imageLoad(linked_light_list_low_detail_heads, slice_coords).x;
-	uint lll_length = imageLoad(linked_light_list_low_detail_size, slice_coords).x;
+	uint lll_start = imageLoad(linked_light_list_heads, slice_coords).x;
+	uint lll_length = imageLoad(linked_light_list_size, slice_coords).x;
 	for (uint lll_ptr = lll_start; lll_ptr != lll_start + lll_length; ++lll_ptr) {
 		lll_element lll_p = lll_buffer[lll_ptr];
 			
@@ -251,9 +251,9 @@ void main() {
 		light_descriptor ld = light_buffer[light_idx];
 		
 		// Cascade data used for directional lights
-		uint cascade_idx = light_get_cascade_descriptor_idx(ld);
-		int cascade = 0;
-		float current_cascade_far_clip = cascades_depths[0];
+		//uint cascade_idx = light_get_cascade_descriptor_idx(ld);
+		//int cascade = 0;
+		//float current_cascade_far_clip = cascades_depths[0];
 		
 		// Compute tight limits on tiles to sample based on pp-lll depth ranges
 		float tiles_effected_by_light_start = volumetric_scattering_tile_for_depth(lll_depth_range.y);
@@ -271,8 +271,8 @@ void main() {
 
 			if (tile <= tiles_effected_by_light_end)
 				accum += scatter(depth, depth_next_tile, slice_coords, 
-								 ld, light_idx, ll_idx, 
-								 cascade_idx, cascade, current_cascade_far_clip);
+								 ld, light_idx, ll_idx
+								 /*cascade_idx, cascade, current_cascade_far_clip*/);
 
 			vec3 stored_rgb = imageLoad(scattering_volume, volume_coords).rgb;
 			imageStore(scattering_volume, volume_coords, vec4(stored_rgb + accum, .0f));

@@ -62,7 +62,7 @@ public:
         dispatch_task.attach_pipeline(pipeline());
         attach_handles(rs.get_creating_context());
 
-        gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this, &rs]() {
+        gbuffer_depth_target_connection = make_connection(gbuffer->get_gbuffer_modified_signal(), [this, &rs]() {
             attach_handles(rs.get_creating_context());
         });
     }

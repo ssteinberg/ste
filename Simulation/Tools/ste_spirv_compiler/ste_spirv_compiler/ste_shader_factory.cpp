@@ -47,7 +47,7 @@ std::string ste_shader_factory::load_source(const boost::filesystem::path &path)
 	std::ifstream fs(path.string(), std::ios::in);
 	if (!fs) {
 		std::cerr << "Can not load " << path.string() << std::endl;
-		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
+		throw std::exception((std::string("Can not load ") + path.string()).c_str());
 	}
 
 	std::string content = std::string((std::istreambuf_iterator<char>(fs)), (std::istreambuf_iterator<char>()));
@@ -85,7 +85,7 @@ std::string ste_shader_factory::compile_from_path(const boost::filesystem::path 
 
 	if (header.type == ste_shader_type::none || header.properties.version_major == 0) {
 		std::cerr << path.string() << ": Unknown type or version" << std::endl;
-		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
+		throw std::exception((std::string("Unknown type or version")).c_str());
 	}
 
 	return src;
@@ -185,7 +185,7 @@ bool ste_shader_factory::parse_include(const boost::filesystem::path &path,
 		bool has_path = resolve_program(file_name, &include_path, source_path);
 		if (!has_path) {
 			std::cerr << "Can not load include " << file_name << std::endl;
-			throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
+			throw std::exception((std::string("Can not load include ") + file_name).c_str());
 		}
 
 		auto include = load_source(include_path);
@@ -242,7 +242,7 @@ std::chrono::system_clock::time_point ste_shader_factory::shader_modification_ti
 			boost::filesystem::path i_path;
 			if (!resolve_program(include, &i_path, source_path)) {
 				std::cerr << "Can not load include " << include << std::endl;
-				throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
+				throw std::exception((std::string("Can not load include ") + include).c_str());
 			}
 
 			if (std::find(paths.begin(), paths.end(), i_path) == paths.end())
@@ -290,7 +290,7 @@ std::string ste_shader_factory::compile_shader(const boost::filesystem::path &pa
 		break;
 	default:
 		std::cerr << "Unknown shader type" << std::endl;
-		throw std::exception((std::string(__FILE__) + ":" + std::to_string(__LINE__)).c_str());
+		throw std::exception((std::string("Unknown shader type ")).c_str());
 	}
 
 	return src;

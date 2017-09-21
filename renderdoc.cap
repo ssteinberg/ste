@@ -16,7 +16,7 @@
   </Options>
   <Inject>false</Inject>
   <AutoStart>false</AutoStart>
-  <Executable>D:\src\git\StE\Simulation\bin\Profile\StE.exe</Executable>
+  <Executable>D:\src\git\StE\Simulation\bin\RenderDoc\StE.exe</Executable>
   <WorkingDir>D:\src\git\StE\Simulation\</WorkingDir>
   <CmdLine />
   <Environment />

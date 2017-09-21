@@ -81,7 +81,7 @@ void main() {
 	xyY = XYZtoxyY(RGBtoXYZ(rgb));
 
 	// Tonemap
-	float tonemapped_luminance = hdr_tonemap(x);// * mix(1.f, .666f, mesopic);
+	float tonemapped_luminance = hdr_tonemap(x) * mix(1.f, .5f, mesopic);
 
 	xyY.z = tonemapped_luminance;
 	rgb = XYZtoRGB(xyYtoXYZ(xyY));

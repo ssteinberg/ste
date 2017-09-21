@@ -33,7 +33,6 @@
 //#include <debug_gui.hpp>
 
 //#define STATIC_SCENE
-#define RENDER_DOC
 
 using namespace ste;
 
@@ -252,6 +251,8 @@ public:
 
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+
+		auto debugz_fence = batch->get_fence_ptr();
 
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
@@ -544,20 +545,9 @@ int main()
 	device_params.allow_markers = false;
 	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
-	device_params.presentation_surface_parameters.required_format = gl::format::b8g8r8a8_srgb;
-
-#ifdef RENDER_DOC
-	// RenderDoc only supports one Vulkan queue (as of Sep 2017...)
-	gl::ste_device_queues_protocol::queue_create_info_t params;
-	params[gl::ste_queue_type::all] = { 1, 1.f };
-#endif
 
 	ste_context::gl_device_t device(device_params,
-#ifdef RENDER_DOC
-									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device, params),
-#else
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
-#endif
 									engine,
 									gl_ctx,
 									window);
