@@ -1,6 +1,6 @@
 
 #include <common.glsl>
-#include <srgb.glsl>
+#include <luminance.glsl>
 #include <sfloat_to_uint_order_preserving.glsl>
 
 const int bins = 1024;
@@ -67,8 +67,8 @@ vec2 hdr_lum_to_luminance(vec2 l) {
 	return exp(l);
 }
 
-float tonemap(float l) {
-	return l;//linear_to_sRGB(l);
+float tonemap(float l, float gamma) {
+	return pow(l, gamma);
 }
 
 

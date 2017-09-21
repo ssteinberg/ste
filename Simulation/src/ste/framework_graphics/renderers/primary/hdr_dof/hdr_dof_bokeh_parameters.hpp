@@ -1,5 +1,5 @@
 // StE
-// © Shlomi Steinberg, 2015-2017
+// ï¿½ Shlomi Steinberg, 2015-2017
 
 #pragma once
 

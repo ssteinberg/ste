@@ -20,6 +20,10 @@ layout(location = 0) in vec2 uv;
 layout(location = 0) out vec4 rgbout;
 layout(location = 1) out vec4 bloomout;
 
+layout(push_constant) uniform push_t {
+	float gamma;
+};
+
 const float bloom_cutoff = .666f;
 const float vision_properties_max_lum = 10.f;
 
@@ -30,6 +34,10 @@ vec4 hdr_bloom(vec3 rgb, float luminance, float mesopic) {
 	}
 	else
 		return vec4(0);
+}
+
+float hdr_exposure(float l) {
+	return tonemap(l, gamma);
 }
 
 float hdr_tonemap(float luminance) {
@@ -45,7 +53,7 @@ float hdr_tonemap(float luminance) {
 	float fbin = max(hdr_bin(max_lum, min_lum, l), .0f);
 	int bin = int(fbin);
 	if (bin >= bins)
-		return tonemap(1.f);
+		return hdr_exposure(1.f);
 
 	// Calculate linear luminance on bin's low and high-end
 	uint toned_bin_start = bin > 0 ? histogram[bin - 1] : 0;
@@ -60,7 +68,7 @@ float hdr_tonemap(float luminance) {
 
 	// Tonemap
 	float toned_l = mix(bin_range.x, bin_range.y, frac);
-	return tonemap(toned_l);
+	return hdr_exposure(toned_l);
 }
 
 void main() {

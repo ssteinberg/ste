@@ -177,25 +177,11 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 															  gl::buffer_memory_barrier(s->properties().lights_storage().buffer(),
 																						gl::access_flags::shader_read | gl::access_flags::shader_write,
 																						gl::access_flags::shader_read)));
-//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::geometry_shader,
-//															  gl::pipeline_stage::compute_shader,
-//															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-//																						gl::access_flags::shader_read,
-//																						gl::access_flags::shader_write),
-//															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-//																						gl::access_flags::shader_read,
-//																						gl::access_flags::shader_write)));
 	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::draw_indirect,
 															  gl::pipeline_stage::compute_shader,
 															  gl::buffer_memory_barrier(s->get_idb().get(),
 																						gl::access_flags::indirect_command_read,
 																						gl::access_flags::shader_write)));
-//															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().idb.get(),
-//																						gl::access_flags::indirect_command_read,
-//																						gl::access_flags::shader_write),
-//															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().idb.get(),
-//																						gl::access_flags::indirect_command_read,
-//																						gl::access_flags::shader_write)));
 
 	// Scene geometry cull
 	record_scene_geometry_cull_fragment(recorder);
@@ -205,29 +191,6 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 															  gl::buffer_memory_barrier(s->get_idb().get(),
 																						gl::access_flags::shader_write,
 																						gl::access_flags::indirect_command_read)));
-//															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().idb.get(),
-//																						gl::access_flags::shader_write,
-//																						gl::access_flags::indirect_command_read),
-//															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().idb.get(),
-//																						gl::access_flags::shader_write,
-//																						gl::access_flags::indirect_command_read)));
-//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-//															  gl::pipeline_stage::geometry_shader,
-//															  gl::buffer_memory_barrier(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-//																						gl::access_flags::shader_write,
-//																						gl::access_flags::shader_read)));
-
-	// Shadow cubemaps project
-//	record_shadow_projector_fragment(recorder);
-//
-//	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-//															  gl::pipeline_stage::geometry_shader,
-//															  gl::buffer_memory_barrier(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table,
-//																						gl::access_flags::shader_write,
-//																						gl::access_flags::shader_read)));
-//
-//	// Directional shadow maps project
-//	record_directional_shadow_projector_fragment(recorder);
 
 	// Draw scene to gbuffer
 	record_scene_fragment(recorder);
@@ -320,14 +283,6 @@ void primary_renderer::record_light_preprocess_fragment(gl::command_recorder &re
 void primary_renderer::record_scene_geometry_cull_fragment(gl::command_recorder &recorder) {
 	recorder << scene_geo_cull.get();
 }
-
-//void primary_renderer::record_shadow_projector_fragment(gl::command_recorder &recorder) {
-//	recorder << shadows_projector.get();
-//}
-//
-//void primary_renderer::record_directional_shadow_projector_fragment(gl::command_recorder &recorder) {
-//	recorder << directional_shadows_projector.get();
-//}
 
 void primary_renderer::record_downsample_depth_fragment(gl::command_recorder &recorder) {
 	recorder << downsample_depth.get();

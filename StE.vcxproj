@@ -202,7 +202,7 @@
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <ErrorLimit>10</ErrorLimit>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ErrorReporting>None</ErrorReporting>
@@ -254,7 +254,7 @@
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <ErrorLimit>10</ErrorLimit>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_ENABLE_ATOMIC_ALIGNMENT_FIX;_MBCS;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ErrorReporting>None</ErrorReporting>
@@ -770,6 +770,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\srgb.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_adaptation_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_compute_histogram_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_camera.hpp" />
@@ -1267,7 +1268,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_bokeh_blur_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_compute_histogram_sums_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_compute_minmax_fragment.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_compute_histogram_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_tonemap_coc_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\renderer_transform_buffers.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\scene\geometry_cull\scene_geo_cull_fragment.hpp" />
@@ -1419,6 +1419,7 @@
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\chromaticity.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\constants.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\luminance.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\lighting\srgb.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\dual_quaternion.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\common_shaders\math\erf.glsl" />
@@ -1472,7 +1473,7 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_blur.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_common.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_compute_histogram_sums.comp" />
-    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_compute_minmax.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_compute_minmax.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_create_histogram.comp" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_tonemap_coc.frag" />
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\shaders\deferred_shading_common.glsl" />

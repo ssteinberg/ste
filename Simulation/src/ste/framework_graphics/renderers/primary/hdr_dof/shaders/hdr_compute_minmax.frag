@@ -1,30 +1,27 @@
 
-#type compute
+#type frag
 #version 450
 
 #include <common.glsl>
 #include <hdr_common.glsl>
 
-layout(local_size_x = 32, local_size_y = 32) in;
-
 layout(binding = 0) uniform sampler2D hdr;
 
-layout(r32f, binding = 1) restrict writeonly uniform image2D hdr_lums;
 layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
-void main() {
-	if (any(greaterThanEqual(gl_GlobalInvocationID.xy, imageSize(hdr_lums))))
-		return;
+layout(location = 0) out float out_lum;
 
+void main() {
 	vec2 ts = textureSize(hdr, 0);
+	ivec2 coord = ivec2(gl_FragCoord.xy);
 
 	// Read 4x4 texels' luminance values
-	vec4 lums0 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(0,0), 2);
-	vec4 lums1 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(2,0), 2);
-	vec4 lums2 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(2,2), 2);
-	vec4 lums3 = textureGatherOffset(hdr, (vec2(gl_GlobalInvocationID.xy) * 4 + vec2(.25)) / ts, ivec2(0,2), 2);
+	vec4 lums0 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(0,0), 2);
+	vec4 lums1 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(2,0), 2);
+	vec4 lums2 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(2,2), 2);
+	vec4 lums3 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(0,2), 2);
 	
 	// Take maximum, minimum and average
 	float max_lum = max_element(vec4(max_element(lums0),
@@ -42,9 +39,8 @@ void main() {
 						 dot(lums3,t)), 
 					t);
 
-	// Create luminance value from average and write to luminance image
-	float l = hdr_lum(max(min_luminance, lum));
-	imageStore(hdr_lums, ivec2(gl_GlobalInvocationID.xy), l.xxxx);
+	// Create luminance value from average
+	out_lum = hdr_lum(max(min_luminance, lum));
 
 	// Update min and max luminance bounds
 	atomicMax(params.lum_max, luminance_to_hdr_params_lum(max_lum));

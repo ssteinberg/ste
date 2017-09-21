@@ -34,6 +34,7 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 	fbo_hdr[0] = gl::framebuffer_attachment(hdr_image.get());
 	fbo_hdr[1] = gl::framebuffer_attachment(hdr_bloom_image.get());
 	fbo_hdr_bloom_blurx_image[0] = gl::framebuffer_attachment(hdr_bloom_blurx_image.get());
+	fbo_hdr_lums[0] = gl::framebuffer_attachment(hdr_lums.get());
 
 	const auto lums_extent = hdr_lums.get().get_image().get_extent();
 	auto &samp = get_creating_context().device().common_samplers_collection().linear_clamp_sampler();
@@ -42,6 +43,7 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 	tonemap_coc_task.attach_framebuffer(fbo_hdr);
 	bloom_blurx_task.attach_framebuffer(fbo_hdr_bloom_blurx_image);
 	bloom_blury_task.attach_framebuffer(fbo_hdr_final);
+	compute_minmax_task.attach_framebuffer(fbo_hdr_lums);
 
 	bloom_blurx_task.set_source(gl::pipeline::combined_image_sampler(hdr_bloom_image.get(), samp));
 	bloom_blury_task.set_source(gl::pipeline::combined_image_sampler(hdr_image.get(), samp),
@@ -52,7 +54,7 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 								gl::pipeline::combined_image_sampler(*input, samp));
 
 	create_histogram_task.bind_buffers(s->histogram, s->hdr_bokeh_param_buffer);
-	create_histogram_task.set_source(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
+	create_histogram_task.set_source(gl::pipeline::combined_image_sampler(hdr_lums.get(), samp), lums_extent);
 
 	bokeh_blur_task.bind_buffers(s->hdr_bokeh_param_buffer);
 	bokeh_blur_task.set_source(gl::pipeline::combined_image_sampler(*input, samp));
@@ -63,7 +65,6 @@ void hdr_dof_postprocess::bind_fragment_resources() {
 
 	compute_minmax_task.bind_buffers(s->hdr_bokeh_param_buffer);
 	compute_minmax_task.set_source(gl::pipeline::combined_image_sampler(*input, samp_no_clamp));
-	compute_minmax_task.set_destination(gl::pipeline::storage_image(hdr_lums.get()), lums_extent);
 }
 
 hdr_dof_postprocess::hdr_dof_postprocess(gl::rendering_system &rs,
@@ -90,8 +91,8 @@ hdr_dof_postprocess::hdr_dof_postprocess(gl::rendering_system &rs,
 																						   "hdr_bloom_blurx_image")),
 	  hdr_lums(_internal::hdr_create_texture<gl::format::r32_sfloat>(get_creating_context(),
 																	 extent / 4u,
-																	 gl::image_usage::storage,
-																	 gl::image_layout::general,
+																	 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																	 gl::image_layout::shader_read_only_optimal,
 																	 "hdr_lums")),
 	  // Fragments
 	  compute_minmax_task(rs),
@@ -114,8 +115,14 @@ hdr_dof_postprocess::hdr_dof_postprocess(gl::rendering_system &rs,
 	  fbo_hdr_bloom_blurx_image(get_creating_context(),
 								"fbo_hdr_bloom_blurx_image",
 								bloom_blurx_task.get_framebuffer_layout(),
-								extent) {
-	bokeh_blur_task.set_aperture_parameters(default_aperature_diameter, default_aperature_focal_ln);
+								extent),
+	  fbo_hdr_lums(get_creating_context(),
+				   "fbo_hdr_lums",
+				   compute_minmax_task.get_framebuffer_layout(),
+				   extent / 4u)
+{
+	set_aperture_parameters(default_aperature_diameter, default_aperature_focal_ln);
+	set_gamma(default_gamma);
 }
 
 void hdr_dof_postprocess::resize(const glm::u32vec2 &extent) {
@@ -136,8 +143,8 @@ void hdr_dof_postprocess::resize(const glm::u32vec2 &extent) {
 																						   "hdr_bloom_blurx_image");
 	hdr_lums = _internal::hdr_create_texture<gl::format::r32_sfloat>(get_creating_context(),
 																	 extent / 4u,
-																	 gl::image_usage::storage,
-																	 gl::image_layout::general,
+																	 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																	 gl::image_layout::shader_read_only_optimal,
 																	 "hdr_lums");
 
 	fbo_hdr_final = gl::framebuffer(get_creating_context(),
@@ -152,6 +159,10 @@ void hdr_dof_postprocess::resize(const glm::u32vec2 &extent) {
 												"fbo_hdr_bloom_blurx_image",
 												bloom_blurx_task.get_framebuffer_layout(),
 												extent);
+	fbo_hdr_lums = gl::framebuffer(get_creating_context(),
+								   "fbo_hdr_lums",
+								   compute_minmax_task.get_framebuffer_layout(),
+								   extent / 4u);
 
 	invalidated = true;
 }
@@ -194,13 +205,6 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 //														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer_prev,
 //																				   gl::access_flags::transfer_write,
 //																				   gl::access_flags::shader_read)))
-		<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
-														 gl::pipeline_stage::compute_shader,
-														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
-																							gl::image_layout::general,
-																							gl::image_layout::general,
-																							gl::access_flags::shader_read,
-																							gl::access_flags::shader_write)))
 		<< compute_minmax_task;
 
 	recorder
@@ -220,12 +224,7 @@ void hdr_dof_postprocess::record(gl::command_recorder &recorder) {
 														 gl::pipeline_stage::compute_shader,
 														 gl::buffer_memory_barrier(s->hdr_bokeh_param_buffer,
 																				   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																				   gl::access_flags::shader_read | gl::access_flags::shader_write),
-														 gl::image_layout_transform_barrier(hdr_lums->get_image(),
-																							gl::image_layout::general,
-																							gl::image_layout::general,
-																							gl::access_flags::shader_write,
-																							gl::access_flags::shader_read)))
+																				   gl::access_flags::shader_read | gl::access_flags::shader_write)))
 		<< create_histogram_task;
 
 //	recorder

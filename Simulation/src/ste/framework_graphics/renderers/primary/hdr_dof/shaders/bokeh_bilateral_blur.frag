@@ -20,8 +20,8 @@ layout(location = 0) in vec2 uv;
 
 layout(location = 0) out vec3 frag_color;
 
-const int samples = 6;
-const int max_rings = 10;
+const int samples = 7;
+const int max_rings = 6;
 const float max_blur_texels_radius = 6.f;
 
 const float blur_coef = 1.0;

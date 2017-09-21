@@ -11,9 +11,9 @@ using namespace ste::graphics;
 constexpr unsigned linked_light_lists::lll_image_res_multiplier;
 
 linked_light_lists::linked_light_lists(const ste_context &ctx,
-									   const glm::uvec2 &extent)
+									   const glm::uvec2 &full_extent)
 	: ctx(ctx),
-	  extent(extent),
+	  extent(full_extent / lll_image_res_multiplier),
 	  lll(ctx,
 		  get_linked_light_list_required_size(),
 		  gl::buffer_usage::storage_buffer,

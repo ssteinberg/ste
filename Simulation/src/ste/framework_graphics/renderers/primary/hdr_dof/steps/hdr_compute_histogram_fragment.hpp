@@ -5,7 +5,7 @@
 
 #include <stdafx.hpp>
 #include <fragment_compute.hpp>
-#include <image.hpp>
+#include <combined_image_sampler.hpp>
 #include <array.hpp>
 
 #include <hdr_dof_bokeh_parameters.hpp>
@@ -41,7 +41,7 @@ public:
 		pipeline()["histogram_data"] = gl::bind(histogram_data);
 		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
-	void set_source(const gl::pipeline::image &hdr_lums,
+	void set_source(const gl::pipeline::combined_image_sampler &hdr_lums,
 					const glm::u32vec2 &extent) {
 		pipeline()["hdr_lums"] = gl::bind(hdr_lums);
 		this->extent = extent;

@@ -28,6 +28,7 @@ class hdr_dof_postprocess : public gl::fragment {
 private:
 	static constexpr float default_aperature_diameter = 8e-3f;
 	static constexpr float default_aperature_focal_ln = 23e-3f;
+	static constexpr float default_gamma = 2.2f;
 
 private:
 	glm::u32vec2 extent;
@@ -51,6 +52,7 @@ private:
 	gl::framebuffer fbo_hdr_final;
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
+	gl::framebuffer fbo_hdr_lums;
 
 //	float tick_time_ms{ .0f };
 	bool invalidated{ true };
@@ -94,6 +96,18 @@ public:
 		assert(focal_length > .0f && "Focal length must be positive");
 
 		bokeh_blur_task.set_aperture_parameters(diameter, focal_length);
+	}
+
+	/**
+	*	@brief	Set the "gamma" value for the final HDR tonemapping power-law expression. 
+	*			>1 values compresses light regions, making the overall scene darker.
+	*
+	* 	@param gamma	Gamma value. Defaults to 2.2.
+	*/
+	void set_gamma(float gamma) {
+		assert(gamma > .0f && "Gamma must be positive");
+
+		tonemap_coc_task.set_gamma(gamma);
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
