@@ -43,7 +43,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					  std::uint32_t max_layer,
 					  std::uint32_t max_level,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	static_assert(resource::is_surface_v<Surface>);
 
 	using block_type = typename Surface::block_type;
@@ -212,7 +212,7 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 				std::uint32_t initial_level = 0,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -245,7 +245,7 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -276,7 +276,7 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				std::uint32_t initial_level = 0,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -309,7 +309,7 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -340,7 +340,7 @@ auto fill_image(const device_image<3, allocation_policy> &image,
 				std::uint32_t initial_level = 0,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -373,7 +373,7 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -406,7 +406,7 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
@@ -435,7 +435,7 @@ auto fill_image(const device_image<dimensions, allocation_policy> &image,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
-				lib::vector<const semaphore*> &&signal_semaphores = {}) {
+				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,

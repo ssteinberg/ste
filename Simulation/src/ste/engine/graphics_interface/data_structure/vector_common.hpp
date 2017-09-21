@@ -103,11 +103,11 @@ private:
 		auto sem = ctx.get().device().get_sync_primitives_pools().semaphores().claim();
 
 		// Enqueue task
-		lib::vector<const semaphore*> signal_semaphores;
+		lib::vector<semaphore*> signal_semaphores;
 		signal_semaphores.emplace_back(&sem.get());
 		v->get().bind_sparse_memory(std::move(allocated_memory_for_sparse_binding),
 									{},
-									std::move(signal_semaphores)).get();
+									std::move(signal_semaphores));
 
 		// Add dependency
 		this->add_dependency(wait_semaphore(std::move(sem), 

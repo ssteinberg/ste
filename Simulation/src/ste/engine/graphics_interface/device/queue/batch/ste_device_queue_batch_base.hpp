@@ -51,13 +51,14 @@ public:
 	/*
 	*	@brief	Sempahores to signal once the commands have completed execution.
 	*/
-	lib::vector<const semaphore*> signal_semaphores;
+	lib::vector<semaphore*> signal_semaphores;
 
 protected:
 	/*
 	*	@brief	Converts a vector of semaphores to a vector of Vulkan semaphore handles
 	*/
-	static auto vk_semaphores(const lib::vector<const semaphore*> &s) {
+	template <typename Semaphore>
+	static auto vk_semaphores(const lib::vector<Semaphore*> &s) {
 		lib::vector<VkSemaphore> vk_sems;
 		vk_sems.reserve(s.size());
 		for (auto &sem : s)

@@ -52,7 +52,6 @@ public:
 	};
 
 	struct shared_data_t {
-		mutable std::mutex swap_chain_guard;
 		mutable std::atomic_flag swap_chain_optimal_flag = ATOMIC_FLAG_INIT;
 	};
 
@@ -84,7 +83,7 @@ private:
 
 private:
 	acquire_next_image_return_t acquire_swapchain_image_impl(std::uint64_t timeout_ns,
-															 const vk::vk_semaphore<> *presentation_image_ready_semaphore,
+															 semaphore &presentation_image_ready_semaphore,
 															 const vk::vk_fence<> *presentation_image_ready_fence) const;
 
 public:
@@ -161,42 +160,13 @@ public:
 	*/
 	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
 	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk::vk_semaphore<> &presentation_image_ready_semaphore,
+		semaphore &presentation_image_ready_semaphore,
 		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
 	) const {
-		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
+		const std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
 		return acquire_swapchain_image_impl(timeout_ns,
-											&presentation_image_ready_semaphore,
+											presentation_image_ready_semaphore,
 											nullptr);
-	}
-
-	/**
-	*	@brief	Acquires the next swap-chain presentation image.
-	*			Call result might be success, suboptimal, out-of-date, timeout or error.
-	*			In case of success or suboptimal returns the next swap image.
-	*			In case of suboptimal or out-of-date raises the 'sub_optimal' flag.
-	*			In case of timeout or error, throws vk_exception.
-	*
-	*			Should be externally synchronized with other presentation methods.
-	*
-	*	@throws vk_exception	On timeout or Vulkan error
-	*
-	*	@param presentation_image_ready_fence		Fence to be signaled when returned image is ready to be drawn to.
-	*	@param timeout								Timeout to wait for next image.
-	*
-	*	@return Returns a struct with a pointer to the pair swap_chain_image_t, index of the image and a 'sub_optimal' flag.
-	*			The returned image might be nullptr.
-	*			If the 'sub_optimal' flag is raised, the swap-chain should be recreated by calling recreate_swap_chain.
-	*/
-	template <class Rep = std::chrono::nanoseconds::rep, class Period = std::chrono::nanoseconds::period>
-	acquire_next_image_return_t acquire_next_swapchain_image(
-		const vk::vk_fence<> &presentation_image_ready_fence,
-		const std::chrono::duration<Rep, Period> &timeout = std::chrono::nanoseconds(std::numeric_limits<uint64_t>::max())
-	) const {
-		std::uint64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
-		return acquire_swapchain_image_impl(timeout_ns,
-											nullptr,
-											&presentation_image_ready_fence);
 	}
 
 	/**

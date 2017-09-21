@@ -213,7 +213,7 @@
     <Link>
       <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib32;D:\src\boost\current\stage32\lib;$(SolutionDir)Simulation\third_party\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <InterproceduralOptimization>false</InterproceduralOptimization>
     </Link>
     <PreBuildEvent>
@@ -267,7 +267,7 @@
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;D:\src\boost\current\stage64\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <InterproceduralOptimization>false</InterproceduralOptimization>
-      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/NODEFAULTLIB:"libcmpt.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>

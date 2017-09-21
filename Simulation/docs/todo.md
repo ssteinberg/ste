@@ -44,3 +44,4 @@
 29. HDR: Adaptation
 30. Multi-submit command batch
 31. Sparse images/opaque images
+32. <strike>Semaphores enforce correct host-side happens-before relationship</strike>

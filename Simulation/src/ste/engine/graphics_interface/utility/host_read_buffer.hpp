@@ -35,7 +35,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t copy_count,
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible>;
 
 	// Select queue
@@ -123,7 +123,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
@@ -152,7 +152,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t elements,
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
@@ -181,7 +181,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return host_read_buffer(ctx,
 							buffer.get(),
 							elements,
@@ -207,7 +207,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 
@@ -236,7 +236,7 @@ auto host_read_buffer(const ste_context &ctx,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
-					  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 

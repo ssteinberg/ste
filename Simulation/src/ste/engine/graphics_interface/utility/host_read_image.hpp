@@ -40,7 +40,7 @@ auto host_read_image(const ste_context &ctx,
 					 std::uint32_t max_layer,
 					 std::uint32_t max_level,
 					 lib::vector<wait_semaphore> &&wait_semaphores = {},
-					 lib::vector<const semaphore*> &&signal_semaphores = {}) {
+					 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	using block_type = typename gl::format_traits<format>::block_type;
 	using staging_buffer_t = device_buffer<block_type, device_resource_allocation_policy_host_visible>;
 	using extent_type = glm::u32vec3;
@@ -189,7 +189,7 @@ auto host_read_image_1d(const ste_context &ctx,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 						std::uint32_t layer = 0,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
-						lib::vector<const semaphore*> &&signal_semaphores = {}) {
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d>(ctx,
 																	image,
 																	layer,
@@ -219,7 +219,7 @@ auto host_read_image_2d(const ste_context &ctx,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 						std::uint32_t layer = 0,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
-						lib::vector<const semaphore*> &&signal_semaphores = {}) {
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d>(ctx,
 																	image,
 																	layer,
@@ -249,7 +249,7 @@ auto host_read_image_3d(const ste_context &ctx,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 						std::uint32_t layer = 0,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
-						lib::vector<const semaphore*> &&signal_semaphores = {}) {
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_3d>(ctx,
 																	image,
 																	layer,
@@ -281,7 +281,7 @@ auto host_read_image_1d_array(const ste_context &ctx,
 							  std::uint32_t initial_layer = 0,
 							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 							  lib::vector<wait_semaphore> &&wait_semaphores = {},
-							  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d_array>(ctx,
 																		  image,
 																		  initial_layer,
@@ -313,7 +313,7 @@ auto host_read_image_2d_array(const ste_context &ctx,
 							  std::uint32_t initial_layer = 0,
 							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 							  lib::vector<wait_semaphore> &&wait_semaphores = {},
-							  lib::vector<const semaphore*> &&signal_semaphores = {}) {
+							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d_array>(ctx,
 																		  image,
 																		  initial_layer,
@@ -345,7 +345,7 @@ auto host_read_image_cubemap(const ste_context &ctx,
 							 std::uint32_t initial_layer = 0,
 							 std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 							 lib::vector<wait_semaphore> &&wait_semaphores = {},
-							 lib::vector<const semaphore*> &&signal_semaphores = {}) {
+							 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap>(ctx,
 																		 image,
 																		 initial_layer,
@@ -377,7 +377,7 @@ auto host_read_image_cubemap_array(const ste_context &ctx,
 								   std::uint32_t initial_layer = 0,
 								   std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
 								   lib::vector<wait_semaphore> &&wait_semaphores = {},
-								   lib::vector<const semaphore*> &&signal_semaphores = {}) {
+								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap_array>(ctx,
 																			   image,
 																			   initial_layer,

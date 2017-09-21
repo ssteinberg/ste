@@ -88,7 +88,8 @@ public:
 	}
 
 private:
-	static auto vk_semaphores(const lib::vector<const semaphore*> &s) {
+	template <typename Semaphore>
+	static auto vk_semaphores(const lib::vector<Semaphore*> &s) {
 		lib::vector<VkSemaphore> vk_sems;
 		vk_sems.reserve(s.size());
 		for (auto &sem : s)
@@ -243,7 +244,7 @@ public:
 	*/
 	auto bind_sparse_memory(allocate_sparse_memory_result_t &&allocation,
 							lib::vector<wait_semaphore> &&wait_semaphores = {},
-							lib::vector<const semaphore*> &&signal_semaphores = {}) {
+							lib::vector<semaphore*> &&signal_semaphores = {}) {
 		if (!allocation) {
 			assert(false);
 		}

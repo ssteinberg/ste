@@ -49,6 +49,15 @@ public:
 	}
 
 	/**
+	*	@brief	Signals the boundary
+	*
+	*	@param	e		Exception to set the boundary to
+	*/
+	void set_exception(const std::exception_ptr &e) {
+		promise.set_exception(e);
+	}
+
+	/**
 	*	@brief	Checks if the boundary is in signaled state
 	*/
 	bool is_signaled() const {

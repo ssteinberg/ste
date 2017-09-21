@@ -141,7 +141,7 @@ private:
 		auto &wait = presentation_batch->wait_semaphores;
 		auto &signal = presentation_batch->signal_semaphores;
 
-		const semaphore &rendering_finished_semaphore = presentation_semaphores->rendering_finished_semaphore;
+		semaphore &rendering_finished_semaphore = presentation_semaphores->rendering_finished_semaphore;
 
 		wait.push_back(wait_semaphore(std::move(presentation_semaphores->swapchain_image_ready_semaphore),
 									  pipeline_stage::color_attachment_output));

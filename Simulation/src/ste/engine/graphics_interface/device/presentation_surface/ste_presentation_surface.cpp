@@ -13,20 +13,19 @@ using namespace ste::gl;
 
 ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface::acquire_swapchain_image_impl(
 	std::uint64_t timeout_ns,
-	const vk::vk_semaphore<> *presentation_image_ready_semaphore,
+	semaphore &presentation_image_ready_semaphore,
 	const vk::vk_fence<> *presentation_image_ready_fence) const
 {
 	acquire_next_image_return_t ret;
-	vk::vk_result res;
-	{
-		//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
-		res = vkAcquireNextImageKHR(*presentation_device,
-									*swap_chain,
-									timeout_ns,
-									presentation_image_ready_semaphore ? static_cast<VkSemaphore>(*presentation_image_ready_semaphore) : vk::vk_null_handle,
-									presentation_image_ready_fence ? static_cast<VkFence>(*presentation_image_ready_fence) : vk::vk_null_handle,
-									&ret.image_index);
-	}
+	vk::vk_result res = vkAcquireNextImageKHR(*presentation_device,
+											  *swap_chain,
+											  timeout_ns,
+											  presentation_image_ready_semaphore ? static_cast<VkSemaphore>(*presentation_image_ready_semaphore) : vk::vk_null_handle,
+											  presentation_image_ready_fence ? static_cast<VkFence>(*presentation_image_ready_fence) : vk::vk_null_handle,
+											  &ret.image_index);
+
+	// Host signal semaphore
+	presentation_image_ready_semaphore.signal_host();
 
 	switch (res.get()) {
 	case VK_SUBOPTIMAL_KHR:
@@ -299,16 +298,20 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 									   const vk::vk_queue<> &presentation_queue,
 									   const semaphore &wait_semaphore) {
 	VkSwapchainKHR swapchain = *swap_chain;
+	VkSemaphore semaphore_handle = wait_semaphore;
 
 	VkPresentInfoKHR info = {};
 	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	info.pNext = nullptr;
 	info.waitSemaphoreCount = 1;
-	info.pWaitSemaphores = &wait_semaphore.get();
+	info.pWaitSemaphores = &semaphore_handle;
 	info.swapchainCount = 1;
 	info.pSwapchains = &swapchain;
 	info.pImageIndices = &image_index;
 	info.pResults = nullptr;
+
+	// Host wait for semaphore
+	wait_semaphore.wait_host();
 
 	vk::vk_result res;
 	{

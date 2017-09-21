@@ -14,9 +14,6 @@
 #include <cmd_pipeline_barrier.hpp>
 #include <buffer_memory_barrier.hpp>
 
-#include <boundary.hpp>
-#include <lib/unique_ptr.hpp>
-
 namespace ste {
 namespace gl {
 
@@ -46,7 +43,7 @@ auto inline queue_transfer(const ste_context &ctx,
 						   pipeline_stage dst_stage,
 						   access_flags dst_access,
 						   lib::vector<wait_semaphore> &&wait_semaphores = {},
-						   lib::vector<const semaphore*> &&signal_semaphores = {}) {
+						   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	const ste_queue_family src_family = src_queue.queue_descriptor().family;
@@ -58,7 +55,6 @@ auto inline queue_transfer(const ste_context &ctx,
 	}
 
 	// Get a semaphore and boundary
-	const auto release_acquire_boundary = lib::allocate_shared<boundary<void>>();
 	auto sem = ctx.device().get_sync_primitives_pools().semaphores().claim();
 
 	src_queue.enqueue([=, semptr = &sem.get(), &buffer, wait_semaphores = std::move(wait_semaphores)]() mutable {
@@ -82,7 +78,6 @@ auto inline queue_transfer(const ste_context &ctx,
 		release_batch->wait_semaphores = std::move(wait_semaphores);
 
 		ste_device_queue::submit_batch(std::move(release_batch));
-		release_acquire_boundary->signal();
 	});
 	auto dst_future = dst_queue.enqueue([=, sem = std::move(sem), &buffer, signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
@@ -101,9 +96,7 @@ auto inline queue_transfer(const ste_context &ctx,
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
-		// Wait for release command to be submitted
-		release_acquire_boundary->get();
-
+		// Wait for release command to be completed
 		acquire_batch->signal_semaphores = std::move(signal_semaphores);
 		acquire_batch->wait_sempahores.emplace_back(std::move(sem), pipeline_stage::bottom_of_pipe);
 
@@ -124,7 +117,7 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   pipeline_stage stage,
 								   access_flags dst_access,
 								   lib::vector<wait_semaphore> &&wait_semaphores = {},
-								   lib::vector<const semaphore*> &&signal_semaphores = {}) {
+								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
 	const ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 

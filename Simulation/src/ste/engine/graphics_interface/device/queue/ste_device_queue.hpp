@@ -165,10 +165,18 @@ public:
 
 		try {
 			if (batch->queue_index == thread_queue_index()) {
+				// Host wait upon wait semaphores
+				for (auto &wait_sem : batch->wait_semaphores)
+					wait_sem.sem->wait_host();
+
 				// Submit
 				batch->submit(thread_queue());
 				// And set submitted flag
 				batch->submitted = true;
+
+				// Host signal signal semaphores
+				for (auto &wait_sem : batch->signal_semaphores)
+					wait_sem->signal_host();
 
 				// Hold onto the batch, release resources only once the device is done with it
 				thread_device_queue().submitted_batches.emplace_back(std::move(batch));
