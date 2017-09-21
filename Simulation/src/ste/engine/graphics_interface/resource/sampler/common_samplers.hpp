@@ -107,16 +107,16 @@ public:
 		return 	get(linear_anisotropic16,
 					*device,
 					"nearest-nearest anis16 sampler",
-					sampler_parameter::filtering(sampler_filter::nearest,
-												 sampler_filter::nearest),
+					sampler_parameter::filtering(sampler_filter::linear,
+												 sampler_filter::linear),
 					sampler_parameter::anisotropy(16));
 	}
 	const auto& linear_clamp_anisotropic16_sampler() const {
 		return 	get(linear_clamp_anisotropic16,
 					*device,
-					"nearest-nearest clamp anis16 sampler",
-					sampler_parameter::filtering(sampler_filter::nearest,
-												 sampler_filter::nearest),
+					"linear-linear clamp anis16 sampler",
+					sampler_parameter::filtering(sampler_filter::linear,
+												 sampler_filter::linear),
 					sampler_parameter::address_mode(sampler_address_mode::clamp_to_edge,
 													sampler_address_mode::clamp_to_edge,
 													sampler_address_mode::clamp_to_edge),

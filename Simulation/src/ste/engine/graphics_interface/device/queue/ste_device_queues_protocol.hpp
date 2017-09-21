@@ -23,7 +23,7 @@ struct queue_create_descriptor {
 };
 
 class ste_device_queues_protocol {
-private:
+public:
 	using queue_create_info_t = lib::unordered_map<ste_queue_type, queue_create_descriptor>;
 
 private:
@@ -117,10 +117,16 @@ public:
 		queue_descriptors_for_physical_device(const vk::vk_physical_device_descriptor &physical_device,
 											  const optional<queue_create_info_t> &queues_create_info = none) {
 		// If no create parameters passed, use default
+#ifndef RENDER_DOC
 		auto default_create_info = default_queue_create_parameters(physical_device);
 		const queue_create_info_t &create_info = queues_create_info ?
 			queues_create_info.get() :
 			default_create_info;
+#else
+		// RenderDoc only supports one Vulkan queue (as of Sep 2017...)
+		queue_create_info_t create_info;
+		create_info[gl::ste_queue_type::all] = { 1, 1.f };
+#endif
 
 		ste_queue_descriptors::queues_t v;
 

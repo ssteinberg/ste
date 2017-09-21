@@ -34,8 +34,8 @@ auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer_base &buffer,
 					  std::size_t copy_count,
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	using staging_buffer_t = device_buffer<T, device_resource_allocation_policy_host_visible>;
 
 	// Select queue
@@ -61,7 +61,7 @@ auto host_read_buffer(const ste_context &ctx,
 	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
-	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores, signal_semaphores]() mutable {
+	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto &command_buffer = batch->acquire_command_buffer();
 
 		// Record and submit a one-time batch
@@ -70,14 +70,18 @@ auto host_read_buffer(const ste_context &ctx,
 
 			// Copy to staging buffer
 			recorder
-				<< cpy_cmd
+				<< std::move(cpy_cmd)
 				<< cmd_pipeline_barrier(pipeline_barrier(pipeline_stage::transfer,
 														 pipeline_stage::host,
 														 buffer_memory_barrier(batch->user_data(),
 																			   access_flags::transfer_write,
 																			   access_flags::host_read)));
 		}
-		ste_device_queue::submit_batch(std::move(batch), wait_semaphores, signal_semaphores);
+
+		batch->wait_semaphores = std::move(wait_semaphores);
+		batch->signal_semaphores = std::move(signal_semaphores);
+
+		ste_device_queue::submit_batch(std::move(batch));
 	});
 
 	// Return future that reads from the device buffer
@@ -118,8 +122,8 @@ auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer<T, allocation_policy> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
@@ -127,8 +131,8 @@ auto host_read_buffer(const ste_context &ctx,
 										  buffer,
 										  copy_count,
 										  offset,
-										  wait_semaphores,
-										  signal_semaphores);
+										  std::move(wait_semaphores),
+										  std::move(signal_semaphores));
 }
 
 /*
@@ -147,8 +151,8 @@ auto host_read_buffer(const ste_context &ctx,
 					  const device_buffer_sparse<T, allocation_policy> &buffer,
 					  std::size_t elements,
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.get().get_elements_count() - offset;
 	const auto copy_count = std::min(elements, buffer_size);
 
@@ -156,8 +160,8 @@ auto host_read_buffer(const ste_context &ctx,
 										  buffer,
 										  copy_count,
 										  offset,
-										  wait_semaphores,
-										  signal_semaphores);
+										  std::move(wait_semaphores),
+										  std::move(signal_semaphores));
 }
 
 /*
@@ -176,14 +180,14 @@ auto host_read_buffer(const ste_context &ctx,
 					  const array<T> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return host_read_buffer(ctx,
 							buffer.get(),
 							elements,
 							offset,
-							wait_semaphores,
-							signal_semaphores);
+							std::move(wait_semaphores),
+							std::move(signal_semaphores));
 }
 
 /*
@@ -202,8 +206,8 @@ auto host_read_buffer(const ste_context &ctx,
 					  const vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 
@@ -211,8 +215,8 @@ auto host_read_buffer(const ste_context &ctx,
 							buffer.get(),
 							elements,
 							offset,
-							wait_semaphores,
-							signal_semaphores);
+							std::move(wait_semaphores),
+							std::move(signal_semaphores));
 }
 
 /*
@@ -231,8 +235,8 @@ auto host_read_buffer(const ste_context &ctx,
 					  const stable_vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	const auto buffer_size = buffer.size() - offset;
 	elements = std::min(elements, buffer_size);
 
@@ -240,8 +244,8 @@ auto host_read_buffer(const ste_context &ctx,
 							buffer.get(),
 							elements,
 							offset,
-							wait_semaphores,
-							signal_semaphores);
+							std::move(wait_semaphores),
+							std::move(signal_semaphores));
 }
 
 }

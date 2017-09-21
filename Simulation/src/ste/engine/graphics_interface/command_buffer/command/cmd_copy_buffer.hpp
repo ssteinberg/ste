@@ -43,7 +43,7 @@ public:
 	virtual ~cmd_copy_buffer() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdCopyBuffer(command_buffer,
 						src_buffer,
 						dst_buffer,

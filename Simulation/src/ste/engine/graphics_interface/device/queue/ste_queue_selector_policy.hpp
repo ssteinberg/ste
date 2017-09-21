@@ -44,7 +44,7 @@ struct ste_queue_selector_policy_strict {
 		}
 
 		// Match stricly only
-		bool strict_match = descriptor.type == select.type &&
+		bool strict_match = (descriptor.type == select.type || descriptor.type == ste_queue_type::all) &&
 			descriptor.type_index == select.type_index;
 		if (strict_match)
 			return 0;

@@ -44,7 +44,7 @@ public:
 	virtual ~cmd_copy_image() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdCopyImage(command_buffer,
 					   src_image,
 					   static_cast<VkImageLayout>(src_image_layout),

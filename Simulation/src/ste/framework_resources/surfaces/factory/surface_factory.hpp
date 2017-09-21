@@ -99,11 +99,13 @@ private:
 						   { &semaphore.get() });
 
 			// Generate mipmaps
+			lib::vector<gl::wait_semaphore> generate_mipmaps_wait_semaphores;
+			generate_mipmaps_wait_semaphores.emplace_back(std::move(semaphore), gl::pipeline_stage::bottom_of_pipe);
 			gl::generate_mipmaps(image,
 								 layout,
 								 layout,
 								 m,
-								 { gl::wait_semaphore(&semaphore.get(), gl::pipeline_stage::bottom_of_pipe) });
+								 std::move(generate_mipmaps_wait_semaphores));
 		}
 		else {
 			// Copy surface to image

@@ -38,9 +38,6 @@ public:
 		pipeline()["histogram_bins"] = gl::bind(histogram_bins);
 		pipeline()["hdr_bokeh_parameters_buffer"] = gl::bind(hdr_bokeh_parameters_buffer);
 	}
-	void set_source(const glm::u32vec2 &extent) {
-		pipeline()["hdr_lum_resolution_t.hdr_lum_resolution"] = (extent.x / 32) * (extent.y / 32);
-	}
 
 	static lib::string name() { return "hdr_compute_histogram_sums"; }
 

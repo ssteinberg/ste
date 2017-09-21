@@ -35,7 +35,7 @@ public:
 	virtual ~pipeline_external_binding_set_cmd_bind() noexcept {}
 
 private:
-	void operator()(const command_buffer& buffer, command_recorder& recorder) const override final;
+	void operator()(const command_buffer& buffer, command_recorder& recorder) && override final;
 };
 
 }

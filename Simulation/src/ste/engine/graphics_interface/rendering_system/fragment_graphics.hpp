@@ -77,7 +77,8 @@ private:
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  optional<framebuffer_layout> &&fb_layout,
 					  Names&&... shader_stages_names)
-		: pipeline_object(create_graphics_pipeline(rs,
+		: fragment(rs.get_creating_context()), 
+		  pipeline_object(create_graphics_pipeline(rs,
 												   name,
 												   std::move(pipeline_graphics_configurations),
 												   rs.external_binding_set(),

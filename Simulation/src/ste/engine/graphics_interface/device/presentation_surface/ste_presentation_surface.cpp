@@ -13,20 +13,19 @@ using namespace ste::gl;
 
 ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface::acquire_swapchain_image_impl(
 	std::uint64_t timeout_ns,
-	const vk::vk_semaphore<> *presentation_image_ready_semaphore,
+	semaphore &presentation_image_ready_semaphore,
 	const vk::vk_fence<> *presentation_image_ready_fence) const
 {
 	acquire_next_image_return_t ret;
-	vk::vk_result res;
-	{
-//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
-		res = vkAcquireNextImageKHR(*presentation_device,
-									*swap_chain,
-									timeout_ns,
-									presentation_image_ready_semaphore ? static_cast<VkSemaphore>(*presentation_image_ready_semaphore) : vk::vk_null_handle,
-									presentation_image_ready_fence ? static_cast<VkFence>(*presentation_image_ready_fence) : vk::vk_null_handle,
-									&ret.image_index);
-	}
+	vk::vk_result res = vkAcquireNextImageKHR(*presentation_device,
+											  *swap_chain,
+											  timeout_ns,
+											  presentation_image_ready_semaphore ? static_cast<VkSemaphore>(*presentation_image_ready_semaphore) : vk::vk_null_handle,
+											  presentation_image_ready_fence ? static_cast<VkFence>(*presentation_image_ready_fence) : vk::vk_null_handle,
+											  &ret.image_index);
+
+	// Host signal semaphore
+	presentation_image_ready_semaphore.signal_host();
 
 	switch (res.get()) {
 	case VK_SUBOPTIMAL_KHR:
@@ -163,28 +162,27 @@ VkSurfaceFormatKHR ste_presentation_surface::get_surface_format() const {
 	}
 
 	// Choose format
-	auto rgb8_it = std::find_if(supported_formats.begin(),
-								supported_formats.end(),
-								[](const auto &surface_format) {
-		return static_cast<format>(surface_format.format) == format::r8g8b8a8_unorm &&
+	if (parameters.required_format) {
+		const auto it = std::find_if(supported_formats.begin(),
+									 supported_formats.end(),
+									 [this](const auto &surface_format) {
+			return surface_format.format == static_cast<VkFormat>(parameters.required_format.get());
+		});
+
+		if (it == supported_formats.end()) {
+			throw ste_device_exception("parameters.required_format no supported by device");
+		}
+
+		return *it;
+	}
+
+	const auto any_srgb_it = std::find_if(supported_formats.begin(),
+										  supported_formats.end(),
+										  [](const auto &surface_format) {
+		return format_id(static_cast<format>(surface_format.format)).is_srgb &&
 			surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-	});
-	auto bgr8_it = std::find_if(supported_formats.begin(),
-								supported_formats.end(),
-								[](const auto &surface_format) {
-		return static_cast<format>(surface_format.format) == format::b8g8r8a8_unorm &&
-			surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-	});
-	auto any_srgb_it = std::find_if(supported_formats.begin(),
-									supported_formats.end(),
-									[](const auto &surface_format) {
-		return surface_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	});
 
-	if (rgb8_it != supported_formats.end())
-		return *rgb8_it;
-	if (bgr8_it != supported_formats.end())
-		return *bgr8_it;
 	if (any_srgb_it != supported_formats.end())
 		return *any_srgb_it;
 
@@ -193,19 +191,44 @@ VkSurfaceFormatKHR ste_presentation_surface::get_surface_format() const {
 }
 
 VkSurfaceTransformFlagBitsKHR ste_presentation_surface::get_transform() const {
+	if (parameters.transform) {
+		const auto transform = static_cast<VkSurfaceTransformFlagBitsKHR>(parameters.transform.get());
+		if (!(surface_presentation_caps.supportedTransforms & transform)) {
+			throw ste_device_exception("parameters.transform not supported by device");
+		}
+		
+		return transform;
+	}
+
 	if (surface_presentation_caps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
 		return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	if (surface_presentation_caps.supportedTransforms & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR)
 		return VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR;
 
-	throw ste_device_exception("Identity transform and inherit presentation transforms not supported");
+	throw ste_device_exception("Identity transform and inherit presentation transforms not supported by device");
+}
+
+VkCompositeAlphaFlagBitsKHR ste_presentation_surface::get_composite_alpha() const {
+	if (parameters.composite_alpha) {
+		const auto composite_alpha = static_cast<VkCompositeAlphaFlagBitsKHR>(parameters.composite_alpha.get());
+		if (!(surface_presentation_caps.supportedCompositeAlpha & composite_alpha)) {
+			throw ste_device_exception("parameters.composite_alpha not supported by device");
+		}
+
+		return composite_alpha;
+	}
+
+	if (surface_presentation_caps.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
+		return VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
+	throw ste_device_exception("opaque composite alpha not supported by device");
 }
 
 void ste_presentation_surface::read_device_caps() {
 	// Read device capabilities
-	vk::vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
-																  presentation_surface,
-																  &surface_presentation_caps);
+	const vk::vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
+																		presentation_surface,
+																		&surface_presentation_caps);
 	if (!res) {
 		throw vk::vk_exception(res);
 	}
@@ -240,7 +263,7 @@ void ste_presentation_surface::create_swap_chain() {
 													   max_image_count);
 	auto format = get_surface_format();
 	auto transform = get_transform();
-	auto composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	auto composite = get_composite_alpha();
 	auto present_mode = get_surface_presentation_mode();
 
 	// Create the swap-chain
@@ -275,20 +298,24 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 									   const vk::vk_queue<> &presentation_queue,
 									   const semaphore &wait_semaphore) {
 	VkSwapchainKHR swapchain = *swap_chain;
+	VkSemaphore semaphore_handle = wait_semaphore;
 
 	VkPresentInfoKHR info = {};
 	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	info.pNext = nullptr;
 	info.waitSemaphoreCount = 1;
-	info.pWaitSemaphores = &wait_semaphore.get();
+	info.pWaitSemaphores = &semaphore_handle;
 	info.swapchainCount = 1;
 	info.pSwapchains = &swapchain;
 	info.pImageIndices = &image_index;
 	info.pResults = nullptr;
 
+	// Host wait for semaphore
+	wait_semaphore.wait_host();
+
 	vk::vk_result res;
 	{
-//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
+		//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
 		res = vkQueuePresentKHR(presentation_queue, &info);
 	}
 

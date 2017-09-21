@@ -52,8 +52,7 @@ public:
 
 	using insert_cmd_t = _internal::vector_cmd_insert<stable_vector<T, max_sparse_size>>;
 	using resize_cmd_t = _internal::vector_cmd_resize<stable_vector<T, max_sparse_size>>;
-	using unbind_cmd_t = _internal::vector_cmd_unbind<stable_vector<T, max_sparse_size>>;
-	using update_cmd_t = _internal::vector_cmd_update<stable_vector<T, max_sparse_size>>;
+	using update_cmd_t = _internal::vector_cmd_update_buffer<stable_vector<T, max_sparse_size>>;
 
 private:
 	buffer_t buffer;
@@ -136,10 +135,12 @@ public:
 	*	@brief	Returns a device command that will insert data into the vector in an empty slot.
 	*			If needed, memory will be bound sprasely to the buffer.
 	*
+	*	@param	ctx			Context
 	*	@param	data		Data to insert
 	*	@param	location	Outputs the insertion index
 	*/
-	auto insert_cmd(const lib::vector<T> &data,
+	auto insert_cmd(const ste_context &ctx,
+					const lib::vector<T> &data,
 					std::uint64_t &location) {
 		// If there are tombstones, replace one of them with new element, if possible
 		std::unique_lock<std::mutex> lt(tombstones_mutex);
@@ -158,7 +159,8 @@ public:
 
 			lt.unlock();
 
-			return insert_cmd_t(data,
+			return insert_cmd_t(ctx,
+								data,
 								location,
 								this);
 		}
@@ -166,19 +168,26 @@ public:
 		lt.unlock();
 
 		location = elements.fetch_add(data.size());
-		return insert_cmd_t(data, location, this);
+		return insert_cmd_t(ctx,
+							data, 
+							location, 
+							this);
 	}
 
 	/**
 	*	@brief	Returns a device command that will insert data into the vector in an empty slot.
 	*			If needed, memory will be bound sprasely to the buffer.
 	*
+	*	@param	ctx			Context
 	*	@param	data		Data to insert
 	*	@param	location	Outputs the insertion index
 	*/
-	auto insert_cmd(const T &data,
+	auto insert_cmd(const ste_context &ctx,
+					const T &data,
 					std::uint64_t &location) {
-		return insert_cmd(lib::vector<T>{ data }, location);
+		return insert_cmd(ctx,
+						  lib::vector<T>{ data }, 
+						  location);
 	}
 
 	/**
@@ -211,47 +220,63 @@ public:
 	*	@brief	Returns a device command that will push back data into the vector.
 	*			If needed, memory will be bound sprasely to the buffer.
 	*
+	*	@param	ctx		Context
 	*	@param	data	Data to push back
 	*/
-	auto push_back_cmd(const lib::vector<T> &data) {
+	auto push_back_cmd(const ste_context &ctx,
+					   const lib::vector<T> &data) {
 		const auto location = elements.fetch_add(data.size());
 
-		return insert_cmd_t(data, location, this);
+		return insert_cmd_t(ctx,
+							data, 
+							location, 
+							this);
 	}
 
 	/**
 	*	@brief	Returns a device command that will push back data into the vector.
 	*			If needed, memory will be bound sprasely to the buffer.
 	*
+	*	@param	ctx		Context
 	*	@param	data	Data to push back
 	*/
-	auto push_back_cmd(const T &data) {
-		return push_back_cmd(lib::vector<T>{ data });
+	auto push_back_cmd(const ste_context &ctx,
+					   const T &data) {
+		return push_back_cmd(ctx,
+							 lib::vector<T>{ data });
 	}
 
 	/**
 	*	@brief	Returns a device command that will erase some of the elements from the back the vector.
 	*			If possible, memory will be unbound sprasely from the buffer.
 	*
+	*	@param	ctx				Context
 	*	@param	count_to_pop	Elements count to pop
 	*/
-	auto pop_back_cmd(std::uint64_t count_to_pop = 1) {
+	auto pop_back_cmd(const ste_context &ctx,
+					  std::uint64_t count_to_pop = 1) {
 		const auto location = elements.fetch_add(-count_to_pop);
-		assert(static_cast<std::int64_t>(location) > 0);
+		assert(static_cast<std::int64_t>(location) >= count_to_pop);
 
-		return unbind_cmd_t(location, count_to_pop, this);
+		return resize_cmd_t(ctx,
+							location,
+							location - count_to_pop, 
+							this);
 	}
 
 	/**
 	*	@brief	Returns a device command that will resize the vector.
 	*			Memory will be bound or unbound sprasely from the buffer, as needed.
 	*
-	*	@param	new_size		New vector size
+	*	@param	ctx			Context
+	*	@param	new_size	New vector size
 	*/
-	auto resize_cmd(std::uint64_t new_size) {
+	auto resize_cmd(const ste_context &ctx,
+					std::uint64_t new_size) {
 		const auto old_size = elements.exchange(new_size);
 
-		return resize_cmd_t(old_size,
+		return resize_cmd_t(ctx,
+							old_size,
 							new_size,
 							this);
 	}

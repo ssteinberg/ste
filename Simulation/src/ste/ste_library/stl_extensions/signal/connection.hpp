@@ -35,7 +35,9 @@ public:
 	connection() = default;
 	template <typename L>
 	connection(L &&l) : l(std::forward<L>(l)) {}
-	~connection() noexcept {}
+	~connection() noexcept {
+		disconnect();
+	}
 
 	connection(const connection &s) = delete;
 	connection& operator=(const connection &s) = delete;

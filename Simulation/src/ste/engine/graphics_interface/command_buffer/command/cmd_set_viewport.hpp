@@ -48,7 +48,7 @@ public:
 	virtual ~cmd_set_viewport() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdSetViewport(command_buffer,
 						 first_viewport_index,
 						 static_cast<std::uint32_t>(viewports.size()),

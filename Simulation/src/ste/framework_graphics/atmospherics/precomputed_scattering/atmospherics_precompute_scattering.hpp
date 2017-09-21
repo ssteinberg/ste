@@ -129,10 +129,13 @@ public:
 			this->scatter_dims_2 != scatter_size2)
 			throw atmospherics_lut_error("LUT size zero");
 
+#ifndef DEBUG
+		// CRC computation is too slow on debug builds, skip..
 		boost::crc_32_type crc_computer;
 		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(&data), sizeof(data));
 		if (this->hash != crc_computer.checksum())
 			throw atmospherics_lut_error("Hash mismatch");
+#endif
 	}
 };
 

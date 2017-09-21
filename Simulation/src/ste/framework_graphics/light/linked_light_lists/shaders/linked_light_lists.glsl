@@ -6,9 +6,9 @@ struct lll_element {
 };
 
 layout(r8ui,   set=2, binding=15) restrict uniform uimage2D linked_light_list_size;
-layout(r8ui,   set=2, binding=16) restrict uniform uimage2D linked_light_list_low_detail_size;
-layout(r32ui,  set=2, binding=17) restrict uniform uimage2D linked_light_list_heads;
-layout(r32ui,  set=2, binding=18) restrict uniform uimage2D linked_light_list_low_detail_heads;
+layout(r32ui,  set=2, binding=16) restrict uniform uimage2D linked_light_list_heads;
+//layout(r8ui,   set=2, binding=17) restrict uniform uimage2D linked_light_list_low_detail_size;
+//layout(r32ui,  set=2, binding=18) restrict uniform uimage2D linked_light_list_low_detail_heads;
 
 layout(std430, set=2, binding=9) restrict buffer linked_light_list_counter_binding {
 	uint lll_counter;
@@ -26,7 +26,7 @@ const int lll_depth_lod = 2;	// = log2(lll_image_res_multiplier)-1  (Down-sample
 /*
  *	Minimal luminance of low detail light. Multiplier is used to adjust the default minimal luminance of a light to compute its new effective range.
  */
-const float lll_low_detail_min_luminance_multiplier = 55.f;
+//const float lll_low_detail_min_luminance_multiplier = 55.f;
 
 /*
  *	Maximum amount of low detail lights in a linked-list, per pixel. 
@@ -34,9 +34,9 @@ const float lll_low_detail_min_luminance_multiplier = 55.f;
 const int max_active_low_detail_lights_per_frame = total_max_active_lights_per_frame >> 1;
 
 
-float lll_low_detail_light_effective_range(light_descriptor ld) {
-	return light_effective_range(ld) / sqrt(lll_low_detail_min_luminance_multiplier);
-}
+//float lll_low_detail_light_effective_range(light_descriptor ld) {
+//	return light_effective_range(ld) / sqrt(lll_low_detail_min_luminance_multiplier);
+//}
 
 ivec2 lll_get_size() {
 	return imageSize(linked_light_list_heads);

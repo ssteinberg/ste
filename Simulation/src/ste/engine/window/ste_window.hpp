@@ -1,17 +1,18 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 
 #include <ste_engine_exceptions.hpp>
-#include <ste_glfw_handle.hpp>
 
 #include <optional.hpp>
 
 #include <ste_window_exceptions.hpp>
 #include <ste_window_signals.hpp>
+
+#include <lib/unique_ptr.hpp>
 
 namespace ste {
 
@@ -20,16 +21,12 @@ private:
 	using window_type = GLFWwindow*;
 
 private:
-	// Global GLFW handle
-	static ste_glfw_handle glfw;
-
-private:
 	window_type window;
 	lib::unique_ptr<ste_window_signals> signals;
 
 public:
 	ste_window(lib::string window_title, glm::i32vec2 window_size, bool fullscreen = false) {
-		auto fs_monitor_handle = fullscreen ? glfwGetPrimaryMonitor() : nullptr;
+		const auto fs_monitor_handle = fullscreen ? glfwGetPrimaryMonitor() : nullptr;
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		window = glfwCreateWindow(window_size.x,

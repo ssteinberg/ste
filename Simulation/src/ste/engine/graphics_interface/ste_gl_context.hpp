@@ -1,11 +1,9 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
-#include <ste_glfw_handle.hpp>
 
 #include <vk_instance.hpp>
 #include <vk_result.hpp>
@@ -26,32 +24,12 @@ private:
 	lib::unique_ptr<vk::vk_debug_report_callback<>> debug_report_handle;
 
 private:
-	static auto vk_instance_validation_layers() {
-		return lib::vector<const char*>{ "VK_LAYER_LUNARG_standard_validation" };
-	}
-
-	static auto create_vk_instance(const char* app_name,
-								   unsigned app_version,
-								   bool debug_context,
-								   lib::vector<const char*> instance_extensions,
-								   lib::vector<const char*> instance_layers) {
-		std::uint32_t count;
-		const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-		for (unsigned i = 0; i < count; ++i)
-			instance_extensions.push_back(extensions[i]);
-
-		// Add debug layers and extensions
-		if (debug_context) {
-			auto instance_validation_layers = vk_instance_validation_layers();
-			instance_layers.insert(instance_layers.begin(), instance_validation_layers.begin(), instance_validation_layers.end());
-
-			instance_extensions.push_back("VK_EXT_debug_report");
-		}
-
-		auto instance = vk::vk_instance<>(app_name, app_version,
-										  instance_extensions, instance_layers);
-		return instance;
-	}
+	static lib::vector<const char*> vk_instance_validation_layers();
+	static vk::vk_instance<> create_vk_instance(const char* app_name,
+												unsigned app_version,
+												bool debug_context,
+												lib::vector<const char*> instance_extensions,
+												lib::vector<const char*> instance_layers);
 
 private:
 	static bool should_create_debug_context(const ste_gl_context_creation_parameters &parameters) {

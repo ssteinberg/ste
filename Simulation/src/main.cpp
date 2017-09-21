@@ -4,6 +4,9 @@
 #include <presentation_engine.hpp>
 #include <presentation_frame_time_predictor.hpp>
 
+#include <keyboard.hpp>
+#include <pointer.hpp>
+
 #include <cmd_pipeline_barrier.hpp>
 
 #include <model_factory.hpp>
@@ -147,8 +150,10 @@ public:
 			auto workers_sleep = get_creating_context().engine().task_scheduler().get_thread_pool()->get_sleeping_workers_count();
 			auto pending_requests = get_creating_context().engine().task_scheduler().get_thread_pool()->get_pending_requests_count();
 
-			title_text_frag.update_text(recorder, { surface_extent.x / 2, surface_extent.y / 2 + 100 }, str);
-			footer_text_frag.update_text(recorder, { 10, 50 },
+			title_text_frag.update_text(get_creating_context(),
+										recorder, { surface_extent.x / 2, surface_extent.y / 2 + 100 }, str);
+			footer_text_frag.update_text(get_creating_context(), 
+										 recorder, { 10, 50 },
 										 line_height(32)(vsmall(b(L"VRAM ") +
 																b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
 																  purple(lib::to_wstring(commited_vram)) + L" / " +
@@ -206,7 +211,7 @@ class gi_renderer : public gl::rendering_presentation_system {
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
 	graphics::primary_renderer r;
-
+	
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
 private:
@@ -246,6 +251,8 @@ public:
 
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+
+		auto debugz_fence = batch->get_fence_ptr();
 
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
@@ -322,7 +329,7 @@ auto create_light_mesh(const ste_context &ctx,
 					   lib::vector<lib::unique_ptr<graphics::material_layer>> &layers) {
 	auto light_obj = lib::allocate_shared<graphics::object>(std::move(mesh));
 
-	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), light_pos)));
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), light_pos)));
 
 	resource::surface_2d<gl::format::r8g8b8a8_unorm> light_color_tex{ { 1, 1 } };
 	auto c = glm::clamp(static_cast<glm::vec3>(color) / color.luminance(), glm::vec3(.0f), glm::vec3(1.f));
@@ -346,8 +353,8 @@ auto create_light_mesh(const ste_context &ctx,
 
 	// Create a batch
 	auto fence = ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
-												   [&](gl::command_recorder &recorder) {
-		scene->get_object_group().add_object(recorder, light_obj);
+												   [=, &ctx](gl::command_recorder &recorder) {
+		scene->get_object_group().add_object(ctx, recorder, light_obj);
 	});
 
 	materials.push_back(std::move(mat));
@@ -386,7 +393,8 @@ auto create_quad_light_object(const ste_context &ctx,
 	auto light = scene->properties().lights_storage().allocate_shaped_light<graphics::quad_light_onesided>(color, intensity, light_pos);
 	ctx.device().submit_onetime_batch(gl::ste_queue_selector<gl::ste_queue_selector_policy_flexible>(gl::ste_queue_type::data_transfer_sparse_queue),
 									  [&](gl::command_recorder &recorder) {
-		light->set_points(recorder,
+		light->set_points(ctx, 
+						  recorder,
 						  points);
 	});
 
@@ -420,10 +428,10 @@ void add_scene_lights(const ste_context &ctx,
 					 glm::vec3{  885, 153,  552} }) {
 #ifdef STATIC_SCENE
 		const graphics::rgb color = graphics::kelvin(1800);
-		const float lums = 6500.f;
+		const float lums = 4500.f;
 #else
 		const graphics::rgb color = graphics::kelvin(std::uniform_real_distribution<float>(1300, 4500)(gen));
-		const float lums = std::uniform_real_distribution<float>(1200, 3000)(gen) / color.luminance();
+		const float lums = std::uniform_real_distribution<float>(3000, 4000)(gen) / color.luminance();
 #endif
 		auto wall_lamp = create_sphere_light_object(ctx, &scene, color, lums, 1.f, v, materials, layers);
 
@@ -533,10 +541,10 @@ int main()
 	gl::ste_gl_device_creation_parameters device_params;
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
-	device_params.vsync = gl::ste_presentation_device_vsync::mailbox;
-	device_params.simultaneous_presentation_frames = 3;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
 	device_params.allow_markers = false;
+	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
+	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
 
 	ste_context::gl_device_t device(device_params,
 									gl::ste_device_queues_protocol::queue_descriptors_for_physical_device(physical_device),
@@ -563,7 +571,7 @@ int main()
 	/*
 	*	Create camera
 	*/
-	constexpr float clip_near = 1.f;
+	constexpr float clip_near = .1f;
 	const float fovy = glm::pi<float>() * .225f;
 	const float aspect = static_cast<float>(ctx.device().get_surface().extent().x) / static_cast<float>(ctx.device().get_surface().extent().y);
 	graphics::camera<float, graphics::camera_projection_reversed_infinite_perspective> camera(graphics::camera_projection_reversed_infinite_perspective<float>(fovy, aspect, clip_near));
@@ -634,12 +642,12 @@ int main()
 	}
 
 	// Configure
-	presenter->renderer().set_aperture_parameters(35e-3f, 25e-3f);
+	presenter->renderer().set_aperture_parameters(8e-3f, 25e-3f);
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
 	auto light0 = create_sphere_light_object(ctx, &scene, graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 17500.f, 4.f, light1_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 8000.f, 4.f, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
@@ -647,21 +655,99 @@ int main()
 
 
 	/*
+	 *	GUI
+	 */
+	float sun_zenith = .0f;
+
+
+	/*
+	 *	Input handlers
+	 */
+
+	bool running = true;
+	bool mouse_down = false;
+	glm::vec2 pointer_pos = { .0, .0 }, last_pointer_pos;
+
+	auto keyboard_connection = ste::make_connection(window.get_signals().signal_keyboard(),
+													[&](auto key, auto scanline, auto status, auto mods) {
+		if (status != hid::status::down)
+			return;
+
+		if (key == hid::key::KeyESCAPE)
+			running = false;
+		//		if (key == hid::key::KeyPRINT_SCREEN || key == hid::key::KeyF12)
+		//			capture_screenshot();
+	});
+	auto pointer_button_connection = ste::make_connection(window.get_signals().signal_pointer_button(),
+														  [&](auto b, auto status, auto mods) {
+		mouse_down = b == hid::button::Left && status == hid::status::down;
+	});
+	auto pointer_movement_connection = ste::make_connection(window.get_signals().signal_pointer_movement(),
+															[&](auto pos) {
+		pointer_pos = glm::vec2(pos);
+	});
+
+
+	/*
 	*	Main loop
 	*/
 
+	float time_elapsed = .0f;
 	for (;;) {
 		ctx.tick();
 		ste_window::poll_events();
 
-		if (window.should_close()) {
+		if (window.should_close() || !running) {
 			break;
 		}
 
+		// Calculate predicted next frame time
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
 		window.set_title(lib::to_string(frame_time_ms).c_str());
 
+		if (window.is_window_focused()) {
+			// Handle movement input
+			constexpr float movement_factor = .4f;
+			if (hid::keyboard::key_status(window, hid::key::KeyW) == hid::status::down)
+				camera.step_forward(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyS) == hid::status::down)
+				camera.step_backward(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyA) == hid::status::down)
+				camera.step_left(frame_time_ms * movement_factor);
+			if (hid::keyboard::key_status(window, hid::key::KeyD) == hid::status::down)
+				camera.step_right(frame_time_ms * movement_factor);
+
+			// Handle camera rotation input
+			constexpr float rotation_factor = .0002f;
+			bool rotate_camera = mouse_down;
+			if (mouse_down/* && !debug_gui_dispatchable->is_gui_active()*/) {
+				const auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pointer_pos) * frame_time_ms * rotation_factor;
+				camera.pitch_and_yaw(diff_v.y, diff_v.x);
+			}
+			last_pointer_pos = pointer_pos;
+		}
+
+		// Update scene objects
+#ifdef STATIC_SCENE
+		glm::vec3 lp = light0_pos;
+		glm::vec3 sun_dir = sun_direction;
+#else
+		const float angle = time_elapsed * glm::pi<float>() *.00025f;
+		const glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+
+		const glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()),
+															-glm::cos(sun_zenith + glm::pi<float>()),
+															.15f });
+
+		light0.first->set_position(lp);
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
+		sun_light->set_direction(sun_dir);
+
+		time_elapsed += frame_time_ms;
+#endif
+
+		// Present
 		presenter->present();
 	}
 
@@ -689,8 +775,8 @@ int main()
 	 //	bool running = true;
 	 //	bool mouse_down = false;
 	 //	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
-	 //		[&](HID::keyboard::K key, int scanline, HID::Status status, HID::ModifierBits mods) {
-	 //		using namespace HID;
+	 //		[&](hid::keyboard::K key, int scanline, hid::Status status, hid::ModifierBits mods) {
+	 //		using namespace hid;
 	 //		auto time_delta = ctx.time_per_frame().count();
 	 //
 	 //		if (status != Status::KeyDown)
@@ -702,8 +788,8 @@ int main()
 	 //			ctx.capture_screenshot();
 	 //	});
 	 //	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
-	 //		[&](HID::pointer::B b, HID::Status status, HID::ModifierBits mods) {
-	 //		using namespace HID;
+	 //		[&](hid::pointer::B b, hid::Status status, hid::ModifierBits mods) {
+	 //		using namespace hid;
 	 //
 	 //		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
 	 //	});
@@ -722,9 +808,9 @@ int main()
 	 //	renderer.get().attach_profiler(gpu_tasks_profiler.get());
 	 //	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
 	 //
-	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(), glm::vec3{ 3.5f });
+	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(1.f), glm::vec3{ 3.5f });
 	 //	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(1.f), glm::vec3{ .0f, .0f, -50.f });
 	 //	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
 	 //	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
 	 //	for (auto &o : mat_editor_objects)
@@ -844,7 +930,7 @@ int main()
 	 //		if (ctx.window_active()) {
 	 //			auto time_delta = ctx.time_per_frame().count();
 	 //
-	 //			using namespace HID;
+	 //			using namespace hid;
 	 //			constexpr float movement_factor = 155.f;
 	 //			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
 	 //				camera.step_forward(time_delta*movement_factor);
@@ -878,7 +964,7 @@ int main()
 	 //													  .15f});
 	 //
 	 //		light0.first->set_position(lp);
-	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(), lp)));
+	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
 	 //		sun_light->set_direction(sun_dir);
 	 //#endif
 	 //

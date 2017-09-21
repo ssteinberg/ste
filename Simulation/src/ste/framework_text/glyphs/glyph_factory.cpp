@@ -9,14 +9,13 @@
 #include <functional>
 
 #include <mutex>
+#include <stdexcept>
+#include <lib/unique_ptr.hpp>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <stdexcept>
-
-#include <lib/alloc.hpp>
-
+using namespace ste;
 using namespace ste::text;
 
 namespace ste {
@@ -44,7 +43,7 @@ public:
 	FT_Library get_lib() const { return library; }
 
 	bool get_spacing(const font &font, wchar_t left, wchar_t right, std::uint32_t pixel_size, std::uint32_t *spacing) const {
-		auto it = spacing_cache.find(_internal::sized_glyph_pair_key{ font, left, right, pixel_size });
+		const auto it = spacing_cache.find(_internal::sized_glyph_pair_key{ font, left, right, pixel_size });
 		if (it != spacing_cache.end()) {
 			*spacing = it->second;
 			return true;
@@ -104,13 +103,13 @@ struct glyph_factory_impl {
 		return it->second;
 	}
 
-	unsigned char *render_glyph_with(const font&, wchar_t, int, int&, int&, int&, int&);
+	lib::unique_ptr<std::uint8_t[]> render_glyph_with(const font&, wchar_t, int, int&, int&, int&, int&);
 };
 
 }
 }
 
-unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
+lib::unique_ptr<std::uint8_t[]> glyph_factory_impl::render_glyph_with(const font &font, wchar_t codepoint, int px_size, int &w, int &h, int &start_y, int &start_x) {
 	std::unique_lock<std::mutex> l(m);
 
 	auto face = get_factory_font(font).get_face();
@@ -131,8 +130,8 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 	const int padding_w = std::max<int>(0, (w - bm.width) >> 1);
 	const int padding_h = std::max<int>(0, (h - bm.rows) >> 1);
 
-	unsigned char *glyph_buf = lib::default_alloc<unsigned char[]>::make(w*h);
-	memset(glyph_buf, 0, w * h);
+	auto glyph_buf = lib::allocate_unique<std::uint8_t[]>(w*h);
+	memset(glyph_buf.get(), 0, w * h);
 	for (unsigned y = 0; y < bm.rows; ++y)
 		memcpy(&glyph_buf[padding_w + (y + padding_h) * w], &reinterpret_cast<char*>(bm.buffer)[(bm.rows - y - 1) * bm.pitch], std::min<int>(w, bm.pitch));
 
@@ -140,26 +139,23 @@ unsigned char* glyph_factory_impl::render_glyph_with(const font &font, wchar_t c
 }
 
 
-glyph_factory::glyph_factory() : pimpl(lib::default_alloc<glyph_factory_impl>::make()) {}
+glyph_factory::glyph_factory() : pimpl(lib::allocate_unique<glyph_factory_impl>()) {}
 
-glyph_factory::~glyph_factory() {
-	lib::default_alloc<glyph_factory_impl>::destroy(pimpl);
-}
+glyph_factory::~glyph_factory() noexcept {}
 
 glyph glyph_factory::create_glyph(const font &font, wchar_t codepoint) const {
 	glyph g;
 	int start_x = 0, start_y = 0, w = 0, h = 0;
 	const int px_size = glyph::ttf_pixel_size;
 
-	unsigned char *glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
+	auto glyph_buf = pimpl->render_glyph_with(font, codepoint, px_size, w, h, start_y, start_x);
 	g.metrics.start_x = start_x;
 	g.metrics.start_y = start_y;
 	g.metrics.width = w;
 	g.metrics.height = h;
 
 	g.glyph_distance_field = lib::allocate_unique<glyph::glyph_distance_field_surface_t>(glm::u32vec2{ static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h) });
-	make_distance_map(glyph_buf, w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
-	lib::default_alloc<unsigned char[]>::destroy(glyph_buf);
+	make_distance_map(glyph_buf.get(), w, h, reinterpret_cast<float*>(g.glyph_distance_field->data()));
 
 	return std::move(g);
 }

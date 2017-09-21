@@ -2,6 +2,9 @@
 #include <stdafx.hpp>
 #include <ste_window.hpp>
 
+#include <ste_glfw_handle.hpp>
+
 using namespace ste;
 
-ste_glfw_handle ste_window::glfw;
+// Global GLFW handle
+static ste_glfw_handle glfw;

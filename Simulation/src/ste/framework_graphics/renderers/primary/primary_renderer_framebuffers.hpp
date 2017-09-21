@@ -37,7 +37,7 @@ private:
 
 	static auto create_fxaa_input_fb_layout() {
 		gl::framebuffer_layout fb_layout;
-		fb_layout[0] = gl::ignore_store(gl::format::r8g8b8a8_unorm,
+		fb_layout[0] = gl::ignore_store(gl::format::r16g16b16a16_sfloat,
 										gl::image_layout::shader_read_only_optimal);
 		return fb_layout;
 	}
@@ -46,36 +46,36 @@ public:
 	primary_renderer_framebuffers(const ste_context &ctx,
 								  const glm::uvec2 &extent)
 		: ctx(ctx),
-		extent(extent),
+		  extent(extent),
 
-		hdr_input_image(ctx,
-						resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
-																								   gl::image_usage::sampled | gl::image_usage::color_attachment,
-																								   gl::image_layout::shader_read_only_optimal,
-																								   "hdr_input_image",
-																								   extent)),
-		fxaa_input_image(ctx,
-						 resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx,
-																							   gl::image_usage::sampled | gl::image_usage::color_attachment,
-																							   gl::image_layout::shader_read_only_optimal,
-																							   "fxaa_input_image",
-																							   extent)),
+		  hdr_input_image(ctx,
+						  resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
+																									 gl::image_usage::sampled | gl::image_usage::color_attachment,
+																									 gl::image_layout::shader_read_only_optimal,
+																									 "hdr_input_image",
+																									 extent)),
+		  fxaa_input_image(ctx,
+						   resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx,
+																									  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																									  gl::image_layout::shader_read_only_optimal,
+																									  "fxaa_input_image",
+																									  extent)),
 
-		hdr_input_fb(ctx,
-					 "hdr_input_fb",
-					 create_hdr_input_fb_layout(),
-					 extent),
-		fxaa_input_fb(ctx,
-					  "fxaa_input_fb",
-					  create_fxaa_input_fb_layout(),
-					  extent)
-	{
+		  hdr_input_fb(ctx,
+					   "hdr_input_fb",
+					   create_hdr_input_fb_layout(),
+					   extent),
+		  fxaa_input_fb(ctx,
+						"fxaa_input_fb",
+						create_fxaa_input_fb_layout(),
+						extent) {
 		hdr_input_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));
 		fxaa_input_fb[0] = gl::framebuffer_attachment(*fxaa_input_image, glm::vec4(.0f));
 	}
+
 	~primary_renderer_framebuffers() noexcept {}
 
-	primary_renderer_framebuffers(primary_renderer_framebuffers&&) = default;
+	primary_renderer_framebuffers(primary_renderer_framebuffers &&) = default;
 
 	void resize(const glm::uvec2 &extent) {
 		if (extent.x <= 0 || extent.y <= 0 || extent == this->extent)
@@ -86,11 +86,11 @@ public:
 		// Recreate framebuffers
 		hdr_input_fb = gl::framebuffer(ctx.get(),
 									   "hdr_input_fb",
-									   create_hdr_input_fb_layout(), 
+									   create_hdr_input_fb_layout(),
 									   extent);
 		fxaa_input_fb = gl::framebuffer(ctx.get(),
 										"fxaa_input_fb",
-										create_fxaa_input_fb_layout(), 
+										create_fxaa_input_fb_layout(),
 										extent);
 
 		// Recreate images
@@ -101,11 +101,11 @@ public:
 																																						 "hdr_input_image",
 																																						 extent));
 		fxaa_input_image = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx.get(),
-																			   resource::surface_factory::image_empty_2d<gl::format::r8g8b8a8_unorm>(ctx.get(),
-																																					 gl::image_usage::sampled | gl::image_usage::color_attachment,
-																																					 gl::image_layout::shader_read_only_optimal,
-																																					 "fxaa_input_image",
-																																					 extent));
+																			   resource::surface_factory::image_empty_2d<gl::format::r16g16b16a16_sfloat>(ctx.get(),
+																																						  gl::image_usage::sampled | gl::image_usage::color_attachment,
+																																						  gl::image_layout::shader_read_only_optimal,
+																																						  "fxaa_input_image",
+																																						  extent));
 
 		// Reattach framebuffer attachments
 		hdr_input_fb[0] = gl::framebuffer_attachment(*hdr_input_image, glm::vec4(.0f));

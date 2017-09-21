@@ -6,9 +6,9 @@
 #include <material.glsl>
 
 #include <gbuffer.glsl>
-#include <shadow.glsl>
+//#include <shadow.glsl>
 #include <light.glsl>
-#include <light_cascades.glsl>
+//#include <light_cascades.glsl>
 #include <linked_light_lists.glsl>
 
 #include <intersection.glsl>
@@ -34,9 +34,9 @@ float get_thickness(ivec2 coord,
 }
 
 float deferred_evaluate_shadowing(fragment_shading_parameters frag,
-								  light_shading_parameters light,
-								  int cascade) {
-	float l_radius = light.ld.radius;
+								  light_shading_parameters light) {
+	return 1.f;
+	/*float l_radius = light.ld.radius;
 
 	if (light_type_is_directional(light.ld.type)) {
 		// Query cascade index, and shadowmap index and construct cascade projection matrix
@@ -62,7 +62,7 @@ float deferred_evaluate_shadowing(fragment_shading_parameters frag,
 					  l_radius,
 					  light_effective_range(light.ld),
 					  frag.coords);
-	}
+	}*/
 }
 
 vec3 deferred_shade_atmospheric_scattering(ivec2 coord) {
@@ -212,9 +212,6 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 
 	// Atmospheric attenuation from eye to fragment
 	vec3 atmospheric_attenuation = deferred_compute_attenuation_from_fragment_to_eye(frag);
-
-	// Directional light cascade
-	int cascade = light_which_cascade_for_position(frag.p);
 	
 	// Add material emission
 	accum_luminance += material_emission(md);
@@ -249,8 +246,7 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 
 		// Shadow query
 		float shdw = deferred_evaluate_shadowing(frag,
-												 light,
-												 cascade);
+												 light);
 		float occlusion = max(.0f, cavity * shdw);
 
 		// For simple materials, bail is fully shadowed
@@ -273,12 +269,8 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 		accum_luminance += material_texture.rgb * luminance;
 	}
 
-	// Volumetric scattered light
-	// Volumetric scattering has atmospheric attenuation precomputed
-	vec3 scattered_incoming_luminance = volumetric_scattering(scattering_volume, vec2(coord), depth);
-
 	// Apply atmospheric attenuation
-	vec3 final = accum_luminance * atmospheric_attenuation + scattered_incoming_luminance;
+	vec3 final = accum_luminance * atmospheric_attenuation;
 
 	return final;
 }

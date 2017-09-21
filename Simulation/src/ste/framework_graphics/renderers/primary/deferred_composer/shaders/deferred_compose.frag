@@ -2,8 +2,6 @@
 #type frag
 #version 450
 
-layout(set=0, binding=0) uniform sampler3D scattering_volume;
-
 layout(set=0, binding=1) uniform sampler2D microfacet_refraction_fit_lut;
 layout(set=0, binding=2) uniform sampler2DArray microfacet_transmission_fit_lut;
 
@@ -13,12 +11,12 @@ layout(set=0, binding=4) uniform sampler2D ltc_ggx_amplitude;
 #include <chromaticity.glsl>
 
 #include <light.glsl>
-#include <light_cascades.glsl>
+//#include <light_cascades.glsl>
 #include <linked_light_lists.glsl>
 #include <linearly_transformed_cosines.glsl>
 
 #include <gbuffer.glsl>
-#include <shadow.glsl>
+//#include <shadow.glsl>
 
 #include <material.glsl>
 #include <material_evaluate.glsl>
@@ -42,10 +40,8 @@ void main() {
 	ivec2 coord = ivec2(gl_FragCoord.xy);
 
 	g_buffer_element g_frag = read_gbuffer(coord);
-
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
-
 	frag_color = vec4(xyY, 1);
 }

@@ -40,7 +40,7 @@ public:
 	virtual ~cmd_fill_buffer() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdFillBuffer(command_buffer,
 						buffer,
 						offset,

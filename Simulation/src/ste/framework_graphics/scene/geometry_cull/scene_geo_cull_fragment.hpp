@@ -28,7 +28,9 @@ private:
 		auto size = s->get_object_group().draw_count();
 		if (size != old_object_group_size) {
 			old_object_group_size = size;
-			s->resize_indirect_command_buffers(recorder, size);
+			s->resize_indirect_command_buffers(get_creating_context(), 
+											   recorder, 
+											   size);
 		}
 	}
 
@@ -42,11 +44,11 @@ public:
 		ls(ls)
 	{
 		pipeline()["idb_data"] = gl::bind(s->get_idb().get());
-		pipeline()["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
-		pipeline()["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
-
-		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
-		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+//		pipeline()["sidb_data"] = gl::bind(s->get_shadow_projection_buffers().idb.get());
+//		pipeline()["dsidb_data"] = gl::bind(s->get_directional_shadow_projection_buffers().idb.get());
+//
+//		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+//		pipeline()["d_drawid_to_lightid_ttl_data"] = gl::bind(s->get_directional_shadow_projection_buffers().proj_id_to_light_id_translation_table);
 
 		dispatch_task.attach_pipeline(pipeline());
 	}

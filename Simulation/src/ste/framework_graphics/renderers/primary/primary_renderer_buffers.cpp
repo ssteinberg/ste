@@ -8,14 +8,7 @@
 using namespace ste;
 using namespace ste::graphics;
 
-gl::pipeline_external_binding_set primary_renderer_buffers::create_common_binding_set_collection(const ste_context &ctx,
-																								 const renderer_transform_buffers &transform_buffers,
-																								 const linked_light_lists &linked_light_list_storage,
-																								 const deferred_gbuffer &gbuffer,
-																								 const shadowmap_storage &shadows,
-																								 const atmospherics_buffer &atmospheric_buffer,
-																								 const atmospherics_lut_storage &atmospherics_luts,
-																								 const scene *s) {
+gl::pipeline_external_binding_set primary_renderer_buffers::create_common_binding_set_collection(const ste_context &ctx) {
 	// Load common descriptor sets from pre-compiled SPIR-v shader
 	gl::external_binding_set_collection_from_shader_stages::shader_stages_input_vector_t v;
 	{
@@ -31,71 +24,69 @@ gl::pipeline_external_binding_set primary_renderer_buffers::create_common_bindin
 	}
 	gl::pipeline_external_binding_set set{
 		gl::external_binding_set_collection_from_shader_stages(ctx.device(),
-															   std::move(v), 
+															   std::move(v),
 															   "primary_renderer common binding set").generate()
 	};
 
-	// Transforms buffer bindings
-	set["view_transform_buffer_binding"] = gl::bind(transform_buffers.get_view_buffer());
-	set["proj_transform_buffer_binding"] = gl::bind(transform_buffers.get_proj_buffer());
-
-	// Mesh and material bindings
-	set["mesh_descriptors_binding"] = gl::bind(s->get_object_group().get_draw_buffers().get_mesh_data_buffer());
-	set["mesh_draw_params_binding"] = gl::bind(s->get_object_group().get_draw_buffers().get_mesh_draw_params_buffer());
-	set["material_descriptors_binding"] = gl::bind(s->properties().materials_storage().buffer());
-	set["material_layer_descriptors_binding"] = gl::bind(s->properties().material_layers_storage().buffer());
-	set["material_sampler"] = gl::bind(ctx.device().common_samplers_collection().linear_mipmap_anisotropic16_sampler());
-
-	// Light bindings
-	set["light_binding"] = gl::bind(s->properties().lights_storage().buffer());
-	set["light_list_counter_binding"] = gl::bind(s->properties().lights_storage().get_active_ll_counter());
-	set["light_list_binding"] = gl::bind(s->properties().lights_storage().get_active_ll(),
-										 0, light_storage::max_ll_buffer_size);
-	set["shaped_lights_points_binding"] = gl::bind(s->properties().lights_storage().get_shaped_lights_points_buffer());
-
-	set["linked_light_list_size"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.linked_light_lists_size_map()));
-	set["linked_light_list_low_detail_size"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.linked_light_lists_low_detail_size_map()));
-	set["linked_light_list_heads"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.linked_light_lists_heads_map()));
-	set["linked_light_list_low_detail_heads"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.linked_light_lists_low_detail_heads_map()));
-
-	set["linked_light_list_counter_binding"] = gl::bind(linked_light_list_storage.linked_light_lists_counter_buffer());
-	set["linked_light_list_binding"] = gl::bind(linked_light_list_storage.linked_light_lists_buffer());
-
-	set["cascades_depths_uniform_binding"] = gl::bind(s->properties().lights_storage().get_cascade_depths_uniform_buffer());
-	set["light_cascades_binding"] = gl::bind(s->properties().lights_storage().get_directional_lights_cascades_buffer());
-
-	// G-Buffer
-	set["downsampled_depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get_downsampled_depth_target(),
-																				 ctx.device().common_samplers_collection().linear_sampler()));
-	set["depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get_depth_target(),
-																	 ctx.device().common_samplers_collection().linear_sampler()));
-	set["backface_depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get_backface_depth_target(),
-																			  ctx.device().common_samplers_collection().linear_sampler()));
-	set["gbuffer"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get_gbuffer(),
-																   ctx.device().common_samplers_collection().nearest_clamp_sampler()));
-
-	// Shadows
-	set["shadow_depth_maps"] = gl::bind(gl::pipeline::combined_image_sampler(shadows.get_cubemaps(),
-																			 shadows.get_shadow_sampler()));
-	set["shadow_maps"] = gl::bind(gl::pipeline::combined_image_sampler(shadows.get_cubemaps(),
-																	   ctx.device().common_samplers_collection().linear_clamp_sampler()));
-	set["directional_shadow_depth_maps"] = gl::bind(gl::pipeline::combined_image_sampler(shadows.get_directional_maps(),
-																						 shadows.get_shadow_sampler()));
-	set["directional_shadow_maps"] = gl::bind(gl::pipeline::combined_image_sampler(shadows.get_directional_maps(),
-																				   ctx.device().common_samplers_collection().linear_clamp_sampler()));
-
-	// Atmospherics
-	set["atmospheric_optical_length_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_optical_length_lut(),
-																						  ctx.device().common_samplers_collection().linear_clamp_sampler()));
-	set["atmospheric_mie0_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_mie0_scatter_lut(),
-																						   ctx.device().common_samplers_collection().linear_clamp_sampler()));
-	set["atmospheric_ambient_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_ambient_lut(),
-																				   ctx.device().common_samplers_collection().linear_clamp_sampler()));
-	set["atmospheric_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts.get_atmospherics_scatter_lut(),
-																					  ctx.device().common_samplers_collection().linear_clamp_sampler()));
-	set["atmospherics_descriptor_binding"] = gl::bind(atmospheric_buffer.get());
-
 	return set;
+}
+
+void primary_renderer_buffers::common_binding_set_bind_transform_buffers() {
+	// Transforms buffer bindings
+	common_binding_set_collection["view_transform_buffer_binding"] = gl::bind(transform_buffers.get_view_buffer());
+	common_binding_set_collection["proj_transform_buffer_binding"] = gl::bind(transform_buffers.get_proj_buffer());
+}
+
+void primary_renderer_buffers::common_binding_set_bind_mesh_and_materials() {
+	// Mesh and material bindings
+	common_binding_set_collection["mesh_descriptors_binding"] = gl::bind(s->get_object_group().get_draw_buffers().get_mesh_data_buffer());
+	common_binding_set_collection["mesh_draw_params_binding"] = gl::bind(s->get_object_group().get_draw_buffers().get_mesh_draw_params_buffer());
+	common_binding_set_collection["material_descriptors_binding"] = gl::bind(s->properties().materials_storage().buffer());
+	common_binding_set_collection["material_layer_descriptors_binding"] = gl::bind(s->properties().material_layers_storage().buffer());
+	common_binding_set_collection["material_sampler"] = gl::bind(ctx.get().device().common_samplers_collection().linear_mipmap_anisotropic16_sampler());
+}
+
+void primary_renderer_buffers::common_binding_set_bind_light_buffers() {
+	// Light bindings
+	common_binding_set_collection["light_binding"] = gl::bind(s->properties().lights_storage().buffer());
+	common_binding_set_collection["light_list_counter_binding"] = gl::bind(s->properties().lights_storage().get_active_ll_counter());
+	common_binding_set_collection["light_list_binding"] = gl::bind(s->properties().lights_storage().get_active_ll());
+	common_binding_set_collection["shaped_lights_points_binding"] = gl::bind(s->properties().lights_storage().get_shaped_lights_points_buffer());
+
+}
+
+void primary_renderer_buffers::common_binding_set_bind_lll_buffers() {
+	// LLL bindings
+	common_binding_set_collection["linked_light_list_size"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.get().linked_light_lists_size_map()));
+	common_binding_set_collection["linked_light_list_heads"] = gl::bind(gl::pipeline::storage_image(linked_light_list_storage.get().linked_light_lists_heads_map()));
+
+	common_binding_set_collection["linked_light_list_counter_binding"] = gl::bind(linked_light_list_storage.get().linked_light_lists_counter_buffer());
+	common_binding_set_collection["linked_light_list_binding"] = gl::bind(linked_light_list_storage.get().linked_light_lists_buffer());
+}
+
+void primary_renderer_buffers::common_binding_set_bind_gbuffer() {
+	// G-Buffer
+	common_binding_set_collection["downsampled_depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get().get_downsampled_depth_target(),
+																										   ctx.get().device().common_samplers_collection().linear_sampler()));
+	common_binding_set_collection["depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get().get_depth_target(),
+																							   ctx.get().device().common_samplers_collection().linear_sampler()));
+	common_binding_set_collection["backface_depth_map"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get().get_backface_depth_target(),
+																										ctx.get().device().common_samplers_collection().linear_sampler()));
+	common_binding_set_collection["gbuffer"] = gl::bind(gl::pipeline::combined_image_sampler(gbuffer.get().get_gbuffer(),
+																							 ctx.get().device().common_samplers_collection().nearest_clamp_sampler()));
+}
+
+void primary_renderer_buffers::common_binding_set_bind_atmospheric_buffers() {
+	// Atmospherics
+	common_binding_set_collection["atmospheric_optical_length_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts->get_atmospherics_optical_length_lut(),
+																													ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
+	common_binding_set_collection["atmospheric_mie0_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts->get_atmospherics_mie0_scatter_lut(),
+																													 ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
+	common_binding_set_collection["atmospheric_ambient_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts->get_atmospherics_ambient_lut(),
+																											 ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
+	common_binding_set_collection["atmospheric_scattering_lut"] = gl::bind(gl::pipeline::combined_image_sampler(atmospherics_luts->get_atmospherics_scatter_lut(),
+																												ctx.get().device().common_samplers_collection().linear_clamp_sampler()));
+	common_binding_set_collection["atmospherics_descriptor_binding"] = gl::bind(atmospheric_buffer.get());
 }
 
 void primary_renderer_buffers::update_common_binding_set(scene *s) {

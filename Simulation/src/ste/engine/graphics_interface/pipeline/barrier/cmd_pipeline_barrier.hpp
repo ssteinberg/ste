@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -17,12 +17,11 @@ private:
 	const pipeline_barrier &barrier;
 
 public:
-	cmd_pipeline_barrier(const pipeline_barrier &barrier) : barrier(barrier) {
-	}
+	cmd_pipeline_barrier(const pipeline_barrier &barrier) : barrier(barrier) {}
 	virtual ~cmd_pipeline_barrier() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &recorder) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &recorder) && override final {
 		const auto &global = barrier.get_global_memory_barriers();
 		const auto &buffer = barrier.get_buffer_barriers();
 		const auto &image = barrier.get_image_barriers();
@@ -47,11 +46,11 @@ private:
 							 static_cast<VkPipelineStageFlags>(barrier.get_src_stage()),
 							 static_cast<VkPipelineStageFlags>(barrier.get_dst_stage()),
 							 0,
-							 static_cast<std::uint32_t>(memory_barriers.size()), 
+							 static_cast<std::uint32_t>(memory_barriers.size()),
 							 memory_barriers.data(),
-							 static_cast<std::uint32_t>(buffer_barriers.size()), 
+							 static_cast<std::uint32_t>(buffer_barriers.size()),
 							 buffer_barriers.data(),
-							 static_cast<std::uint32_t>(image_barriers.size()), 
+							 static_cast<std::uint32_t>(image_barriers.size()),
 							 image_barriers.data());
 	}
 };

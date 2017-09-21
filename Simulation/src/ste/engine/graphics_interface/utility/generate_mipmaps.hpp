@@ -34,9 +34,9 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					  image_layout initial_layout,
 					  image_layout final_layout,
 					  std::uint32_t start_level,
-					  const lib::vector<wait_semaphore> &wait_semaphores = {},
-					  const lib::vector<const semaphore*> &signal_semaphores = {}) {
-	auto future = image.parent_context().engine().task_scheduler().schedule_now([=, &image]() {
+					  lib::vector<wait_semaphore> &&wait_semaphores = {},
+					  lib::vector<semaphore*> &&signal_semaphores = {}) {
+	auto future = image.parent_context().engine().task_scheduler().schedule_now([=, &image, wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		const ste_context &ctx = image.parent_context();
 
 		auto image_format = image.get_format();
@@ -130,7 +130,10 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 				recorder << cmd_pipeline_barrier(barrier);
 			}
 
-			ste_device_queue::submit_batch(std::move(batch), wait_semaphores, signal_semaphores);
+			batch->wait_semaphores = std::move(wait_semaphores);
+			batch->signal_semaphores = std::move(signal_semaphores);
+
+			ste_device_queue::submit_batch(std::move(batch));
 		});
 
 		enqueue_future.get();

@@ -59,6 +59,9 @@ public:
 	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline().attach_framebuffer(fb);
 	}
+	void set_gamma(float gamma) {
+		pipeline()["push_t.gamma"] = gamma;
+	}
 	const auto& get_framebuffer_layout() const {
 		return pipeline().get_framebuffer_layout();
 	}

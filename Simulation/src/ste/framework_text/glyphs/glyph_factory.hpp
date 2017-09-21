@@ -16,7 +16,7 @@ struct glyph_factory_impl;
 
 class glyph_factory {
 private:
-	glyph_factory_impl *pimpl;
+	lib::unique_ptr<glyph_factory_impl> pimpl;
 
 public:
 	glyph_factory();

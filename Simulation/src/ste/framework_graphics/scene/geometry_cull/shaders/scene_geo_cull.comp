@@ -7,8 +7,10 @@ layout(local_size_x = 128) in;
 #include <indirect.glsl>
 
 #include <light.glsl>
-#include <light_cascades.glsl>
-#include <shadow_drawid_to_lightid_ttl.glsl>
+//#include <light_cascades.glsl>
+//#include <shadow_drawid_to_lightid_ttl.glsl>
+
+#include <renderer_transform_buffers.glsl>
 
 #include <intersection.glsl>
 
@@ -17,7 +19,7 @@ layout(local_size_x = 128) in;
 layout(std430, binding = 0) restrict writeonly buffer idb_data {
 	indirect_multi_draw_elements_command idb[];
 };
-layout(std430, binding = 1) restrict writeonly buffer sidb_data {
+/*layout(std430, binding = 1) restrict writeonly buffer sidb_data {
 	indirect_multi_draw_elements_command sidb[];
 };
 layout(std430, binding = 2) restrict writeonly buffer dsidb_data {
@@ -28,7 +30,7 @@ layout(std430, binding = 3) restrict writeonly buffer drawid_to_lightid_ttl_data
 };
 layout(std430, binding = 4) restrict writeonly buffer d_drawid_to_lightid_ttl_data {
 	d_drawid_to_lightid_ttl d_ttl[];
-};
+};*/
 
 layout(push_constant) uniform mesh_descriptors_count_t {
 	uint mesh_count;
@@ -45,10 +47,11 @@ void main() {
 	vec3 center = transform_view(center_world);
 	float radius = md.bounding_sphere.w;
 	
-	uint shadow_instance_count = 0;
-	uint dir_shadow_instance_count = 0;
+	//uint shadow_instance_count = 0;
+	//uint dir_shadow_instance_count = 0;
 
 	// Check if the geometry intersects some light's effective range
+	bool add = false;
 	for (int i = 0; i < ll_counter; ++i) {
 		uint light_idx = ll[i];
 		light_descriptor ld = light_buffer[light_idx];
@@ -56,7 +59,7 @@ void main() {
 		
 		if (light_type_is_directional(ld.type)) {
 			// For directional lights check if the geometry is in one of the cascades
-			uint cascade_idx = light_get_cascade_descriptor_idx(ld);
+			/*uint cascade_idx = light_get_cascade_descriptor_idx(ld);
 
 			for (int cascade=0; cascade<directional_light_cascades; ++cascade) {
 				// Read cascade parameters and construct projection matrix
@@ -73,31 +76,36 @@ void main() {
 					++dir_shadow_instance_count;
 					break;
 				}
-			}
+			}*/
+
+			// TODO
 		}
-		else {
+		else { 
 			// Check if the light effective range sphere intersects the geometry bounding sphere
 			float lr = light_effective_range(ld);
 
 			if (collision_sphere_sphere(l, lr, center, radius)) {
-				ttl[draw_id].entries[shadow_instance_count] = create_drawid_ttl_entry(uint(i), light_idx);
-				++shadow_instance_count;
+				//ttl[draw_id].entries[shadow_instance_count] = create_drawid_ttl_entry(uint(i), light_idx);
+				//++shadow_instance_count;
+				add = true;
+				break;
 			}
 		}
 	}
 
 	// Generate indirect draw command
 	indirect_multi_draw_elements_command c;
-	c.index_count = shadow_instance_count > 0 || dir_shadow_instance_count > 0 ? mesh_draw_params_buffer[draw_id].count : 0;
+	//c.index_count = shadow_instance_count > 0 || dir_shadow_instance_count > 0 ? mesh_draw_params_buffer[draw_id].count : 0;
+	c.index_count = uint(add) * mesh_draw_params_buffer[draw_id].count;
 	c.instance_count = 1;
 	c.first_index = mesh_draw_params_buffer[draw_id].first_index;
 	c.vertex_offset = mesh_draw_params_buffer[draw_id].vertex_offset;
 	c.base_instance = draw_id;
-	
-	// Write to scene and shadow indirect draw buffers
 	idb[draw_id] = c;
-	c.instance_count = shadow_instance_count;
+	
+	// Write to shadow indirect draw buffers
+	/*c.instance_count = shadow_instance_count;
 	sidb[draw_id] = c;
 	c.instance_count = dir_shadow_instance_count;
-	dsidb[draw_id] = c;
+	dsidb[draw_id] = c;*/
 }

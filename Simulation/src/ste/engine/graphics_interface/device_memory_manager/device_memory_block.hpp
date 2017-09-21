@@ -1,11 +1,9 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
-
-#include <lib/list.hpp>
 
 namespace ste {
 namespace gl {
@@ -28,6 +26,7 @@ public:
 	device_memory_block &operator=(device_memory_block &&) = default;
 	device_memory_block &operator=(const device_memory_block &) = default;
 
+	// For ordered containers
 	bool operator<(const device_memory_block &b) const { return offset < b.offset; }
 	bool operator==(const device_memory_block &b) const { return offset == b.offset; }
 

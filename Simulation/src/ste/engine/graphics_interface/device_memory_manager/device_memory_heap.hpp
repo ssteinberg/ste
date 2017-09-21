@@ -62,10 +62,15 @@ public:
 	*/
 	void deallocate(const allocation_type &ptr) {
 		total_used_size -= ptr->get_bytes();
-		auto it = std::lower_bound(blocks.begin(), blocks.end(), *ptr);
+		const auto it = std::lower_bound(blocks.begin(), blocks.end(), *ptr);
 
-		assert(*it == *ptr);
-		blocks.erase(it);
+		if (*it == *ptr) {
+			blocks.erase(it);
+			return;
+		}
+
+		// Allocation not found in this heap!
+		assert(false);
 	}
 
 	/**
@@ -87,7 +92,7 @@ public:
 		size_type start = 0;
 		auto it = blocks.begin();
 		for (;;) {
-			bool last = it == blocks.end();
+			const bool last = it == blocks.end();
 
 			auto end = memory.get_size();
 			decltype(end) len;
@@ -100,7 +105,7 @@ public:
 			if (end > start &&
 				end - start >= size) {
 				// Allocate
-				block_type block(start, size);
+				const block_type block(start, size);
 
 				blocks.insert(it, block);
 				total_used_size += size;

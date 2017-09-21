@@ -10,15 +10,11 @@ namespace ste {
 template <typename T>
 class alias {
 private:
-	T *ptr;
+	T *ptr{ nullptr };
 
 public:
+	alias() = default;
 	alias(T &object) noexcept : ptr(&object) {}
-
-	alias(alias&&) noexcept = default;
-	alias(const alias&) noexcept = default;
-	alias &operator=(alias&&) noexcept = default;
-	alias &operator=(const alias&) noexcept = default;
 
 	alias(T *p) noexcept : ptr(p) {}
 	alias &operator=(T *p) noexcept {
@@ -45,6 +41,9 @@ public:
 
 	operator T&() noexcept { return get(); }
 	operator const T&() const noexcept { return get(); }
+
+	bool operator!() const noexcept { return !ptr; }
+	operator bool() const noexcept { return !!ptr; }
 };
 
 }

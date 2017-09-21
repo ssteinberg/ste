@@ -169,9 +169,13 @@ public:
 	*/
 	template<class Rep, class Period>
 	bool wait_for(const std::chrono::duration<Rep, Period>& timeout_duration) const {
-		if (future.wait_for(timeout_duration * .5f) == std::future_status::ready) {
-			bool ret = f.wait_idle(timeout_duration * .5f);
-			return ret;
+		const auto start = std::chrono::high_resolution_clock::now();
+		if (future.wait_for(timeout_duration) == std::future_status::ready) {
+			const auto end = std::chrono::high_resolution_clock::now();
+			auto elapsed = std::chrono::duration_cast<decltype(timeout_duration)>(end - start);
+
+			auto timeout_duration_left = timeout_duration - elapsed;
+			return f.wait_idle(timeout_duration_left);
 		}
 		return false;
 	}

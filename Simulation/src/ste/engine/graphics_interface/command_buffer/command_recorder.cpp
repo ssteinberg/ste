@@ -13,12 +13,16 @@ void command_recorder::end() {
 	}
 }
 
-command_recorder& command_recorder::operator<<(const command &cmd) {
-	cmd(*buffer, *this);
-	return *this;
-}
+command_recorder &command_recorder::operator<<(command &&cmd) {
+	// Record command
+	std::move(cmd)(*buffer, *this);
 
-command_recorder& command_recorder::operator<<(host_command &&cmd) {
-	buffer->push_command(std::move(cmd));
+	// Append command dependencies to command buffer
+	auto deps = std::move(cmd).extract_dependencies();
+	buffer->dependencies.reserve(buffer->dependencies.size() + deps.size());
+	buffer->dependencies.insert(buffer->dependencies.end(), 
+								std::make_move_iterator(deps.begin()), 
+								std::make_move_iterator(deps.end()));
+
 	return *this;
 }

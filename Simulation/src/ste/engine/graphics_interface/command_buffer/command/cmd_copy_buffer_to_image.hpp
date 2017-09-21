@@ -55,7 +55,7 @@ public:
 	virtual ~cmd_copy_buffer_to_image() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdCopyBufferToImage(command_buffer,
 							   src_buffer,
 							   dst_image,

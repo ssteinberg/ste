@@ -1,7 +1,10 @@
 
 #include <common.glsl>
-#include <shadow.glsl>
+//#include <shadow.glsl>
 #include <light_transport.glsl>
+#include <deferred_shading_common.glsl>
+
+#include <renderer_transform_buffers.glsl>
 
 #include <light.glsl>
 

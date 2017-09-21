@@ -17,10 +17,6 @@
 #include <cmd_pipeline_barrier.hpp>
 #include <image_memory_barrier.hpp>
 
-#include <boundary.hpp>
-#include <lib/unique_ptr.hpp>
-#include <future>
-
 namespace ste {
 namespace gl {
 
@@ -55,8 +51,8 @@ auto inline queue_transfer(const ste_context &ctx,
 						   image_layout dst_layout,
 						   pipeline_stage dst_stage,
 						   access_flags dst_access,
-						   const lib::vector<wait_semaphore> &wait_semaphores = {},
-						   const lib::vector<const semaphore*> &signal_semaphores = {}) {
+						   lib::vector<wait_semaphore> &&wait_semaphores = {},
+						   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
 
 	auto src_family = src_queue.queue_descriptor().family;
@@ -70,7 +66,7 @@ auto inline queue_transfer(const ste_context &ctx,
 		}
 
 		// Only transform layout
-		auto future = src_queue.enqueue([=, &image]() {
+		auto future = src_queue.enqueue([=, &image, signal_semaphores = std::move(signal_semaphores), wait_semaphores = std::move(wait_semaphores)]() mutable {
 			auto acquire_batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = acquire_batch->acquire_command_buffer();
 			{
@@ -85,20 +81,21 @@ auto inline queue_transfer(const ste_context &ctx,
 																			   dst_access));
 				recorder << cmd_pipeline_barrier(barrier);
 			}
-			ste_device_queue::submit_batch(std::move(acquire_batch), wait_semaphores, signal_semaphores);
+
+			acquire_batch->signal_semaphores = std::move(signal_semaphores);
+			acquire_batch->wait_semaphores = std::move(wait_semaphores);
+
+			ste_device_queue::submit_batch(std::move(acquire_batch));
 		});
 
 		return future;
 	}
 
 	// Get a semaphore and boundary
-	using semaphore_t = ste_device_sync_primitives_pools::semaphore_pool_t::resource_t;
-	using user_data_t = lib::shared_ptr<semaphore_t>;
-	auto user_data = lib::allocate_shared<semaphore_t>(ctx.device().get_sync_primitives_pools().semaphores().claim());
-	const auto release_acquire_boundary = lib::allocate_shared<boundary<void>>();
+	auto sem = ctx.device().get_sync_primitives_pools().semaphores().claim();
 
-	src_queue.enqueue([=, &image]() {
-		auto release_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
+	src_queue.enqueue([=, semptr = &sem.get(), &image, wait_semaphores = std::move(wait_semaphores)]() mutable {
+		auto release_batch = ste_device_queue::thread_allocate_batch<>();
 		auto& command_buffer = release_batch->acquire_command_buffer();
 		{
 			auto recorder = command_buffer.record();
@@ -116,12 +113,13 @@ auto inline queue_transfer(const ste_context &ctx,
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
-		const semaphore &sem = *release_batch->user_data();
-		ste_device_queue::submit_batch(std::move(release_batch), wait_semaphores, { &sem });
-		release_acquire_boundary->signal();
+		release_batch->signal_semaphores.emplace_back(semptr);
+		release_batch->wait_semaphores = std::move(wait_semaphores);
+
+		ste_device_queue::submit_batch(std::move(release_batch));
 	});
-	auto dst_future = dst_queue.enqueue([=, &image]() {
-		auto acquire_batch = ste_device_queue::thread_allocate_batch<user_data_t>(user_data);
+	auto dst_future = dst_queue.enqueue([=, sem = std::move(sem), &image, signal_semaphores = std::move(signal_semaphores)]() mutable {
+		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
 			auto recorder = command_buffer.record();
@@ -139,10 +137,11 @@ auto inline queue_transfer(const ste_context &ctx,
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
-		// Wait for release command to be submitted
-		release_acquire_boundary->get();
-		const semaphore &sem = *acquire_batch->user_data();
-		ste_device_queue::submit_batch(std::move(acquire_batch), { wait_semaphore(&sem, pipeline_stage::bottom_of_pipe) }, signal_semaphores);
+		// Wait for release command to be completed
+		acquire_batch->signal_semaphores = std::move(signal_semaphores);
+		acquire_batch->wait_semaphores.emplace_back(std::move(sem), pipeline_stage::bottom_of_pipe);
+
+		ste_device_queue::submit_batch(std::move(acquire_batch));
 	});
 
 	return dst_future;
@@ -164,15 +163,16 @@ auto inline queue_transfer(const ste_context &ctx,
 						   pipeline_stage src_stage,
 						   image_layout dst_layout,
 						   pipeline_stage dst_stage,
-						   const lib::vector<wait_semaphore> &wait_semaphores = {},
-						   const lib::vector<const semaphore*> &signal_semaphores = {}) {
+						   lib::vector<wait_semaphore> &&wait_semaphores = {},
+						   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return queue_transfer(ctx,
 						  image,
 						  src_queue,
 						  dst_queue,
 						  src_layout, src_stage, access_flags_for_image_layout(src_layout),
 						  dst_layout, dst_stage, access_flags_for_image_layout(dst_layout),
-						  wait_semaphores, signal_semaphores);
+						  std::move(wait_semaphores), 
+						  std::move(signal_semaphores));
 }
 
 /**
@@ -187,12 +187,12 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   image_layout src_layout,
 								   image_layout dst_layout,
 								   access_flags dst_access,
-								   const lib::vector<wait_semaphore> &wait_semaphores = {},
-								   const lib::vector<const semaphore*> &signal_semaphores = {}) {
+								   lib::vector<wait_semaphore> &&wait_semaphores = {},
+								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	auto &dst_queue = ctx.device().select_queue(dst_queue_selector);
 	const ste_queue_family dst_family = dst_queue.queue_descriptor().family;
 
-	auto future = dst_queue.enqueue([=, &image]() {
+	auto future = dst_queue.enqueue([=, &image, wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto acquire_batch = ste_device_queue::thread_allocate_batch<>();
 		auto& command_buffer = acquire_batch->acquire_command_buffer();
 		{
@@ -210,8 +210,11 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 			recorder << cmd_pipeline_barrier(barrier);
 		}
 
+		acquire_batch->wait_semaphores = std::move(wait_semaphores);
+		acquire_batch->signal_semaphores = std::move(signal_semaphores);
+
 		// Wait for release command to be submitted
-		ste_device_queue::submit_batch(std::move(acquire_batch), wait_semaphores, signal_semaphores);
+		ste_device_queue::submit_batch(std::move(acquire_batch));
 	});
 
 	return future;
@@ -231,8 +234,8 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								   pipeline_stage stage,
 								   image_layout src_layout,
 								   image_layout dst_layout,
-								   const lib::vector<wait_semaphore> &wait_semaphores = {},
-								   const lib::vector<const semaphore*> &signal_semaphores = {}) {
+								   lib::vector<wait_semaphore> &&wait_semaphores = {},
+								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return queue_transfer_discard(ctx,
 								  image,
 								  dst_queue_selector,
@@ -240,7 +243,8 @@ auto inline queue_transfer_discard(const ste_context &ctx,
 								  src_layout, 
 								  dst_layout, 
 								  access_flags_for_image_layout(dst_layout),
-								  wait_semaphores, signal_semaphores);
+								  std::move(wait_semaphores), 
+								  std::move(signal_semaphores));
 }
 
 }

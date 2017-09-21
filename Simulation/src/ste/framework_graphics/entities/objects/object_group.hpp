@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
 
 #include <entity.hpp>
 #include <object.hpp>
@@ -39,7 +40,8 @@ public:
 	object_group(const ste_context &ctx) : draw_buffers(ctx) {}
 	~object_group() noexcept;
 
-	void add_object(gl::command_recorder &recorder,
+	void add_object(const ste_context &ctx,
+					gl::command_recorder &recorder,
 					const lib::shared_ptr<object> &);
 	void remove_all();
 	void update_dirty_buffers(gl::command_recorder &recorder) const;

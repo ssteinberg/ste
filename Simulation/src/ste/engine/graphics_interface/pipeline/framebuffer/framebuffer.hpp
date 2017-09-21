@@ -148,7 +148,7 @@ public:
 				const char* frambuffer_name,
 				framebuffer_layout &&layout,
 				const glm::u32vec2 &extent,
-				const depth_range &depth = depth_range::one_to_zero())
+				const depth_range &depth = depth_range::zero_to_one())
 		: ctx(ctx),
 		frambuffer_name(frambuffer_name),
 		layout(std::move(layout)), 
@@ -160,7 +160,7 @@ public:
 				const char* frambuffer_name,
 				const framebuffer_layout &layout,
 				const glm::u32vec2 &extent,
-				const depth_range &depth = depth_range::one_to_zero())
+				const depth_range &depth = depth_range::zero_to_one())
 		: framebuffer(ctx,
 					  frambuffer_name,
 					  framebuffer_layout(layout),

@@ -47,7 +47,7 @@ public:
 	virtual ~cmd_bind_vertex_buffers() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdBindVertexBuffers(command_buffer,
 							   first,
 							   static_cast<std::uint32_t>(buffers.size()),

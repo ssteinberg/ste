@@ -1,11 +1,11 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
 #include <command.hpp>
-#include <host_command.hpp>
+
 #include <ste_device_queue_descriptors.hpp>
 
 namespace ste {
@@ -26,9 +26,9 @@ private:
 	template <typename buffer_type, typename... Ts>
 	command_recorder(buffer_type &buffer,
 					 const ste_queue_descriptor &queue_descriptor,
-					 Ts&&... ts)
-		: buffer(&buffer), 
-		queue_descriptor(queue_descriptor) {
+					 Ts &&... ts)
+		: buffer(&buffer),
+		  queue_descriptor(queue_descriptor) {
 		buffer.begin(std::forward<Ts>(ts)...);
 	}
 
@@ -37,8 +37,8 @@ public:
 		end();
 	}
 
-	command_recorder(command_recorder&&) = default;
-	command_recorder &operator=(command_recorder&&) = default;
+	command_recorder(command_recorder &&) = default;
+	command_recorder &operator=(command_recorder &&) = default;
 	command_recorder(const command_recorder &) = delete;
 	command_recorder &operator=(const command_recorder &) = delete;
 
@@ -49,13 +49,7 @@ public:
 	*
 	*	@param	cmd	Command to record
 	*/
-	command_recorder& operator<<(const command &cmd);
-	/**
-	*	@brief	Record a command on the command buffer
-	*
-	*	@param	cmd	Command to record
-	*/
-	command_recorder& operator<<(host_command &&cmd);
+	command_recorder &operator<<(command &&cmd);
 
 	auto &get_queue_descriptor() const { return queue_descriptor; }
 };

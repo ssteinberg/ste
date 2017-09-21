@@ -15,10 +15,10 @@ struct gbuffer_fragment_information {
 	int mat;
 };
 
+layout(set=2, binding=17) uniform sampler2DArray gbuffer;
+layout(set=2, binding=18) uniform sampler2D depth_map;
 layout(set=2, binding=19) uniform sampler2D downsampled_depth_map;
-layout(set=2, binding=20) uniform sampler2D depth_map;
-layout(set=2, binding=21) uniform sampler2D backface_depth_map;
-layout(set=2, binding=22) uniform sampler2DArray gbuffer;
+layout(set=2, binding=20) uniform sampler2D backface_depth_map;
 
 float gbuffer_parse_depth(g_buffer_element frag) {
 	return frag.data[0].x;

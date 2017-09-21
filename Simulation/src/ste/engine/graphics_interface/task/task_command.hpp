@@ -73,7 +73,7 @@ public:
 
 private:
 	void operator()(const command_buffer &,
-					command_recorder &recorder) const override final {
+					command_recorder &recorder) && override final {
 		// Bind the pipeline, if any
 		tast_command_bind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);
 
@@ -84,7 +84,7 @@ private:
 		});
 
 		// Record the command itself
-		recorder << cmd;
+		recorder << std::move(cmd);
 
 		// Unbind the pipeline
 		tast_command_unbind_pipeline<Task, pipeline_policy>()(task, Task::accessor_token(), recorder);

@@ -9,7 +9,6 @@ layout(location = 0) out vec4 gbuffer0;
 layout(location = 1) out vec4 gbuffer1;
 
 layout(location = 0) in scene_transform {
-	vec3 frag_position;
 	vec3 frag_normal;
 	vec3 frag_tangent;
 	vec2 frag_texcoords;
@@ -17,19 +16,19 @@ layout(location = 0) in scene_transform {
 } vin;
 
 void main() {
+	int material = vin.matIdx;
+
 	vec2 uv = vin.frag_texcoords;
-	material_descriptor md = mat_descriptor[vin.matIdx];
+	material_descriptor md = mat_descriptor[material];
 
 	if (material_is_masked(md, uv)) {
 		discard;
 		return;
 	}
 
-	vec3 P = vin.frag_position;
 	vec3 n = normalize(vin.frag_normal);
 	vec3 t = normalize(vin.frag_tangent);
 
-	int material = vin.matIdx;
 
 	g_buffer_element gbuffer_element = gbuffer_encode(gl_FragCoord.z,
 													  uv,

@@ -40,6 +40,9 @@ protected:
 	using descriptor_type = typename Base::descriptor_type;
 	using storage_type = Storage;
 
+protected:
+	alias<const ste_context> ctx;
+
 private:
 	storage_type store;
 	lib::concurrent_queue<command> pending_device_operations;
@@ -121,7 +124,8 @@ public:
 	resource_storage(const ste_context &ctx,
 					 const buffer_usage &usage,
 					 const char *name)
-		: store(ctx, 
+		: ctx(ctx),
+		  store(ctx,
 				usage, 
 				name)
 	{}
@@ -139,7 +143,7 @@ public:
 		// Pop and submit all pending operations
 		lib::unique_ptr<command> pending_op = nullptr;
 		while ((pending_op = pending_device_operations.pop()) != nullptr)
-			recorder << *pending_op;
+			recorder << std::move(*pending_op);
 
 		// Likewise update all signalled objects
 		{

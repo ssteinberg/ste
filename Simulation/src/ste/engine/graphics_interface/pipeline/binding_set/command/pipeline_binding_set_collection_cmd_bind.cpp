@@ -8,7 +8,7 @@ using namespace ste;
 using namespace ste::gl;
 
 void pipeline_binding_set_collection_cmd_bind::operator()(const command_buffer &buffer, 
-														  command_recorder &recorder) const {
+														  command_recorder &recorder) && {
 	auto &sets = collection->get_sets();
 	if (!sets.size())
 		return;

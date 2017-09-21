@@ -1,9 +1,11 @@
-// StE
+//	StE
 // © Shlomi Steinberg, 2015-2017
 
 #pragma once
 
 #include <stdafx.hpp>
+#include <ste_context.hpp>
+
 #include <text_manager.hpp>
 #include <attributed_string.hpp>
 #include <glyph_point.hpp>
@@ -37,18 +39,20 @@ private:
 
 private:
 	class cmd_update_text : public gl::command {
+		alias<const ste_context> ctx;
 		text_fragment *tr;
 		const lib::vector<glyph_point> points;
 
 	public:
-		cmd_update_text(text_fragment *tr,
+		cmd_update_text(const ste_context &ctx,
+						text_fragment *tr,
 						lib::vector<glyph_point> &&points)
-			: tr(tr), points(std::move(points))
+			: ctx(ctx), tr(tr), points(std::move(points))
 		{}
 		virtual ~cmd_update_text() noexcept {}
 
 	private:
-		void operator()(const gl::command_buffer &, gl::command_recorder &recorder) const override final {
+		void operator()(const gl::command_buffer &, gl::command_recorder &recorder) && override final {
 			// Update glyphs
 			tr->tm->update_glyphs(recorder);
 			tr->count = static_cast<std::uint32_t>(points.size());
@@ -58,7 +62,8 @@ private:
 
 			// Update vertex buffer
 			if (tr->count > static_cast<std::uint32_t>(tr->vertex_buffer.size()))
-				recorder << tr->vertex_buffer.resize_cmd(tr->count);
+				recorder << tr->vertex_buffer.resize_cmd(ctx.get(),
+														 tr->count);
 			recorder << tr->vertex_buffer.overwrite_cmd(0, points);
 
 			tr->updated = true;
@@ -66,7 +71,8 @@ private:
 	};
 
 public:
-	text_fragment(text_manager*);
+	text_fragment(const ste_context &ctx,
+				  text_manager*);
 
 	text_fragment(text_fragment&&) = default;
 	text_fragment &operator=(text_fragment&&) = default;
@@ -74,11 +80,12 @@ public:
 	/**
 	*	@brief	Sets attributed text for the fragment to render. Will spawn tasks to load glyphs, if necessary.
 	*/
-	void update_text(gl::command_recorder &recorder,
+	void update_text(const ste_context &ctx, 
+					 gl::command_recorder &recorder,
 					 const glm::vec2 &ortho_pos,
 					 const attributed_wstring &wstr) {
 		auto points = tm->create_points(ortho_pos, wstr);
-		recorder << cmd_update_text(this, std::move(points));
+		recorder << cmd_update_text(ctx, this, std::move(points));
 	}
 
 	/**

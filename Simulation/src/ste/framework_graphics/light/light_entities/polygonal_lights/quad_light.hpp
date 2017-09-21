@@ -31,17 +31,21 @@ protected:
 public:
 	virtual ~quad_light() noexcept {}
 
-	void set_points(gl::command_recorder &recorder, 
+	void set_points(const ste_context &ctx, 
+					gl::command_recorder &recorder,
 					const glm::vec3 *quad_points) {
 		glm::vec3 n = glm::cross(quad_points[1] - quad_points[0], quad_points[3] - quad_points[0]);
-		float area = glm::length(n);
+		const float area = glm::length(n);
 
-		Base::set_points(recorder,
+		Base::set_points(ctx,
+						 recorder,
 						 quad_points, 4, area, n / area);
 	}
-	void set_points(gl::command_recorder &recorder, 
+	void set_points(const ste_context &ctx,
+					gl::command_recorder &recorder,
 					const std::array<glm::vec3, 4> &quad_points) {
-		set_points(recorder,
+		set_points(ctx,
+				   recorder,
 				   &quad_points[0]);
 	}
 };

@@ -1,12 +1,16 @@
 
 #include <common.glsl>
+#include <luminance.glsl>
+#include <sfloat_to_uint_order_preserving.glsl>
 
-const int bins = 128;
+const int bins = 1024;
 const float fbins = float(bins);
-const float min_luminance = .000001f;
+const float min_luminance = 1e-9f;
+
 
 struct hdr_bokeh_parameters {
-	int lum_min, lum_max;
+	uint lum_min;
+	uint lum_max;
 	float focus;
 };
 
@@ -15,43 +19,64 @@ struct bokeh_point_descriptor {
 	vec4 color;
 };
 
-float hdr_scotopic(float lum) {
-	return 1.f - clamp((lum - min_luminance) / (.1f - min_luminance), .0f, 1.f);
+
+const float scotopic_end = 3e-3f;
+const float mesopic_end = 3.f;
+
+const float visual_acuity_coef = .9f;
+
+float scotopic_vision(float lum) {
+	return 1.f - clamp((lum - min_luminance) / (scotopic_end - min_luminance), 0.f, 1.f);
 }
 
-float hdr_mesopic(float lum) {
-	return 1.f - clamp((lum - .01f) / (10.f - .01f), .0f, 1.f);
+float mesopic_vision(float lum) {
+	return 1.f - clamp((lum - scotopic_end) / (mesopic_end - scotopic_end), 0.f, 1.f);
 }
 
-float hdr_acuity(float lum) {
-	float a = mix(0.f, .7f, hdr_scotopic(lum));
-	float a2 = a * a;
-	return a2 * a2;
+float visual_acuity(float mesopic) {
+	const float a = mix(0.f, visual_acuity_coef, mesopic);
+	return a*a;
 }
 
-float red_response(float mesopic) {
-	return mix(1.f, .35f, mesopic);
+float red_response(float scotopic) {
+	return mix(1.f, .35f, scotopic);
 }
 
-float monochromaticity(float lum) {
-	return smoothstep(1.f, .0f, clamp((lum - min_luminance) / (.025f - min_luminance), .0f, 1.f));
+float monochromaticity(float scotopic) {
+	return smoothstep(.0f, 1.f, scotopic);
 }
+
 
 float hdr_bin(float max_lum, float min_lum, float l) {
 	float range = max_lum - min_lum;
 	float bin_size = range / fbins;
-	float r = (l - min_lum) / bin_size;
-	return clamp(r, 0.f, fbins - .0000001f);
+	return (l - min_lum) / bin_size;
 }
 
 float hdr_lum(float l) {
-	return log(l + 1.f);// / log(10.f);
+	return log(l);
+}
+vec2 hdr_lum(vec2 l) {
+	return log(l);
 }
 
 float hdr_lum_to_luminance(float l) {
-	return exp(l) - 1.f;
+	return exp(l);
+}
+vec2 hdr_lum_to_luminance(vec2 l) {
+	return exp(l);
 }
 
-float tonemap(float l) {
-	return l;
+float tonemap(float l, float gamma) {
+	return pow(l, gamma);
+}
+
+
+uint luminance_to_hdr_params_lum(float l) {
+	float hdr_lum = hdr_lum(max(min_luminance, l));
+	return sfloat_to_uint_order_preserving(hdr_lum);
+}
+
+float hdr_lum_from_hdr_params(uint param) {
+	return uint_to_sfloat_order_preserving(param);
 }

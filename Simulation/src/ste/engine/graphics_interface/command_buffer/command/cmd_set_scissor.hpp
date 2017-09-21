@@ -44,7 +44,7 @@ public:
 	virtual ~cmd_set_scissor() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdSetScissor(command_buffer,
 						first_scissor_index,
 						static_cast<std::uint32_t>(scissors.size()),

@@ -10,45 +10,37 @@ using namespace ste::graphics;
 
 constexpr unsigned linked_light_lists::lll_image_res_multiplier;
 
-linked_light_lists::linked_light_lists(const ste_context &ctx, 
-									   const glm::uvec2 &extent)
+linked_light_lists::linked_light_lists(const ste_context &ctx,
+									   const glm::uvec2 &full_extent)
 	: ctx(ctx),
-	lll(ctx, 
-		gl::buffer_usage::storage_buffer, 
-		"lll"),
-	lll_counter(ctx, 
-				lib::vector<lll_counter_element>{ lll_counter_element{ 1 } }, 
-				gl::buffer_usage::storage_buffer, 
-				"lll_counter"),
+	  extent(full_extent / lll_image_res_multiplier),
+	  lll(ctx,
+		  get_linked_light_list_required_size(),
+		  gl::buffer_usage::storage_buffer,
+		  "lll"),
+	  lll_counter(ctx,
+				  1,
+				  gl::buffer_usage::storage_buffer,
+				  "lll_counter"),
 
-	lll_heads(ctx, 
-			  resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, 
-																				gl::image_usage::storage, 
-																				gl::image_layout::general, 
-																				"lll_heads",
-																				extent)),
-	lll_size(ctx, 
-			 resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, 
-																			gl::image_usage::storage, 
-																			gl::image_layout::general,
-																			"lll_size",
-																			extent)),
-	lll_low_detail_heads(ctx, 
-						 resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, 
-																						   gl::image_usage::storage, 
-																						   gl::image_layout::general,
-																						   "lll_low_detail_heads",
-																						   extent)),
-	lll_low_detail_size(ctx, 
-						resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, 
-																					   gl::image_usage::storage, 
-																					   gl::image_layout::general,
-																					   "lll_low_detail_size",
-																					   extent)),
+	  lll_heads(ctx,
+				resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx,
+																				  gl::image_usage::storage,
+																				  gl::image_layout::general,
+																				  "lll_heads",
+																				  extent)),
+	  lll_size(ctx,
+			   resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx,
+																			  gl::image_usage::storage,
+																			  gl::image_layout::general,
+																			  "lll_size",
+																			  extent)) {}
 
-	extent(extent)
-{
-	up_to_date.clear(std::memory_order_release);
+std::size_t linked_light_lists::get_linked_light_list_required_size() const {
+	return
+		static_cast<std::size_t>(extent.x) *
+		static_cast<std::size_t>(extent.y) *
+		static_cast<std::size_t>(total_max_active_lights_per_frame);
 }
 
 void linked_light_lists::resize(const glm::uvec2 &extent) {
@@ -56,38 +48,29 @@ void linked_light_lists::resize(const glm::uvec2 &extent) {
 	if (t.x <= 0 || t.y <= 0 || t == this->extent)
 		return;
 
-	up_to_date.clear(std::memory_order_release);
 	this->extent = t;
 	std::atomic_thread_fence(std::memory_order_release);
 
-	lll_heads = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, 
-																	resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, 
-																																	  gl::image_usage::storage, 
+	// Resize images
+	lll_heads = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx,
+																	resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx,
+																																	  gl::image_usage::storage,
 																																	  gl::image_layout::general,
 																																	  "lll_heads",
 																																	  extent));
-	lll_size = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, 
-																   resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, 
-																																  gl::image_usage::storage, 
+	lll_size = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx,
+																   resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx,
+																																  gl::image_usage::storage,
 																																  gl::image_layout::general,
 																																  "lll_size",
 																																  extent));
-	lll_low_detail_heads = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, 
-																			   resource::surface_factory::image_empty_2d<gl::format::r32_sfloat>(ctx, 
-																																				 gl::image_usage::storage, 
-																																				 gl::image_layout::general,
-																																				 "lll_low_detail_heads",
-																																				 extent));
-	lll_low_detail_size = ste_resource<gl::texture<gl::image_type::image_2d>>(ctx, 
-																			  resource::surface_factory::image_empty_2d<gl::format::r8_uint>(ctx, 
-																																			 gl::image_usage::storage, 
-																																			 gl::image_layout::general,
-																																			 "lll_low_detail_size",
-																																			 extent));
-}
 
-void linked_light_lists::resize_internal(gl::command_recorder &recorder) {
-	std::atomic_thread_fence(std::memory_order_acquire);
+	// Resize LLL buffer
+	lll = gl::array<lll_element>(ctx,
+								 get_linked_light_list_required_size(),
+								 gl::buffer_usage::storage_buffer,
+								 "lll");
 
-	recorder << lll.resize_cmd(extent.x * extent.y * total_max_active_lights_per_frame);
+	// Notify storage was modified
+	resize_signal.emit();
 }

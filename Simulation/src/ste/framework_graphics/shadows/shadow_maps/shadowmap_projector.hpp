@@ -26,12 +26,12 @@ public:
 			   "shadow_cubemap.vert", "shadow_cubemap.geom"),
 		s(s)
 	{
-		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
+//		pipeline()["drawid_to_lightid_ttl_data"] = gl::bind(s->get_shadow_projection_buffers().proj_id_to_light_id_translation_table);
 
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_shadow_projection_buffers().idb);
+//		draw_task.attach_indirect_buffer(s->get_shadow_projection_buffers().idb);
 	}
 	~shadowmap_projector() noexcept {}
 
@@ -53,7 +53,7 @@ public:
 		gl::device_pipeline_graphics_configurations config;
 		config.depth_op = gl::depth_operation(gl::compare_op::greater);
 		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::back_bit,
-														gl::front_face::ccw);
+														gl::front_face::cw);
 		auditor.set_pipeline_settings(std::move(config));
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<object_vertex_data>());
 	}

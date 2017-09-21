@@ -20,9 +20,7 @@ namespace gl {
 namespace _detail {
 
 auto inline attachment_layout_for_format(format f) {
-	return format_is_depth(f) ?
-		image_layout::depth_stencil_attachment_optimal : 
-		image_layout::color_attachment_optimal;
+	return format_is_depth(f) ? image_layout::depth_stencil_attachment_optimal : image_layout::color_attachment_optimal;
 }
 
 }
@@ -52,6 +50,7 @@ struct framebuffer_attachment_layout {
 	bool operator==(const framebuffer_attachment_layout &rhs) const {
 		return std::memcmp(this, &rhs, sizeof(rhs)) == 0;
 	}
+
 	bool operator!=(const framebuffer_attachment_layout &rhs) const {
 		return !(*this == rhs);
 	}
@@ -66,8 +65,8 @@ struct framebuffer_attachment_layout {
 	 *	@brief	Checks if the attachments are renderpass compatible
 	 */
 	bool renderpass_compatible(const framebuffer_attachment_layout &rhs) const {
-		bool format_compatible = image_format == rhs.image_format;
-		bool layout_compatible =
+		const bool format_compatible = image_format == rhs.image_format;
+		const bool layout_compatible =
 			initial_layout == rhs.initial_layout &&
 			layout == rhs.layout &&
 			final_layout == rhs.final_layout;
@@ -98,6 +97,24 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 		attachment_store_op::store,
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially clear attachment content and store after render.
+*/
+framebuffer_attachment_layout inline clear_store(format image_format,
+												 image_layout layout,
+												 image_layout final_layout) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::clear,
+		attachment_store_op::store,
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and discard contents after render.
@@ -113,6 +130,24 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 		attachment_store_op::discard,
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially clear attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline clear_discard(format image_format,
+												   image_layout layout,
+												   image_layout final_layout) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::clear,
+		attachment_store_op::discard,
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and store after render.
@@ -129,6 +164,25 @@ framebuffer_attachment_layout inline load_store(format image_format,
 		attachment_store_op::store
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially load attachment content and store after render.
+*/
+framebuffer_attachment_layout inline load_store(format image_format,
+												image_layout initial_layout,
+												image_layout layout,
+												image_layout final_layout) {
+	return {
+		image_format,
+		initial_layout,
+		layout,
+		final_layout,
+		attachment_load_op::load,
+		attachment_store_op::store
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and discard contents after render.
@@ -145,6 +199,25 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 		attachment_store_op::discard
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially load attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline load_discard(format image_format,
+												  image_layout initial_layout,
+												  image_layout layout,
+												  image_layout final_layout) {
+	return {
+		image_format,
+		initial_layout,
+		layout,
+		final_layout,
+		attachment_load_op::load,
+		attachment_store_op::discard
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and store contents after render.
@@ -160,6 +233,24 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 		attachment_store_op::store
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Ignore initial attachment content and store contents after render.
+*/
+framebuffer_attachment_layout inline ignore_store(format image_format,
+												  image_layout layout,
+												  image_layout final_layout) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::undefined,
+		attachment_store_op::store
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and discard contents after render.
@@ -175,6 +266,24 @@ framebuffer_attachment_layout inline ignore_discard(format image_format,
 		attachment_store_op::discard
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Ignore initial attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline ignore_discard(format image_format,
+													image_layout layout,
+													image_layout final_layout) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::undefined,
+		attachment_store_op::discard
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and store after render.
@@ -192,6 +301,26 @@ framebuffer_attachment_layout inline clear_store(format image_format,
 		blend
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially clear attachment content and store after render.
+*/
+framebuffer_attachment_layout inline clear_store(format image_format,
+												 image_layout layout,
+												 image_layout final_layout,
+												 const blend_operation &blend) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::clear,
+		attachment_store_op::store,
+		blend
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially clear attachment content and discard contents after render.
@@ -209,6 +338,26 @@ framebuffer_attachment_layout inline clear_discard(format image_format,
 		blend
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially clear attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline clear_discard(format image_format,
+												   image_layout layout,
+												   image_layout final_layout,
+												   const blend_operation &blend) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::clear,
+		attachment_store_op::discard,
+		blend
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and store after render.
@@ -227,6 +376,27 @@ framebuffer_attachment_layout inline load_store(format image_format,
 		blend
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially load attachment content and store after render.
+*/
+framebuffer_attachment_layout inline load_store(format image_format,
+												image_layout initial_layout,
+												image_layout layout,
+												image_layout final_layout,
+												const blend_operation &blend) {
+	return {
+		image_format,
+		initial_layout,
+		layout,
+		final_layout,
+		attachment_load_op::load,
+		attachment_store_op::store,
+		blend
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Intially load attachment content and discard contents after render.
@@ -245,6 +415,27 @@ framebuffer_attachment_layout inline load_discard(format image_format,
 		blend
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Intially load attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline load_discard(format image_format,
+												  image_layout initial_layout,
+												  image_layout layout,
+												  image_layout final_layout,
+												  const blend_operation &blend) {
+	return {
+		image_format,
+		initial_layout,
+		layout,
+		final_layout,
+		attachment_load_op::load,
+		attachment_store_op::discard,
+		blend
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and store contents after render.
@@ -262,6 +453,26 @@ framebuffer_attachment_layout inline ignore_store(format image_format,
 		blend
 	};
 }
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Ignore initial attachment content and store contents after render.
+*/
+framebuffer_attachment_layout inline ignore_store(format image_format,
+												  image_layout layout,
+												  image_layout final_layout,
+												  const blend_operation &blend) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
+		final_layout,
+		attachment_load_op::undefined,
+		attachment_store_op::store,
+		blend
+	};
+}
+
 /**
 *	@brief	Creates a framebuffer attachment with the following load-store operations:
 *			Ignore initial attachment content and discard contents after render.
@@ -273,6 +484,25 @@ framebuffer_attachment_layout inline ignore_discard(format image_format,
 		image_format,
 		image_layout::undefined,
 		_detail::attachment_layout_for_format(image_format),
+		final_layout,
+		attachment_load_op::undefined,
+		attachment_store_op::discard,
+		blend
+	};
+}
+
+/**
+*	@brief	Creates a framebuffer attachment with the following load-store operations:
+*			Ignore initial attachment content and discard contents after render.
+*/
+framebuffer_attachment_layout inline ignore_discard(format image_format,
+													image_layout layout,
+													image_layout final_layout,
+													const blend_operation &blend) {
+	return {
+		image_format,
+		image_layout::undefined,
+		layout,
 		final_layout,
 		attachment_load_op::undefined,
 		attachment_store_op::discard,

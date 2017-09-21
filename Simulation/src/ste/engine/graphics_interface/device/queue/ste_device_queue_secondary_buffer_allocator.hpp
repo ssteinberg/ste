@@ -28,6 +28,7 @@ private:
 	void dealloc(buffer_t &&buffer) const {
 		std::unique_lock<std::mutex> l(*m);
 		{
+			// Move into temporary
 			auto temp = std::move(buffer);
 		}
 	}

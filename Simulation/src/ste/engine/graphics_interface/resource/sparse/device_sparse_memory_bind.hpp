@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -9,15 +9,11 @@
 namespace ste {
 namespace gl {
 
-namespace vk {
-
-struct vk_sparse_memory_bind {
-	ste_gl_device_memory_allocator::allocation_t *allocation;
+struct device_sparse_memory_bind {
+	ste_gl_device_memory_allocator::allocation_t *allocation{ nullptr };
 	std::uint64_t resource_offset_bytes;
 	std::uint64_t size_bytes;
 };
-
-}
 
 }
 }

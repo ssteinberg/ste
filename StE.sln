@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StE", "StE.vcxproj", "{70B22EE6-B88C-468D-9221-333B3376689D}"
 EndProject
@@ -13,6 +13,8 @@ Global
 		Profile|x86 = Profile|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		RenderDoc|x64 = RenderDoc|x64
+		RenderDoc|x86 = RenderDoc|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{70B22EE6-B88C-468D-9221-333B3376689D}.Debug|x64.ActiveCfg = Debug|x64
@@ -27,8 +29,15 @@ Global
 		{70B22EE6-B88C-468D-9221-333B3376689D}.Release|x64.Build.0 = Release|x64
 		{70B22EE6-B88C-468D-9221-333B3376689D}.Release|x86.ActiveCfg = Release|Win32
 		{70B22EE6-B88C-468D-9221-333B3376689D}.Release|x86.Build.0 = Release|Win32
+		{70B22EE6-B88C-468D-9221-333B3376689D}.RenderDoc|x64.ActiveCfg = RenderDoc|x64
+		{70B22EE6-B88C-468D-9221-333B3376689D}.RenderDoc|x64.Build.0 = RenderDoc|x64
+		{70B22EE6-B88C-468D-9221-333B3376689D}.RenderDoc|x86.ActiveCfg = RenderDoc|Win32
+		{70B22EE6-B88C-468D-9221-333B3376689D}.RenderDoc|x86.Build.0 = RenderDoc|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {733E1FD6-2BFF-4C3C-B46F-EA2DCAC5F890}
 	EndGlobalSection
 EndGlobal

@@ -39,8 +39,8 @@ auto host_read_image(const ste_context &ctx,
 					 std::uint32_t initial_level,
 					 std::uint32_t max_layer,
 					 std::uint32_t max_level,
-					 const lib::vector<wait_semaphore> &wait_semaphores = {},
-					 const lib::vector<const semaphore*> &signal_semaphores = {}) {
+					 lib::vector<wait_semaphore> &&wait_semaphores = {},
+					 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	using block_type = typename gl::format_traits<format>::block_type;
 	using staging_buffer_t = device_buffer<block_type, device_resource_allocation_policy_host_visible>;
 	using extent_type = glm::u32vec3;
@@ -123,7 +123,7 @@ auto host_read_image(const ste_context &ctx,
 	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
-	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores, signal_semaphores]() mutable {
+	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto &command_buffer = batch->acquire_command_buffer();
 
 		// Record and submit a one-time batch
@@ -132,14 +132,18 @@ auto host_read_image(const ste_context &ctx,
 
 			// Copy to staging buffer
 			recorder
-				<< cpy_cmd
+				<< std::move(cpy_cmd)
 				<< cmd_pipeline_barrier(pipeline_barrier(pipeline_stage::transfer,
 														 pipeline_stage::host,
 														 buffer_memory_barrier(batch->user_data(),
 																			   access_flags::transfer_write,
 																			   access_flags::host_read)));
 		}
-		ste_device_queue::submit_batch(std::move(batch), wait_semaphores, signal_semaphores);
+
+		batch->wait_semaphores = std::move(wait_semaphores);
+		batch->signal_semaphores = std::move(signal_semaphores);
+
+		ste_device_queue::submit_batch(std::move(batch));
 	});
 
 	// Return future that reads from the device buffer
@@ -174,6 +178,7 @@ auto host_read_image(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -182,16 +187,17 @@ auto host_read_image_1d(const ste_context &ctx,
 						const device_image<1, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						const lib::vector<wait_semaphore> &wait_semaphores = {},
-						const lib::vector<const semaphore*> &signal_semaphores = {}) {
+						std::uint32_t layer = 0,
+						lib::vector<wait_semaphore> &&wait_semaphores = {},
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
-																	wait_semaphores,
-																	signal_semaphores);
+																	std::move(wait_semaphores),
+																	std::move(signal_semaphores));
 }
 
 /*
@@ -202,6 +208,7 @@ auto host_read_image_1d(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -210,16 +217,17 @@ auto host_read_image_2d(const ste_context &ctx,
 						const device_image<2, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						const lib::vector<wait_semaphore> &wait_semaphores = {},
-						const lib::vector<const semaphore*> &signal_semaphores = {}) {
+						std::uint32_t layer = 0,
+						lib::vector<wait_semaphore> &&wait_semaphores = {},
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
-																	wait_semaphores,
-																	signal_semaphores);
+																	std::move(wait_semaphores),
+																	std::move(signal_semaphores));
 }
 
 /*
@@ -230,6 +238,7 @@ auto host_read_image_2d(const ste_context &ctx,
 *	@param	image				Device image to copy from
 *	@param	initial_level		Initial level to start copying from
 *	@param	max_level			Last level to copy
+*	@param	layer				Image's layer to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
@@ -238,16 +247,17 @@ auto host_read_image_3d(const ste_context &ctx,
 						const device_image<3, allocation_policy> &image,
 						std::uint32_t initial_level = 0,
 						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						const lib::vector<wait_semaphore> &wait_semaphores = {},
-						const lib::vector<const semaphore*> &signal_semaphores = {}) {
+						std::uint32_t layer = 0,
+						lib::vector<wait_semaphore> &&wait_semaphores = {},
+						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_3d>(ctx,
 																	image,
-																	0,
+																	layer,
 																	initial_level,
-																	0,
+																	layer,
 																	max_level,
-																	wait_semaphores,
-																	signal_semaphores);
+																	std::move(wait_semaphores),
+																	std::move(signal_semaphores));
 }
 
 /*
@@ -270,16 +280,16 @@ auto host_read_image_1d_array(const ste_context &ctx,
 							  std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 							  std::uint32_t initial_layer = 0,
 							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-							  const lib::vector<wait_semaphore> &wait_semaphores = {},
-							  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+							  lib::vector<wait_semaphore> &&wait_semaphores = {},
+							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d_array>(ctx,
 																		  image,
 																		  initial_layer,
 																		  initial_level,
 																		  max_layer,
 																		  max_level,
-																		  wait_semaphores,
-																		  signal_semaphores);
+																		  std::move(wait_semaphores),
+																		  std::move(signal_semaphores));
 }
 
 /*
@@ -302,16 +312,16 @@ auto host_read_image_2d_array(const ste_context &ctx,
 							  std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 							  std::uint32_t initial_layer = 0,
 							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-							  const lib::vector<wait_semaphore> &wait_semaphores = {},
-							  const lib::vector<const semaphore*> &signal_semaphores = {}) {
+							  lib::vector<wait_semaphore> &&wait_semaphores = {},
+							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d_array>(ctx,
 																		  image,
 																		  initial_layer,
 																		  initial_level,
 																		  max_layer,
 																		  max_level,
-																		  wait_semaphores,
-																		  signal_semaphores);
+																		  std::move(wait_semaphores),
+																		  std::move(signal_semaphores));
 }
 
 /*
@@ -334,16 +344,16 @@ auto host_read_image_cubemap(const ste_context &ctx,
 							 std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 							 std::uint32_t initial_layer = 0,
 							 std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-							 const lib::vector<wait_semaphore> &wait_semaphores = {},
-							 const lib::vector<const semaphore*> &signal_semaphores = {}) {
+							 lib::vector<wait_semaphore> &&wait_semaphores = {},
+							 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap>(ctx,
 																		 image,
 																		 initial_layer,
 																		 initial_level,
 																		 max_layer,
 																		 max_level,
-																		 wait_semaphores,
-																		 signal_semaphores);
+																		 std::move(wait_semaphores),
+																		 std::move(signal_semaphores));
 }
 
 /*
@@ -366,16 +376,16 @@ auto host_read_image_cubemap_array(const ste_context &ctx,
 								   std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
 								   std::uint32_t initial_layer = 0,
 								   std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-								   const lib::vector<wait_semaphore> &wait_semaphores = {},
-								   const lib::vector<const semaphore*> &signal_semaphores = {}) {
+								   lib::vector<wait_semaphore> &&wait_semaphores = {},
+								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap_array>(ctx,
 																			   image,
 																			   initial_layer,
 																			   initial_level,
 																			   max_layer,
 																			   max_level,
-																			   wait_semaphores,
-																			   signal_semaphores);
+																			   std::move(wait_semaphores),
+																			   std::move(signal_semaphores));
 }
 
 }

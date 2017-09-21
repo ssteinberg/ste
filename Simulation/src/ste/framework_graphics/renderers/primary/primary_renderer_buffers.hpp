@@ -17,8 +17,6 @@
 #include <atmospherics_lut_storage.hpp>
 #include <renderer_transform_buffers.hpp>
 #include <linked_light_lists.hpp>
-#include <shadowmap_storage.hpp>
-#include <volumetric_scattering_storage.hpp>
 
 #include <atomic>
 #include <connection.hpp>
@@ -36,36 +34,34 @@ private:
 		return static_cast<int>(glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier))) + 1;
 	}
 
-	static gl::pipeline_external_binding_set create_common_binding_set_collection(const ste_context &ctx,
-																				  const renderer_transform_buffers &transform_buffers,
-																				  const linked_light_lists &linked_light_list_storage,
-																				  const deferred_gbuffer &gbuffer,
-																				  const shadowmap_storage &shadows,
-																				  const atmospherics_buffer &atmospheric_buffer,
-																				  const atmospherics_lut_storage &atmospherics_luts,
-																				  const scene *s);
+	static gl::pipeline_external_binding_set create_common_binding_set_collection(const ste_context &ctx);
 
 private:
 	alias<const ste_context> ctx;
+	const scene *s;
 
 	connection<> gbuffer_depth_target_connection;
-	connection<> shadows_storage_connection;
+	connection<> lll_storage_connection;
 
 	glm::uvec2 extent;
 	std::atomic_flag projection_data_up_to_date_flag;
 
-	renderer_transform_buffers transform_buffers;
-
+	ste_resource<linked_light_lists> linked_light_list_storage;
 	gl::rendering_system::storage_ptr<atmospherics_lut_storage> atmospherics_luts;
 	atmospherics_buffer atmospheric_buffer;
 
 	ste_resource<deferred_gbuffer> gbuffer;
-
-	ste_resource<shadowmap_storage> shadows_storage;
-	ste_resource<linked_light_lists> linked_light_list_storage;
-	ste_resource<volumetric_scattering_storage> vol_scat_storage;
+	renderer_transform_buffers transform_buffers;
 
 	mutable gl::pipeline_external_binding_set common_binding_set_collection;
+
+private:
+	void common_binding_set_bind_transform_buffers();
+	void common_binding_set_bind_mesh_and_materials();
+	void common_binding_set_bind_light_buffers();
+	void common_binding_set_bind_lll_buffers();
+	void common_binding_set_bind_gbuffer();
+	void common_binding_set_bind_atmospheric_buffers();
 
 public:
 	primary_renderer_buffers(const ste_context &ctx,
@@ -74,35 +70,35 @@ public:
 							 gl::rendering_system::storage_ptr<atmospherics_lut_storage> &&atmospherics_luts,
 							 const atmospherics_properties<double> &atmospherics_prop)
 		: ctx(ctx),
+		s(s),
 		extent(extent),
 
-		transform_buffers(ctx),
-
+		linked_light_list_storage(ctx, extent),
 		atmospherics_luts(std::move(atmospherics_luts)),
 		atmospheric_buffer(ctx, atmospherics_prop),
 
 		gbuffer(ctx, extent, gbuffer_depth_target_levels()),
+		transform_buffers(ctx),
 
-		shadows_storage(ctx),
-		linked_light_list_storage(ctx, extent),
-		vol_scat_storage(ctx, extent),
-
-		common_binding_set_collection(create_common_binding_set_collection(ctx,
-																		   transform_buffers,
-																		   *linked_light_list_storage,
-																		   *gbuffer,
-																		   *shadows_storage,
-																		   atmospheric_buffer,
-																		   *this->atmospherics_luts,
-																		   s))
+		common_binding_set_collection(create_common_binding_set_collection(ctx))
 	{
-		projection_data_up_to_date_flag.test_and_set(std::memory_order_release);
+		projection_data_up_to_date_flag.clear(std::memory_order_release);
+
+		// Bind common binding set resources
+		common_binding_set_bind_transform_buffers();
+		common_binding_set_bind_mesh_and_materials();
+		common_binding_set_bind_light_buffers();
+		common_binding_set_bind_lll_buffers();
+		common_binding_set_bind_gbuffer();
+		common_binding_set_bind_atmospheric_buffers();
 
 		// gbuffer resize signal
-		gbuffer_depth_target_connection = make_connection(gbuffer->get_depth_target_modified_signal(), [this]() {
+		gbuffer_depth_target_connection = make_connection(gbuffer->get_gbuffer_modified_signal(), [this]() {
+			common_binding_set_bind_gbuffer();
 		});
-		// Shadow storage change signal
-		shadows_storage_connection = make_connection(shadows_storage->get_storage_modified_signal(), [&]() {
+		// Linked-light-lists storage change signal
+		lll_storage_connection = make_connection(linked_light_list_storage->get_storage_modified_signal(), [&]() {
+			common_binding_set_bind_lll_buffers();
 		});
 	}
 	~primary_renderer_buffers() noexcept {}
@@ -119,7 +115,6 @@ public:
 		// Resize buffers
 		gbuffer->resize(extent);
 		linked_light_list_storage->resize(extent);
-		vol_scat_storage->resize(extent);
 
 		// Set resized flag
 		projection_data_up_to_date_flag.clear(std::memory_order_release);

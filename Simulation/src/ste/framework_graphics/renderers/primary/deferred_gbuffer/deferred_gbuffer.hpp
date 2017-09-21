@@ -59,7 +59,7 @@ public:
 											  zero);
 	}
 
-	auto& get_gbuffer() const { return gbuffer.get(); }
+	auto& get_gbuffer() const { return gbuffer; }
 
 	auto& get_extent() const { return extent; }
 	
@@ -74,7 +74,7 @@ public:
 	auto& get_depth_fbo() { return depth_fbo; }
 	auto& get_depth_backface_fbo() { return depth_backface_fbo; }
 
-	auto& get_depth_target_modified_signal() const { return gbuffer_resized_signal; }
+	auto& get_gbuffer_modified_signal() const { return gbuffer_resized_signal; }
 };
 
 }

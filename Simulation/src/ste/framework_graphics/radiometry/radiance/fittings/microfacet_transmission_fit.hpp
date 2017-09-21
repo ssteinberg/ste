@@ -55,12 +55,15 @@ public:
 		if (bytes_read != lut_size)
 			throw microfacet_fit_error("Premature EOF");
 
+#ifndef DEBUG
+		// CRC computation is too slow on debug builds, skip..
 		boost::crc_32_type crc_computer;
 		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(fit_data->data.get()), lut_size);
 		auto hash = crc_computer.checksum();
 
 		if (fit_data->header.hash != hash)
 			throw microfacet_fit_error("Checksum mismatch");
+#endif
 	}
 
 	microfacet_transmission_fit(microfacet_transmission_fit &&) = default;

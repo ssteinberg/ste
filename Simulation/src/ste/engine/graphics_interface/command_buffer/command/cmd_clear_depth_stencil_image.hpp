@@ -40,7 +40,7 @@ public:
 	virtual ~cmd_clear_depth_stencil_image() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdClearDepthStencilImage(command_buffer,
 									image,
 									static_cast<VkImageLayout>(layout),

@@ -1,0 +1,71 @@
+
+#type compute
+#version 450
+
+#include <hdr_common.glsl>
+
+layout(local_size_x = 1, local_size_y = 1) in;
+
+layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
+	hdr_bokeh_parameters params;
+};
+layout(std430, binding = 3) restrict readonly buffer hdr_bokeh_parameters_buffer_prev {
+	hdr_bokeh_parameters prev_params;
+};
+
+layout(push_constant) uniform time_push_t {
+	float time_ms;
+};
+
+float adaptation_down_coef(float field_intensity) {
+	// I >= 2:			3 sec adaptation
+	// I -> -inf:		5 min adaptation
+	const float threshold = 2.f;
+	const float adaptation0 = 1.f / 3e+3f;
+	const float adaptation1 = 1.f / (5 * 60e+3f);
+
+	const float scale = 2.f;
+
+	float I = min(field_intensity, threshold) / threshold * scale; // in (-inf, scale]
+	return mix(adaptation1, adaptation0, exp(I) / exp(scale));
+}
+
+float adaptation_up_coef(float field_intensity) {
+	// I >= 0:		.1sec adaptation
+	// I -> -inf:	10sec adaptation
+	const float threshold = .01f;
+	const float adaptation0 = 1.f / 1e+2f;
+	const float adaptation1 = 1.f / 10e+3f;
+
+	const float scale = 2.f;
+
+	float I = min(field_intensity, threshold) / threshold * scale; // in (-inf, scale]
+	return mix(adaptation1, adaptation0, exp(I) / exp(scale));
+}
+
+float adapt(float target, float lum) {
+	float field_intensity = lum;
+	float adaptation_coef = target > lum ? adaptation_up_coef(field_intensity) : adaptation_down_coef(field_intensity);
+
+	return clamp(adaptation_coef * time_ms, .0f, 1.f);
+}
+
+void main() {
+	float min_lum = hdr_lum_from_hdr_params(params.lum_min);
+	float max_lum = hdr_lum_from_hdr_params(params.lum_max);
+
+	if (prev_params.lum_min != 0xffffffff) {
+		float min_lum_prev = hdr_lum_from_hdr_params(prev_params.lum_min);
+		float max_lum_prev = hdr_lum_from_hdr_params(prev_params.lum_max);
+
+		float a = adapt(min_lum, min_lum_prev);
+		float b = adapt(max_lum, max_lum_prev);
+		float t = mix(a, b, .5f);
+
+		min_lum = mix(min_lum_prev, min_lum, t);
+		max_lum = mix(max_lum_prev, max_lum, t);
+	}
+
+	params.lum_min = sfloat_to_uint_order_preserving(min_lum);
+	params.lum_max = sfloat_to_uint_order_preserving(max_lum);
+}

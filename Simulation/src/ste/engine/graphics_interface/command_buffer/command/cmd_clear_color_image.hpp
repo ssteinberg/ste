@@ -60,7 +60,7 @@ public:
 	virtual ~cmd_clear_color_image() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdClearColorImage(command_buffer,
 							 image,
 							 static_cast<VkImageLayout>(layout),

@@ -6,7 +6,7 @@
 
 layout(local_size_x = 32, local_size_y = 32) in;
 
-layout(r32f, binding = 0) restrict readonly uniform image2D hdr_lums;
+layout(binding = 0) uniform sampler2D hdr_lums;
 
 layout(std430, binding = 1) restrict buffer histogram_data {
 	uint histogram[bins];
@@ -17,11 +17,15 @@ layout(std430, binding = 2) restrict readonly buffer hdr_bokeh_parameters_buffer
 };
 
 void main() {
-	float l = imageLoad(hdr_lums, ivec2(gl_GlobalInvocationID.xy)).x;
+	if (any(greaterThanEqual(gl_GlobalInvocationID.xy, textureSize(hdr_lums, 0))))
+		return;
 
-	float min_lum = intBitsToFloat(params.lum_min);
-	float max_lum = intBitsToFloat(params.lum_max);
+	float l = texelFetch(hdr_lums, ivec2(gl_GlobalInvocationID.xy), 0).x;
 
+	float min_lum = hdr_lum_from_hdr_params(params.lum_min);
+	float max_lum = hdr_lum_from_hdr_params(params.lum_max);
+
+	// Add a sample to relevant bin
 	int bin = int(hdr_bin(max_lum, min_lum, l));
-	atomicAdd(histogram[bin], 1);
+	atomicAdd(histogram[min(bin, bins-1)], 1);
 }

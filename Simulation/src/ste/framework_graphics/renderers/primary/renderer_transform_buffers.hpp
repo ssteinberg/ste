@@ -23,7 +23,7 @@ private:
 			get<0>().get<0>() = q.real;
 			get<0>().get<1>() = q.dual;
 		}
-		auto view_transform() { return glm::dualquat{ get<0>().get<0>(), get<0>().get<0>() }; }
+		auto view_transform() { return glm::dualquat{ get<0>().get<0>(), get<0>().get<1>() }; }
 
 		void set_inverse_view_transform(const glm::dualquat &q) {
 			get<1>().get<0>() = q.real;
@@ -65,7 +65,7 @@ public:
 
 		view_data v;
 		v.set_view_transform(c.view_transform_dquat());
-		v.inverse_view_transform() = glm::inverse(v.view_transform());
+		v.set_inverse_view_transform(glm::inverse(v.view_transform()));
 		v.eye_position() = glm::vec4{ p.x, p.y, p.z, .0f };
 
 		recorder << view_buffer.overwrite_cmd(0, v);

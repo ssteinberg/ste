@@ -1,6 +1,5 @@
-﻿1. **primary_renderer**
+﻿1. <strike>**primary_renderer**</strike>
      - <strike>Fragments must conform to ste_resource deferred</strike> 
-     - Switch back to atomic counters (GLSL 4.6)
      - <strike>Enumerate resources used for each primary renderer fragment</strike>
      - <strike>Primary renderer pipeline barriers</strike>
      - <strike>Decouple renderer and presentation engine</strike>
@@ -37,6 +36,12 @@
 21. Units, meters, km, kelvin, bytes, kb, etc.
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
 23. Queue transfer, correctly, in time.
-24. Get rid of host commands altogether.
-25. Fix bind sparse mess.
-26. Host read-back, buffers and images.
+24. <strike>Get rid of host commands altogether.</strike>
+25. <strike>Fix bind sparse mess.</strike>
+26. <strike>Host read-back, buffers and images.</strike>
+27. Switch back to atomic counters (GLSL 4.6)
+28. <strike>HDR: Temporal stablity of histogram tonemap.</strike>
+29. HDR: Adaptation
+30. Multi-submit command batch
+31. Sparse images/opaque images
+32. <strike>Semaphores enforce correct host-side happens-before relationship</strike>

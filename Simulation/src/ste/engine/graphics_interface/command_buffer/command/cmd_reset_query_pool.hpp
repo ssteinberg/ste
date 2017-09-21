@@ -32,7 +32,7 @@ public:
 	virtual ~cmd_reset_query_pool() noexcept {}
 
 private:
-	void operator()(const command_buffer &command_buffer, command_recorder &) const override final {
+	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdResetQueryPool(command_buffer, pool, first, count);
 	}
 };

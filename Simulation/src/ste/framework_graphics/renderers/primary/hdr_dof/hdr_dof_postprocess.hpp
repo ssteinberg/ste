@@ -1,4 +1,4 @@
-// StE
+//	StE
 // © Shlomi Steinberg, 2015-2017
 
 #pragma once
@@ -18,11 +18,8 @@
 #include <hdr_tonemap_coc_fragment.hpp>
 #include <hdr_compute_histogram_fragment.hpp>
 #include <hdr_compute_histogram_sums_fragment.hpp>
+#include <hdr_adaptation_fragment.hpp>
 #include <hdr_compute_minmax_fragment.hpp>
-
-#include <command_recorder.hpp>
-
-#include <alias.hpp>
 
 namespace ste {
 namespace graphics {
@@ -31,9 +28,9 @@ class hdr_dof_postprocess : public gl::fragment {
 private:
 	static constexpr float default_aperature_diameter = 8e-3f;
 	static constexpr float default_aperature_focal_ln = 23e-3f;
+	static constexpr float default_gamma = 2.2f;
 
 private:
-	alias<const ste_context> ctx;
 	glm::u32vec2 extent;
 	gl::rendering_system::storage_ptr<hdr_dof_postprocess_storage> s;
 
@@ -45,6 +42,7 @@ private:
 
 	hdr_compute_minmax_fragment compute_minmax_task;
 	hdr_compute_histogram_fragment create_histogram_task;
+	hdr_adaptation_fragment adaptation_task;
 	hdr_compute_histogram_sums_fragment compute_histogram_sums_task;
 	hdr_tonemap_coc_fragment tonemap_coc_task;
 	hdr_bloom_blur_x_fragment bloom_blurx_task;
@@ -54,7 +52,9 @@ private:
 	gl::framebuffer fbo_hdr_final;
 	gl::framebuffer fbo_hdr;
 	gl::framebuffer fbo_hdr_bloom_blurx_image;
+	gl::framebuffer fbo_hdr_lums;
 
+//	float tick_time_ms{ .0f };
 	bool invalidated{ true };
 
 private:
@@ -96,6 +96,18 @@ public:
 		assert(focal_length > .0f && "Focal length must be positive");
 
 		bokeh_blur_task.set_aperture_parameters(diameter, focal_length);
+	}
+
+	/**
+	*	@brief	Set the "gamma" value for the final HDR tonemapping power-law expression. 
+	*			>1 values compresses light regions, making the overall scene darker.
+	*
+	* 	@param gamma	Gamma value. Defaults to 2.2.
+	*/
+	void set_gamma(float gamma) {
+		assert(gamma > .0f && "Gamma must be positive");
+
+		tonemap_coc_task.set_gamma(gamma);
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {

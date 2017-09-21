@@ -24,9 +24,6 @@
 #include <scene_write_gbuffer_fragment.hpp>
 #include <linked_light_lists_gen_fragment.hpp>
 #include <light_preprocessor_fragment.hpp>
-#include <shadowmap_projector.hpp>
-#include <directional_shadowmap_projector.hpp>
-#include <volumetric_scattering_scatter_fragment.hpp>
 #include <gbuffer_downsample_depth_fragment.hpp>
 
 #include <signal.hpp>
@@ -57,18 +54,12 @@ private:
 	ste_resource<fxaa_postprocess> fxaa;
 
 	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
-	ste_resource<scene_prepopulate_depth_front_face_fragment> prepopulate_depth;
 	ste_resource<scene_prepopulate_depth_back_face_fragment> prepopulate_backface_depth;
 	ste_resource<scene_write_gbuffer_fragment> scene_write_gbuffer;
 	ste_resource<scene_geo_cull_fragment> scene_geo_cull;
 
 	ste_resource<linked_light_lists_gen_fragment> linked_light_list_generator;
 	ste_resource<light_preprocessor_fragment> light_preprocess;
-
-	ste_resource<shadowmap_projector> shadows_projector;
-	ste_resource<directional_shadowmap_projector> directional_shadows_projector;
-
-	ste_resource<volumetric_scattering_scatter_fragment> volumetric_scatterer;
 
 private:
 	optional<atmospherics_properties<double>> atmospherics_properties_update;
@@ -87,14 +78,10 @@ private:
 
 	void record_light_preprocess_fragment(gl::command_recorder &recorder);
 	void record_scene_geometry_cull_fragment(gl::command_recorder &recorder);
-	void record_shadow_projector_fragment(gl::command_recorder &recorder);
-	void record_directional_shadow_projector_fragment(gl::command_recorder &recorder);
-	void record_prepopulate_depth_fragment(gl::command_recorder &recorder);
 	void record_downsample_depth_fragment(gl::command_recorder &recorder);
 	void record_linked_light_list_generator_fragment(gl::command_recorder &recorder);
 	void record_scene_fragment(gl::command_recorder &recorder);
 	void record_prepopulate_depth_backface_fragment(gl::command_recorder &recorder);
-	void record_volumetric_scattering_fragment(gl::command_recorder &recorder);
 	void record_deferred_composer_fragment(gl::command_recorder &recorder);
 	
 public:
