@@ -1151,7 +1151,7 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.cpp">
+    <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui_fragment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.cpp">
@@ -1278,7 +1278,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\directional_shadowmap_projector.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_projector.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shadowmap_storage.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_timeline.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profileable.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\profiler\profiler.hpp" />
@@ -1496,6 +1496,8 @@
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\atmospherics\volumetric_scattering\shaders\volumetric_scattering_scatter.comp" />
     <None Include="Simulation\src\ste\framework_graphics\shadows\shadow_maps\shaders\shadow_directional.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\shaders\imgui_vulkan.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\shaders\imgui_vulkan.vert" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.geom_old" />

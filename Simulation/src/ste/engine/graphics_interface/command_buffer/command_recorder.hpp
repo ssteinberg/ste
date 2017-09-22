@@ -52,6 +52,11 @@ public:
 	command_recorder &operator<<(command &&cmd);
 
 	auto &get_queue_descriptor() const { return queue_descriptor; }
+
+	/*
+	 *	@brief	Returns a reference to the command buffer
+	 */
+	auto &get_command_buffer() const { return *buffer; }
 };
 
 }

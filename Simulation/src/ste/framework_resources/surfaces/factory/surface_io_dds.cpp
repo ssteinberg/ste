@@ -51,22 +51,26 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 	using extent_type = gl::image_extent_type_t<dimensions>;
 
 	// Read file
-	std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
-	if (!fs) {
-		using namespace attributes;
-		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
-		throw resource_io_error("Could not open file");
+	lib::string content;
+	{
+		std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
+		if (!fs) {
+			using namespace attributes;
+			ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
+			throw resource_io_error("Could not open file");
+		}
+
+		const std::size_t size = std::experimental::filesystem::file_size(path);
+		content.resize(size);
+		fs.read(content.data(), size);
 	}
 
-	const auto content = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
-	fs.close();
-	const auto size = content.size();
 	auto header_bytes = sizeof(dds_header) + sizeof(magic_dds);
 	auto data = content.data();
 
 	// Validate magic
 	if (strncmp(data, reinterpret_cast<const char*>(magic_dds), 4) != 0 ||
-		size <= sizeof(dds_header) + sizeof(magic_dds)) {
+		content.size() <= sizeof(dds_header) + sizeof(magic_dds)) {
 		using namespace attributes;
 		ste_log_error() << text::attributed_string("DDS ") + i(lib::to_string(path.string())) + ": Bad magic or header" << std::endl;
 		throw surface_error("Bad magic or header on DDS file");
@@ -79,7 +83,7 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 
 	dds_header10 Header10;
 	if ((header.Format.flags & DDPF_FOURCC) && (header.Format.magic == d3dfmt::D3DFMT_DX10)) {
-		if (size <= sizeof(dds_header) + sizeof(magic_dds) + sizeof(dds_header10)) {
+		if (content.size() <= sizeof(dds_header) + sizeof(magic_dds) + sizeof(dds_header10)) {
 			using namespace attributes;
 			ste_log_error() << text::attributed_string("DDS ") + i(lib::to_string(path.string())) + ": Bad magic or header" << std::endl;
 			throw surface_error("Bad magic or header on DDS file");
@@ -337,7 +341,7 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 	if constexpr (dimensions > 1)	extent.y = static_cast<std::uint32_t>(header.Height);
 	if constexpr (dimensions > 2)	extent.z = static_cast<std::uint32_t>(depth_count);
 
-	std::size_t bytes = size - header_bytes;
+	std::size_t bytes = content.size() - header_bytes;
 	surface_t surface(format.get(),
 					  image_type,
 					  extent,

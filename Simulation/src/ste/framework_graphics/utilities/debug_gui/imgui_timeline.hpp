@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -9,32 +9,32 @@
 
 #include <sstream>
 #include <iomanip>
-#include <lib/map.hpp>
+#include <lib/vector.hpp>
 #include <lib/string.hpp>
 
 #include <imgui/imgui.h>
 
 namespace ImGui {
 
-inline void PlotTimeline(const lib::vector<std::pair<lib::string, float>> &times) {
+inline void PlotTimeline(const ste::lib::vector<std::pair<ste::lib::string, float>> &times) {
 	float total_time = 0.f;
 	for (auto &pair : times)
 		total_time += pair.second;
 
 	ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
-	ImVec2 canvasPosition = ImGui::GetCursorScreenPos();
-	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
+	const ImVec2 canvasPosition = ImGui::GetCursorScreenPos();
+	const ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
 	draw_list->PushClipRect(ImVec2(canvasPosition.x, canvasPosition.y), ImVec2(canvasPosition.x + canvasSize.x, canvasPosition.y + canvasSize.y), true);
 
 	ImGui::InvisibleButton("canvas", canvasSize);
 
-	int offset = canvasPosition.x;
+	auto offset = canvasPosition.x;
 	for (auto &pair : times) {
-		auto t = pair.second;
-		auto p = t / total_time;
-		auto poffset = std::max<int>(0, static_cast<int>(p * canvasSize.x + .5f) - 1);
+		const auto t = pair.second;
+		const auto p = t / total_time;
+		const auto poffset = std::max<int>(0, static_cast<int>(p * canvasSize.x + .5f) - 1);
 
 		std::ostringstream out;
 		out << std::setprecision(5) << t / 1000.f;

@@ -82,14 +82,15 @@ public:
 #endif
 	}
 
-	static VkAllocationCallbacks allocation_callbacks() {
-		VkAllocationCallbacks callbacks = {};
-		callbacks.pUserData = nullptr;
-		callbacks.pfnAllocation = allocate;
-		callbacks.pfnReallocation = reallocate;
-		callbacks.pfnFree = free;
-		callbacks.pfnInternalAllocation = internal_allocation_notification;
-		callbacks.pfnInternalFree = internal_free_notification;
+	static VkAllocationCallbacks& allocation_callbacks() {
+		static VkAllocationCallbacks callbacks = {
+			nullptr,
+			allocate,
+			reallocate,
+			free,
+			internal_allocation_notification,
+			internal_free_notification
+		};
 
 		return callbacks;
 	}

@@ -297,10 +297,15 @@ public:
 	 */
 	auto& common_samplers_collection() const { return samplers_collection; }
 
+	/*
+	 *	@brief	Returns a reference to the physical device
+	 */
+	auto& physical_device() const { return parameters.physical_device; }
+
 	/**
 	*	@brief	Human readable device name
 	*/
-	lib::string name() const { return lib::string(parameters.physical_device.properties.deviceName); }
+	lib::string name() const { return lib::string(physical_device().properties.deviceName); }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 

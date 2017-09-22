@@ -36,15 +36,19 @@ opaque_surface<dimensions> load_ktx(const std::experimental::filesystem::path &p
 	using extent_type = gl::image_extent_type_t<dimensions>;
 
 	// Read file
-	std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
-	if (!fs) {
-		using namespace attributes;
-		ste_log_error() << text::attributed_string("Can't open KTX ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
-		throw resource_io_error("Could not open file");
-	}
+	lib::string content;
+	{
+		std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
+		if (!fs) {
+			using namespace attributes;
+			ste_log_error() << text::attributed_string("Can't open KTX ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
+			throw resource_io_error("Could not open file");
+		}
 
-	auto content = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
-	fs.close();
+		const std::size_t size = std::experimental::filesystem::file_size(path);
+		content.resize(size);
+		fs.read(content.data(), size);
+	}
 
 	if (content.size() <= sizeof(magic_ktx10) + sizeof(ktx_header10)) {
 		ste_log_error() << "Can't open KTX or file empty: " << path << std::endl;
