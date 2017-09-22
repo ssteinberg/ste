@@ -81,10 +81,12 @@ struct alloc_impl<Allocator, true> {
 																		size_type n,
 																		Args&&... args) {
 		*reinterpret_cast<length_type*>(ptr) = static_cast<length_type>(n);
-
 		reinterpret_cast<byte*&>(ptr) += array_length_size();
-		for (size_type idx = 0; idx < n; ++idx)
-			::new (&ptr[idx]) value_type(std::forward<Args>(args)...);
+
+		if constexpr (!std::is_trivially_constructible_v<value_type> || sizeof...(args) > 0) {
+			for (size_type idx = 0; idx < n; ++idx)
+				::new (&ptr[idx]) value_type(std::forward<Args>(args)...);
+		}
 
 		return ptr;
 	}

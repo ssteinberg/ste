@@ -8,16 +8,7 @@ using namespace ste::graphics;
 material_layer::material_layer(const ste_context &ctx,
 							   material_textures_storage &textures_storage)
 	: ctx(ctx),
-	textures_storage(textures_storage),
-	material_sampler(ctx.device(),
-					 "material_layer sampler",
-					 gl::sampler_parameter::anisotropy(16),
-					 gl::sampler_parameter::address_mode(gl::sampler_address_mode::repeat,
-														 gl::sampler_address_mode::repeat,
-														 gl::sampler_address_mode::repeat),
-					 gl::sampler_parameter::filtering(gl::sampler_filter::linear,
-													  gl::sampler_filter::linear,
-													  gl::sampler_mipmap_mode::linear))
+	textures_storage(textures_storage)
 {
 	// Write default values
 	descriptor.set_ior_phase(index_of_refraction, phase_g);

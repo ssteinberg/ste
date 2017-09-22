@@ -10,7 +10,7 @@
 
 #include <lib/unique_ptr.hpp>
 #include <istream>
-#include <boost/crc.hpp>
+#include <crc32.h>
 
 namespace ste {
 namespace graphics {
@@ -58,15 +58,10 @@ public:
 		if (bytes_read != lut_size)
 			throw microfacet_fit_error("Premature EOF");
 
-#ifndef DEBUG
-		// CRC computation is too slow on debug builds, skip..
-		boost::crc_32_type crc_computer;
-		crc_computer.process_bytes(reinterpret_cast<const std::uint8_t*>(fit_data->data.get()), lut_size);
-		auto hash = crc_computer.checksum();
-
+		// CRC checksum
+		const auto hash = crc32::crc32_fast(fit_data->data.get(), lut_size);
 		if (fit_data->header.hash != hash)
 			throw microfacet_fit_error("Checksum mismatch");
-#endif
 	}
 
 	microfacet_refraction_fit(microfacet_refraction_fit &&) = default;

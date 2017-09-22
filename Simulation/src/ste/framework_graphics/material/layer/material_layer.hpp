@@ -33,8 +33,6 @@ private:
 	alias<const ste_context> ctx;
 	alias<material_textures_storage> textures_storage;
 
-	gl::sampler material_sampler;
-
 	rgb albedo;
 	
 	material_texture roughness_map;

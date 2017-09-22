@@ -211,7 +211,7 @@
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;crc32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib32;D:\src\boost\current\stage32\lib;$(SolutionDir)Simulation\third_party\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <InterproceduralOptimization>false</InterproceduralOptimization>
@@ -265,7 +265,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;D:\src\boost\current\stage64\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltallocd.lib;libboost_system-vc141-mt-gd-1_65.lib;libboost_filesystem-vc141-mt-gd-1_65.lib;libboost_serialization-vc141-mt-gd-1_65.lib;libboost_exception-vc141-mt-gd-1_65.lib;zlibstaticd.lib;freetyped.lib;glfw3d.lib;turbojpeg-staticd.lib;libpng16_staticd.lib;tga_staticd.lib;tinyobjloaderd.lib;crc32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <InterproceduralOptimization>false</InterproceduralOptimization>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/NODEFAULTLIB:"libcmpt.lib" %(AdditionalOptions)</AdditionalOptions>
@@ -329,7 +329,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib32;D:\src\boost\current\stage32\lib;$(SolutionDir)Simulation\third_party\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
@@ -397,7 +397,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib32;D:\src\boost\current\stage32\lib;$(SolutionDir)Simulation\third_party\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
@@ -466,7 +466,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib32;D:\src\boost\current\stage32\lib;$(SolutionDir)Simulation\third_party\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions> /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
@@ -532,7 +532,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;D:\src\boost\current\stage64\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <Profile>false</Profile>
@@ -596,7 +596,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;D:\src\boost\current\stage64\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <Profile>true</Profile>
@@ -660,7 +660,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\lib;D:\src\boost\current\stage64\lib;$(SolutionDir)Simulation\third_party\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;ltalloc.lib;libboost_system-vc141-mt-1_65.lib;libboost_filesystem-vc141-mt-1_65.lib;libboost_serialization-vc141-mt-1_65.lib;zlibstatic.lib;freetype.lib;glfw3.lib;turbojpeg-static.lib;libpng16_static.lib;tga_static.lib;tinyobjloader.lib;crc32.lib</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <Profile>false</Profile>

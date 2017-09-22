@@ -343,6 +343,8 @@ template <gl::component_swizzle component, typename Source, typename Block>
 void store_block_8component(Block *block, const Source data, unsigned count = 8) {
 	using source_type = std::remove_cv_t<std::remove_reference_t<decltype(data)>>;
 
+	count = std::min(count, 8u);
+
 	// Use dedicated routines for 8-component store
 	if constexpr (std::is_same_v<source_type, __m256>)
 		_detail::store_block_8_components_fp32<component>(block, data, count);
@@ -365,6 +367,8 @@ void store_block_8component(Block *block, const Source data, unsigned count = 8)
 */
 template <gl::component_swizzle component, typename Block>
 void store_block_8component_default(Block *block, unsigned count = 8) {
+	count = std::min(count, 8u);
+
 	// Create default value
 	using default_val_t = typename Block::template comp_writer_type<component>;
 	default_val_t default_val;

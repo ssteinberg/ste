@@ -26,6 +26,7 @@
      - Compressed blocks
      - Operations: Resize, reduce etc.
      - Advanced operations: Convolutions
+     - Faster PNG loader
 14. <strike>Concurrency support for GPU data structures</strike>
 15. Incorporate optimizing GLSL/SPIR-v compiler (LunarGLASS?)
 16. SPIR-v refection: OpSpecConstantOp

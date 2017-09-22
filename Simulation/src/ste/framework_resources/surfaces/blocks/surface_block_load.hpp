@@ -288,6 +288,8 @@ using block_load_8component_result_t = _detail::block_load_8component_result_t<c
 */
 template <gl::component_swizzle component, typename Block>
 auto load_block_8component(const Block *block, unsigned count = 8) {
+	count = std::min(count, 8u);
+
 	using common_type = typename Block::common_type;
 	block_load_8component_result_t<common_type> result;
 
