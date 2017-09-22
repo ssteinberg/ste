@@ -785,7 +785,9 @@
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_1component.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_3component.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_4component.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_load.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_depth.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\blocks\surface_block_store.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\cubemap_face.hpp" />
     <ClCompile Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_dds.cpp" />
     <ClInclude Include="Simulation\src\ste\framework_resources\surfaces\factory\surface_io_helper.hpp" />

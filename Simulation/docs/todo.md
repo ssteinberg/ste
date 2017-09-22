@@ -21,9 +21,9 @@
      - <strike>Load opaque surface + DDS</strike>
      - Samplers
      - <strike>Surface convert and copy</strike>
-     - Accelerated operations /w AVX
+     - <strike>Accelerated operations /w AVX</strike>
      - Mipmap generation
-     - Compressed surfaces
+     - Compressed blocks
      - Operations: Resize, reduce etc.
      - Advanced operations: Convolutions
 14. <strike>Concurrency support for GPU data structures</strike>
