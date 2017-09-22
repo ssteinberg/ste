@@ -9,6 +9,8 @@
 #include <format_type_traits.hpp>
 #include <image_aspect.hpp>
 
+#include <surface_block_load.hpp>
+
 #include <unordered_map>
 #include <optional.hpp>
 
@@ -30,13 +32,18 @@ struct format_rtti {
 	unsigned is_scaled_integer : 1;
 	unsigned is_compressed : 1;
 
+	// Name of block common type
 	resource::block_common_type block_common_type_name;
-	std::size_t(*block_loader_fp32)(const std::uint8_t *input, float *output){ nullptr };
-	std::size_t(*block_loader_fp64)(const std::uint8_t *input, double *output) { nullptr };
-	std::size_t(*block_loader_int32)(const std::uint8_t *input, std::int32_t *output) { nullptr };
-	std::size_t(*block_loader_int64)(const std::uint8_t *input, std::int64_t *output) { nullptr };
-	std::size_t(*block_loader_uint32)(const std::uint8_t *input, std::uint32_t *output) { nullptr };
-	std::size_t(*block_loader_uint64)(const std::uint8_t *input, std::uint64_t *output) { nullptr };
+
+	using _block_loader_func_ptr = std::size_t(*)(const std::uint8_t *input, void *output);
+	using _block_loader_8component_func_ptr = void(*)(const std::uint8_t *input, unsigned count);
+
+	// Loader function pointers. Before use, must be cast to correct type based on common_type.
+	_block_loader_func_ptr block_loader{ nullptr };
+	_block_loader_8component_func_ptr block_loader_8component_r{ nullptr };
+	_block_loader_8component_func_ptr block_loader_8component_g{ nullptr };
+	_block_loader_8component_func_ptr block_loader_8component_b{ nullptr };
+	_block_loader_8component_func_ptr block_loader_8component_a{ nullptr };
 };
 
 namespace _internal {
@@ -126,6 +133,138 @@ auto inline format_is_float(const format &format) {
 */
 auto inline format_is_signed(const format &format) {
 	return format_id(format).is_signed;
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type fp32
+*/
+auto inline format_block_loader_fp32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::fp32);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, float *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type fp64
+*/
+auto inline format_block_loader_fp64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::fp64);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, double *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type i32
+*/
+auto inline format_block_loader_i32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::int32);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, std::int32_t *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type u32
+*/
+auto inline format_block_loader_u32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::uint32);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, std::uint32_t *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type i64
+*/
+auto inline format_block_loader_i64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::int64);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, std::int64_t *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block loader function pointer for type u64
+*/
+auto inline format_block_loader_u64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::uint64);
+	return reinterpret_cast<std::size_t(*)(const std::uint8_t *, std::uint64_t *)>(fr.block_loader);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type fp32
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_fp32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::fp32);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<float>(*)(const std::uint8_t *, unsigned)>(ptr);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type fp64
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_fp64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::fp64);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<double>(*)(const std::uint8_t *, unsigned)>(ptr);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type i32
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_i32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::int32);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<std::int32_t>(*)(const std::uint8_t *, unsigned)>(ptr);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type u32
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_u32(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::uint32);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<std::uint32_t>(*)(const std::uint8_t *, unsigned)>(ptr);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type i64
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_i64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::int64);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<std::int64_t>(*)(const std::uint8_t *, unsigned)>(ptr);
+}
+
+/**
+*	@brief	Helper method, returns the block 8-component loader function pointer for type u64
+*/
+template <gl::component_swizzle comp>
+auto format_block_loader_8component_u64(const format_rtti &fr) {
+	assert(fr.block_common_type_name == resource::block_common_type::uint64);
+
+	const auto ptr =
+		comp == component_swizzle::r ? fr.block_loader_8component_r :
+		(comp == component_swizzle::g ? fr.block_loader_8component_g :
+		(comp == component_swizzle::b ? fr.block_loader_8component_b : fr.block_loader_8component_a));
+	return reinterpret_cast<resource::block_load_8component_result_t<std::uint64_t>(*)(const std::uint8_t *, unsigned)>(ptr);
 }
 
 }

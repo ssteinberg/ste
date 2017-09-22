@@ -65,11 +65,30 @@ public:
 		(comp1 == gl::component_swizzle::a ? comp0_bits :
 		(comp2 == gl::component_swizzle::a ? comp0_bits + comp1_bits : comp0_bits + comp1_bits + comp2_bits));
 
-	static constexpr int index_for_component(gl::component_swizzle c) {
+	template <gl::component_swizzle c>
+	static constexpr int index_for_component() {
 		if constexpr (c == gl::component_swizzle::r) return r_index;
 		if constexpr (c == gl::component_swizzle::g) return g_index;
 		if constexpr (c == gl::component_swizzle::b) return b_index;
 		if constexpr (c == gl::component_swizzle::a) return a_index;
+		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g || c == gl::component_swizzle::b || c == gl::component_swizzle::a);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int offset_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_offset;
+		if constexpr (c == gl::component_swizzle::g) return g_offset;
+		if constexpr (c == gl::component_swizzle::b) return b_offset;
+		if constexpr (c == gl::component_swizzle::a) return a_offset;
+		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g || c == gl::component_swizzle::b || c == gl::component_swizzle::a);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int size_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_bits;
+		if constexpr (c == gl::component_swizzle::g) return g_bits;
+		if constexpr (c == gl::component_swizzle::b) return b_bits;
+		if constexpr (c == gl::component_swizzle::a) return a_bits;
 		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g || c == gl::component_swizzle::b || c == gl::component_swizzle::a);
 		return -1;
 	}
@@ -87,6 +106,15 @@ public:
 	using a_comp_writer_type = typename _detail::block_primary_type_selector<a_type, a_bits>::block_writer_type;
 	using common_type = typename common_type_selector_t::type;
 	static constexpr block_common_type common_type_name = common_type_selector_t::common_type_name;
+
+	template <gl::component_swizzle c>
+	using comp_type = std::conditional_t<c == gl::component_swizzle::r, r_comp_type,
+		std::conditional_t<c == gl::component_swizzle::g, g_comp_type,
+		std::conditional_t<c == gl::component_swizzle::b, b_comp_type, a_comp_type>>>;
+	template <gl::component_swizzle c>
+	using comp_writer_type = std::conditional_t<c == gl::component_swizzle::r, r_comp_writer_type,
+		std::conditional_t<c == gl::component_swizzle::g, g_comp_writer_type,
+		std::conditional_t<c == gl::component_swizzle::b, b_comp_writer_type, a_comp_writer_type>>>;
 
 private:
 	static_assert((total_bits % 8) == 0, "Block straddles bytes");
@@ -142,56 +170,18 @@ public:
 	template <int index>
 	auto component() {
 		static_assert(index >= 0 && index <= 3);
-		if constexpr (index == 0) return r();
-		if constexpr (index == 1) return g();
-		if constexpr (index == 2) return b();
-		if constexpr (index == 3) return a();
+		if constexpr (index == r_index) return r();
+		if constexpr (index == g_index) return g();
+		if constexpr (index == b_index) return b();
+		if constexpr (index == a_index) return a();
 	}
 	template <int index>
 	auto component() const {
 		static_assert(index >= 0 && index <= 3);
-		if constexpr (index == 0) return r();
-		if constexpr (index == 1) return g();
-		if constexpr (index == 2) return b();
-		if constexpr (index == 3) return a();
-	}
-
-	/**
-	 *	@brief Loads a block from memory and writes the decoded data, in RGBA swizzling, to output buffer.
-	 *	
-	 *	@param	data		Input buffer
-	 *	@param	rgba_output	Output buffer, must be able to hold sizeof(common_type)*4 bytes
-	 *	
-	 *	@return	Element count written
-	 */
-	static std::size_t load_block(const std::uint8_t *data, common_type *rgba_output) {
-		auto &block = *reinterpret_cast<const block_4components*>(data);
-		*(rgba_output + 0) = static_cast<common_type>(block.r());
-		*(rgba_output + 1) = static_cast<common_type>(block.g());
-		*(rgba_output + 2) = static_cast<common_type>(block.b());
-		*(rgba_output + 3) = static_cast<common_type>(block.a());
-
-		return 4;
-	}
-
-	/**
-	*	@brief	Encodes from buffer, assumed to be in RGBA swizzling, to block.
-	*
-	*	@param	data			Input buffer
-	*	@param	max_elements	Max elements to read
-	*/
-	template <typename src_type>
-	void write_block(const src_type *data, std::size_t max_elements = 4) {
-		a_comp_writer_type a_default_val;
-		if constexpr (is_floating_point_v<a_comp_writer_type>)
-			a_default_val = static_cast<a_comp_writer_type>(1.0);
-		else
-			a_default_val = std::numeric_limits<a_comp_type>::max();
-
-		r() = static_cast<r_comp_type>(max_elements > 0 ? static_cast<r_comp_writer_type>(*(data + 0)) : static_cast<r_comp_writer_type>(0));
-		g() = static_cast<g_comp_type>(max_elements > 1 ? static_cast<g_comp_writer_type>(*(data + 1)) : static_cast<g_comp_writer_type>(0));
-		b() = static_cast<b_comp_type>(max_elements > 2 ? static_cast<b_comp_writer_type>(*(data + 2)) : static_cast<b_comp_writer_type>(0));
-		a() = static_cast<a_comp_type>(max_elements > 3 ? static_cast<a_comp_writer_type>(*(data + 3)) : a_default_val);
+		if constexpr (index == r_index) return r();
+		if constexpr (index == g_index) return g();
+		if constexpr (index == b_index) return b();
+		if constexpr (index == a_index) return a();
 	}
 };
 

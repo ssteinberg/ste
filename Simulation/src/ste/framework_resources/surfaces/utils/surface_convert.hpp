@@ -10,6 +10,9 @@
 #include <opaque_surface.hpp>
 #include <surface_type_traits.hpp>
 
+#include <surface_block_load.hpp>
+#include <surface_block_store.hpp>
+
 #include <lib/vector.hpp>
 #include <lib/shared_ptr.hpp>
 
@@ -30,7 +33,7 @@ private:
 		}
 
 		template <typename Target>
-		static auto create_target_surface(const typename Target::extent_type &extent, std::size_t levels, std::size_t layers, 
+		static auto create_target_surface(const typename Target::extent_type &extent, std::size_t levels, std::size_t layers,
 										  _detail::surface_storage<typename gl::format_traits<surface_format_v<Target>>::block_type> &&storage) {
 			if constexpr (gl::image_has_arrays_v<Target::surface_image_type()>)
 				return Target(extent, layers, levels, storage);
@@ -40,18 +43,26 @@ private:
 			}
 		}
 
-		template <gl::format target_format, typename Target, typename CommonType, typename Src>
-		static Target convert(Src &&surface, std::size_t(*src_block_loader)(const std::uint8_t *input, CommonType *output)) {
+		template <gl::format target_format, typename Target, typename common_type, typename Src>
+		static Target convert(Src &&surface,
+							  block_load_8component_result_t<common_type>(*src_block_loader8_r)(const std::uint8_t*, unsigned),
+							  block_load_8component_result_t<common_type>(*src_block_loader8_g)(const std::uint8_t*, unsigned),
+							  block_load_8component_result_t<common_type>(*src_block_loader8_b)(const std::uint8_t*, unsigned),
+							  block_load_8component_result_t<common_type>(*src_block_loader8_a)(const std::uint8_t*, unsigned)) {
 			if constexpr (std::is_same_v<Target, Src>) {
 				// Identical surfaces, no need to convert
 				assert(surface.surface_format() == target_format);
 				return std::move(surface);
 			}
 
-			auto& src_traits = surface.get_format_traits();
+			auto &src_traits = surface.get_format_traits();
 			if (gl::format_traits<target_format>::is_compressed || src_traits.is_compressed) {
 				// Format is a compressed format
 				throw surface_convert_format_mismatch_error("Target or source format must not be a compressed type");
+			}
+			if (src_traits.block_extent.x != 1 || src_traits.block_extent.y != 1) {
+				// Block size isn't 1x1
+				throw surface_convert_format_mismatch_error("Source block size must be 1x1");
 			}
 
 			static_assert(gl::format_traits<target_format>::block_extent.x == 1 && gl::format_traits<target_format>::block_extent.y == 1);
@@ -63,36 +74,60 @@ private:
 			auto elements = glm::max(src_traits.elements, gl::format_traits<target_format>::elements);
 			Target target = create_target_surface<Target>(extent, layers, levels);
 
-			lib::vector<CommonType> buffer;
-			buffer.resize(src_traits.block_extent.x * src_traits.block_extent.y * src_traits.elements);
-
 			// Convert blocks
 			for (std::size_t a = 0; a < layers; ++a) {
 				for (std::size_t l = 0; l < levels; ++l) {
 					auto src_blocks_count = surface.blocks(l);
 					auto dst_blocks_count = surface.blocks(l);
+					assert(src_blocks_count == dst_blocks_count);
 
 					auto src_layer_data = reinterpret_cast<const std::uint8_t*>(surface.data_at(a, l));
 					auto dst_layer_data = target.data_at(a, l);
 
-					auto src_extent_in_blocks = surface.extent_in_blocks(l);
+					for (std::size_t b = 0; b < src_blocks_count; b += 8) {
+						// Set source and destination
+						auto src = src_layer_data + b * src_traits.block_bytes;
+						auto dst = dst_layer_data + b;
 
-					for (std::size_t b = 0; b < src_blocks_count; ++b) {
-						// Decode each block into the temporary buffer
-						auto written = src_block_loader(src_layer_data + b * src_traits.block_bytes, buffer.data());
-						assert(written == buffer.size());
+						// Maximal count of blocks to decode (limited to 8)
+						unsigned count = std::min(static_cast<unsigned>(src_blocks_count - b), 8u);
 
-						// Write to target from temporary buffer
-						for (std::uint32_t y = 0; y < src_traits.block_extent.y; ++y) {
-							for (std::uint32_t x = 0; x < src_traits.block_extent.x; ++x) {
-								glm::u32vec2 coord = { b % src_extent_in_blocks.x, b / src_extent_in_blocks.x };
-								coord *= src_traits.block_extent;
-								coord += glm::u32vec2{ x, y };
-
-								auto p = dst_layer_data + coord.y * extent.x + coord.x;
-								const auto decoded_block_src = buffer.data() + src_traits.elements * (x + y * src_traits.block_extent.x);
-								p->template write_block<CommonType>(decoded_block_src, src_traits.elements);
+						// Load and store components
+						if constexpr (gl::format_traits<target_format>::elements > 0) {
+							// R
+							if (src_block_loader8_r) {
+								auto loader_result = src_block_loader8_r(src, count);
+								resource::store_block_8component<gl::component_swizzle::r>(dst, loader_result.data, count);
 							}
+							else
+								resource::store_block_8component_default<gl::component_swizzle::r>(dst, count);
+						}
+						if constexpr (gl::format_traits<target_format>::elements > 1) {
+							// G
+							if (src_block_loader8_g) {
+								auto loader_result = src_block_loader8_g(src, count);
+								resource::store_block_8component<gl::component_swizzle::g>(dst, loader_result.data, count);
+							}
+							else
+								resource::store_block_8component_default<gl::component_swizzle::g>(dst, count);
+						}
+						if constexpr (gl::format_traits<target_format>::elements > 2) {
+							// B
+							if (src_block_loader8_b) {
+								auto loader_result = src_block_loader8_b(src, count);
+								resource::store_block_8component<gl::component_swizzle::b>(dst, loader_result.data, count);
+							}
+							else
+								resource::store_block_8component_default<gl::component_swizzle::b>(dst, count);
+						}
+						if constexpr (gl::format_traits<target_format>::elements > 3) {
+							// A
+							if (src_block_loader8_a) {
+								auto loader_result = src_block_loader8_a(src, count);
+								resource::store_block_8component<gl::component_swizzle::a>(dst, loader_result.data, count);
+							}
+							else
+								resource::store_block_8component_default<gl::component_swizzle::a>(dst, count);
 						}
 					}
 				}
@@ -127,30 +162,48 @@ private:
 			default:
 				assert(false);
 			case block_common_type::fp32: {
-				auto loader = surface.get_format_traits().block_loader_fp32;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_fp32<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp32<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp32<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp32<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
 			case block_common_type::fp64: {
-				auto loader = surface.get_format_traits().block_loader_fp64;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_fp64<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp64<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp64<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_fp64<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
 			case block_common_type::int32: {
-				auto loader = surface.get_format_traits().block_loader_int32;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_i32<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i32<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i32<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i32<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
 			case block_common_type::int64: {
-				auto loader = surface.get_format_traits().block_loader_int64;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_i64<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i64<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i64<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_i64<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
 			case block_common_type::uint32: {
-				auto loader = surface.get_format_traits().block_loader_uint32;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_u32<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u32<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u32<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u32<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
 			case block_common_type::uint64: {
-				auto loader = surface.get_format_traits().block_loader_uint64;
-				return convert<target_format, Target>(std::move(surface), loader);
+				return convert<target_format, Target>(std::move(surface),
+													  gl::format_block_loader_8component_u64<gl::component_swizzle::r>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u64<gl::component_swizzle::g>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u64<gl::component_swizzle::b>(surface.get_format_traits()),
+													  gl::format_block_loader_8component_u64<gl::component_swizzle::a>(surface.get_format_traits()));
 			}
-			} 
+			}
 		}
 	};
 
@@ -241,8 +294,29 @@ public:
 
 		static constexpr auto source_format = surface_format_v<Surface>;
 
-		return _impl::convert<target_format, Target>(std::move(surface),
-													 gl::format_traits<source_format>::block_type::load_block);
+		// Assign block's 8-component loader function pointers
+		using Block = typename gl::format_traits<source_format>::block_type;
+		if constexpr (Block::elements == 1)
+			return _impl::convert<target_format, Target, Block::common_type>(std::move(surface),
+																			 resource::load_block_8component_buffer<gl::component_swizzle::r, Block>,
+																			 nullptr, nullptr, nullptr);
+		if constexpr (Block::elements == 2)
+			return _impl::convert<target_format, Target, Block::common_type>(std::move(surface),
+																			 resource::load_block_8component_buffer<gl::component_swizzle::r, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::g, Block>,
+																			 nullptr, nullptr);
+		if constexpr (Block::elements == 3)
+			return _impl::convert<target_format, Target, Block::common_type>(std::move(surface),
+																			 resource::load_block_8component_buffer<gl::component_swizzle::r, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::g, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::b, Block>,
+																			 nullptr);
+		if constexpr (Block::elements == 4)
+			return _impl::convert<target_format, Target, Block::common_type>(std::move(surface),
+																			 resource::load_block_8component_buffer<gl::component_swizzle::r, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::g, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::b, Block>,
+																			 resource::load_block_8component_buffer<gl::component_swizzle::a, Block>);
 	}
 
 

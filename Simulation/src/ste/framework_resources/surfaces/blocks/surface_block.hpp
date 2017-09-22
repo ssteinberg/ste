@@ -158,16 +158,16 @@ class block_component {
 	static read_type convert_public_to_read(T data) {
 		if constexpr (type == block_type::block_unorm)
 			return static_cast<read_type>(glm::round(glm::clamp<T>(data, 0, 1) * static_cast<T>(mask())));
+		if constexpr (type == block_type::block_snorm) {
+			auto max = (1ull << (size_bits - 1)) - (data > 0 ? 1ull : 0ul);
+			return static_cast<read_type>(glm::round(glm::clamp<T>(data, -1, 1) * static_cast<T>(max)));
+		}
+		if constexpr (type == block_type::block_uscaled || type == block_type::block_sscaled)
+			return static_cast<read_type>(glm::round(data));
 		if constexpr (type == block_type::block_srgb) {
 			data = graphics::linear_to_sRGB<T>(data);
 			return static_cast<read_type>(glm::round(glm::clamp<T>(data, 0, 1) * static_cast<T>(mask())));
 		}
-		if constexpr (type == block_type::block_snorm || type == block_type::block_unorm) {
-			auto max = (1ull << (size_bits - 1)) - (data > 0 ? 1ull : 0ul);
-			return static_cast<read_type>(glm::round(glm::clamp<T>(data, -1, 1) * static_cast<T>(max)));
-		}
-		if constexpr (type == block_type::block_sscaled || type == block_type::block_uscaled)
-			return static_cast<read_type>(glm::round(data));
 		if constexpr (type == block_type::block_uint)
 			return static_cast<read_type>(data);
 		if constexpr (type == block_type::block_sint)

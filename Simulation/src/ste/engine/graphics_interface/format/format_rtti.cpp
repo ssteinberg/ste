@@ -24,43 +24,44 @@ constexpr format_rtti format_rtti_for_format() {
 	ret.is_compressed = format_traits<Format>::is_compressed;
 
 	if constexpr (!format_traits<Format>::is_compressed) {
-		ret.block_common_type_name = format_traits<Format>::block_type::common_type_name;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp32)
-			ret.block_loader_fp32 = format_traits<Format>::block_type::load_block;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::fp64)
-			ret.block_loader_fp64 = format_traits<Format>::block_type::load_block;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int32)
-			ret.block_loader_int32 = format_traits<Format>::block_type::load_block;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::int64)
-			ret.block_loader_int64 = format_traits<Format>::block_type::load_block;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint32)
-			ret.block_loader_uint32 = format_traits<Format>::block_type::load_block;
-		if constexpr (format_traits<Format>::block_type::common_type_name == resource::block_common_type::uint64)
-			ret.block_loader_uint64 = format_traits<Format>::block_type::load_block;
+		using block_type = typename format_traits<Format>::block_type;
+
+		ret.block_common_type_name = block_type::common_type_name;
+		ret.block_loader = reinterpret_cast<format_rtti::_block_loader_func_ptr>(resource::load_block_buffer<block_type>);
+		if constexpr (block_type::elements > 0)
+			ret.block_loader_8component_r = reinterpret_cast<format_rtti::_block_loader_8component_func_ptr>(resource::load_block_8component_buffer<gl::component_swizzle::r, block_type>);
+		if constexpr (block_type::elements > 1)
+			ret.block_loader_8component_g = reinterpret_cast<format_rtti::_block_loader_8component_func_ptr>(resource::load_block_8component_buffer<gl::component_swizzle::g, block_type>);
+		if constexpr (block_type::elements > 2)
+			ret.block_loader_8component_b = reinterpret_cast<format_rtti::_block_loader_8component_func_ptr>(resource::load_block_8component_buffer<gl::component_swizzle::b, block_type>);
+		if constexpr (block_type::elements > 3)
+			ret.block_loader_8component_a = reinterpret_cast<format_rtti::_block_loader_8component_func_ptr>(resource::load_block_8component_buffer<gl::component_swizzle::a, block_type>);
 	}
 
 	// Sanity
 	if constexpr (!format_traits<Format>::is_compressed) {
-		static_assert(format_traits<Format>::elements == format_traits<Format>::block_type::elements, "Elements count mismatch");
-		static_assert(format_traits<Format>::block_bytes == format_traits<Format>::block_type::bytes, "Block size mismatch");
-		static_assert(format_traits<Format>::block_bytes == sizeof(format_traits<Format>::block_type), "wrong sizeof block class");
+		using block_type = typename format_traits<Format>::block_type;
+
+		static_assert(format_traits<Format>::elements == block_type::elements, "Elements count mismatch");
+		static_assert(format_traits<Format>::block_bytes == block_type::bytes, "Block size mismatch");
+		static_assert(format_traits<Format>::block_bytes == sizeof(block_type), "wrong sizeof block class");
 
 		if constexpr (format_traits<Format>::is_scaled_integer && !format_traits<Format>::is_signed)
-			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_uscaled);
+			static_assert(block_type::blocktype == resource::block_type::block_uscaled);
 		if constexpr (format_traits<Format>::is_scaled_integer && format_traits<Format>::is_signed)
-			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_sscaled);
+			static_assert(block_type::blocktype == resource::block_type::block_sscaled);
 		if constexpr (format_traits<Format>::is_srgb) {
 			static_assert(format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed);
-			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_srgb);
+			static_assert(block_type::blocktype == resource::block_type::block_srgb);
 		}
 		else {
 			if constexpr (format_traits<Format>::is_normalized_integer && !format_traits<Format>::is_signed)
-				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_unorm);
+				static_assert(block_type::blocktype == resource::block_type::block_unorm);
 			if constexpr (format_traits<Format>::is_normalized_integer && format_traits<Format>::is_signed)
-				static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_snorm);
+				static_assert(block_type::blocktype == resource::block_type::block_snorm);
 		}
 		if constexpr (format_traits<Format>::is_float)
-			static_assert(format_traits<Format>::block_type::blocktype == resource::block_type::block_fp);
+			static_assert(block_type::blocktype == resource::block_type::block_fp);
 	}
 
 	return ret;
@@ -118,11 +119,11 @@ std::unordered_map<format, format_rtti> _internal::format_rtti_database::databas
 		format::r8_sscaled,
 		_detail::format_rtti_for_format<format::r8_sscaled>()
 	},
-	{ 
+	{
 		format::r8_uint,
 		_detail::format_rtti_for_format<format::r8_uint>()
 	},
-	{ 
+	{
 		format::r8_sint,
 		_detail::format_rtti_for_format<format::r8_sint>()
 	},

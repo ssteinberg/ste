@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -30,9 +30,24 @@ public:
 	static constexpr unsigned r_offset = comp0 == gl::component_swizzle::r ? 0 : comp0_bits;
 	static constexpr unsigned g_offset = comp0 == gl::component_swizzle::g ? 0 : comp0_bits;
 
-	static constexpr int index_for_component(gl::component_swizzle c) {
+	template <gl::component_swizzle c>
+	static constexpr int index_for_component() {
 		if constexpr (c == gl::component_swizzle::r) return r_index;
 		if constexpr (c == gl::component_swizzle::g) return g_index;
+		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int offset_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_offset;
+		if constexpr (c == gl::component_swizzle::g) return g_offset;
+		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int size_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_bits;
+		if constexpr (c == gl::component_swizzle::g) return g_bits;
 		static_assert(c == gl::component_swizzle::r || c == gl::component_swizzle::g);
 		return -1;
 	}
@@ -42,8 +57,15 @@ public:
 
 	using r_comp_type = typename _detail::block_primary_type_selector<type, r_bits>::type;
 	using g_comp_type = typename _detail::block_primary_type_selector<type, g_bits>::type;
+	using r_comp_writer_type = typename _detail::block_primary_type_selector<type, r_bits>::block_writer_type;
+	using g_comp_writer_type = typename _detail::block_primary_type_selector<type, g_bits>::block_writer_type;
 	using common_type = typename common_type_selector_t::type;
 	static constexpr block_common_type common_type_name = common_type_selector_t::common_type_name;
+
+	template <gl::component_swizzle c>
+	using comp_type = std::conditional_t<c == gl::component_swizzle::r, r_comp_type, g_comp_type>;
+	template <gl::component_swizzle c>
+	using comp_writer_type = std::conditional_t<c == gl::component_swizzle::r, r_comp_writer_type, g_comp_writer_type>;
 
 private:
 	static_assert((total_bits % 8) == 0, "Block straddles bytes");
@@ -81,42 +103,14 @@ public:
 	template <int index>
 	auto component() {
 		static_assert(index >= 0 && index <= 1);
-		if constexpr (index == 0) return r();
-		if constexpr (index == 1) return g();
+		if constexpr (index == r_index) return r();
+		if constexpr (index == g_index) return g();
 	}
 	template <int index>
 	auto component() const {
 		static_assert(index >= 0 && index <= 1);
-		if constexpr (index == 0) return r();
-		if constexpr (index == 1) return g();
-	}
-
-	/**
-	*	@brief Loads a block from memory and writes the decoded data, in RG swizzling, to output buffer.
-	*
-	*	@param	data		Input buffer
-	*	@param	rg_output	Output buffer, must be able to hold sizeof(common_type)*2 bytes
-	 *	
-	 *	@return	Element count written
-	*/
-	static std::size_t load_block(const std::uint8_t *data, common_type *rg_output) {
-		auto &block = *reinterpret_cast<const block_2components*>(data);
-		*(rg_output + 0) = static_cast<common_type>(block.r());
-		*(rg_output + 1) = static_cast<common_type>(block.g());
-
-		return 2;
-	}
-
-	/**
-	*	@brief	Encodes from buffer, assumed to be in RG swizzling, to block.
-	*
-	*	@param	data			Input buffer
-	*	@param	max_elements	Max elements to read
-	*/
-	template <typename src_type>
-	void write_block(const src_type *data, std::size_t max_elements = 2) {
-		r() = max_elements > 0 ? static_cast<r_comp_type>(*(data + 0)) : static_cast<r_comp_type>(0);
-		g() = max_elements > 1 ? static_cast<g_comp_type>(*(data + 1)) : static_cast<g_comp_type>(0);
+		if constexpr (index == r_index) return r();
+		if constexpr (index == g_index) return g();
 	}
 };
 

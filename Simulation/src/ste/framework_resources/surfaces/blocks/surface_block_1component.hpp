@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -24,8 +24,21 @@ public:
 	static constexpr unsigned r_bits = comp0_bits;
 	static constexpr unsigned r_offset = 0;
 
-	static constexpr int index_for_component(gl::component_swizzle c) {
+	template <gl::component_swizzle c>
+	static constexpr int index_for_component() {
 		if constexpr (c == gl::component_swizzle::r) return r_index;
+		static_assert(c == gl::component_swizzle::r);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int offset_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_offset;
+		static_assert(c == gl::component_swizzle::r);
+		return -1;
+	}
+	template <gl::component_swizzle c>
+	static constexpr int size_for_component() {
+		if constexpr (c == gl::component_swizzle::r) return r_bits;
 		static_assert(c == gl::component_swizzle::r);
 		return -1;
 	}
@@ -34,8 +47,14 @@ public:
 	static constexpr unsigned bytes = total_bits / 8;
 
 	using r_comp_type = typename _detail::block_primary_type_selector<type, r_bits>::type;
+	using r_comp_writer_type = typename _detail::block_primary_type_selector<type, r_bits>::block_writer_type;
 	using common_type = typename common_type_selector_t::type;
 	static constexpr block_common_type common_type_name = common_type_selector_t::common_type_name;
+
+	template <gl::component_swizzle c>
+	using comp_type = r_comp_type;
+	template <gl::component_swizzle c>
+	using comp_writer_type = r_comp_writer_type;
 
 private:
 	static_assert((total_bits % 8) == 0, "Block straddles bytes");
@@ -70,32 +89,6 @@ public:
 	auto component() const {
 		static_assert(index >= 0 && index <= 0);
 		return r();
-	}
-
-	/**
-	*	@brief Loads a block from memory and writes the decoded data to output buffer.
-	*
-	*	@param	data		Input buffer
-	*	@param	r_output	Output buffer, must be able to hold sizeof(common_type) bytes
-	 *	
-	 *	@return	Element count written
-	*/
-	static std::size_t load_block(const std::uint8_t *data, common_type *r_output) {
-		auto &block = *reinterpret_cast<const block_1components*>(data);
-		*r_output = static_cast<common_type>(block.r());
-
-		return 1;
-	}
-
-	/**
-	*	@brief	Encodes from buffer to block.
-	*
-	*	@param	data			Input buffer
-	*	@param	max_elements	Max elements to read
-	*/
-	template <typename src_type>
-	void write_block(const src_type *data, std::size_t max_elements = 1) {
-		r() = max_elements > 0 ? static_cast<r_comp_type>(*(data + 0)) : static_cast<r_comp_type>(0);
 	}
 };
 
