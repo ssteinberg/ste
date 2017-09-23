@@ -2,52 +2,70 @@
 #include <stdafx.hpp>
 #include <profiler.hpp>
 
-#include <functional>
-#include <fstream>
-#include <cstring>
-
+using namespace ste;
 using namespace ste::graphics;
 
-profiler::profiler() {
-	last_times_per_frame.resize(500);
-	std::memset(last_times_per_frame.data(), 0, sizeof(float) * 500);
+profiler::profiler(const ste_context &ctx,
+				   std::uint32_t max_atoms)
+	: ctx(ctx), 
+	  timestamp_resolution_ns(ctx.device()->get_physical_device_descriptor().properties.limits.timestampPeriod),
+	  max_atoms(max_atoms)
+{
+	segments.emplace_back(0,
+						  create_query_pool());
 }
 
-profiler::~profiler() {
-	std::ofstream f(log_path);
-	f << "[" << std::endl;
+void profiler::end_segment() {
+	const auto &segment = segments[current_segment];
 
-	bool first = true;
-	for (auto &e : entries) {
-		if (!first)
-			f << "," << std::endl;
-		first = false;
+	// If current segment was unused, nothing to end
+	if (!segment.atoms.size())
+		return;
 
-		auto tid = std::hash<lib::string>()(e.name);
-		f << "{" <<
-			"\"cat\": \"GPU task\"," <<
-			"\"pid\": 0," <<
-			"\"tid\": " << lib::to_string(tid) << "," <<
-			"\"ts\": " << lib::to_string(e.start) << "," <<
-			"\"ph\": \"B\"," <<
-			"\"name\": \"" << e.name << "\"," <<
-			"\"args\": {}" <<
-		"}," << std::endl;
-		f << "{" <<
-			"\"cat\": \"GPU task\"," <<
-			"\"pid\": 0," <<
-			"\"tid\": " << lib::to_string(tid) << "," <<
-			"\"ts\": " << lib::to_string(e.end) << "," <<
-			"\"ph\": \"E\"," <<
-			"\"name\": \"" << e.name << "\"," <<
-			"\"args\": {}" <<
-		"}";
+	// Try to read segment results back from next query
+	const auto next_segment_idx = (current_segment + 1) % segments.size();
+	auto &next_segment = segments[next_segment_idx];
+	assert(next_segment.atoms.size());
+
+	// Attempt to read last query results from 
+	struct timestamp_query_with_indicator { std::uint32_t timestamp, indicator; };
+	timestamp_query_with_indicator last_query_results;
+	next_segment.query_pool.read_results<timestamp_query_with_indicator>(&last_query_results,
+																		 static_cast<std::uint32_t>(next_segment.atoms.size() * 2) - 1,
+																		 1,
+																		 sizeof(timestamp_query_with_indicator),
+																		 VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+
+	// If results unavailable, create new segment and set it as current
+	if (last_query_results.indicator == 0) {
+		segments.emplace_back(segment.segment_idx,
+								create_query_pool());
+		current_segment = segments.size() - 1;
+		return;
 	}
 
-	f << "]" << std::endl;
-}
+	// Otherwise, read timestamps
+	lib::vector<timestamp_query_results_t> timestamps;
+	timestamps.resize(next_segment.atoms.size() * 2);
+	next_segment.query_pool.read_results<timestamp_query_with_indicator>(&last_query_results,
+																		 0,
+																		 static_cast<std::uint32_t>(next_segment.atoms.size() * 2),
+																		 sizeof(timestamp_query_results_t));
+	// Create results and notify
+	segment_results_t results;
+	results.segment_idx = next_segment.segment_idx;
+	results.data.reserve(next_segment.atoms.size());
+	for (std::size_t i=0; i<next_segment.atoms.size(); ++i) {
+		segment_result_atom a;
+		a.name = next_segment.atoms[i];
+		a.time_start_ms = timestamp_to_result_time(timestamps[i * 2]);
+		a.time_end_ms = timestamp_to_result_time(timestamps[i * 2 + 1]);
+		results.data.push_back(a);
+	}
 
-void profiler::record_frame(float t) {
-	std::memmove(&last_times_per_frame[0], &last_times_per_frame[1], (last_times_per_frame.size() - 1) * sizeof(float));
-	last_times_per_frame.back() = t;
+	segment_results_available_signal.emit(results);
+
+	// Clear and use for next segment
+	next_segment.atoms = atoms_t{};
+	current_segment = next_segment_idx;
 }

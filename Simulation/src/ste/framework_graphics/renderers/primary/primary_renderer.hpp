@@ -102,12 +102,20 @@ public:
 	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospherics_properties_update = atmospherics_prop; }
 
 	/**
-	 *	@brief		Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
-	 *
-	 * 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
-	 *	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
-	 */
+	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
+	*
+	* 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
+	*	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
+	*/
 	void set_aperture_parameters(float diameter, float focal_length) { hdr->set_aperture_parameters(diameter, focal_length); }
+
+	/**
+	*	@brief	Set the "gamma" value for the final HDR tonemapping power-law expression.
+	*			>1 values compresses light regions, making the overall scene darker.
+	*
+	* 	@param gamma	Gamma value. Defaults to 2.2.
+	*/
+	void set_gamma(float gamma) { hdr->set_gamma(gamma); }
 
 	/*
 	 *	@brief		Attaches output framebuffer

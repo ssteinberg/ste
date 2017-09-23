@@ -652,7 +652,9 @@ int main()
 	}
 
 	// Configure
+	float hdr_gamma = 2.2f;
 	presenter->renderer().set_aperture_parameters(8e-3f, 25e-3f);
+	presenter->renderer().set_gamma(hdr_gamma);
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
@@ -756,10 +758,12 @@ int main()
 			}
 		}
 
-		if (ImGui::Begin("Atmosphere", nullptr)) {
+		if (ImGui::Begin("Settings", nullptr)) {
 			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
 			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
 			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+
+			ImGui::SliderFloat((std::string("Gamma ##value##gamma")).data(), &hdr_gamma, .1f, 10.f);
 		}
 
 		ImGui::End();
@@ -767,6 +771,7 @@ int main()
 		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
 		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
 		presenter->renderer().update_atmospherics_properties(atmosphere);
+		presenter->renderer().set_gamma(hdr_gamma);
 	});
 
 

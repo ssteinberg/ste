@@ -13,25 +13,27 @@ namespace gl {
 
 class cmd_begin_query : public command {
 private:
-	const vk::vk_query<> &query;
+	VkQueryPool pool;
+	std::uint32_t index;
 	bool precise;
 
 public:
 	cmd_begin_query(cmd_begin_query &&) = default;
-	cmd_begin_query(const cmd_begin_query&) = default;
+	cmd_begin_query(const cmd_begin_query &) = default;
 	cmd_begin_query &operator=(cmd_begin_query &&) = default;
-	cmd_begin_query &operator=(const cmd_begin_query&) = default;
+	cmd_begin_query &operator=(const cmd_begin_query &) = default;
 
 	cmd_begin_query(const vk::vk_query<> &query,
-					bool precise = false) : query(query), precise(precise) {}
+					bool precise = false)
+		: pool(query.get_pool()), index(query.ge_query_index()), precise(precise) {}
 
 	virtual ~cmd_begin_query() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdBeginQuery(command_buffer,
-						query.get_pool(),
-						query.ge_query_index(),
+						pool,
+						index,
 						precise ? VK_QUERY_CONTROL_PRECISE_BIT : 0);
 	}
 };

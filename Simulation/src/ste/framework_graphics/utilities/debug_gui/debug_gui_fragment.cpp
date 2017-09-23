@@ -139,29 +139,28 @@ void debug_gui_fragment::record(gl::command_recorder &recorder) {
 							 ImGuiSetCond_FirstUseEver);
 	if (ImGui::Begin("StE debug", nullptr)) {
 		// Plot frame times graph
-		auto &fts = prof->get_last_times_per_frame();
-		ImGui::PlotLines("Frame Times", 
-						 &fts[0], 
-						 static_cast<int>(fts.size()), 
-						 0, 
-						 "ms", 
-						 0.f, 
-						 .1f);
-
-		// Write camera position
-		ImGui::SameLine(0, 75);
-		std::stringstream camera_pos_str;
-		print_vec(camera_pos_str, camera_position);
-		ImGui::Text(camera_pos_str.str().data());
-		
-		// Write device name
-		ImGui::SameLine(0, 75);
-		ImGui::Text(get_creating_context().device().physical_device().properties.deviceName);
-		
-		// Plot profiler timeline
-		ImGui::PlotTimeline(times);
+//		auto &fts = prof->get_last_times_per_frame();
+//		ImGui::PlotLines("Frame Times", 
+//						 &fts[0], 
+//						 static_cast<int>(fts.size()), 
+//						 0, 
+//						 "ms", 
+//						 0.f, 
+//						 .1f);
+//
+//		// Write camera position
+//		ImGui::SameLine(0, 75);
+//		std::stringstream camera_pos_str;
+//		print_vec(camera_pos_str, camera_position);
+//		ImGui::Text(camera_pos_str.str().data());
+//		
+//		// Write device name
+//		ImGui::SameLine(0, 75);
+//		ImGui::Text(get_creating_context().device().physical_device().properties.deviceName);
+//		
+//		// Plot profiler timeline
+//		ImGui::PlotTimeline(times);
 	}
-
 	ImGui::End();
 
 	// Render user provided GUIs

@@ -40,7 +40,7 @@ public:
 		return pool.read_results(data_size, index, 1, data_size, flags);
 	}
 
-	auto& get() const { return pool; }
+	auto& get_pool() const { return pool; }
 	auto ge_query_index() const { return index; }
 };
 
