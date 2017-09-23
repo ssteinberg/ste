@@ -110,7 +110,6 @@ protected:
 	fragment_graphics(const RenderingSystem &rs,
 					  device_pipeline_graphics_configurations &&pipeline_graphics_configurations,
 					  framebuffer_layout &&fb_layout,
-
 					  Names&&... shader_stages_names)
 		: fragment_graphics(ctor(),
 							CRTP::name().data(),

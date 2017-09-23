@@ -32,7 +32,7 @@
 16. SPIR-v refection: OpSpecConstantOp
 17. <strike>Integrate glslang into StE SPIR-v compiler. Compile all modules in a single go.</strike>
 18. <strike>Device resources' debug names via VK_EXT_debug_marker</strike>
-19. Sponza Vulkan demo UI and ImGUI
+19. <strike>Sponza Vulkan demo UI and ImGUI</strike>
 20. Profiler
 21. Units, meters, km, kelvin, bytes, kb, etc.
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
@@ -46,3 +46,4 @@
 30. Multi-submit command batch
 31. Sparse images/opaque images
 32. <strike>Semaphores enforce correct host-side happens-before relationship</strike>
+33. Window resizing, correct resource deallocation and recreation.

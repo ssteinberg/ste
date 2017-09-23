@@ -805,19 +805,6 @@ void ImGui_ImplGlfwVulkan_NewFrame()
     io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f/60.0f);
     g_Time = current_time;
 
-    // Setup inputs
-    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-    if (glfwGetWindowAttrib(g_Window, GLFW_FOCUSED))
-    {
-        double mouse_x, mouse_y;
-        glfwGetCursorPos(g_Window, &mouse_x, &mouse_y);
-        io.MousePos = ImVec2((float)mouse_x, (float)mouse_y);   // Mouse position in screen coordinates (set to -1,-1 if no mouse / on another screen, etc.)
-    }
-    else
-    {
-        io.MousePos = ImVec2(-1,-1);
-    }
-
     for (int i = 0; i < 3; i++)
     {
         io.MouseDown[i] = g_MousePressed[i] || glfwGetMouseButton(g_Window, i) != 0;    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.

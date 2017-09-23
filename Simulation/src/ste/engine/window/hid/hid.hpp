@@ -4,7 +4,7 @@
 #pragma once
 
 #include <stdafx.hpp>
-#include <GLFW/glfw3.h>
+#include <glfw.hpp>
 
 namespace ste {
 namespace hid {

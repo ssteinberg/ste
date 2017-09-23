@@ -2,7 +2,7 @@
 #include <stdafx.hpp>
 #include <ste_window_signals.hpp>
 
-#include <GLFW/glfw3.h>
+#include <glfw.hpp>
 
 #include <ste_window.hpp>
 

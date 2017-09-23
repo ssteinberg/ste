@@ -1,17 +1,19 @@
 
 #include <stdafx.hpp>
-#include <debug_gui_fragment.hpp>
 
+// Compile ImGUI
+#include <glfw.hpp>
 #include <imgui/imgui.cpp>
 #include <imgui/imgui_draw.cpp>
 #include <imgui/glfw_vulkan_impl/imgui_impl_glfw_vulkan.cpp>
+
+#include <debug_gui_fragment.hpp>
 #include <imgui_timeline.hpp>
 
 #include <glm_print.hpp>
 #include <lib/vector.hpp>
 #include <algorithm>
 #include <functional>
-#include <cstring>
 #include <sstream>
 
 using namespace ste;
@@ -38,11 +40,13 @@ gl::vk::vk_descriptor_pool<> debug_gui_fragment::create_imgui_desciptor_pool(con
 
 debug_gui_fragment::debug_gui_fragment(gl::rendering_system &rs,
 									   const ste_window &window,
+									   gl::framebuffer_layout &&fb_layout,
 									   profiler *prof, 
 									   const ste::text::font &default_font) 
 
 	: Base(rs,
 		   gl::device_pipeline_graphics_configurations{},
+		   std::move(fb_layout),
 		   "imgui_vulkan.vert", "imgui_vulkan.frag"),
 	  prof(prof),
 	  imgui_descriptor_pool(create_imgui_desciptor_pool(rs.get_creating_context().device()))
@@ -70,7 +74,11 @@ debug_gui_fragment::debug_gui_fragment(gl::rendering_system &rs,
 		ImGui_ImplGlfwVulkan_CreateFontsTexture(recorder.get_command_buffer());
 	});
 
-	// Attach HID callbacks
+	// Attach HID callbacks and pass data to ImGUI IO
+	hid_pointer_movement_connection = make_connection(window.get_signals().signal_pointer_movement(), [](auto pos) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.MousePos = ImVec2(static_cast<float>(pos.x), static_cast<float>(pos.y));
+	});
 	hid_pointer_button_connection = make_connection(window.get_signals().signal_pointer_button(), [handle = window.get_window_handle()](auto b, auto action, auto mod) {
 		ImGui_ImplGlfwVulkan_MouseButtonCallback(handle, static_cast<int>(b), static_cast<int>(action), static_cast<int>(mod));
 	});
@@ -157,8 +165,8 @@ void debug_gui_fragment::record(gl::command_recorder &recorder) {
 	ImGui::End();
 
 	// Render user provided GUIs
-	for (auto &f : user_guis)
-		f(fb_extent);
+	if (user_gui_lambda)
+		user_gui_lambda(fb_extent);
 
 	ImGui_ImplGlfwVulkan_Render(recorder.get_command_buffer());
 }

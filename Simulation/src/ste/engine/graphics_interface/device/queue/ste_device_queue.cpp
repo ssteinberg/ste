@@ -21,20 +21,24 @@ void ste_device_queue::create_worker() {
 
 			task_queue_t::stored_ptr task;
 			{
-				std::unique_lock<std::mutex> l(shared_data->m);
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
-				shared_data->notifier.wait(l, [&]() {
-					return interruptible_thread::is_interruption_flag_set() ||
-						(task = shared_data->task_queue.pop()) != nullptr;
-				});
+				{
+					std::unique_lock<std::mutex> l(shared_data->m);
+					shared_data->notifier.wait(l, [&]() {
+						return interruptible_thread::is_interruption_flag_set() ||
+							(task = shared_data->task_queue.pop()) != nullptr;
+					});
+				}
 
 				while (task != nullptr) {
-					if (interruptible_thread::is_interruption_flag_set())
-						return;
-
 					// Call task lambda
 					(*task)();
+					// Check if worker has been interrupted
+					if (interruptible_thread::is_interruption_flag_set())
+						break;
+
+					// Acquire next task
 					task = shared_data->task_queue.pop();
 				}
 			}

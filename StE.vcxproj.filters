@@ -2012,6 +2012,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\debug_gui_fragment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\glfw.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

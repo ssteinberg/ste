@@ -79,16 +79,15 @@ class loading_renderer : public gl::rendering_presentation_system {
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
+	lib::vector<gl::framebuffer> swap_chain_framebuffer, swap_chain_clear_framebuffers;
 
 	loading_photo_fragment photo_fragment;
 	text::text_fragment title_text_frag;
 	text::text_fragment footer_text_frag;
 
-	lib::vector<gl::framebuffer> swap_chain_clear_framebuffers;
-
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
-private:
+public:
 	static auto create_fb_clear_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
@@ -103,35 +102,23 @@ private:
 		return fb_layout;
 	}
 
-	void create_swap_chain_clear_framebuffers() {
-		auto surface_extent = device().get_surface().extent();
-
-		lib::vector<gl::framebuffer> v;
-		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
-			gl::framebuffer fb(get_creating_context(),
-							   "swap_chain_clear_framebuffer",
-							   create_fb_clear_layout(get_creating_context()),
-							   surface_extent);
-			fb[0] = gl::framebuffer_attachment(swap_image.view, glm::vec4(.0f));
-
-			v.push_back(std::move(fb));
-		}
-
-		swap_chain_clear_framebuffers = std::move(v);
+private:
+	void swap_chain_resized() override final {
+		swap_chain_framebuffer = this->create_swap_chain_framebuffers(create_fb_layout(get_creating_context()));
+		swap_chain_clear_framebuffers = this->create_swap_chain_framebuffers(create_fb_clear_layout(get_creating_context()));
 	}
 
 public:
 	loading_renderer(const ste_context &ctx,
 					 gl::presentation_engine &presentation,
 					 text::text_manager &tm)
-		: Base(ctx,
-			   create_fb_layout(ctx)),
+		: Base(ctx),
 		presentation(presentation),
 		photo_fragment(*this, create_fb_clear_layout(ctx)),
 		title_text_frag(tm.create_fragment()),
 		footer_text_frag(tm.create_fragment())
 	{
-		create_swap_chain_clear_framebuffers();
+		swap_chain_resized();
 	}
 	~loading_renderer() noexcept {}
 
@@ -185,10 +172,9 @@ public:
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
-				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
 
-				title_text_frag.manager().attach_framebuffer(fb);
+				title_text_frag.manager().attach_framebuffer(swap_chain_framebuffer[batch->presentation_image_index()]);
 				photo_fragment.attach_framebuffer(swap_chain_clear_framebuffers[batch->presentation_image_index()]);
 
 				render(recorder);
@@ -212,18 +198,32 @@ class gi_renderer : public gl::rendering_presentation_system {
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
+	lib::vector<gl::framebuffer> renderer_fb, gui_fb;
 	graphics::primary_renderer r;
 
 	graphics::debug_gui_fragment *debug_gui{ nullptr };
 	
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
-private:
-	static auto fb_layout(const ste_context &ctx) {
+public:
+	static auto fb_renderer_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
 										gl::image_layout::color_attachment_optimal);
 		return fb_layout;
+	}
+	static auto fb_ui_layout(const ste_context &ctx) {
+		gl::framebuffer_layout fb_layout;
+		fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
+									  gl::image_layout::color_attachment_optimal,
+									  gl::image_layout::color_attachment_optimal);
+		return fb_layout;
+	}
+
+private:
+	void swap_chain_resized() override final {
+		renderer_fb = this->create_swap_chain_framebuffers(fb_renderer_layout(get_creating_context()));
+		gui_fb = this->create_swap_chain_framebuffers(fb_ui_layout(get_creating_context()));
 	}
 
 public:
@@ -232,11 +232,12 @@ public:
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
 				const graphics::atmospherics_properties<double> &atmospherics_prop)
-		: Base(ctx,
-			   fb_layout(ctx)),
+		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_layout(ctx), cam, s, atmospherics_prop)
-	{}
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop)
+	{
+		swap_chain_resized();
+	}
 	~gi_renderer() noexcept {}
 
 	void attach_debug_gui(graphics::debug_gui_fragment *debug_gui) { this->debug_gui = debug_gui; }
@@ -250,6 +251,10 @@ public:
 		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
 
 		r.render(recorder);
+
+		if (debug_gui)
+			// Debug GUI
+			recorder << *debug_gui;
 	}
 
 	void present() override final {
@@ -258,24 +263,18 @@ public:
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
 
-		auto debugz_fence = batch->get_fence_ptr();
-
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
-				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
 
-				r.attach_framebuffer(fb);
+				// Attach sawp-chain framebuffers
+				r.attach_framebuffer(renderer_fb[batch->presentation_image_index()]);
+				if (debug_gui) debug_gui->attach_framebuffer(gui_fb[batch->presentation_image_index()]);
 
 				render(recorder);
-
-				if (debug_gui)
-					// Debug GUI
-					recorder << *debug_gui;
-
 				recorder
 					// Prepare framebuffer for presentation
 					<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::color_attachment_output,
@@ -671,6 +670,7 @@ int main()
 	graphics::profiler prof;
 	graphics::debug_gui_fragment debug_gui(presenter->renderer(),
 										   window,
+										   gi_renderer::fb_ui_layout(ctx),
 										   &prof, 
 										   text_manager_font);
 	presenter->attach_debug_gui(&debug_gui);
@@ -708,7 +708,7 @@ int main()
 		phase[i] = .0f;
 	}
 
-	debug_gui.add_custom_gui([&](const glm::ivec2 &bbsize) {
+	debug_gui.set_custom_gui([&](const glm::ivec2 &bbsize) {
 		if (ImGui::Begin("Material Editor", nullptr)) {
 			for (int i = 0; i < layers_count; ++i) {
 				std::string layer_label = std::string("Layer ") + std::to_string(i);
@@ -830,13 +830,15 @@ int main()
 
 			// Handle camera rotation input
 			constexpr float rotation_factor = .0002f;
-			bool rotate_camera = mouse_down;
-			if (mouse_down/* && !debug_gui_dispatchable->is_gui_active()*/) {
+			if (mouse_down && !debug_gui.is_gui_active()) {
 				const auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pointer_pos) * frame_time_ms * rotation_factor;
 				camera.pitch_and_yaw(diff_v.y, diff_v.x);
 			}
 			last_pointer_pos = pointer_pos;
 		}
+
+		// Update debug GUI camera position
+		debug_gui.set_camera_position(camera.get_position());
 
 		// Update scene objects
 #ifdef STATIC_SCENE
