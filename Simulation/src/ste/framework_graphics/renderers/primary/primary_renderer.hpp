@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -26,6 +26,8 @@
 #include <light_preprocessor_fragment.hpp>
 #include <gbuffer_downsample_depth_fragment.hpp>
 
+#include <profiler.hpp>
+
 #include <signal.hpp>
 #include <optional.hpp>
 
@@ -39,6 +41,8 @@ public:
 	using camera_t = primary_renderer_camera;
 
 private:
+	gl::profiler::profiler *profiler;
+
 	const camera_t *cam;
 	scene *s;
 
@@ -89,7 +93,8 @@ public:
 					 gl::framebuffer_layout &&fb_layout,
 					 const camera_t *cam,
 					 scene *s,
-					 const atmospherics_properties<double> &atmospherics_prop);
+					 const atmospherics_properties<double> &atmospherics_prop,
+					 gl::profiler::profiler *profiler = nullptr);
 	~primary_renderer() noexcept {}
 
 	const gl::pipeline_external_binding_set* external_binding_set() const override final {

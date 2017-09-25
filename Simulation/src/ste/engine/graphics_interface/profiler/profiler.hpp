@@ -17,7 +17,8 @@
 #include <signal.hpp>
 
 namespace ste {
-namespace graphics {
+namespace gl {
+namespace profiler {
 
 class profiler_atom {
 	friend class profiler;
@@ -34,7 +35,7 @@ public:
 				  gl::pipeline_stage stages_start,
 				  gl::pipeline_stage stages_end)
 		: recorder(recorder),
-		  query_end(std::move(query_end)),
+		query_end(std::move(query_end)),
 		stages_end(stages_end)
 	{
 		// Record start timestamp
@@ -94,13 +95,13 @@ private:
 	}
 
 	auto timestamp_to_result_time(timestamp_query_results_t timestamp) {
-		return static_cast<float>(timestamp) / 1000.f * timestamp_resolution_ns;
+		return static_cast<float>(timestamp) * 1e-6f * timestamp_resolution_ns;
 	}
 
 public:
 	/*
 	*	@brief	Creates a new profiler object
-	*	
+	*
 	*	@param	ctx			Context
 	*	@param	max_atoms	Max atoms per segment
 	*/
@@ -109,12 +110,15 @@ public:
 	~profiler() noexcept {}
 
 	/*
-	 *	@brief	Begins an atom. Atom ends when returned object goes out of scope
+	 *	@brief	Begins an atom. Atom ends when returned object goes out of scope.
+	 *	
+	 *	@param	recorder	Command recorder on which the atom will record
+	 *	@param	name		Atom name
+	 *	@param	stages		Earliest stage at which to record the END timestamp
 	 */
 	auto start_atom(gl::command_recorder &recorder,
-					gl::pipeline_stage stages_start,
-					gl::pipeline_stage stages_end,
-					lib::string name) {
+					lib::string name,
+					gl::pipeline_stage stages = gl::pipeline_stage::bottom_of_pipe) {
 		auto &segment = segments[current_segment];
 		const auto current_query_idx = static_cast<std::uint32_t>(segment.atoms.size() * 2);
 
@@ -127,15 +131,15 @@ public:
 
 		// Create atom
 		return profiler_atom(segment.query_pool[current_query_idx],
-							 segment.query_pool[current_query_idx +1],
+							 segment.query_pool[current_query_idx + 1],
 							 recorder,
-							 stages_start,
-							 stages_end);
+							 gl::pipeline_stage::bottom_of_pipe,
+							 stages);
 	}
 
 	/**
 	 *	@brief	Ends the profiler segment. Must be called outside a renderpass.
-	 *	
+	 *
 	 *			Results are not immediately available.
 	 *			end_segment() will try to read the results of previously completed but yet pending segments, if any results are available the results are
 	 *			distributed via a signal. See get_segment_results_available_signal().
@@ -148,5 +152,6 @@ public:
 	auto& get_segment_results_available_signal() const { return segment_results_available_signal; }
 };
 
+}
 }
 }

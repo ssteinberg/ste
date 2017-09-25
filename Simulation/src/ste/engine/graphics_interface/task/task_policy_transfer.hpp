@@ -18,6 +18,8 @@
 #include <cmd_fill_buffer.hpp>
 #include <cmd_update_buffer.hpp>
 
+#include <inherit_from_types.hpp>
+
 namespace ste {
 namespace gl {
 

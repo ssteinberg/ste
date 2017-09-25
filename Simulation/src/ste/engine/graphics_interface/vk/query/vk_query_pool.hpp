@@ -74,8 +74,13 @@ public:
 		}
 	}
 
+	/*
+	 *	@brief	Attempts to read and retrieve status and results for a set of queries.
+	 *	
+	 *	@return	True on success, false if data is not ready.
+	 */
 	template <typename T>
-	void read_results(T *output,
+	bool read_results(T *output,
 					  std::uint32_t first_query,
 					  std::uint32_t queries_count,
 					  std::uint64_t stride,
@@ -84,9 +89,14 @@ public:
 													first_query, queries_count,
 													sizeof(T) * queries_count, output,
 													stride, flags);
+		if (res == VK_NOT_READY)
+			return false;
+
 		if (!res) {
 			throw vk_exception(res);
 		}
+
+		return true;
 	}
 
 	auto& get_creating_device() const { return device.get(); }

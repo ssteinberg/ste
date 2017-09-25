@@ -47,3 +47,4 @@
 31. Sparse images/opaque images
 32. <strike>Semaphores enforce correct host-side happens-before relationship</strike>
 33. Window resizing, correct resource deallocation and recreation.
+34. Profiler capture and output

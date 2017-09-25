@@ -212,29 +212,23 @@ public:
 										gl::image_layout::color_attachment_optimal);
 		return fb_layout;
 	}
-	static auto fb_ui_layout(const ste_context &ctx) {
-		gl::framebuffer_layout fb_layout;
-		fb_layout[0] = gl::load_store(ctx.device().get_surface().surface_format(),
-									  gl::image_layout::color_attachment_optimal,
-									  gl::image_layout::color_attachment_optimal);
-		return fb_layout;
-	}
 
 private:
 	void swap_chain_resized() override final {
 		renderer_fb = this->create_swap_chain_framebuffers(fb_renderer_layout(get_creating_context()));
-		gui_fb = this->create_swap_chain_framebuffers(fb_ui_layout(get_creating_context()));
+		gui_fb = this->create_swap_chain_framebuffers(graphics::debug_gui_fragment::create_fb_layout(get_creating_context()));
 	}
 
 public:
 	gi_renderer(const ste_context &ctx,
 				gl::presentation_engine &presentation,
+				gl::profiler::profiler *prof,
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
 				const graphics::atmospherics_properties<double> &atmospherics_prop)
 		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop)
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof)
 	{
 		swap_chain_resized();
 	}
@@ -552,7 +546,7 @@ int main()
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
-	device_params.allow_markers = false;
+	device_params.allow_markers = true;
 	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
 
@@ -569,6 +563,18 @@ int main()
 	*/
 	gl::presentation_engine presentation(device);
 	gl::presentation_frame_time_predictor frame_time_predictor;
+
+
+	/*
+	*	Profiler
+	*/
+#ifdef PROFILE
+	gl::profiler::profiler profiler(ctx, 256);
+	gl::profiler::profiler::segment_results_t profiler_results;
+	auto profiler_output_connection = make_connection(profiler.get_segment_results_available_signal(), [&](auto segment) {
+		profiler_results = std::move(segment);
+	});
+#endif
 
 
 	/*
@@ -613,6 +619,11 @@ int main()
 		// Create renderer
 		presenter = lib::allocate_unique<gi_renderer>(ctx,
 													  presentation,
+#ifdef PROFILE
+													  &profiler,
+#else
+													  nullptr,
+#endif
 													  &camera,
 													  &scene,
 													  atmosphere);
@@ -669,11 +680,8 @@ int main()
 	/*
 	 *	GUI
 	 */
-	graphics::profiler prof;
 	graphics::debug_gui_fragment debug_gui(presenter->renderer(),
 										   window,
-										   gi_renderer::fb_ui_layout(ctx),
-										   &prof, 
 										   text_manager_font);
 	presenter->attach_debug_gui(&debug_gui);
 
@@ -819,7 +827,6 @@ int main()
 		// Calculate predicted next frame time
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
-		window.set_title(lib::to_string(frame_time_ms).c_str());
 
 		if (window.is_window_focused()) {
 			// Handle movement input
@@ -842,8 +849,9 @@ int main()
 			last_pointer_pos = pointer_pos;
 		}
 
-		// Update debug GUI camera position
+		// Update debug GUI 
 		debug_gui.set_camera_position(camera.get_position());
+		debug_gui.append_frame(static_cast<float>(presentation.get_frame_time()) * 1e-6f, profiler_results);
 
 		// Update scene objects
 #ifdef STATIC_SCENE

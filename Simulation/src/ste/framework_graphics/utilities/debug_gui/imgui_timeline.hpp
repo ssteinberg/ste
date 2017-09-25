@@ -37,7 +37,7 @@ inline void PlotTimeline(const ste::lib::vector<std::pair<ste::lib::string, floa
 		const auto poffset = std::max<int>(0, static_cast<int>(p * canvasSize.x + .5f) - 1);
 
 		std::ostringstream out;
-		out << std::setprecision(5) << t / 1000.f;
+		out << std::setprecision(5) << t;
 		auto t_str = out.str() + "ms";
 
 		static constexpr int y0 = 18;

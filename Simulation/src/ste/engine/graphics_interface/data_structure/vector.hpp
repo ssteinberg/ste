@@ -29,7 +29,7 @@ template <
 class vector :
 	ste_resource_deferred_create_trait,
 	public allow_type_decay<vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
-	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
+	//static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
 	using buffer_t = device_buffer_sparse<T, device_resource_allocation_policy_device>;
@@ -118,20 +118,35 @@ public:
 	*
 	*	@param	idx		Slot index to overwrite
 	*	@param	data	New data to overwrite
+	*	@param	size	Element count of new data
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
-					   const lib::vector<T> &data) {
-
+					   const T *data,
+					   std::size_t size) {
 		{
 			std::unique_lock<std::mutex> l(mutex);
 
-			assert(idx + data.size() <= size());
-			std::copy(data.begin(), data.end(), host_replica.begin() + static_cast<int>(idx));
+			assert(idx + size <= this->size());
+			std::copy(data, data + size, host_replica.begin() + static_cast<int>(idx));
 		}
 
 		return update_cmd_t(data,
+							size,
 							idx,
 							this);
+	}
+
+	/**
+	*	@brief	Returns a device command that will overwrite slot at index idx with data.
+	*
+	*	@param	idx		Slot index to overwrite
+	*	@param	data	New data to overwrite
+	*/
+	auto overwrite_cmd(std::uint64_t idx,
+					   const lib::vector<T> &data) {
+		return overwrite_cmd(idx,
+							 data.data(),
+							 data.size());
 	}
 
 	/**
@@ -170,21 +185,38 @@ public:
 	*
 	*	@param	ctx		Context
 	*	@param	data	Data to push back
+	*	@param	size	Element count of new data
 	*/
-	auto push_back_cmd(const ste_context &ctx, 
-					   const lib::vector<T> &data) {
+	auto push_back_cmd(const ste_context &ctx,
+					   const T *data,
+					   std::size_t size) {
 		std::size_t location;
 		{
 			std::unique_lock<std::mutex> l(mutex);
 
-			location = size();
-			std::copy(data.begin(), data.end(), std::back_inserter(host_replica));
+			location = this->size();
+			std::copy(data, data + size, std::back_inserter(host_replica));
 		}
 
 		return insert_cmd_t(ctx, 
 							data, 
+							size,
 							location, 
 							this);
+	}
+
+	/**
+	*	@brief	Returns a device command that will push back data into the vector.
+	*			If needed, memory will be bound sprasely to the buffer.
+	*
+	*	@param	ctx		Context
+	*	@param	data	Data to push back
+	*/
+	auto push_back_cmd(const ste_context &ctx,
+					   const lib::vector<T> &data) {
+		return push_back_cmd(ctx,
+							 data.data(),
+							 data.size());
 	}
 
 	/**

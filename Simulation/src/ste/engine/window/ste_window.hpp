@@ -7,16 +7,15 @@
 
 #include <ste_engine_exceptions.hpp>
 
-#include <optional.hpp>
-
 #include <ste_window_exceptions.hpp>
 #include <ste_window_signals.hpp>
 
+#include <anchored.hpp>
 #include <lib/unique_ptr.hpp>
 
 namespace ste {
 
-class ste_window {
+class ste_window : anchored {
 private:
 	using window_type = GLFWwindow*;
 
@@ -45,9 +44,6 @@ public:
 		signals = nullptr;
 		glfwDestroyWindow(window);
 	}
-
-	ste_window(ste_window &&) = default;
-	ste_window &operator=(ste_window &&) = default;
 
 	/**
 	*	@brief	Polls windowing system events.

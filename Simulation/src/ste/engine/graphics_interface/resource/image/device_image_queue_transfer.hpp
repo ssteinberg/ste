@@ -53,8 +53,6 @@ auto inline queue_transfer(const ste_context &ctx,
 						   access_flags dst_access,
 						   lib::vector<wait_semaphore> &&wait_semaphores = {},
 						   lib::vector<semaphore*> &&signal_semaphores = {}) {
-	assert(!ste_device_queue::is_queue_thread() && "Should not be called from a queue");
-
 	auto src_family = src_queue.queue_descriptor().family;
 	auto dst_family = dst_queue.queue_descriptor().family;
 
