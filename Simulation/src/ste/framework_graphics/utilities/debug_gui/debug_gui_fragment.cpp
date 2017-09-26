@@ -3,9 +3,14 @@
 
 // Compile ImGUI
 #include <glfw.hpp>
+#ifdef _WIN32
+#undef APIENTRY
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+#include <GLFW/glfw3native.h>
+#endif
 #include <imgui/imgui.cpp>
 #include <imgui/imgui_draw.cpp>
-#include <imgui/glfw_vulkan_impl/imgui_impl_glfw_vulkan.cpp>
 
 #include <debug_gui_fragment.hpp>
 #include <imgui_timeline.hpp>
@@ -181,6 +186,8 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 	}
 
 	// Prepare new ImGUI frame
+	std::unique_lock<std::mutex> l(*mutex);
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(fb_extent.x), 
 							static_cast<float>(fb_extent.y));
@@ -206,18 +213,18 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 	ImGui::SetNextWindowPos(ImVec2(20, 20),
 							ImGuiSetCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(static_cast<float>(fb_extent.x) - 40.f,
-									135.f),
+									120.f),
 							 ImGuiSetCond_FirstUseEver);
 	if (ImGui::Begin("StE debug", nullptr)) {
 		// Plot frame times graph
 		{
 			std::stringstream stream;
 			stream << std::fixed << std::setprecision(3) << frame_time_ms << " ms";
-			ImGui::PlotLines(stream.str().c_str(),
+			ImGui::PlotLines("frame times",
 							 &frame_times[0],
 							 static_cast<int>(frame_times.size()),
 							 0,
-							 "frame times");
+							 stream.str().c_str());
 		}
 
 		// Write camera position
@@ -244,22 +251,22 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 	// Create user provided GUIs
 	if (user_gui_lambda)
 		user_gui_lambda(fb_extent);
+
+	// Render GUI
+	ImGui::Render();
 }
 
 void debug_gui_fragment::record(gl::command_recorder &recorder) {
-	// Prepare
-	ImGui::Render();
-
-	// Update draw data
-	auto draw_data = ImGui::GetDrawData();
-	assert(draw_data->Valid);
-
-	const size_t vertex_count = draw_data->TotalVtxCount;
-	const size_t index_count = draw_data->TotalIdxCount;
-
-	// Sparse resize buffers (if needed)
-	recorder << vertex_buffer.resize_cmd(get_creating_context(), vertex_count);
-	recorder << index_buffer.resize_cmd(get_creating_context(), index_count);
+	struct draw_list_element_t {
+		std::uint32_t element_count{ 0 };
+		gl::i32rect scissor_rect;
+		draw_list_element_t(gl::i32rect r) : scissor_rect(r) {}
+	};
+	struct draw_list_t {
+		std::uint32_t index_buffer_size;
+		std::uint32_t vertex_buffer_size;
+		lib::vector<draw_list_element_t> draws_element_count;
+	};
 
 	// Memory barrier before transfer
 	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::vertex_input,
@@ -271,20 +278,71 @@ void debug_gui_fragment::record(gl::command_recorder &recorder) {
 																						gl::access_flags::index_read,
 																						gl::access_flags::transfer_write)));
 
-	// Upload new data
-	std::size_t offset_vertex = 0;
-	std::size_t offset_index = 0;
-	for (int n = 0; n < draw_data->CmdListsCount; n++) {
-		const ImDrawList* cmd_list = draw_data->CmdLists[n];
-		recorder << vertex_buffer.overwrite_cmd(offset_vertex,
-												reinterpret_cast<const imgui_vertex_data *>(cmd_list->VtxBuffer.Data),
-												cmd_list->VtxBuffer.Size);
-		recorder << index_buffer.overwrite_cmd(offset_index,
-											   reinterpret_cast<const index_t *>(cmd_list->IdxBuffer.Data),
-											   cmd_list->IdxBuffer.Size);
+	lib::vector<draw_list_t> draw_lists;
+	{
+		std::unique_lock<std::mutex> l(*mutex);
 
-		offset_vertex += cmd_list->VtxBuffer.Size;
-		offset_index += cmd_list->IdxBuffer.Size;
+		// Update draw data
+		const auto draw_data = ImGui::GetDrawData();
+		assert(draw_data->Valid);
+
+		const std::size_t vertex_count = draw_data->TotalVtxCount;
+		std::size_t index_count = draw_data->TotalIdxCount;
+
+		if (!vertex_count || !index_count)
+			return;
+
+		// Align index buffer to 4 bytes, reserve an extra 1 element passing for each draw list
+		index_count = (index_count + draw_data->CmdListsCount + 2) >> 1 << 1;
+
+		// Sparse resize buffers (if needed, and grow only)
+		if (vertex_count > vertex_buffer.size())
+			recorder << vertex_buffer.resize_cmd(get_creating_context(), vertex_count);
+		if (index_count > index_buffer.size())
+			recorder << index_buffer.resize_cmd(get_creating_context(), index_count);
+
+		// Upload new data
+		draw_lists.reserve(draw_data->CmdListsCount);
+		std::uint32_t offset_vertex = 0;
+		std::uint32_t offset_index = 0;
+		for (int n = 0; n < draw_data->CmdListsCount; n++) {
+			const ImDrawList* cmd_list = draw_data->CmdLists[n];
+
+			if (cmd_list->VtxBuffer.Size && cmd_list->IdxBuffer.Size) {
+				const auto idx_buffer_size = static_cast<std::uint32_t>(cmd_list->IdxBuffer.Size + 1) >> 1 << 1;
+
+				// Store draw list data
+				draw_list_t dl;
+				dl.vertex_buffer_size = static_cast<std::uint32_t>(cmd_list->VtxBuffer.Size);
+				dl.index_buffer_size = idx_buffer_size;
+
+				// Write
+				recorder << vertex_buffer.overwrite_cmd(offset_vertex,
+														reinterpret_cast<const imgui_vertex_data *>(cmd_list->VtxBuffer.Data),
+														dl.vertex_buffer_size);
+				recorder << index_buffer.overwrite_cmd(offset_index,
+													   reinterpret_cast<const index_t *>(cmd_list->IdxBuffer.Data),
+													   idx_buffer_size);
+
+				offset_vertex += dl.vertex_buffer_size;
+				offset_index += idx_buffer_size;
+
+				// Save per-draw elements count
+				dl.draws_element_count.reserve(cmd_list->CmdBuffer.Size);
+				for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
+					const auto &cmd = cmd_list->CmdBuffer[cmd_i];
+
+					draw_list_element_t e(gl::i32rect{
+						{ static_cast<std::int32_t>(cmd.ClipRect.x), static_cast<std::int32_t>(cmd.ClipRect.y) },
+						{ static_cast<std::uint32_t>(cmd.ClipRect.z - cmd.ClipRect.x), static_cast<std::uint32_t>(cmd.ClipRect.w - cmd.ClipRect.y + 1) }
+					});
+					e.element_count = cmd.ElemCount;
+
+					dl.draws_element_count.emplace_back(std::move(e));
+				}
+				draw_lists.emplace_back(std::move(dl));
+			}
+		}
 	}
 
 	// Memory barrier after transfer
@@ -302,22 +360,24 @@ void debug_gui_fragment::record(gl::command_recorder &recorder) {
 	recorder << gl::cmd_bind_vertex_buffers(0, vertex_buffer);
 	recorder << gl::cmd_bind_index_buffer(index_buffer);
 
-	int vtx_offset = 0;
-	int idx_offset = 0;
-	for (int n = 0; n < draw_data->CmdListsCount; n++) {
-		const ImDrawList* cmd_list = draw_data->CmdLists[n];
-		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
-			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+	std::int32_t vtx_offset = 0;
+	std::uint32_t idx_offset = 0;
+	for (const auto &dl : draw_lists) {
+		std::uint32_t cmd_idx_offset = 0;
+		for (const auto &dle : dl.draws_element_count) {
+			if (dle.element_count) {
+				recorder << gl::cmd_set_scissor(dle.scissor_rect);
+				recorder << gl::cmd_draw_indexed(dle.element_count,
+												 1, 
+												 idx_offset + cmd_idx_offset,
+												 vtx_offset);
 
-			recorder << gl::cmd_set_scissor(gl::i32rect{ 
-				{ static_cast<std::int32_t>(pcmd->ClipRect.x), static_cast<std::int32_t>(pcmd->ClipRect.y)},
-				{ static_cast<std::uint32_t>(pcmd->ClipRect.z - pcmd->ClipRect.x), static_cast<std::uint32_t>(pcmd->ClipRect.w - pcmd->ClipRect.y + 1) }
-			});
-			recorder << gl::cmd_draw_indexed(pcmd->ElemCount, 1);
-			
-			idx_offset += pcmd->ElemCount;
+				cmd_idx_offset += dle.element_count;
+			}
 		}
-		vtx_offset += cmd_list->VtxBuffer.Size;
+
+		idx_offset += dl.index_buffer_size;
+		vtx_offset += static_cast<int32_t>(dl.vertex_buffer_size);
 	}
 
 	recorder << pipeline().cmd_unbind();

@@ -8,7 +8,7 @@
 using namespace ste;
 using namespace ste::graphics;
 
-void light_preprocessor_fragment::update_projection_planes(const primary_renderer_camera &camera) {
+void light_preprocessor_fragment::update_projection_planes(const primary_renderer_camera::projection_model_t &camera_projection) {
 	using clip_planes_uniform = gl::std140<glm::vec4, glm::vec4, glm::vec4, glm::vec4, glm::vec4>;
 
 	glm::vec4 fp;
@@ -19,9 +19,9 @@ void light_preprocessor_fragment::update_projection_planes(const primary_rendere
 	glm::vec4 bp;
 
 	// Extract frustum planes
-	const float aspect = camera.get_projection_model().get_aspect();
-	const float fovy = camera.get_projection_model().get_fovy();
-	const float fnear = camera.get_projection_model().get_near_clip_plane();
+	const float aspect = camera_projection.get_aspect();
+	const float fovy = camera_projection.get_fovy();
+	const float fnear = camera_projection.get_near_clip_plane();
 	extract_projection_frustum_planes(fnear * 2, fnear, fovy, aspect,
 									  &np, &fp, &rp, &lp, &tp, &bp);
 

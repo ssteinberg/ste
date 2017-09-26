@@ -27,6 +27,8 @@
 #include <optional.hpp>
 #include <atomic>
 #include <array>
+#include <lib/aligned_padded_ptr.hpp>
+#include <mutex>
 
 namespace ste {
 namespace graphics {
@@ -52,6 +54,7 @@ private:
 
 private:
 	alias<const ste_window> window;
+	lib::aligned_padded_ptr<std::mutex> mutex;
 
 	std::function<void(const glm::ivec2 &)> user_gui_lambda;
 
@@ -101,12 +104,20 @@ public:
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
 		static_assert(sizeof(ImDrawVert) == sizeof(imgui_vertex_data));
+
+		gl::device_pipeline_graphics_configurations config;
+		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::none,
+														gl::front_face::ccw);
+		auditor.set_pipeline_settings(std::move(config));
+		auditor.set_framebuffer_layout(create_fb_layout(rs.get_creating_context()));
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<imgui_vertex_data>());
 	}
 
 	void attach_framebuffer(gl::framebuffer &fb) {
 		fb_extent = fb.extent();
 		pipeline().attach_framebuffer(fb);
+
+		pipeline()["push_t.scale"] = glm::vec2{ 2.f / static_cast<float>(fb_extent.x), 2.f / static_cast<float>(fb_extent.y) };
 	}
 
 	void record(gl::command_recorder &recorder) override final;

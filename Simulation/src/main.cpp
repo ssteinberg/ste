@@ -202,6 +202,7 @@ private:
 	graphics::primary_renderer r;
 
 	graphics::debug_gui_fragment *debug_gui{ nullptr };
+	text::text_fragment footer_text_frag;
 	
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
@@ -225,10 +226,12 @@ public:
 				gl::profiler::profiler *prof,
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
-				const graphics::atmospherics_properties<double> &atmospherics_prop)
+				const graphics::atmospherics_properties<double> &atmospherics_prop,
+				text::text_manager &tm)
 		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof)
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof),
+		footer_text_frag(tm.create_fragment())
 	{
 		swap_chain_resized();
 	}
@@ -240,11 +243,20 @@ public:
 	auto &renderer() const { return r; }
 
 	void render(gl::command_recorder &recorder) override final {
+		using namespace text::attributes;
+
 		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
 		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
 		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+		footer_text_frag.update_text(get_creating_context(),
+									 recorder, { 10, 10 },
+									 line_height(32)(vsmall(b(L"VRAM ") +
+															b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
+															  purple(lib::to_wstring(commited_vram)) + L" / " +
+															  stroke(blue, 1)(sky_blue(lib::to_wstring(total_vram))) + L" MB"))));
 
 		r.render(recorder);
+		recorder << footer_text_frag;
 
 		if (debug_gui)
 			// Debug GUI
@@ -266,6 +278,7 @@ public:
 
 				// Attach sawp-chain framebuffers
 				r.attach_framebuffer(renderer_fb[batch->presentation_image_index()]);
+				footer_text_frag.manager().attach_framebuffer(gui_fb[batch->presentation_image_index()]);
 				if (debug_gui) debug_gui->attach_framebuffer(gui_fb[batch->presentation_image_index()]);
 
 				render(recorder);
@@ -546,7 +559,7 @@ int main()
 	device_params.physical_device = physical_device;
 	device_params.requested_device_features = features;
 	device_params.additional_device_extensions = { "VK_KHR_shader_draw_parameters" };
-	device_params.allow_markers = true;
+	device_params.allow_markers = false;
 	device_params.presentation_surface_parameters.vsync = gl::ste_presentation_device_vsync::mailbox;
 	device_params.presentation_surface_parameters.simultaneous_presentation_frames = 3;
 
@@ -626,7 +639,8 @@ int main()
 #endif
 													  &camera,
 													  &scene,
-													  atmosphere);
+													  atmosphere,
+													  text_manager);
 	});
 
 

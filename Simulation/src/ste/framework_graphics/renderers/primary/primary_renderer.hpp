@@ -30,12 +30,34 @@
 
 #include <signal.hpp>
 #include <optional.hpp>
+#include <mutex>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
 
 class primary_renderer : public gl::rendering_system {
 	using Base = gl::rendering_system;
+
+private:
+	class atmospherics_properties_update_t {
+	private:
+		std::mutex m;
+		optional<atmospherics_properties<double>> update;
+
+	public:
+		void operator=(const atmospherics_properties<double> &p) {
+			std::unique_lock<std::mutex> l(m);
+			update = p;
+		}
+		optional<atmospherics_properties<double>> get() {
+			std::unique_lock<std::mutex> l(m);
+			optional<atmospherics_properties<double>> ret = update;
+			update = none;
+
+			return ret;
+		}
+	};
 
 public:
 	using camera_t = primary_renderer_camera;
@@ -66,7 +88,7 @@ private:
 	ste_resource<light_preprocessor_fragment> light_preprocess;
 
 private:
-	optional<atmospherics_properties<double>> atmospherics_properties_update;
+	lib::aligned_padded_ptr<atmospherics_properties_update_t> atmospherics_properties_update;
 
 private:
 	void reattach_framebuffers();
@@ -104,7 +126,9 @@ public:
 	/**
 	 *	@brief		Updates atmospheric properties.
 	 */
-	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospherics_properties_update = atmospherics_prop; }
+	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) {
+		*atmospherics_properties_update = atmospherics_prop;
+	}
 
 	/**
 	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.

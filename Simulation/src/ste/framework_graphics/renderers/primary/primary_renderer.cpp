@@ -83,7 +83,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	light_preprocess(ctx,
 					 *this,
 					 &this->s->properties().lights_storage(),
-					 *this->cam)
+					 this->cam->get_projection_model())
 {
 	// Attach a connection to swapchain's surface resize signal
 	resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [this, &ctx](auto) {
@@ -99,11 +99,11 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	});
 
 	// Attach a connection to camera's projection change signal
-	camera_projection_change_signal = make_connection(cam->get_projection_change_signal(), [this](auto, auto) {
+	camera_projection_change_signal = make_connection(cam->get_projection_change_signal(), [this](auto, auto projection) {
 		// Update buffers and fragments that rely on projection data
 		buffers.invalidate_projection_buffer();
 
-		light_preprocess->update_projection_planes(*this->cam);
+		light_preprocess->update_projection_planes(projection);
 	});
 
 	// Attach framebuffers
@@ -160,21 +160,20 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 																						gl::access_flags::shader_read)));
 
 	// Update atmospheric properties (if needed)
-	if (atmospherics_properties_update) {
+	auto atmoshperics_update = atmospherics_properties_update->get();
+	if (atmoshperics_update) {
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
 																  gl::pipeline_stage::transfer,
 																  gl::buffer_memory_barrier(buffers.atmospheric_buffer.get(),
 																							gl::access_flags::shader_read,
 																							gl::access_flags::transfer_write)));
 		buffers.update_atmospheric_properties(recorder,
-											  atmospherics_properties_update.get());
+											  atmoshperics_update.get());
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
 																  gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
 																  gl::buffer_memory_barrier(buffers.atmospheric_buffer.get(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read)));
-
-		atmospherics_properties_update = none;
 	}
 
 	// Update common binding set
