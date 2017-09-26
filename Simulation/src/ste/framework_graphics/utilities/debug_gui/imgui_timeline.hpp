@@ -40,8 +40,8 @@ inline void PlotTimeline(const ste::lib::vector<std::pair<ste::lib::string, floa
 		out << std::setprecision(5) << t;
 		auto t_str = out.str() + "ms";
 
-		static constexpr int y0 = 8;
-		static constexpr int y1 = 38;
+		static constexpr int y0 = 10;
+		static constexpr int y1 = 30;
 		static constexpr int bar_h = 35;
 
 		draw_list->AddRectFilled(ImVec2(offset, canvasPosition.y + y1),

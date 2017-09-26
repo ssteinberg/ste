@@ -2024,6 +2024,12 @@
     <ClInclude Include="Simulation\src\ste\engine\types\ste_normalized_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\memory_properties_flags.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\memory_requirements.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

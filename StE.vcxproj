@@ -742,6 +742,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\presentation_surface_transform.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\presentation_surface\ste_presentation_surface_creation_parameters.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device\queue\batch\ste_device_queue_batch_base.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\memory_properties_flags.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\device_memory_manager\memory_requirements.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\observable_resource.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\observable_resource_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage.hpp" />

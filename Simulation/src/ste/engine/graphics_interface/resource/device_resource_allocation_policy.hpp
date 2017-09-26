@@ -4,15 +4,16 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <memory_properties_flags.hpp>
 
 namespace ste {
 namespace gl {
 
 struct device_resource_allocation_policy {
 	virtual ~device_resource_allocation_policy() noexcept {}
-	virtual VkMemoryPropertyFlags required_flags() const = 0;
-	virtual VkMemoryPropertyFlags preferred_flags() const = 0;
-	virtual bool private_allocation() const = 0;
+	virtual memory_properties_flags required_flags() const = 0;
+	virtual memory_properties_flags preferred_flags() const = 0;
+	virtual bool requires_dedicated_allocation() const = 0;
 };
 
 /*
@@ -20,18 +21,18 @@ struct device_resource_allocation_policy {
 *			local physical memory.
 */
 struct device_resource_allocation_policy_device : public device_resource_allocation_policy {
-	VkMemoryPropertyFlags required_flags() const override final { return 0; }
-	VkMemoryPropertyFlags preferred_flags() const override final { return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; }
-	bool private_allocation() const override final { return false; }
+	memory_properties_flags required_flags() const override final { return memory_properties_flags::none; }
+	memory_properties_flags preferred_flags() const override final { return memory_properties_flags::device_local; }
+	bool requires_dedicated_allocation() const override final { return false; }
 };
 
 /*
 *	@brief	Resource memory allocation policy for lazily-allocated resources.
 */
 struct device_resource_allocation_policy_lazy : public device_resource_allocation_policy {
-	VkMemoryPropertyFlags required_flags() const override final { return VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT; }
-	VkMemoryPropertyFlags preferred_flags() const override final { return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; }
-	bool private_allocation() const override final { return false; }
+	memory_properties_flags required_flags() const override final { return memory_properties_flags::lazily_allocated; }
+	memory_properties_flags preferred_flags() const override final { return memory_properties_flags::device_local; }
+	bool requires_dedicated_allocation() const override final { return false; }
 };
 
 /*
@@ -41,9 +42,9 @@ struct device_resource_allocation_policy_lazy : public device_resource_allocatio
 *			Private allocation as the mmaped allocation can't be shared.
 */
 struct device_resource_allocation_policy_host_visible : public device_resource_allocation_policy {
-	VkMemoryPropertyFlags required_flags() const override final { return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT; }
-	VkMemoryPropertyFlags preferred_flags() const override final { return VK_MEMORY_PROPERTY_HOST_CACHED_BIT; }
-	bool private_allocation() const override final { return true; }
+	memory_properties_flags required_flags() const override final { return memory_properties_flags::host_visible; }
+	memory_properties_flags preferred_flags() const override final { return memory_properties_flags::host_cached; }
+	bool requires_dedicated_allocation() const override final { return true; }
 };
 
 /*
@@ -52,9 +53,9 @@ struct device_resource_allocation_policy_host_visible : public device_resource_a
 *			Similar to device_resource_allocation_policy_mmap.
 */
 struct device_resource_allocation_policy_host_visible_coherent : public device_resource_allocation_policy {
-	VkMemoryPropertyFlags required_flags() const override final { return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT; }
-	VkMemoryPropertyFlags preferred_flags() const override final { return 0; }
-	bool private_allocation() const override final { return true; }
+	memory_properties_flags required_flags() const override final { return memory_properties_flags::host_visible | memory_properties_flags::host_coherent; }
+	memory_properties_flags preferred_flags() const override final { return memory_properties_flags::none; }
+	bool requires_dedicated_allocation() const override final { return true; }
 };
 
 }

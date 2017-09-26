@@ -10,7 +10,7 @@
 5. <strike>Non-templated resolutions for shadowmap storage</strike>
 6. <strike>External binding sets: Specializeable constants</strike>
 7. <strike>Correct constness for pipeline_layout and external binding sets</strike>
-8. VK_KHR_dedicated_allocation
+8. <strike>VK_KHR_dedicated_allocation</strike>
 9. VK_KHR_16bit_storage
 10. <strike>Atomic flags for pipeline layout and binding sets flags</strike>
 11. <strike>Model factory adaptation to new engine</strike>
@@ -33,7 +33,7 @@
 17. <strike>Integrate glslang into StE SPIR-v compiler. Compile all modules in a single go.</strike>
 18. <strike>Device resources' debug names via VK_EXT_debug_marker</strike>
 19. <strike>Sponza Vulkan demo UI and ImGUI</strike>
-20. Profiler
+20. <strike>Profiler</strike>
 21. Units, meters, km, kelvin, bytes, kb, etc.
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
 23. Queue transfer, correctly, in time.
@@ -48,3 +48,4 @@
 32. <strike>Semaphores enforce correct host-side happens-before relationship</strike>
 33. Window resizing, correct resource deallocation and recreation.
 34. Profiler capture and output
+35. Types: Normalized types.

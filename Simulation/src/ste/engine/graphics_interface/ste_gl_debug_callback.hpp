@@ -24,14 +24,15 @@ public:
 					const char* pLayerPrefix,
 					const char* pMessage,
 					const void *ctx) const {
-		static const lib::flat_set<std::int32_t> ignored_message_codes = { 10 };
+		static const lib::flat_set<std::int32_t> ignored_message_codes = { 10, 11, 12, 1002554381, 1000457229 };
+
+		const lib::string message = lib::string("Vulkan debug report - ") + pLayerPrefix + ": " + pMessage + "\n";
 
 		if (ignored_message_codes.find(messageCode) != ignored_message_codes.end()) {
 			// Ignore message
+//			ste_log_warn() << message << text::attributes::i("  (ignored)");
 			return;
 		}
-
-		const lib::string message = lib::string("Vulkan debug report - ") + pLayerPrefix + ": " + pMessage + "\n";
 
 		switch (flags) {
 		case VK_DEBUG_REPORT_WARNING_BIT_EXT:
