@@ -3,7 +3,7 @@
 #version 450
 
 #include <common.glsl>
-#include <chromaticity.glsl>
+#include <luminance.glsl>
 #include <hdr_common.glsl>
 #include <fast_rand.glsl>
 

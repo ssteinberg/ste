@@ -242,7 +242,7 @@ public:
 	*	
 	*	@return	Future to enqueued task.
 	*/
-	auto bind_sparse_memory(allocate_sparse_memory_result_t &&allocation,
+	void bind_sparse_memory(allocate_sparse_memory_result_t &&allocation,
 							lib::vector<wait_semaphore> &&wait_semaphores = {},
 							lib::vector<semaphore*> &&signal_semaphores = {}) {
 		if (!allocation) {
@@ -250,7 +250,7 @@ public:
 		}
 
 		auto &q = ctx.get().device().select_queue(ste_queue_selector<ste_queue_selector_policy_flexible>(ste_queue_type::data_transfer_sparse_queue));
-		return q.enqueue([=, allocation = std::move(allocation), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
+		q.enqueue([=, allocation = std::move(allocation), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 			// Allocate sparse binding batch
 			using batch_t = device_sparse_binding_batch<>;
 			auto batch = ste_device_queue::thread_allocate_batch_custom<batch_t>();
@@ -264,7 +264,7 @@ public:
 
 			// Queue sparse binding command
 			ste_device_queue::submit_batch(std::move(batch));
-		});
+		}).wait();
 	}
 
 	resource_t &get() { return resource; }

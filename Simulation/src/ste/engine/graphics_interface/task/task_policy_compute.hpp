@@ -11,6 +11,8 @@
 #include <cmd_dispatch.hpp>
 #include <cmd_dispatch_indirect.hpp>
 
+#include <inherit_from_types.hpp>
+
 
 namespace ste {
 namespace gl {

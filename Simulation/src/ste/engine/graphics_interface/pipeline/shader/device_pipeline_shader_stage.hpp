@@ -70,12 +70,19 @@ private:
 
 		// Load SPIR-v code
 		{
+			const std::size_t size = std::experimental::filesystem::file_size(path);
+
 			std::ifstream fs;
 			fs.exceptions(fs.exceptions() | std::ios::failbit | std::ifstream::badbit);
 			fs.open(path.string(), std::ios::in | std::ios::binary);
 
+			// Read header
 			fs.read(reinterpret_cast<char*>(&header), sizeof(header));
-			code = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
+
+			// Read code
+			const auto code_size = size - sizeof(header);
+			code.resize(code_size);
+			fs.read(code.data(), code_size);
 		}
 
 		// Verify header

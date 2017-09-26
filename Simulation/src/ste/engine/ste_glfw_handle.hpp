@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <glfw.hpp>
 #include <log.hpp>
 #include <ste_engine_exceptions.hpp>
 

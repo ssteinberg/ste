@@ -18,11 +18,13 @@
 
 #include <rendering_presentation_system.hpp>
 
+#include <primary_renderer.hpp>
 #include <scene.hpp>
 #include <atmospherics_properties.hpp>
-#include <primary_renderer.hpp>
 #include <sphere.hpp>
 #include <quad_light.hpp>
+
+#include <debug_gui_fragment.hpp>
 
 #include <camera.hpp>
 #include <camera_projection_reversed_infinite_perspective.hpp>
@@ -77,16 +79,15 @@ class loading_renderer : public gl::rendering_presentation_system {
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
+	lib::vector<gl::framebuffer> swap_chain_framebuffer, swap_chain_clear_framebuffers;
 
 	loading_photo_fragment photo_fragment;
 	text::text_fragment title_text_frag;
 	text::text_fragment footer_text_frag;
 
-	lib::vector<gl::framebuffer> swap_chain_clear_framebuffers;
-
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
-private:
+public:
 	static auto create_fb_clear_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::clear_store(ctx.device().get_surface().surface_format(),
@@ -101,35 +102,23 @@ private:
 		return fb_layout;
 	}
 
-	void create_swap_chain_clear_framebuffers() {
-		auto surface_extent = device().get_surface().extent();
-
-		lib::vector<gl::framebuffer> v;
-		for (auto &swap_image : device().get_surface().get_swap_chain_images()) {
-			gl::framebuffer fb(get_creating_context(),
-							   "swap_chain_clear_framebuffer",
-							   create_fb_clear_layout(get_creating_context()),
-							   surface_extent);
-			fb[0] = gl::framebuffer_attachment(swap_image.view, glm::vec4(.0f));
-
-			v.push_back(std::move(fb));
-		}
-
-		swap_chain_clear_framebuffers = std::move(v);
+private:
+	void swap_chain_resized() override final {
+		swap_chain_framebuffer = this->create_swap_chain_framebuffers(create_fb_layout(get_creating_context()));
+		swap_chain_clear_framebuffers = this->create_swap_chain_framebuffers(create_fb_clear_layout(get_creating_context()));
 	}
 
 public:
 	loading_renderer(const ste_context &ctx,
 					 gl::presentation_engine &presentation,
 					 text::text_manager &tm)
-		: Base(ctx,
-			   create_fb_layout(ctx)),
+		: Base(ctx),
 		presentation(presentation),
 		photo_fragment(*this, create_fb_clear_layout(ctx)),
 		title_text_frag(tm.create_fragment()),
 		footer_text_frag(tm.create_fragment())
 	{
-		create_swap_chain_clear_framebuffers();
+		swap_chain_resized();
 	}
 	~loading_renderer() noexcept {}
 
@@ -183,10 +172,9 @@ public:
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
-				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
 
-				title_text_frag.manager().attach_framebuffer(fb);
+				title_text_frag.manager().attach_framebuffer(swap_chain_framebuffer[batch->presentation_image_index()]);
 				photo_fragment.attach_framebuffer(swap_chain_clear_framebuffers[batch->presentation_image_index()]);
 
 				render(recorder);
@@ -210,40 +198,69 @@ class gi_renderer : public gl::rendering_presentation_system {
 
 private:
 	std::reference_wrapper<gl::presentation_engine> presentation;
+	lib::vector<gl::framebuffer> renderer_fb, gui_fb;
 	graphics::primary_renderer r;
+
+	graphics::debug_gui_fragment *debug_gui{ nullptr };
+	text::text_fragment footer_text_frag;
 	
 	gl::ste_device::queues_and_surface_recreate_signal_type::connection_type resize_signal_connection;
 
-private:
-	static auto fb_layout(const ste_context &ctx) {
+public:
+	static auto fb_renderer_layout(const ste_context &ctx) {
 		gl::framebuffer_layout fb_layout;
 		fb_layout[0] = gl::ignore_store(ctx.device().get_surface().surface_format(),
 										gl::image_layout::color_attachment_optimal);
 		return fb_layout;
 	}
 
+private:
+	void swap_chain_resized() override final {
+		renderer_fb = this->create_swap_chain_framebuffers(fb_renderer_layout(get_creating_context()));
+		gui_fb = this->create_swap_chain_framebuffers(graphics::debug_gui_fragment::create_fb_layout(get_creating_context()));
+	}
+
 public:
 	gi_renderer(const ste_context &ctx,
 				gl::presentation_engine &presentation,
+				gl::profiler::profiler *prof,
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
-				const graphics::atmospherics_properties<double> &atmospherics_prop)
-		: Base(ctx,
-			   fb_layout(ctx)),
+				const graphics::atmospherics_properties<double> &atmospherics_prop,
+				text::text_manager &tm)
+		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_layout(ctx), cam, s, atmospherics_prop)
-	{}
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof),
+		footer_text_frag(tm.create_fragment())
+	{
+		swap_chain_resized();
+	}
 	~gi_renderer() noexcept {}
+
+	void attach_debug_gui(graphics::debug_gui_fragment *debug_gui) { this->debug_gui = debug_gui; }
 
 	auto &renderer() { return r; }
 	auto &renderer() const { return r; }
 
 	void render(gl::command_recorder &recorder) override final {
+		using namespace text::attributes;
+
 		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
 		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
 		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+		footer_text_frag.update_text(get_creating_context(),
+									 recorder, { 10, 10 },
+									 line_height(32)(vsmall(b(L"VRAM ") +
+															b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
+															  purple(lib::to_wstring(commited_vram)) + L" / " +
+															  stroke(blue, 1)(sky_blue(lib::to_wstring(total_vram))) + L" MB"))));
 
 		r.render(recorder);
+		recorder << footer_text_frag;
+
+		if (debug_gui)
+			// Debug GUI
+			recorder << *debug_gui;
 	}
 
 	void present() override final {
@@ -252,17 +269,17 @@ public:
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
 
-		auto debugz_fence = batch->get_fence_ptr();
-
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
 			auto& command_buffer = batch->acquire_command_buffer();
 			{
 				auto recorder = command_buffer.record();
-				auto &fb = swap_chain_framebuffer(batch->presentation_image_index());
 				auto &swapchain_image = swap_chain_image(batch->presentation_image_index()).image;
 
-				r.attach_framebuffer(fb);
+				// Attach sawp-chain framebuffers
+				r.attach_framebuffer(renderer_fb[batch->presentation_image_index()]);
+				footer_text_frag.manager().attach_framebuffer(gui_fb[batch->presentation_image_index()]);
+				if (debug_gui) debug_gui->attach_framebuffer(gui_fb[batch->presentation_image_index()]);
 
 				render(recorder);
 				recorder
@@ -562,6 +579,18 @@ int main()
 
 
 	/*
+	*	Profiler
+	*/
+#ifdef PROFILE
+	gl::profiler::profiler profiler(ctx, 256);
+	gl::profiler::profiler::segment_results_t profiler_results;
+	auto profiler_output_connection = make_connection(profiler.get_segment_results_available_signal(), [&](auto segment) {
+		profiler_results = std::move(segment);
+	});
+#endif
+
+
+	/*
 	*	Text renderer
 	*/
 	const auto text_manager_font = text::font("Data/ArchitectsDaughter.ttf");
@@ -603,9 +632,15 @@ int main()
 		// Create renderer
 		presenter = lib::allocate_unique<gi_renderer>(ctx,
 													  presentation,
+#ifdef PROFILE
+													  &profiler,
+#else
+													  nullptr,
+#endif
 													  &camera,
 													  &scene,
-													  atmosphere);
+													  atmosphere,
+													  text_manager);
 	});
 
 
@@ -642,7 +677,9 @@ int main()
 	}
 
 	// Configure
+	float hdr_gamma = 2.2f;
 	presenter->renderer().set_aperture_parameters(8e-3f, 25e-3f);
+	presenter->renderer().set_gamma(hdr_gamma);
 
 	const glm::vec3 light0_pos{ -700.6, 138, -70 };
 	const glm::vec3 light1_pos{ 200, 550, 170 };
@@ -657,7 +694,107 @@ int main()
 	/*
 	 *	GUI
 	 */
+	graphics::debug_gui_fragment debug_gui(presenter->renderer(),
+										   window,
+										   text_manager_font);
+	presenter->attach_debug_gui(&debug_gui);
+
 	float sun_zenith = .0f;
+	float mie_absorption_coefficient = 2.5f;
+	float mie_scattering_coefficient = 1.5e+1f;
+
+	constexpr int layers_count = 3;
+	bool layer_enabled[layers_count] = { true, false, false };
+	graphics::rgb base_color[layers_count];
+	float roughness[layers_count];
+//	float anisotropy[layers_count];
+	float metallic[layers_count];
+	float index_of_refraction[layers_count];
+	float thickness[layers_count];
+	float absorption[layers_count];
+	float phase[layers_count];
+
+	lib::unique_ptr<graphics::material_layer> layers[layers_count] = { 
+		std::move(mat_editor_layers.back()), 
+		scene.properties().material_layers_storage().allocate_layer(), 
+		scene.properties().material_layers_storage().allocate_layer() 
+	};
+	mat_editor_materials.front()->enable_subsurface_scattering(true);
+
+	for (int i = 0; i < layers_count; ++i) {
+		base_color[i] = { 1,1,1 };
+		roughness[i] = .5f;
+//		anisotropy[i] = 0;
+		metallic[i] = 0;
+		index_of_refraction[i] = 1.5f;
+		thickness[i] = 0.001f;
+		absorption[i] = 1.f;
+		phase[i] = .0f;
+	}
+
+	debug_gui.set_custom_gui([&](const glm::ivec2 &bbsize) {
+		if (ImGui::Begin("Material Editor", nullptr)) {
+			for (int i = 0; i < layers_count; ++i) {
+				std::string layer_label = std::string("Layer ") + std::to_string(i);
+				if (i != 0)
+					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
+				else
+					ImGui::Text(layer_label.data());
+
+				if (layer_enabled[i]) {
+					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
+					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
+//					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
+					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
+					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
+					if (i < layers_count - 1 && layer_enabled[i + 1])
+						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, graphics::material_layer_max_thickness, "%.5f", 3.f);
+					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
+					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
+				}
+			}
+		}
+
+		ImGui::End();
+		
+		for (int i = 0; i < layers_count; ++i) {/*
+			if (layers[i]->get_albedo() != base_color[i])
+				layers[i]->set_albedo(base_color[i]);
+			layers[i]->set_roughness(roughness[i]);
+//			layers[i]->set_anisotropy(anisotropy[i]);
+			layers[i]->set_metallicity(metallic[i]);
+			layers[i]->set_layer_thickness(thickness[i]);
+			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
+				layers[i]->set_index_of_refraction(index_of_refraction[i]);
+			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
+				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
+			if (layers[i]->get_scattering_phase_parameter() != phase[i])
+				layers[i]->set_scattering_phase_parameter(phase[i]);*/
+
+			if (i != 0) {
+				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
+				if (layer_enabled[i] != enabled)
+					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
+			}
+		}
+
+		if (ImGui::Begin("Settings", nullptr)) {
+			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
+			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
+			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
+
+			ImGui::SliderFloat((std::string("Gamma ##value##gamma")).data(), &hdr_gamma, .1f, 10.f);
+		}
+
+		ImGui::End();
+
+		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
+		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
+		presenter->renderer().update_atmospherics_properties(atmosphere);
+		presenter->renderer().set_gamma(hdr_gamma);
+	});
 
 
 	/*
@@ -675,8 +812,8 @@ int main()
 
 		if (key == hid::key::KeyESCAPE)
 			running = false;
-		//		if (key == hid::key::KeyPRINT_SCREEN || key == hid::key::KeyF12)
-		//			capture_screenshot();
+//		if (key == hid::key::KeyPRINT_SCREEN || key == hid::key::KeyF12)
+//			capture_screenshot();
 	});
 	auto pointer_button_connection = ste::make_connection(window.get_signals().signal_pointer_button(),
 														  [&](auto b, auto status, auto mods) {
@@ -704,7 +841,6 @@ int main()
 		// Calculate predicted next frame time
 		frame_time_predictor.update(presentation.get_frame_time());
 		float frame_time_ms = frame_time_predictor.predicted_value();
-		window.set_title(lib::to_string(frame_time_ms).c_str());
 
 		if (window.is_window_focused()) {
 			// Handle movement input
@@ -720,13 +856,16 @@ int main()
 
 			// Handle camera rotation input
 			constexpr float rotation_factor = .0002f;
-			bool rotate_camera = mouse_down;
-			if (mouse_down/* && !debug_gui_dispatchable->is_gui_active()*/) {
+			if (mouse_down && !debug_gui.is_gui_active()) {
 				const auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pointer_pos) * frame_time_ms * rotation_factor;
 				camera.pitch_and_yaw(diff_v.y, diff_v.x);
 			}
 			last_pointer_pos = pointer_pos;
 		}
+
+		// Update debug GUI 
+		debug_gui.set_camera_position(camera.get_position());
+		debug_gui.append_frame(static_cast<float>(presentation.get_frame_time()) * 1e-6f, profiler_results);
 
 		// Update scene objects
 #ifdef STATIC_SCENE
@@ -755,242 +894,3 @@ int main()
 
 	return 0;
 }
-
-//
-//#ifdef _MSC_VER
-//int CALLBACK WinMain(HINSTANCE hInstance,
-//					 HINSTANCE hPrevInstance,
-//					 LPSTR     lpCmdLine,
-//					 int       nCmdShow)
-//#else
-//int main()
-//#endif
-//{
-	 //
-	 //
-	 //	/*
-	 //	 *	Connect input handlers
-	 //	 */
-	 //
-	 //	bool running = true;
-	 //	bool mouse_down = false;
-	 //	auto keyboard_listner = std::make_shared<decltype(ctx)::hid_keyboard_signal_type::connection_type>(
-	 //		[&](hid::keyboard::K key, int scanline, hid::Status status, hid::ModifierBits mods) {
-	 //		using namespace hid;
-	 //		auto time_delta = ctx.time_per_frame().count();
-	 //
-	 //		if (status != Status::KeyDown)
-	 //			return;
-	 //
-	 //		if (key == keyboard::K::KeyESCAPE)
-	 //			running = false;
-	 //		if (key == keyboard::K::KeyPRINT_SCREEN || key == keyboard::K::KeyF12)
-	 //			ctx.capture_screenshot();
-	 //	});
-	 //	auto pointer_button_listner = std::make_shared<decltype(ctx)::hid_pointer_button_signal_type::connection_type>(
-	 //		[&](hid::pointer::B b, hid::Status status, hid::ModifierBits mods) {
-	 //		using namespace hid;
-	 //
-	 //		mouse_down = b == pointer::B::Left && status == Status::KeyDown;
-	 //	});
-	 //	ctx.hid_signal_keyboard().connect(keyboard_listner);
-	 //	ctx.hid_signal_pointer_button().connect(pointer_button_listner);
-	 //
-	 //
-	 //
-	 //	/*
-	 //	 *	Create debug view window and material editor
-	 //	 */
-	 //
-	 //	constexpr int layers_count = 3;
-	 //
-	 //	std::unique_ptr<graphics::profiler> gpu_tasks_profiler = std::make_unique<graphics::profiler>();
-	 //	renderer.get().attach_profiler(gpu_tasks_profiler.get());
-	 //	std::unique_ptr<graphics::debug_gui> debug_gui_dispatchable = std::make_unique<graphics::debug_gui>(ctx, gpu_tasks_profiler.get(), font, &camera);
-	 //
-	 //	auto mat_editor_model_transform = glm::scale(glm::mat4(1.f), glm::vec3{ 3.5f });
-	 //	mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
-	 //	//auto mat_editor_model_transform = glm::translate(glm::mat4(1.f), glm::vec3{ .0f, .0f, -50.f });
-	 //	//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
-	 //	//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
-	 //	for (auto &o : mat_editor_objects)
-	 //		o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
-	 //	
-	 //	std::unique_ptr<graphics::material_layer> layers[layers_count];
-	 //	layers[0] = std::move(mat_editor_layers.back());
-	 //	mat_editor_materials.back()->enable_subsurface_scattering(true);
-	 //
-	 //	float dummy = .0f;
-	 //
-	 //	float sun_zenith = .0f;
-	 //	float mie_absorption_coefficient = 2.5f;
-	 //	float mie_scattering_coefficient = 1.5e+1f;
-	 //
-	 //	bool layer_enabled[3] = { true, false, false };
-	 //	graphics::rgb base_color[3];
-	 //	float roughness[3];
-	 ////	float anisotropy[3];
-	 //	float metallic[3];
-	 //	float index_of_refraction[3];
-	 //	float thickness[3];
-	 //	float absorption[3];
-	 //	float phase[3];
-	 //
-	 //	for (int i = 0; i < layers_count; ++i) {
-	 //		if (i > 0)
-	 //			layers[i] = scene.get().properties().material_layers_storage().allocate_layer();
-	 //
-	 //		base_color[i] = { 1,1,1 };
-	 //		roughness[i] = .5f;
-	 ////		anisotropy[i] = 0;
-	 //		metallic[i] = 0;
-	 //		index_of_refraction[i] = 1.5f;
-	 //		thickness[i] = 0.001f;
-	 //		absorption[i] = 1.f;
-	 //		phase[i] = .0f;
-	 //	}
-	 //
-	 //	debug_gui_dispatchable->add_custom_gui([&](const glm::ivec2 &bbsize) {
-	 //		if (ImGui::Begin("Material Editor", nullptr)) {
-	 //			for (int i = 0; i < layers_count; ++i) {
-	 //				std::string layer_label = std::string("Layer ") + std::to_string(i);
-	 //				if (i != 0)
-	 //					ImGui::Checkbox(layer_label.data(), &layer_enabled[i]);
-	 //				else
-	 //					ImGui::text(layer_label.data());
-	 //
-	 //				if (layer_enabled[i]) {
-	 //					ImGui::SliderFloat((std::string("R ##value") +		" ##" + layer_label).data(), &base_color[i].R(),	 .0f, 1.f);
-	 //					ImGui::SliderFloat((std::string("G ##value") +		" ##" + layer_label).data(), &base_color[i].G(),	 .0f, 1.f);
-	 //					ImGui::SliderFloat((std::string("B ##value") +		" ##" + layer_label).data(), &base_color[i].B(),	 .0f, 1.f);
-	 //					ImGui::SliderFloat((std::string("Rghn ##value") +	" ##" + layer_label).data(), &roughness[i],			 .0f, 1.f);
-	 ////					ImGui::SliderFloat((std::string("Aniso ##value") +	" ##" + layer_label).data(), &anisotropy[i],		-1.f, 1.f, "%.3f", 2.f);
-	 //					ImGui::SliderFloat((std::string("Metal ##value") +	" ##" + layer_label).data(), &metallic[i],			 .0f, 1.f);
-	 //					ImGui::SliderFloat((std::string("IOR ##value") +	" ##" + layer_label).data(), &index_of_refraction[i],1.f, 4.f, "%.5f", 3.f);
-	 //					if (i < layers_count - 1 && layer_enabled[i + 1])
-	 //						ImGui::SliderFloat((std::string("Thick ##value") + " ##" + layer_label).data(), &thickness[i], .0f, graphics::material_layer_max_thickness, "%.5f", 3.f);
-	 //					ImGui::SliderFloat((std::string("Attn ##value") +	" ##" + layer_label).data(), &absorption[i], .000001f, 50.f, "%.8f", 5.f);
-	 //					ImGui::SliderFloat((std::string("Phase ##value") +	" ##" + layer_label).data(), &phase[i], -1.f, +1.f);
-	 //				}
-	 //			}
-	 //		}
-	 //
-	 //		ImGui::End();
-	 //		
-	 //		for (int i = 0; i < layers_count; ++i) {
-	 //			auto t = glm::u8vec3(base_color[i].R() * 255.5f, base_color[i].G() * 255.5f, base_color[i].B() * 255.5f);
-	 //			if (layers[i]->get_albedo() != base_color[i])
-	 //				layers[i]->set_albedo(base_color[i]);
-	 //			layers[i]->set_roughness(roughness[i]);
-	 ////			layers[i]->set_anisotropy(anisotropy[i]);
-	 //			layers[i]->set_metallic(metallic[i]);
-	 //			layers[i]->set_layer_thickness(thickness[i]);
-	 //			if (layers[i]->get_index_of_refraction() != index_of_refraction[i])
-	 //				layers[i]->set_index_of_refraction(index_of_refraction[i]);
-	 //			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
-	 //				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
-	 //			if (layers[i]->get_scattering_phase_parameter() != phase[i])
-	 //				layers[i]->set_scattering_phase_parameter(phase[i]);
-	 //
-	 //			if (i != 0) {
-	 //				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
-	 //				if (layer_enabled[i] != enabled)
-	 //					layers[i - 1]->set_next_layer(layer_enabled[i] ? layers[i].get() : nullptr);
-	 //			}
-	 //		}
-	 //
-	 //		if (ImGui::Begin("Atmosphere", nullptr)) {
-	 //			ImGui::SliderFloat((std::string("Sun zenith angle ##value")).data(), &sun_zenith, .0f, 2 * glm::pi<float>());
-	 //			ImGui::SliderFloat((std::string("Mie scattering coefficient (10^-8) ##value##mie1")).data(), &mie_scattering_coefficient, .0f, 100.f, "%.5f", 3.f);
-	 //			ImGui::SliderFloat((std::string("Mie absorption coefficient (10^-8) ##value##mie2")).data(), &mie_absorption_coefficient, .0f, 100.f, "%.5f", 3.f);
-	 //			ImGui::SliderFloat((std::string("Debug dummy variable")).data(), &dummy, .0f, 1.f);
-	 //		}
-	 //
-	 //		ImGui::End();
-	 //
-	 //		atmosphere.mie_absorption_coefficient = static_cast<double>(mie_absorption_coefficient) * 1e-8;
-	 //		atmosphere.mie_scattering_coefficient = static_cast<double>(mie_scattering_coefficient) * 1e-8;
-	 //		renderer.get().update_atmospherics_properties(atmosphere);
-	 //
-	 //		renderer.get().get_composer_program().set_uniform("dummy", dummy);
-	 //	});
-	 //
-	 //
-	 //	auto footer_text = text_manager.get().create_renderer();
-	 //	auto footer_text_task = graphics::make_gpu_task("footer_text", footer_text.get(), nullptr);
-	 //
-	 //#ifndef STATIC_SCENE
-	 //	renderer.get().add_gui_task(footer_text_task);
-	 //#endif
-	 //	renderer.get().add_gui_task(graphics::make_gpu_task("debug_gui", debug_gui_dispatchable.get(), nullptr));
-	 //
-	 //	glm::ivec2 last_pointer_pos;
-	 //	float time = 0;
-	 //	while (running) {
-	 //		if (ctx.window_active()) {
-	 //			auto time_delta = ctx.time_per_frame().count();
-	 //
-	 //			using namespace hid;
-	 //			constexpr float movement_factor = 155.f;
-	 //			if (ctx.get_key_status(keyboard::K::KeyW) == Status::KeyDown)
-	 //				camera.step_forward(time_delta*movement_factor);
-	 //			if (ctx.get_key_status(keyboard::K::KeyS) == Status::KeyDown)
-	 //				camera.step_backward(time_delta*movement_factor);
-	 //			if (ctx.get_key_status(keyboard::K::KeyA) == Status::KeyDown)
-	 //				camera.step_left(time_delta*movement_factor);
-	 //			if (ctx.get_key_status(keyboard::K::KeyD) == Status::KeyDown)
-	 //				camera.step_right(time_delta*movement_factor);
-	 //
-	 //			constexpr float rotation_factor = .09f;
-	 //			bool rotate_camera = mouse_down;
-	 //
-	 //			auto pp = ctx.get_pointer_position();
-	 //			if (mouse_down && !debug_gui_dispatchable->is_gui_active()) {
-	 //				auto diff_v = static_cast<glm::vec2>(last_pointer_pos - pp) * time_delta * rotation_factor;
-	 //				camera.pitch_and_yaw(-diff_v.y, diff_v.x);
-	 //			}
-	 //			last_pointer_pos = pp;
-	 //		}
-	 //
-	 //#ifdef STATIC_SCENE
-	 //		glm::vec3 lp = light0_pos;
-	 //		glm::vec3 sun_dir = sun_direction;
-	 //#else
-	 //		float angle = time * glm::pi<float>() / 2.5f;
-	 //		glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
-	 //
-	 //		glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()), 
-	 //													  -glm::cos(sun_zenith + glm::pi<float>()), 
-	 //													  .15f});
-	 //
-	 //		light0.first->set_position(lp);
-	 //		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
-	 //		sun_light->set_direction(sun_dir);
-	 //#endif
-	 //
-	 //		{
-	 //			using namespace text::attributes;
-	 //
-	 //			static unsigned tpf_count = 0;
-	 //			static float total_tpf = .0f;
-	 //			total_tpf += ctx.time_per_frame().count();
-	 //			++tpf_count;
-	 //			static float tpf = .0f;
-	 //			if (tpf_count % 5 == 0) {
-	 //				tpf = total_tpf / 5.f;
-	 //				total_tpf = .0f;
-	 //			}
-	 //
-	 //			auto total_vram = std::to_wstring(ctx.gl()->meminfo_total_available_vram() / 1024);
-	 //			auto free_vram = std::to_wstring(ctx.gl()->meminfo_free_vram() / 1024);
-	 //
-	 //			footer_text->set_text({ 10, 50 }, line_height(28)(vsmall(b(stroke(dark_magenta, 1)(red(std::to_wstring(tpf * 1000.f))))) + L" ms\n" +
-	 //															  vsmall(b((blue_violet(free_vram) + L" / " + stroke(red, 1)(dark_red(total_vram)) + L" MB")))));
-	 //		}
-	 //
-	 //		time += ctx.time_per_frame().count();
-	 //		if (!ctx.tick()) break;
-	 //	}
-	 //
-	 //	return 0;
-	 //}

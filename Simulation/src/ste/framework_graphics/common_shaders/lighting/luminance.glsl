@@ -1,4 +1,17 @@
 
+
+/*
+ *	@brief	Returns the luminance of an RGB value
+ */
+float luminance(vec3 color) {
+	const vec3 lumcoeff = vec3(0.212671f, 0.715160f, 0.072169f);
+	return dot(color, lumcoeff);
+}
+
+vec3 saturate(vec3 c) {
+	return c / max_element(c);
+}
+
 /*
  *	@brief	Stevens's power law is a proposed relationship between the magnitude of a physical stimulus and its perceived intensity.
  *			Returns k*I^a

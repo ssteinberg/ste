@@ -37,8 +37,8 @@ public:
 
 private:
 	struct shared_data_t {
-		mutable std::mutex m;
 		std::condition_variable notifier;
+		std::mutex m;
 
 		std::atomic<std::uint32_t> requests_pending{ 0 };
 		std::atomic<std::uint32_t> active_workers{ 0 };
@@ -53,7 +53,6 @@ public:
 private:
 	lib::aligned_padded_ptr<shared_data_t> shared_data;
 	lib::vector<interruptible_thread> workers;
-	lib::vector<interruptible_thread> despawned_workers;
 
 	task_queue_t task_queue;
 
@@ -77,13 +76,11 @@ private:
 				{
 					// Wait for tasks
 					std::unique_lock<std::mutex> l(shared_data->m);
-					if (interruptible_thread::is_interruption_flag_set()) return;
-
 					shared_data->notifier.wait(l,
 											   [&]() {
-											   return interruptible_thread::is_interruption_flag_set() ||
-												   (task = task_queue.pop()) != nullptr;
-										   });
+												   return interruptible_thread::is_interruption_flag_set() ||
+													   (task = task_queue.pop()) != nullptr;
+											   });
 				}
 
 				shared_data->active_workers.fetch_add(1);
@@ -91,10 +88,8 @@ private:
 				// Process tasks
 				while (task != nullptr) {
 					run_task(std::move(*task));
-					if (interruptible_thread::is_interruption_flag_set()) {
-						shared_data->active_workers.fetch_add(-1);
-						return;
-					}
+					if (interruptible_thread::is_interruption_flag_set())
+						break;
 					task = task_queue.pop();
 				}
 
@@ -121,8 +116,7 @@ private:
 		workers.pop_back();
 
 		ref.interrupt();
-		ref.detach();
-		despawned_workers.push_back(std::move(ref));
+		std::move(ref).detach();
 	}
 
 	void notify_workers_on_enqueue() {
@@ -148,6 +142,15 @@ private:
 		return std::max<unsigned>(std::thread::hardware_concurrency() * 4, 1u);
 	}
 
+	void notify_and_join_thread(interruptible_thread &w) {
+		w.interrupt();
+		do {
+			shared_data->notifier.notify_all();
+		} while (!shared_data->m.try_lock());
+		shared_data->m.unlock();
+		w.join();
+	}
+
 public:
 	balanced_thread_pool(float idle_time_threshold_for_new_worker = .1f, float kernel_time_thershold_for_despawn_extra_worker = .1f, float idle_time_threshold_for_despawn_surplus_worker = .15f)
 		: idle_time_threshold_for_new_worker(idle_time_threshold_for_new_worker),
@@ -160,17 +163,13 @@ public:
 	}
 
 	~balanced_thread_pool() {
-		for (auto &t : workers)
-			t.interrupt();
+		// Interrupt all workers
+		for (auto &w : workers)
+			w.interrupt();
 
-		do { shared_data->notifier.notify_all(); }
-		while (!shared_data->m.try_lock());
-		shared_data->m.unlock();
-
-		for (auto &t : workers)
-			t.join();
-		for (auto &t : despawned_workers)
-			t.get_future().get();
+		// Keep notifying until all threads are interrupted
+		for (auto &w : workers)
+			notify_and_join_thread(w);
 	}
 
 	balanced_thread_pool(balanced_thread_pool &&) = delete;
@@ -241,26 +240,15 @@ public:
 		if (!sys_times.get_times_since_last_call(idle_frac, kernel_frac, user_frac))
 			return;
 
-		// Cleanup despawn queue
-		for (auto it = despawned_workers.begin(); it != despawned_workers.end();) {
-			if (it->get_future().wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-				it->get_future().get(); // Might throw
-				it = despawned_workers.erase(it);
-			}
-			else
-				++it;
-		}
-
-		// Check for workers with exceptions
+		// Check for dead workers (e.g. exception thrown)
 		for (auto it = workers.begin(); it != workers.end();) {
-			if (it->get_future().wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-				it->get_future().get();
+			if (it->is_terminated())
 				it = workers.erase(it);
-			}
 			else
 				++it;
 		}
 
+		// Load balance
 		const unsigned min_threads = min_worker_threads();
 		const auto req = get_pending_requests_count();
 		const auto threads_sleeping = get_sleeping_workers_count();

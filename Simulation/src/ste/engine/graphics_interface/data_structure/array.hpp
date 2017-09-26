@@ -95,18 +95,20 @@ public:
 	array(array &&o) = default;
 	array &operator=(array &&) = default;
 
-
 	/**
 	*	@brief	Returns a device command that will overwrite slot at index idx with data.
 	*
 	*	@param	idx		Slot index to overwrite
 	*	@param	data	New data to overwrite
+	*	@param	size	Element count of new data
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
-					   const lib::vector<T> &data) {
-		assert(idx + data.size() <= size());
+					   const T *data,
+					   std::size_t size) {
+		assert(idx + size <= this->size());
 
 		return update_cmd_t(data,
+							size,
 							idx,
 							this);
 	}
@@ -118,8 +120,21 @@ public:
 	*	@param	data	New data to overwrite
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
+					   const lib::vector<T> &data) {
+		return overwrite_cmd(idx,
+							 data.data(),
+							 data.size());
+	}
+
+	/**
+	*	@brief	Returns a device command that will overwrite slot at index idx with data.
+	*
+	*	@param	idx		Slot index to overwrite
+	*	@param	data	New data to overwrite
+	*/
+	auto overwrite_cmd(std::uint64_t idx,
 					   const T &data) {
-		return overwrite_cmd(idx, lib::vector<T>{ data });
+		return overwrite_cmd(idx, &data, 1);
 	}
 
 	auto size() const { return buffer.get().get_elements_count(); }

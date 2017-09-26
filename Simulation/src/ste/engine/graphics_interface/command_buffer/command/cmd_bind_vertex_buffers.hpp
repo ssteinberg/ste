@@ -5,6 +5,7 @@
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
+#include <command_buffer.hpp>
 #include <device_buffer_base.hpp>
 #include <cassert>
 

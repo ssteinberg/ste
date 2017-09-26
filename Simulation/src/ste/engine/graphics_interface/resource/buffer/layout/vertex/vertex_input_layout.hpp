@@ -8,6 +8,7 @@
 #include <generate_array.hpp>
 
 #include <tuple>
+#include <tuple_reverse.hpp>
 
 namespace ste {
 namespace gl {
@@ -32,7 +33,7 @@ struct vertex_input_layout_initialize_with_args<N, Dst, T> {
 
 template <typename... Ts>
 struct vertex_input_layout {
-	using tuple_t = std::tuple<Ts...>;
+	using tuple_t = tuple_reverse_t<std::tuple<Ts...>>;
 	static constexpr char _vertex_input_tag = 0;
 
 	static constexpr std::size_t count_elements = sizeof...(Ts);
@@ -43,18 +44,18 @@ struct vertex_input_layout {
 
 	template <int N>
 	auto& get() {
-		static_assert(N < sizeof...(Ts), "N out of range");
-		return std::get<N>(_data);
+		static_assert(N < count_elements, "N out of range");
+		return std::get<count_elements - N - 1>(_data);
 	}
 	template <int N>
 	const auto& get() const {
-		static_assert(N < sizeof...(Ts), "N out of range");
-		return std::get<N>(_data);
+		static_assert(N < count_elements, "N out of range");
+		return std::get<count_elements - N - 1>(_data);
 	}
 
 	vertex_input_layout() = default;
 	vertex_input_layout(tuple_t &&tuple) {
-		_data = std::move(tuple);
+		_data = invert_tuple(std::move(tuple));
 	}
 	vertex_input_layout(Ts&&... args) : vertex_input_layout(tuple_t(std::forward<Ts>(args)...)) {}
 };
@@ -76,8 +77,8 @@ template <int N, typename Block>
 struct vertex_input_offset_of_helper {
 	auto operator()(int i) {
 		auto b = Block();
-		auto addr = reinterpret_cast<std::size_t>(&b.template get<N>());
-		auto base = reinterpret_cast<std::size_t>(&b._data);
+		const auto addr = reinterpret_cast<std::size_t>(&b.template get<N>());
+		const auto base = reinterpret_cast<std::size_t>(&b._data);
 		if (N == i)
 			return addr - base;
 

@@ -22,20 +22,21 @@ class vector_cmd_update_buffer : public command {
 	lib::vector<cmd_update_buffer> update_commands;
 
 public:
-	vector_cmd_update_buffer(const lib::vector<typename vector::value_type>& data_copy,
+	vector_cmd_update_buffer(const typename vector::value_type *data,
+							 std::size_t size,
 	                         std::uint64_t location,
 	                         vector* v) {
 		// Calculate the maximal amount of elements possible to update in a single update buffer command
 		auto elements_per_chunk = cmd_update_buffer::maximal_update_bytes / sizeof(typename vector::value_type);
 
 		// Create update buffer commands
-		for (std::size_t e = 0; e < data_copy.size(); e += elements_per_chunk, location += elements_per_chunk) {
-			auto chunk_count = glm::min(elements_per_chunk, data_copy.size() - e);
+		for (std::size_t e = 0; e < size; e += elements_per_chunk, location += elements_per_chunk) {
+			auto chunk_count = glm::min(elements_per_chunk, size - e);
 
 			update_commands.emplace_back(buffer_view(v->get(),
 			                                         location,
 			                                         chunk_count),
-			                             lib::blob(data_copy.data() + e,
+			                             lib::blob(data + e,
 			                                       chunk_count * sizeof(typename vector::value_type)));
 		}
 	}
@@ -123,15 +124,17 @@ class vector_cmd_insert : public command {
 
 public:
 	vector_cmd_insert(const ste_context &ctx,
-					  const lib::vector<typename vector::value_type>& data_copy,
+					  const typename vector::value_type *data,
+					  std::size_t size,
 	                  std::uint64_t location,
 	                  vector* v)
-		: overwrite_cmd(data_copy,
+		: overwrite_cmd(data,
+						size,
 		                location,
 		                v),
 		resize_cmd(ctx,
 				   location,
-				   location + static_cast<std::uint64_t>(data_copy.size()),
+				   location + static_cast<std::uint64_t>(size),
 				   v) {}
 
 	virtual ~vector_cmd_insert() noexcept {}

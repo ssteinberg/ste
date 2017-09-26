@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -13,8 +13,9 @@ namespace gl {
 
 class cmd_write_timestamp : public command {
 private:
-	const vk::vk_query<> &query;
-	VkPipelineStageFlagBits stage;
+	VkQueryPool pool;
+	std::uint32_t index;
+	gl::pipeline_stage stage;
 
 public:
 	cmd_write_timestamp(cmd_write_timestamp &&) = default;
@@ -23,16 +24,17 @@ public:
 	cmd_write_timestamp &operator=(const cmd_write_timestamp&) = default;
 
 	cmd_write_timestamp(const vk::vk_query<> &query,
-						VkPipelineStageFlagBits stage) : query(query), stage(stage) {}
+						gl::pipeline_stage stage)
+		: pool(query.get_pool()), index(query.ge_query_index()), stage(stage) {}
 
 	virtual ~cmd_write_timestamp() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdWriteTimestamp(command_buffer,
-							stage,
-							query.get_pool(),
-							query.ge_query_index());
+							static_cast<VkPipelineStageFlagBits>(stage),
+							pool,
+							index);
 	}
 };
 

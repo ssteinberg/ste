@@ -34,7 +34,7 @@ template <
 class stable_vector :
 	ste_resource_deferred_create_trait,
 	public allow_type_decay<stable_vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
-	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
+	//static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
 	using buffer_t = device_buffer_sparse<T, device_resource_allocation_policy_device>;
@@ -137,41 +137,62 @@ public:
 	*
 	*	@param	ctx			Context
 	*	@param	data		Data to insert
+	*	@param	size		Element count of new data
 	*	@param	location	Outputs the insertion index
 	*/
 	auto insert_cmd(const ste_context &ctx,
-					const lib::vector<T> &data,
+					const T *data,
+					std::size_t size,
 					std::uint64_t &location) {
 		// If there are tombstones, replace one of them with new element, if possible
 		std::unique_lock<std::mutex> lt(tombstones_mutex);
 
 		auto it = tombstones.begin();
 		for (; it != tombstones.end(); ++it) {
-			if (it->length >= data.size())
+			if (it->length >= size)
 				break;
 		}
 
 		if (it != tombstones.end()) {
 			location = it->start;
 
-			const tombstone_range t(location, data.size());
+			const tombstone_range t(location, size);
 			tombstones.remove(t);
 
 			lt.unlock();
 
 			return insert_cmd_t(ctx,
 								data,
+								size,
 								location,
 								this);
 		}
 
 		lt.unlock();
 
-		location = elements.fetch_add(data.size());
+		location = elements.fetch_add(size);
 		return insert_cmd_t(ctx,
 							data, 
+							size,
 							location, 
 							this);
+	}
+
+	/**
+	*	@brief	Returns a device command that will insert data into the vector in an empty slot.
+	*			If needed, memory will be bound sprasely to the buffer.
+	*
+	*	@param	ctx			Context
+	*	@param	data		Data to insert
+	*	@param	location	Outputs the insertion index
+	*/
+	auto insert_cmd(const ste_context &ctx,
+					const lib::vector<T> &data,
+					std::uint64_t &location) {
+		return insert_cmd(ctx,
+						  data.data(),
+						  data.size(),
+						  location);
 	}
 
 	/**
@@ -186,7 +207,8 @@ public:
 					const T &data,
 					std::uint64_t &location) {
 		return insert_cmd(ctx,
-						  lib::vector<T>{ data }, 
+						  &data,
+						  1,
 						  location);
 	}
 
@@ -195,12 +217,15 @@ public:
 	*
 	*	@param	idx		Slot index to overwrite
 	*	@param	data	New data to overwrite
+	*	@param	size	Element count of new data
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
-					   const lib::vector<T> &data) {
-		assert(idx + data.size() <= size());
+					   const T *data,
+					   std::size_t size) {
+		assert(idx + size <= this->size());
 
 		return update_cmd_t(data,
+							size,
 							idx,
 							this);
 	}
@@ -212,8 +237,41 @@ public:
 	*	@param	data	New data to overwrite
 	*/
 	auto overwrite_cmd(std::uint64_t idx,
+					   const lib::vector<T> &data) {
+		return overwrite_cmd(idx,
+							 data.data(),
+							 data.size());
+	}
+
+	/**
+	*	@brief	Returns a device command that will overwrite slot at index idx with data.
+	*
+	*	@param	idx		Slot index to overwrite
+	*	@param	data	New data to overwrite
+	*/
+	auto overwrite_cmd(std::uint64_t idx,
 					   const T &data) {
-		return overwrite_cmd(idx, lib::vector<T>{ data });
+		return overwrite_cmd(idx, &data, 1);
+	}
+
+	/**
+	*	@brief	Returns a device command that will push back data into the vector.
+	*			If needed, memory will be bound sprasely to the buffer.
+	*
+	*	@param	ctx		Context
+	*	@param	data	Data to push back
+	*	@param	size	Element count of new data
+	*/
+	auto push_back_cmd(const ste_context &ctx,
+					   const T *data,
+					   std::size_t size) {
+		const auto location = elements.fetch_add(size);
+
+		return insert_cmd_t(ctx,
+							data,
+							size,
+							location,
+							this);
 	}
 
 	/**
@@ -225,12 +283,9 @@ public:
 	*/
 	auto push_back_cmd(const ste_context &ctx,
 					   const lib::vector<T> &data) {
-		const auto location = elements.fetch_add(data.size());
-
-		return insert_cmd_t(ctx,
-							data, 
-							location, 
-							this);
+		return push_back_cmd(ctx,
+							 data.data(),
+							 data.size());
 	}
 
 	/**
@@ -243,7 +298,8 @@ public:
 	auto push_back_cmd(const ste_context &ctx,
 					   const T &data) {
 		return push_back_cmd(ctx,
-							 lib::vector<T>{ data });
+							 &data,
+							 1);
 	}
 
 	/**

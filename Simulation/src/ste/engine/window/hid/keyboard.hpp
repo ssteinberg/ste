@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <glfw.hpp>
 
 #include <hid.hpp>
 #include <ste_window.hpp>

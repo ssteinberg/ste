@@ -56,6 +56,12 @@ public:
 		set_pipeline_settings(std::move(settings));
 	}
 	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
+							  framebuffer_layout &&layout)
+		: fb_layout(std::move(layout))
+	{
+		set_pipeline_settings(std::move(settings));
+	}
+	pipeline_auditor_graphics(device_pipeline_graphics_configurations &&settings,
 							  const lib::vector<shader_stage_t> &stages)
 		: pipeline_auditor_graphics(std::move(settings))
 	{

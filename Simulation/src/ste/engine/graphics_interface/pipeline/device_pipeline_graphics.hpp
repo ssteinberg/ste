@@ -206,6 +206,13 @@ public:
 	const auto& get_framebuffer_layout() const {
 		return fb_layout;
 	}
+
+	/*
+	 *	@brief	Returns a reference to the renderpass object
+	 */
+	const auto& get_renderpass() const {
+		return device_renderpass.get();
+	}
 };
 
 }

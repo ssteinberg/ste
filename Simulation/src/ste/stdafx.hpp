@@ -20,6 +20,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include <ste_types.hpp>
+
 
 #include <memory>
 #include <vector>

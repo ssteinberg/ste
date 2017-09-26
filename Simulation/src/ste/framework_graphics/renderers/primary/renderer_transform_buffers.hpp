@@ -74,12 +74,13 @@ public:
 	void update_proj_data(gl::command_recorder &recorder,
 						  const primary_renderer_camera &c,
 						  const glm::uvec2 backbuffer_size) {
-		proj_data p;
+		auto proj = c.get_projection_model();
 
-		p.proj_xywz() = c.get_projection_model().projection_xywz();
+		proj_data p;
+		p.proj_xywz() = proj.projection_xywz();
 		p.backbuffer_size() = backbuffer_size;
-		p.tan_half_fovy() = c.get_projection_model().tan_fovy_over_two();
-		p.aspect() = c.get_projection_model().get_aspect();
+		p.tan_half_fovy() = proj.tan_fovy_over_two();
+		p.aspect() = proj.get_aspect();
 
 		recorder << proj_buffer.overwrite_cmd(0, p);
 	}

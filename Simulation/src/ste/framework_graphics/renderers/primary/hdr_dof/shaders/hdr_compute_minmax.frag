@@ -11,17 +11,19 @@ layout(std430, binding = 2) restrict buffer hdr_bokeh_parameters_buffer {
 	hdr_bokeh_parameters params;
 };
 
+layout(location = 0) in vec2 uv;
+
 layout(location = 0) out float out_lum;
 
 void main() {
-	vec2 ts = textureSize(hdr, 0);
+	//vec2 ts = textureSize(hdr, 0);
 	ivec2 coord = ivec2(gl_FragCoord.xy);
 
 	// Read 4x4 texels' luminance values
-	vec4 lums0 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(0,0), 2);
-	vec4 lums1 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(2,0), 2);
-	vec4 lums2 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(2,2), 2);
-	vec4 lums3 = textureGatherOffset(hdr, (vec2(coord) * 4 + vec2(.25)) / ts, ivec2(0,2), 2);
+	vec4 lums0 = textureGatherOffset(hdr, uv, ivec2(-1,-1), 2); //(vec2(coord) * 4 + vec2(.25)) / ts
+	vec4 lums1 = textureGatherOffset(hdr, uv, ivec2( 1,-1), 2);
+	vec4 lums2 = textureGatherOffset(hdr, uv, ivec2( 1, 1), 2);
+	vec4 lums3 = textureGatherOffset(hdr, uv, ivec2(-1, 1), 2);
 	
 	// Take maximum, minimum and average
 	float max_lum = max_element(vec4(max_element(lums0),

@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -12,7 +12,6 @@
 
 #include <optional.hpp>
 
-#include <lib/string.hpp>
 #include <alias.hpp>
 #include <allow_type_decay.hpp>
 
@@ -42,7 +41,7 @@ protected:
 		create_info.pipelineStatistics = pipeline_statistic_flags;
 
 		VkQueryPool query_pool;
-		vk_result res = vkCreateQueryPool(device, &create_info, &host_allocator::allocation_callbacks(), &query_pool);
+		const vk_result res = vkCreateQueryPool(device, &create_info, &host_allocator::allocation_callbacks(), &query_pool);
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -75,23 +74,29 @@ public:
 		}
 	}
 
-	lib::string read_results(std::size_t data_size,
-							 std::uint32_t first_query,
-							 std::uint32_t queries_count,
-							 std::uint64_t stride,
-							 VkQueryResultFlags flags = 0) const {
-		lib::string data;
-		data.resize(data_size);
+	/*
+	 *	@brief	Attempts to read and retrieve status and results for a set of queries.
+	 *	
+	 *	@return	True on success, false if data is not ready.
+	 */
+	template <typename T>
+	bool read_results(T *output,
+					  std::uint32_t first_query,
+					  std::uint32_t queries_count,
+					  std::uint64_t stride,
+					  VkQueryResultFlags flags = 0) const {
+		const vk_result res = vkGetQueryPoolResults(device.get(), *this,
+													first_query, queries_count,
+													sizeof(T) * queries_count, output,
+													stride, flags);
+		if (res == VK_NOT_READY)
+			return false;
 
-		vk_result res = vkGetQueryPoolResults(device.get(), *this,
-											  first_query, queries_count,
-											  data_size, &data[0], stride,
-											  flags);
 		if (!res) {
 			throw vk_exception(res);
 		}
 
-		return data;
+		return true;
 	}
 
 	auto& get_creating_device() const { return device.get(); }

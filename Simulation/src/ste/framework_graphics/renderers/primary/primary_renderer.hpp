@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -26,8 +26,12 @@
 #include <light_preprocessor_fragment.hpp>
 #include <gbuffer_downsample_depth_fragment.hpp>
 
+#include <profiler.hpp>
+
 #include <signal.hpp>
 #include <optional.hpp>
+#include <mutex>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -35,10 +39,32 @@ namespace graphics {
 class primary_renderer : public gl::rendering_system {
 	using Base = gl::rendering_system;
 
+private:
+	class atmospherics_properties_update_t {
+	private:
+		std::mutex m;
+		optional<atmospherics_properties<double>> update;
+
+	public:
+		void operator=(const atmospherics_properties<double> &p) {
+			std::unique_lock<std::mutex> l(m);
+			update = p;
+		}
+		optional<atmospherics_properties<double>> get() {
+			std::unique_lock<std::mutex> l(m);
+			optional<atmospherics_properties<double>> ret = update;
+			update = none;
+
+			return ret;
+		}
+	};
+
 public:
 	using camera_t = primary_renderer_camera;
 
 private:
+	gl::profiler::profiler *profiler;
+
 	const camera_t *cam;
 	scene *s;
 
@@ -62,7 +88,7 @@ private:
 	ste_resource<light_preprocessor_fragment> light_preprocess;
 
 private:
-	optional<atmospherics_properties<double>> atmospherics_properties_update;
+	lib::aligned_padded_ptr<atmospherics_properties_update_t> atmospherics_properties_update;
 
 private:
 	void reattach_framebuffers();
@@ -89,7 +115,8 @@ public:
 					 gl::framebuffer_layout &&fb_layout,
 					 const camera_t *cam,
 					 scene *s,
-					 const atmospherics_properties<double> &atmospherics_prop);
+					 const atmospherics_properties<double> &atmospherics_prop,
+					 gl::profiler::profiler *profiler = nullptr);
 	~primary_renderer() noexcept {}
 
 	const gl::pipeline_external_binding_set* external_binding_set() const override final {
@@ -99,15 +126,25 @@ public:
 	/**
 	 *	@brief		Updates atmospheric properties.
 	 */
-	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) { atmospherics_properties_update = atmospherics_prop; }
+	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) {
+		*atmospherics_properties_update = atmospherics_prop;
+	}
 
 	/**
-	 *	@brief		Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
-	 *
-	 * 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
-	 *	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
-	 */
+	*	@brief	Set the camera aperture parameter. Those parameters affect the depth of field of the resulting image.
+	*
+	* 	@param diameter		Lens diameter in world units. Defaults to human eye pupil diameter which ranges from 2e-3 to 8e-3.
+	*	@param focal_length	Focal length world units. Defaults to human eye focal length, about 23e-3.
+	*/
 	void set_aperture_parameters(float diameter, float focal_length) { hdr->set_aperture_parameters(diameter, focal_length); }
+
+	/**
+	*	@brief	Set the "gamma" value for the final HDR tonemapping power-law expression.
+	*			>1 values compresses light regions, making the overall scene darker.
+	*
+	* 	@param gamma	Gamma value. Defaults to 2.2.
+	*/
+	void set_gamma(float gamma) { hdr->set_gamma(gamma); }
 
 	/*
 	 *	@brief		Attaches output framebuffer

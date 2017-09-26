@@ -24,12 +24,12 @@ private:
 public:
 	light_preprocessor_fragment(const gl::rendering_system &rs,
 								light_storage *ls,
-								const primary_renderer_camera &camera)
+								const primary_renderer_camera::projection_model_t &camera_projection)
 		: Base(rs,
 			   "light_preprocess_cull_lights.comp"),
 		ls(ls)
 	{
-		update_projection_planes(camera);
+		update_projection_planes(camera_projection);
 		dispatch_task.attach_pipeline(pipeline());
 	}
 	~light_preprocessor_fragment() noexcept {}
@@ -42,7 +42,7 @@ public:
 	 *	@brief	Updates the fragment's projection planes uniform buffer. 
 	 *			Should be called whenever camera's projection model changes.
 	 */
-	void update_projection_planes(const primary_renderer_camera &camera);
+	void update_projection_planes(const primary_renderer_camera::projection_model_t &camera_projection);
 
 	void record(gl::command_recorder &recorder) override final {
 		constexpr int jobs = 128;

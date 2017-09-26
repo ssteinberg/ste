@@ -16,15 +16,19 @@ using namespace ste::text;
 using namespace ste::resource;
 
 opaque_surface<2> surface_io::load_jpeg_2d(const std::experimental::filesystem::path &path, bool srgb) {
-	std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
-	if (!fs) {
-		using namespace attributes;
-		ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
-		throw resource_io_error("Could not open file");
-	}
+	lib::string content;
+	{
+		std::ifstream fs(path.string(), std::ios::in | std::ios::binary);
+		if (!fs) {
+			using namespace attributes;
+			ste_log_error() << text::attributed_string("Can't open JPEG ") + i(lib::to_string(path.string())) + ": " + std::strerror(errno) << std::endl;
+			throw resource_io_error("Could not open file");
+		}
 
-	auto content = lib::string((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
-	fs.close();
+		const std::size_t size = std::experimental::filesystem::file_size(path);
+		content.resize(size);
+		fs.read(content.data(), size);
+	}
 
 	unsigned char *data = reinterpret_cast<unsigned char*>(&content[0]);
 

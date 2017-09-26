@@ -50,13 +50,24 @@ public:
 	// msvc 14.10.25017 (VC++ 2017 March release) fails with an internal error with conditional noexcept
 //	~aligned_ptr() noexcept(std::is_nothrow_destructible_v<value_type>) {}
 	~aligned_padded_ptr() noexcept {
-		deleter(ptr);
-		allocator.deallocate(reinterpret_cast<std::uint8_t*>(ptr), block_size);
+		if (ptr) {
+			deleter(ptr);
+			allocator.deallocate(reinterpret_cast<std::uint8_t*>(ptr), block_size);
+		}
 	}
 
 	// TODO: Respect allocator's propagate_on_container_move_assignment
-	aligned_padded_ptr(aligned_padded_ptr&&) = default;
-	aligned_padded_ptr &operator=(aligned_padded_ptr&&) = default;
+	aligned_padded_ptr(aligned_padded_ptr &&o) noexcept : ptr(o.ptr), allocator(std::move(o.allocator)) {
+		o.ptr = nullptr;
+	}
+	aligned_padded_ptr &operator=(aligned_padded_ptr &&o) noexcept {
+		ptr = o.ptr;
+		allocator = std::move(o.allocator);
+
+		o.ptr = nullptr;
+
+		return *this;
+	}
 
 	auto *get() { return ptr; }
 	auto *get() const { return ptr; }
