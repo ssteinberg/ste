@@ -21,11 +21,15 @@ struct device_resource_memory_allocator {
 
 	auto operator()(const ste_gl_device_memory_allocator &allocator,
 					vk::vk_resource<> &resource) const {
-		const auto memory_requirements = resource.get_memory_requirements();
+		auto memory_requirements = resource.get_memory_requirements();
+		if (allocation_policy().requires_dedicated_allocation()) {
+			// If allocation policy demands a dedicated allocation, override memory requirements settings
+			memory_requirements.dedicated = memory_dedicated_allocation_flag::dedicated_required;
+		}
+
 		auto allocation = allocator.allocate_device_memory_for_resource(memory_requirements,
 																		allocation_policy().required_flags(),
-																		allocation_policy().preferred_flags(),
-																		allocation_policy().private_allocation());
+																		allocation_policy().preferred_flags());
 		assert(allocation);
 
 		resource.bind_memory(allocation);
@@ -35,12 +39,17 @@ struct device_resource_memory_allocator {
 
 	auto operator()(const ste_gl_device_memory_allocator &allocator,
 					std::uint64_t size,
-					const VkMemoryRequirements &memory_requirements) const {
+					memory_requirements memory_requirements) const {
+		if (allocation_policy().requires_dedicated_allocation()) {
+			// If allocation policy demands a dedicated allocation, override memory requirements settings
+			memory_requirements.dedicated = memory_dedicated_allocation_flag::dedicated_required;
+		}
+
+
 		auto allocation = allocator.allocate_device_memory(size,
 														   memory_requirements,
 														   allocation_policy().required_flags(),
-														   allocation_policy().preferred_flags(),
-														   allocation_policy().private_allocation());
+														   allocation_policy().preferred_flags());
 		assert(allocation);
 
 		return allocation;

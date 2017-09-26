@@ -59,7 +59,7 @@ private:
 	std::function<void(const glm::ivec2 &)> user_gui_lambda;
 
 	glm::vec3 camera_position;
-	lib::deque<float> frame_times;
+	lib::vector<float> frame_times;
 
 	std::array<std::atomic_flag, 3> pointer_buttons_pressed_signals{ 0, 0, 0 };
 	std::atomic<float> pointer_wheel_signal_accumulator{ .0f };

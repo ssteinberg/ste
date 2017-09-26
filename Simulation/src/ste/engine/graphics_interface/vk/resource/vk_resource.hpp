@@ -8,6 +8,7 @@
 #include <vk_host_allocator.hpp>
 #include <vulkan/vulkan.h>
 #include <device_memory_heap.hpp>
+#include <memory_requirements.hpp>
 
 namespace ste {
 namespace gl {
@@ -23,7 +24,7 @@ protected:
 	virtual void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) = 0;
 
 public:
-	virtual VkMemoryRequirements get_memory_requirements() const = 0;
+	virtual memory_requirements get_memory_requirements() const = 0;
 
 public:
 	vk_resource() = default;

@@ -190,13 +190,24 @@ public:
 		return layout;
 	}
 
-	VkMemoryRequirements get_memory_requirements() const override {
-		VkMemoryRequirements req;
-		vkGetImageMemoryRequirements(this->device.get(),
-									 *this,
-									 &req);
+	memory_requirements get_memory_requirements() const override {
+		VkImageMemoryRequirementsInfo2KHR info = {};
+		VkMemoryDedicatedRequirementsKHR dedicated_info = {};
+		info.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR;
+		info.image = *this;
+		info.pNext = &dedicated_info;
+		dedicated_info.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+		dedicated_info.pNext = nullptr;
+		
+		VkMemoryRequirements2KHR req;
+		req.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+		req.pNext = nullptr;
+		device.get().get_extensions_func_pointers().get_memory_requirements2().vkGetImageMemoryRequirements2KHR(this->device.get(),
+																												&info,
+																												&req);
 
-		return req;
+		return memory_requirements(req,
+								   dedicated_info);
 	}
 
 	auto& get_usage() const { return usage; }

@@ -68,7 +68,7 @@ private:
 private:
 	alias<const ste_context> ctx;
 	resource_t resource;
-	VkMemoryRequirements memory_requirements{};
+	memory_requirements resource_memory_requirements{};
 
 	lib::flat_map<bind_range_t, alloc_t> bound_ranges;
 	range_list<std::uint64_t> ranges_to_unbind;
@@ -76,7 +76,7 @@ private:
 
 public:
 	auto atom_size() const {
-		return glm::max<std::size_t>(memory_requirements.alignment, 
+		return glm::max<std::size_t>(resource_memory_requirements.alignment, 
 									 element_size);
 	}
 
@@ -167,7 +167,7 @@ private:
 			auto it = bound_ranges.emplace(r,
 										   device_resource_memory_allocator<allocation_policy>()(ctx.get().device_memory_allocator(),
 																								 size,
-																								 memory_requirements));
+																								 resource_memory_requirements));
 
 			device_sparse_memory_bind b;
 			b.allocation = &it.first->second;
@@ -184,7 +184,7 @@ private:
 						 resource_t &&resource)
 		: ctx(ctx),
 		  resource(std::move(resource)) {
-		memory_requirements = this->resource.get_memory_requirements();
+		resource_memory_requirements = this->resource.get_memory_requirements();
 	}
 
 public:

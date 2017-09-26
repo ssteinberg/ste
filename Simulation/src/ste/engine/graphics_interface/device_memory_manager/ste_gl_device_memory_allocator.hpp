@@ -11,6 +11,9 @@
 #include <vk_device_memory.hpp>
 #include <device_memory_heap.hpp>
 
+#include <memory_properties_flags.hpp>
+#include <memory_requirements.hpp>
+
 #include <mutex>
 #include <array>
 #include <lib/unordered_map.hpp>
@@ -52,14 +55,14 @@ private:
 
 private:
 	static bool memory_type_matches_requirements(const memory_type_t &type,
-												 const VkMemoryRequirements &memory_requirements) {
-		return !!(memory_requirements.memoryTypeBits & (1 << type));
+												 const memory_requirements &memory_requirements) {
+		return !!(memory_requirements.type_bits & (1 << type));
 	}
 
 	static memory_type_t find_memory_type_for(const vk::vk_logical_device<> &device,
-											  const VkMemoryRequirements &memory_requirements,
-											  const VkMemoryPropertyFlags &required_flags,
-											  const VkMemoryPropertyFlags &preferred_flags) {
+											  const memory_requirements &memory_requirements,
+											  const memory_properties_flags &required_flags,
+											  const memory_properties_flags &preferred_flags) {
 		const vk::vk_physical_device_descriptor &physical_device = device.get_physical_device_descriptor();
 		int fallback_memory_type = -1;
 
@@ -70,10 +73,10 @@ private:
 				continue;
 
 			auto &heap = physical_device.memory_properties.memoryTypes[type];
-			if ((heap.propertyFlags & preferred_flags) == preferred_flags)
+			if ((static_cast<memory_properties_flags>(heap.propertyFlags) & preferred_flags) == preferred_flags)
 				return type;
 			if (fallback_memory_type == -1 &&
-				(heap.propertyFlags & required_flags) == required_flags)
+				(static_cast<memory_properties_flags>(heap.propertyFlags) & required_flags) == required_flags)
 				fallback_memory_type = type;
 		}
 
@@ -126,9 +129,9 @@ private:
 	auto commit_device_memory_heap_for_memory_type(const memory_type_t &memory_type,
 												   std::uint64_t minimal_size,
 												   std::uint64_t alignment,
-												   bool private_memory) const {
+												   bool dedicated_allocation) const {
 		// Calculate chunk size
-		auto chunk_size = private_memory ?
+		auto chunk_size = dedicated_allocation ?
 			minimal_size :
 			std::max(minimal_size, minimal_allocation_size_bytes);
 		// Align it
@@ -139,11 +142,14 @@ private:
 	}
 
 	auto allocate(std::uint64_t size,
-				  const VkMemoryRequirements &memory_requirements,
-				  const VkMemoryPropertyFlags &required_flags,
-				  const VkMemoryPropertyFlags &preferred_flags,
-				  bool private_memory = false) const {
-		auto memory_type = find_memory_type_for(device, memory_requirements, required_flags, preferred_flags | required_flags);
+				  const memory_requirements &memory_requirements,
+				  const memory_properties_flags &required_flags,
+				  const memory_properties_flags &preferred_flags) const {
+		auto memory_type = find_memory_type_for(device, 
+												memory_requirements,
+												required_flags, 
+												preferred_flags | required_flags);
+		bool dedicated_allocation = memory_requirements.dedicated != memory_dedicated_allocation_flag::suballocate;
 		auto alignment = memory_requirements.alignment;
 		allocation_t allocation;
 
@@ -159,7 +165,7 @@ private:
 					it = heap.private_chunks.erase(it);
 			}
 
-			if (!private_memory && !heap.chunks.empty()) {
+			if (!dedicated_allocation && !heap.chunks.empty()) {
 				// Try to allocate memory on one of the existing chunks
 				allocation = allocate_from_heap(heap, 
 												size, 
@@ -169,7 +175,7 @@ private:
 			// If failed allocating on existing chunks, or no existing chunks available,
 			// create a new chunk.
 			if (!allocation) {
-				chunks_t &chunks = private_memory ?
+				chunks_t &chunks = dedicated_allocation ?
 					heap.private_chunks :
 					heap.chunks;
 
@@ -177,7 +183,7 @@ private:
 				auto memory_object = commit_device_memory_heap_for_memory_type(memory_type, 
 																			   size, 
 																			   alignment, 
-																			   private_memory);
+																			   dedicated_allocation);
 				// And use it to create a new chunk
 				auto ret = chunks.emplace(std::piecewise_construct,
 										  std::forward_as_tuple(static_cast<std::uint64_t>(vk::vk_handle(memory_object))),
@@ -186,7 +192,7 @@ private:
 																std::move(memory_object)));
 				assert(ret.second);
 				// Allocate from that chunk
-				allocation = ret.first->second.allocate(size, alignment, private_memory);
+				allocation = ret.first->second.allocate(size, alignment, dedicated_allocation);
 			}
 		}
 
@@ -216,15 +222,13 @@ public:
 	*	@param preferred_flags	Nice to have flags.
 	*/
 	auto allocate_device_memory(std::uint64_t size,
-								const VkMemoryRequirements &memory_requirements,
-								const VkMemoryPropertyFlags &required_flags,
-								const VkMemoryPropertyFlags &preferred_flags,
-								bool private_memory = false) const {
+								const memory_requirements &memory_requirements,
+								const memory_properties_flags &required_flags,
+								const memory_properties_flags &preferred_flags) const {
 		return allocate(size,
 						memory_requirements,
 						required_flags,
-						preferred_flags,
-						false);
+						preferred_flags);
 	}
 
 	/**
@@ -239,19 +243,15 @@ public:
 	*	@param size				Size in bytes
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
-	*							be shared with other alocation.
 	*/
 	auto allocate_device_physical_memory(std::uint64_t size,
-										 const VkMemoryRequirements &memory_requirements,
-										 const VkMemoryPropertyFlags &required_flags = 0,
-										 bool private_memory = false) const {
-		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+										 const memory_requirements &memory_requirements,
+										 const memory_properties_flags &required_flags = memory_properties_flags::none) const {
+		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::device_local;
 		return allocate(size,
 						memory_requirements,
 						required_flags,
-						preferred_flags,
-						private_memory);
+						preferred_flags);
 	}
 
 	/**
@@ -266,19 +266,15 @@ public:
 	*	@param size				Size in bytes
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
-	*							be shared with other alocation.
 	*/
 	auto allocate_host_visible_memory(std::uint64_t size,
-									  const VkMemoryRequirements &memory_requirements,
-									  const VkMemoryPropertyFlags &required_flags = 0,
-									  bool private_memory = false) const {
-		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+									  const memory_requirements &memory_requirements,
+									  const memory_properties_flags &required_flags = memory_properties_flags::none) const {
+		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::host_visible;
 		return allocate(size,
 						memory_requirements,
 						required_flags,
-						preferred_flags,
-						private_memory);
+						preferred_flags);
 	}
 
 	/**
@@ -293,18 +289,14 @@ public:
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
 	*	@param preferred_flags	Nice to have flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
-	*							be shared with other alocation.
 	*/
-	auto allocate_device_memory_for_resource(const VkMemoryRequirements &memory_requirements,
-												 const VkMemoryPropertyFlags &required_flags,
-												 const VkMemoryPropertyFlags &preferred_flags,
-												 bool private_memory = false) const {
+	auto allocate_device_memory_for_resource(const memory_requirements &memory_requirements,
+											 const memory_properties_flags &required_flags,
+											 const memory_properties_flags &preferred_flags) const {
 		auto allocation = allocate(memory_requirements.size,
 								   memory_requirements,
 								   required_flags,
-								   preferred_flags,
-								   private_memory);
+								   preferred_flags);
 
 		if (!allocation) {
 			throw device_memory_allocation_failed();
@@ -324,14 +316,13 @@ public:
 	*
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
-	*							be shared with other alocation.
 	*/
-	auto allocate_device_physical_memory_for_resource(const VkMemoryRequirements &memory_requirements,
-													  const VkMemoryPropertyFlags &required_flags = 0,
-													  bool private_memory = false) const {
-		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		return allocate_device_memory_for_resource(memory_requirements, required_flags, preferred_flags, private_memory);
+	auto allocate_device_physical_memory_for_resource(const memory_requirements &memory_requirements,
+													  const memory_properties_flags &required_flags = memory_properties_flags::none) const {
+		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::device_local;
+		return allocate_device_memory_for_resource(memory_requirements, 
+												   required_flags, 
+												   preferred_flags);
 	}
 
 	/**
@@ -345,14 +336,13 @@ public:
 	*
 	*	@param memory_requirements	Memory requirements
 	*	@param required_flags	Required memory flags.
-	*	@param private_memory	If set to true, the allocation will create a pivate chunk only for this allocation, i.e. this chunk will not
-	*							be shared with other alocation.
 	*/
-	auto allocate_host_visible_memory_for_resource(const VkMemoryRequirements &memory_requirements,
-												   const VkMemoryPropertyFlags &required_flags = 0,
-												   bool private_memory = false) const {
-		VkMemoryPropertyFlags preferred_flags = required_flags | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-		return allocate_device_memory_for_resource(memory_requirements, required_flags, preferred_flags, private_memory);
+	auto allocate_host_visible_memory_for_resource(const memory_requirements &memory_requirements,
+												   const memory_properties_flags &required_flags = memory_properties_flags::none) const {
+		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::host_visible;
+		return allocate_device_memory_for_resource(memory_requirements, 
+												   required_flags, 
+												   preferred_flags);
 	}
 
 	/**
@@ -361,13 +351,13 @@ public:
 	*	
 	*	@param	flags	Memory type flags
 	*/
-	auto get_total_device_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
+	auto get_total_device_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 
 		lib::unordered_set<std::uint32_t> conforming_heaps;
 		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
 			auto &type = properties.memoryTypes[i];
-			if ((type.propertyFlags & flags) == flags)
+			if ((static_cast<memory_properties_flags>(type.propertyFlags) & flags) == flags)
 				conforming_heaps.insert(type.heapIndex);
 		}
 
@@ -408,13 +398,13 @@ public:
 	*
 	*	@param	flags	Memory type flags
 	*/
-	auto get_total_commited_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
+	auto get_total_commited_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 		std::uint64_t total_commited_memory = 0;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
 			auto &mem_type = properties.memoryTypes[type];
-			if ((mem_type.propertyFlags & flags) == flags)
+			if ((static_cast<memory_properties_flags>(mem_type.propertyFlags) & flags) == flags)
 				total_commited_memory += get_total_commited_memory_of_type(type);
 		}
 
@@ -451,13 +441,13 @@ public:
 	*
 	*	@param	flags	Memory type flags
 	*/
-	auto get_total_allocated_memory(const VkMemoryPropertyFlags &flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) const {
+	auto get_total_allocated_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
 		std::uint64_t total_allocated_memory = 0;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
 			auto &mem_type = properties.memoryTypes[type];
-			if ((mem_type.propertyFlags & flags) == flags)
+			if ((static_cast<memory_properties_flags>(mem_type.propertyFlags) & flags) == flags)
 				total_allocated_memory += get_total_allocated_memory_of_type(type);
 		}
 
