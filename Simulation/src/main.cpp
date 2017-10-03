@@ -584,7 +584,9 @@ int main()
 #ifdef PROFILE
 	gl::profiler::profiler profiler(ctx, 256);
 	gl::profiler::profiler::segment_results_t profiler_results;
+	std::mutex profiler_writer_mutex;
 	auto profiler_output_connection = make_connection(profiler.get_segment_results_available_signal(), [&](auto segment) {
+		std::unique_lock<std::mutex> l(profiler_writer_mutex);
 		profiler_results = std::move(segment);
 	});
 #endif
@@ -865,7 +867,15 @@ int main()
 
 		// Update debug GUI 
 		debug_gui.set_camera_position(camera.get_position());
-		debug_gui.append_frame(static_cast<float>(presentation.get_frame_time()) * 1e-6f, profiler_results);
+#ifdef PROFILE
+		{
+			std::unique_lock<std::mutex> l(profiler_writer_mutex);
+			debug_gui.append_frame(static_cast<float>(presentation.get_frame_time()) * 1e-6f, 
+								   static_cast<const decltype(profiler_results)&>(profiler_results));
+		}
+#else
+		debug_gui.append_frame(static_cast<float>(presentation.get_frame_time()) * 1e-6f);
+#endif
 
 		// Update scene objects
 #ifdef STATIC_SCENE

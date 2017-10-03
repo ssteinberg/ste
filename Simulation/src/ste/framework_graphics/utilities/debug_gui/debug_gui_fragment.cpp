@@ -175,7 +175,7 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 	// Append frame time
 	frame_times.push_back(frame_time_ms);
 	if (frame_times.size() > frame_times_limit)
-		frame_times.pop_front();
+		frame_times.erase(frame_times.begin());
 
 	lib::vector<std::pair<lib::string, float>> times;
 	if (profiler_segment_results) {
