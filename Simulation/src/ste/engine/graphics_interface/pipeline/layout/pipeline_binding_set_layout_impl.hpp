@@ -80,7 +80,7 @@ public:
 			auto ret = name_map.try_emplace(access_it<>(it).name(), it);
 			if (!ret.second) {
 				// Name already exists
-				throw pipeline_layout_duplicate_variable_name_exception("Variable's name was already used in layout");
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name ('" + access_it<>(it).name() + "') was already used in layout");
 			}
 		}
 	}

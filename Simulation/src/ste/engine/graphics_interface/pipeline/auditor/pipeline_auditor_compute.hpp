@@ -45,7 +45,7 @@ public:
 	*/
 	void attach_shader_stage(device_pipeline_shader_stage &stage) {
 		if (stage.get_stage() != ste_shader_program_stage::compute_program) {
-			throw pipeline_layout_incompatible_stage_exception("Excepted a compute shader stage.");
+			throw pipeline_layout_incompatible_stage_exception(stage.get_name() + " - Excepted a compute shader stage.");
 		}
 		compute_shader_stage = &stage;
 	}

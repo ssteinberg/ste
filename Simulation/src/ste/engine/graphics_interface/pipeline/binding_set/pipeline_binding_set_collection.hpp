@@ -95,7 +95,7 @@ public:
 		for (auto &set_idx : set_indices) {
 			if (layout.get().set_layouts().size() <= set_idx) {
 				// Not found
-				throw pipeline_layout_exception("Set does not exist");
+				throw pipeline_layout_exception("Can not recreate set " + lib::to_string(set_idx) + " as it does not exist");
 			}
 
 			layouts.push_back(&layout.get().set_layouts()[set_idx]);

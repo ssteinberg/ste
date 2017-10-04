@@ -118,7 +118,7 @@ private:
 		if (!ret.second) {
 			// If name exists, verify it is the same variable
 			if (*b.binding->variable != *binding.binding->variable) {
-				throw pipeline_layout_duplicate_variable_name_exception("Variable's name was already used in layout");
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name ('" + b.binding->variable->name() + "') was already used in layout");
 			}
 		}
 
@@ -134,7 +134,7 @@ private:
 		if (!ret.second) {
 			// Name exists, verify it is the same attachment
 			if (*a.attachment->variable != *attachment.attachment->variable) {
-				throw pipeline_layout_duplicate_variable_name_exception("Attachment name was already used in layout");
+				throw pipeline_layout_duplicate_variable_name_exception("Attachment name ('" + a.attachment->variable->name() + "') was already used in layout");
 			}
 		}
 	}
@@ -146,6 +146,7 @@ private:
 			auto& b = it->second;
 			auto set_idx = b.set_idx();
 			auto bind_idx = b.bind_idx();
+			const auto &name = b.binding->variable->name();
 
 			if (b.binding->binding_type == ste_shader_stage_binding_type::push_constant)
 				continue;
@@ -159,7 +160,7 @@ private:
 					if (external_binding.bind_idx() == bind_idx) {
 						// Verify
 						if (!external_binding.get_binding().compatible(*b.binding)) {
-							throw pipeline_layout_variable_incompatible_with_external_set_exception("Variable is incompatible with external binding set");
+							throw pipeline_layout_variable_incompatible_with_external_set_exception("Variable ('" + name + "') is incompatible with external binding set");
 						}
 
 						found = true;
@@ -169,7 +170,7 @@ private:
 
 				if (!found) {
 					// Not found in external binding set
-					throw pipeline_layout_variable_not_found_in_external_set_exception("Variable bound to external set but not found in external binding sets");
+					throw pipeline_layout_variable_not_found_in_external_set_exception("Variable ('" + name + "') bound to external set but not found in external binding sets");
 				}
 
 				// Set is handled externally
@@ -239,7 +240,7 @@ private:
 		// 2) Make sure we have consecutive set layouts, including the external set. 
 		if (external_binding_set) {
 			if (external_binding_set->set_idx() <= largest_set_idx) {
-				throw pipeline_layout_exception("External binding set overlaps local binding set");
+				throw pipeline_layout_exception("External binding set (set index " + lib::to_string(static_cast<std::uint32_t>(external_binding_set->set_idx())) + ") overlaps local binding set");
 			}
 
 			largest_set_idx = external_binding_set->set_idx() - 1;
@@ -325,7 +326,7 @@ private:
 		// Used for dynamic array lengths
 		auto it = spec_variables_map.find(name);
 		if (it == spec_variables_map.end()) {
-			throw pipeline_layout_variable_not_found_exception("Specialization constant with provided name not found");
+			throw pipeline_layout_variable_not_found_exception("Specialization constant with provided name ('" + name + "') not found");
 		}
 
 		auto &b = *it->second->binding;
@@ -507,7 +508,7 @@ public:
 	auto recreate_set_layout(pipeline_layout_set_index set_idx) {
 		if (bindings_set_layouts.size() <= set_idx) {
 			// Not found
-			throw pipeline_layout_exception("Set does not exist");
+			throw pipeline_layout_exception("Set (index " + lib::to_string(static_cast<std::uint32_t>(set_idx)) + ") does not exist");
 		}
 
 		return bindings_set_layouts[set_idx].recreate(ctx.get().device());

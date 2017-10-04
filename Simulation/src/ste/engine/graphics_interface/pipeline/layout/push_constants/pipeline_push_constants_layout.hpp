@@ -109,7 +109,7 @@ private:
 				// If a variable exists at this offset, make sure it is the same variable with identical alias
 				if (!it->variable->compatible(*variable) ||
 					it->push_path != push_path) {
-					throw pipeline_layout_duplicate_incompatible_overlapping_push_constants_exception("Overlapping push constants are incompatible");
+					throw pipeline_layout_duplicate_incompatible_overlapping_push_constants_exception("Overlapping push constants ('" + variable->name() + ", " + it->variable->name() + "') are incompatible");
 				}
 
 				it->stages.insert(stages);

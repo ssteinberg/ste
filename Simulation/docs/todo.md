@@ -49,3 +49,5 @@
 33. Window resizing, correct resource deallocation and recreation.
 34. Profiler capture and output
 35. Types: Normalized types.
+36. Voxel GI:
+	- Sparse voxelize

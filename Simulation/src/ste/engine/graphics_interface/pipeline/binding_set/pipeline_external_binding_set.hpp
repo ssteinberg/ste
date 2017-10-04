@@ -86,7 +86,7 @@ private:
 		// Used for dynamic array lengths
 		const auto it = spec_variables_map.find(name);
 		if (it == spec_variables_map.end()) {
-			throw pipeline_layout_variable_not_found_exception("Specialization constant with provided name not found");
+			throw pipeline_layout_variable_not_found_exception("Specialization constant with provided name ('" + name + ")' not found");
 		}
 
 		auto &b = it->second.get_binding();
@@ -175,7 +175,7 @@ public:
 			const auto ret = name_map.try_emplace(b.name(), &b);
 			if (!ret.second) {
 				// Name already exists
-				throw pipeline_layout_duplicate_variable_name_exception("Variable's name already exists in collection");
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name ('" + b.name() + "') already exists in collection");
 			}
 
 			// Map array variables whose length depends on specialization constants
@@ -191,11 +191,12 @@ public:
 			auto spec_variables_map_it = spec_variables_map.emplace(b.name(), std::move(b));
 
 			// Check for duplicate names
-			const auto ret = name_map.try_emplace(spec_variables_map_it.first->second.name(), 
+			const auto &name = spec_variables_map_it.first->second.name();
+			const auto ret = name_map.try_emplace(name, 
 												  &spec_variables_map_it.first->second);
 			if (!ret.second) {
 				// Name already exists
-				throw pipeline_layout_duplicate_variable_name_exception("Variable's name already exists in collection");
+				throw pipeline_layout_duplicate_variable_name_exception("Variable's name ('" + name + "') already exists in collection");
 			}
 		}
 
