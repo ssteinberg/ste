@@ -62,7 +62,7 @@ public:
 					// Name exists
 					if (it->second.binding != binding) {
 						// Incompatible
-						throw pipeline_layout_incompatible_binding_exception("Incompatible bindings with identical name");
+						throw pipeline_layout_incompatible_binding_exception("Incompatible bindings with identical name: '" + name + "'");
 					}
 					it->second.stages.insert(stages);
 				}
@@ -74,7 +74,9 @@ public:
 						// Verify set index
 						if (set_idx) {
 							if (set_idx.get() != binding.set_idx) {
-								throw pipeline_layout_exception("Provided shader stages contain variables bound to multiple sets. Only one set allowed.");
+								throw pipeline_layout_exception("Provided shader stages contain variables bound to multiple sets (" + 
+																lib::to_string(static_cast<std::uint32_t>(binding.set_idx)) +
+																"). Only one set allowed.");
 							}
 						}
 					}

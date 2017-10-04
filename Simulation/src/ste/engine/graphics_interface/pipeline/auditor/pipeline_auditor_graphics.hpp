@@ -96,7 +96,7 @@ public:
 			set_fragment_stage(&stage);
 			break;
 		default:
-			throw pipeline_layout_incompatible_stage_exception("Excepted a graphics shader stage.");
+			throw pipeline_layout_incompatible_stage_exception(stage.get_name() + " - Excepted a graphics shader stage.");
 		}
 	}
 
