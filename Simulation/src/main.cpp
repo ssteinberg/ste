@@ -31,8 +31,7 @@
 
 #include <random>
 
-//#include <imgui/imgui.h>
-//#include <debug_gui.hpp>
+#include <numerical_type.hpp>
 
 //#define STATIC_SCENE
 
@@ -513,6 +512,29 @@ int CALLBACK WinMain(HINSTANCE hInstance,
 int main()
 #endif
 {
+	{
+		auto k = 3_km;
+		k += 1_m;
+		millimetre m = k;
+		auto mm = 2_m;
+		auto mm2 = mm*mm;
+		auto mm3 = mm*mm2;
+		cubic_kilometre km3 = mm3;
+
+		metre_vec2 v = { 0.5_m, -2.8_m };
+		v *= 2;
+		v += { 5_cm, 1_km };
+		auto u = glm::normalize(v.v());
+
+		auto kb = 5_kB;
+		auto mb = 0.2_MB;
+		kb += mb;
+		byte b = kb;
+
+		bool __b = false;
+	}
+
+
 	/*
 	*	Create logger
 	*/

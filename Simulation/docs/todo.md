@@ -5,7 +5,7 @@
      - <strike>Decouple renderer and presentation engine</strike>
      - <strike>Light cascades</strike>
 2. <strike>Camera: Allow projection change and signal changes</strike>
-3. Pipeline layouts' exceptions: Mention offending variable names
+3. <strike>Pipeline layouts' exceptions: Mention offending variable names</strike>
 4. <strike><font color="lightgray">ste_resource: uninitialized resource.</font></strike>
 5. <strike>Non-templated resolutions for shadowmap storage</strike>
 6. <strike>External binding sets: Specializeable constants</strike>

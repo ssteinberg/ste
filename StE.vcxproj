@@ -761,8 +761,10 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
-    <ClInclude Include="Simulation\src\ste\engine\types\ste_normalized_types.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\types\ste_types_norm.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\types\ste_types.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\types\ste_types_length_unit.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\types\ste_types_digital_information_unit.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\window\hid\keyboard.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\window\hid\pointer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.hpp" />
@@ -1363,6 +1365,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\small_allocator.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\tuple\tuple_reverse.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type\numerical_type.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\copyable_moveale_base.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\type_traits\is_anchored.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\utility\alias.hpp" />
