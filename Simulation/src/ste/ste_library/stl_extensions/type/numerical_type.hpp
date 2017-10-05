@@ -21,6 +21,8 @@ protected:
 public:
 	constexpr numerical_type() = default;
 	explicit constexpr numerical_type(value_type v) noexcept : val(v) {}
+	template <typename S, typename = std::enable_if_t<std::is_convertible_v<S, value_type>>>
+	explicit numerical_type(S v) noexcept : val(static_cast<value_type>(v)) {}
 
 	numerical_type(numerical_type&&) = default;
 	numerical_type(const numerical_type&) = default;
@@ -88,6 +90,10 @@ public:
 
 	constexpr bool operator==(numerical_type rhs) const noexcept { return val == rhs.val; }
 	constexpr bool operator!=(numerical_type rhs) const noexcept { return val != rhs.val; }
+	constexpr bool operator<=(numerical_type rhs) const noexcept { return val <= rhs.val; }
+	constexpr bool operator>=(numerical_type rhs) const noexcept { return val >= rhs.val; }
+	constexpr bool operator<(numerical_type rhs) const noexcept { return val < rhs.val; }
+	constexpr bool operator>(numerical_type rhs) const noexcept { return val > rhs.val; }
 
 	constexpr numerical_type operator+() const noexcept { return numerical_type(+val); }
 	constexpr numerical_type operator-() const noexcept { return numerical_type(-val); }
@@ -101,6 +107,7 @@ public:
 	constexpr friend numerical_type operator+(numerical_type lhs, numerical_type rhs) noexcept { return lhs += rhs; }
 	constexpr friend numerical_type operator-(numerical_type lhs, numerical_type rhs) noexcept { return lhs -= rhs; }
 	constexpr friend numerical_type operator*(numerical_type lhs, value_type rhs) noexcept { return lhs *= rhs; }
+	constexpr friend numerical_type operator*(value_type lhs, numerical_type rhs) noexcept { return lhs *= rhs; }
 	constexpr friend numerical_type operator/(numerical_type lhs, value_type rhs) noexcept { return lhs /= rhs; }
 
 	template <typename S = value_type, typename = std::enable_if_t<std::is_integral_v<S>>>
@@ -117,6 +124,9 @@ public:
 	constexpr friend numerical_type operator>>(numerical_type lhs, value_type rhs) noexcept { return lhs >>= rhs; }
 
 	explicit constexpr operator value_type() const noexcept { return val; }
+	template <typename S, typename = std::enable_if_t<std::is_convertible_v<value_type, S>>>
+	explicit constexpr operator S() const noexcept { return static_cast<S>(val); }
+	constexpr operator bool() const noexcept { return val; }
 };
 
 }

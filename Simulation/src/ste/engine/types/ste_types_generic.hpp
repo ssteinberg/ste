@@ -23,7 +23,9 @@ using layers_t = numerical_type<std::uint32_t, _detail::layers_unique_tag>;
 */
 using levels_t = numerical_type<std::uint32_t, _detail::levels_unique_tag>;
 
-inline auto operator"" _layers(unsigned long long int val) { return layers_t(static_cast<layers_t::value_type>(val)); }
-inline auto operator"" _mips(unsigned long long int val) { return levels_t(static_cast<levels_t::value_type>(val)); }
+constexpr auto operator"" _layers(unsigned long long int val) { return layers_t(static_cast<layers_t::value_type>(val)); }
+constexpr auto operator"" _layer(unsigned long long int val) { return layers_t(static_cast<layers_t::value_type>(val)); }
+constexpr auto operator"" _mips(unsigned long long int val) { return levels_t(static_cast<levels_t::value_type>(val)); }
+constexpr auto operator"" _mip(unsigned long long int val) { return levels_t(static_cast<levels_t::value_type>(val)); }
 
 }

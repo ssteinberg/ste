@@ -39,6 +39,8 @@ private:
 public:
 	constexpr ste_length_type() = default;
 	explicit constexpr ste_length_type(value_type v) noexcept : val(v) {}
+	template <typename S, typename = std::enable_if_t<std::is_convertible_v<S, value_type>>>
+	explicit constexpr ste_length_type(S v) noexcept : val(static_cast<value_type>(v)) {}
 	template <int SrcExp>
 	constexpr ste_length_type(ste_length_type<SrcExp, Power> src) noexcept : val(_convert<Exp, SrcExp>(static_cast<value_type>(src))) {}
 
@@ -85,12 +87,23 @@ public:
 	constexpr bool operator==(ste_length_type<E, Power> rhs) const noexcept { return val == ste_length_type<Exp, Power>(rhs).val; }
 	template <int E>
 	constexpr bool operator!=(ste_length_type<E, Power> rhs) const noexcept { return val != ste_length_type<Exp, Power>(rhs).val; }
+	template <int E>
+	constexpr bool operator<=(ste_length_type<E, Power> rhs) const noexcept { return val <= ste_length_type<Exp, Power>(rhs).val; }
+	template <int E>
+	constexpr bool operator>=(ste_length_type<E, Power> rhs) const noexcept { return val >= ste_length_type<Exp, Power>(rhs).val; }
+	template <int E>
+	constexpr bool operator<(ste_length_type<E, Power> rhs) const noexcept { return val < ste_length_type<Exp, Power>(rhs).val; }
+	template <int E>
+	constexpr bool operator>(ste_length_type<E, Power> rhs) const noexcept { return val > ste_length_type<Exp, Power>(rhs).val; }
 
 	constexpr ste_length_type operator+() const noexcept { return ste_length_type(+val); }
 	constexpr ste_length_type operator-() const noexcept { return ste_length_type(-val); }
 	constexpr auto operator!() const noexcept { return !val; }
 
 	explicit constexpr operator value_type() const noexcept { return val; }
+	template <typename S, typename = std::enable_if_t<std::is_convertible_v<value_type, S>>>
+	explicit constexpr operator S() const noexcept { return static_cast<S>(val); }
+	constexpr operator bool() const noexcept { return val; }
 };
 
 template <int E1, int E2, int Power>
@@ -109,6 +122,8 @@ constexpr auto operator-(ste_length_type<E1, Power> lhs, ste_length_type<E2, Pow
 }
 template <int E, int Power>
 constexpr auto operator*(ste_length_type<E, Power> lhs, typename ste_length_type<E, Power>::value_type rhs) noexcept { return lhs *= rhs; }
+template <int E, int Power>
+constexpr auto operator*(typename ste_length_type<E, Power>::value_type lhs, ste_length_type<E, Power> rhs) noexcept { return lhs *= rhs; }
 template <int E, int Power>
 constexpr auto operator/(ste_length_type<E, Power> lhs, typename ste_length_type<E, Power>::value_type rhs) noexcept { return lhs /= rhs; }
 
@@ -169,34 +184,34 @@ using cubic_decimetre = ste_length_type<-3, 3>;
 using cubic_metre = ste_length_type<0, 3>;
 using cubic_kilometre = ste_length_type<9, 3>;
 
-inline auto operator"" _μm(long double val) { return micrometre(static_cast<micrometre::value_type>(val)); }
-inline auto operator"" _μm(unsigned long long int val) { return micrometre(static_cast<micrometre::value_type>(val)); }
-inline auto operator"" _mm(long double val) { return millimetre(static_cast<millimetre::value_type>(val)); }
-inline auto operator"" _mm(unsigned long long int val) { return millimetre(static_cast<millimetre::value_type>(val)); }
-inline auto operator"" _cm(long double val) { return centimetre(static_cast<centimetre::value_type>(val)); }
-inline auto operator"" _cm(unsigned long long int val) { return centimetre(static_cast<centimetre::value_type>(val)); }
-inline auto operator"" _m(long double val) { return metre(static_cast<metre::value_type>(val)); }
-inline auto operator"" _m(unsigned long long int val) { return metre(static_cast<metre::value_type>(val)); }
-inline auto operator"" _km(long double val) { return kilometre(static_cast<kilometre::value_type>(val)); }
-inline auto operator"" _km(unsigned long long int val) { return kilometre(static_cast<kilometre::value_type>(val)); }
+constexpr auto operator"" _μm(long double val) { return micrometre(static_cast<micrometre::value_type>(val)); }
+constexpr auto operator"" _μm(unsigned long long int val) { return micrometre(static_cast<micrometre::value_type>(val)); }
+constexpr auto operator"" _mm(long double val) { return millimetre(static_cast<millimetre::value_type>(val)); }
+constexpr auto operator"" _mm(unsigned long long int val) { return millimetre(static_cast<millimetre::value_type>(val)); }
+constexpr auto operator"" _cm(long double val) { return centimetre(static_cast<centimetre::value_type>(val)); }
+constexpr auto operator"" _cm(unsigned long long int val) { return centimetre(static_cast<centimetre::value_type>(val)); }
+constexpr auto operator"" _m(long double val) { return metre(static_cast<metre::value_type>(val)); }
+constexpr auto operator"" _m(unsigned long long int val) { return metre(static_cast<metre::value_type>(val)); }
+constexpr auto operator"" _km(long double val) { return kilometre(static_cast<kilometre::value_type>(val)); }
+constexpr auto operator"" _km(unsigned long long int val) { return kilometre(static_cast<kilometre::value_type>(val)); }
 
-inline auto operator"" _mm²(long double val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
-inline auto operator"" _mm²(unsigned long long int val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
-inline auto operator"" _cm²(long double val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
-inline auto operator"" _cm²(unsigned long long int val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
-inline auto operator"" _m²(long double val) { return square_metre(static_cast<square_metre::value_type>(val)); }
-inline auto operator"" _m²(unsigned long long int val) { return square_metre(static_cast<square_metre::value_type>(val)); }
-inline auto operator"" _km²(long double val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
-inline auto operator"" _km²(unsigned long long int val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
+constexpr auto operator"" _mm²(long double val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
+constexpr auto operator"" _mm²(unsigned long long int val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
+constexpr auto operator"" _cm²(long double val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
+constexpr auto operator"" _cm²(unsigned long long int val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
+constexpr auto operator"" _m²(long double val) { return square_metre(static_cast<square_metre::value_type>(val)); }
+constexpr auto operator"" _m²(unsigned long long int val) { return square_metre(static_cast<square_metre::value_type>(val)); }
+constexpr auto operator"" _km²(long double val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
+constexpr auto operator"" _km²(unsigned long long int val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
 
-inline auto operator"" _mm³(long double val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
-inline auto operator"" _mm³(unsigned long long int val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
-inline auto operator"" _cm³(long double val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
-inline auto operator"" _cm³(unsigned long long int val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
-inline auto operator"" _m³(long double val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
-inline auto operator"" _m³(unsigned long long int val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
-inline auto operator"" _km³(long double val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
-inline auto operator"" _km³(unsigned long long int val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
+constexpr auto operator"" _mm³(long double val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
+constexpr auto operator"" _mm³(unsigned long long int val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
+constexpr auto operator"" _cm³(long double val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
+constexpr auto operator"" _cm³(unsigned long long int val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
+constexpr auto operator"" _m³(long double val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
+constexpr auto operator"" _m³(unsigned long long int val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
+constexpr auto operator"" _km³(long double val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
+constexpr auto operator"" _km³(unsigned long long int val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
 
 class metre_vec2 {
 public:
@@ -270,6 +285,7 @@ public:
 	friend metre_vec2 operator/(metre_vec2 lhs, value_type rhs) noexcept { return lhs /= rhs; }
 	friend metre_vec2 operator*(metre_vec2 lhs, vec_type rhs) noexcept { return lhs *= rhs; }
 	friend metre_vec2 operator/(metre_vec2 lhs, vec_type rhs) noexcept { return lhs /= rhs; }
+	friend metre_vec2 operator*(vec_type lhs, metre_vec2 rhs) noexcept { return rhs *= lhs; }
 
 	explicit constexpr operator vec_type() const noexcept {
 		vec_type v;
@@ -352,6 +368,7 @@ public:
 	friend metre_vec3 operator/(metre_vec3 lhs, value_type rhs) noexcept { return lhs /= rhs; }
 	friend metre_vec3 operator*(metre_vec3 lhs, vec_type rhs) noexcept { return lhs *= rhs; }
 	friend metre_vec3 operator/(metre_vec3 lhs, vec_type rhs) noexcept { return lhs /= rhs; }
+	friend metre_vec3 operator*(vec_type lhs, metre_vec3 rhs) noexcept { return rhs *= lhs; }
 
 	explicit constexpr operator vec_type() const noexcept {
 		vec_type v;
@@ -436,6 +453,7 @@ public:
 	friend metre_vec4 operator/(metre_vec4 lhs, value_type rhs) noexcept { return lhs /= rhs; }
 	friend metre_vec4 operator*(metre_vec4 lhs, vec_type rhs) noexcept { return lhs *= rhs; }
 	friend metre_vec4 operator/(metre_vec4 lhs, vec_type rhs) noexcept { return lhs /= rhs; }
+	friend metre_vec4 operator*(vec_type lhs, metre_vec4 rhs) noexcept { return rhs *= lhs; }
 
 	explicit constexpr operator vec_type() const noexcept {
 		vec_type v;

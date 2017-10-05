@@ -22,8 +22,8 @@ struct nit_unique_tag {};
 */
 using cd_t = numerical_type<float, _detail::cd_unique_tag>;
 
-inline auto operator"" _cd(unsigned long long int val) { return cd_t(static_cast<cd_t::value_type>(val)); }
-inline auto operator"" _cd(long double val) { return cd_t(static_cast<cd_t::value_type>(val)); }
+constexpr auto operator"" _cd(unsigned long long int val) { return cd_t(static_cast<cd_t::value_type>(val)); }
+constexpr auto operator"" _cd(long double val) { return cd_t(static_cast<cd_t::value_type>(val)); }
 
 /*
 *	@brief	The candela per square metre (cd/m2) is the derived SI unit of luminance. The unit is based on the candela, the SI unit of luminous intensity, and the square metre, the SI unit of area.
@@ -31,10 +31,10 @@ inline auto operator"" _cd(long double val) { return cd_t(static_cast<cd_t::valu
 */
 using nit_t = numerical_type<float, _detail::nit_unique_tag>;
 
-inline auto operator"" _nt(unsigned long long int val) { return nit_t(static_cast<nit_t::value_type>(val)); }
-inline auto operator"" _nt(long double val) { return nit_t(static_cast<nit_t::value_type>(val)); }
-inline auto operator"" _cd_m²(unsigned long long int val) { return nit_t(static_cast<nit_t::value_type>(val)); }
-inline auto operator"" _cd_m²(long double val) { return nit_t(static_cast<nit_t::value_type>(val)); }
+constexpr auto operator"" _nt(unsigned long long int val) { return nit_t(static_cast<nit_t::value_type>(val)); }
+constexpr auto operator"" _nt(long double val) { return nit_t(static_cast<nit_t::value_type>(val)); }
+constexpr auto operator"" _cd_m²(unsigned long long int val) { return nit_t(static_cast<nit_t::value_type>(val)); }
+constexpr auto operator"" _cd_m²(long double val) { return nit_t(static_cast<nit_t::value_type>(val)); }
 
 /*
 *	@brief	Division of candela by area gives nits.

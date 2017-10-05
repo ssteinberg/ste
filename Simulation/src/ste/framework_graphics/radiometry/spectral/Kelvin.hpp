@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -32,6 +32,11 @@ public:
 };
 
 }
+
+
+inline auto operator"" _K(unsigned long long int val) { return graphics::kelvin(static_cast<graphics::kelvin::T>(val)); }
+inline auto operator"" _K(long double val) { return graphics::kelvin(static_cast<graphics::kelvin::T>(val)); }
+
 }
 
 #include <rgb.hpp>
