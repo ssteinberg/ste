@@ -51,3 +51,5 @@
 35. Types: Normalized types.
 36. Voxel GI:
 	- Sparse voxelize
+37. Polygonal lights: Beam focusing
+38. Geometry culling: Better bounding volume or low-poly geometry

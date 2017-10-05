@@ -761,6 +761,8 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\resource\vk_buffer_impl.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\vk_host_allocator.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\types\ste_types_generic.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\types\ste_types_luminance_units.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\types\ste_types_norm.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\types\ste_types.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\types\ste_types_length_unit.hpp" />

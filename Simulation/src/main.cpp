@@ -1,4 +1,4 @@
-
+﻿
 #include <stdafx.hpp>
 #include <ste_engine.hpp>
 #include <presentation_engine.hpp>
@@ -523,13 +523,17 @@ int main()
 
 		metre_vec2 v = { 0.5_m, -2.8_m };
 		v *= 2;
-		v += { 5_cm, 1_km };
+		v += { 5_μm, 1_km };
 		auto u = glm::normalize(v.v());
 
 		auto kb = 5_kB;
 		auto mb = 0.2_MB;
 		kb += mb;
-		byte b = kb;
+		byte_t b = kb;
+
+		auto cd = 100.5_cd;
+		auto cd_m2 = cd / (2_m * 2.5_m);
+		cd_m2 += 2_cd_m²;
 
 		bool __b = false;
 	}

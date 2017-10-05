@@ -1,5 +1,5 @@
-//	StE
-// � Shlomi Steinberg 2015-2017
+﻿//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -91,8 +91,6 @@ public:
 	constexpr auto operator!() const noexcept { return !val; }
 
 	explicit constexpr operator value_type() const noexcept { return val; }
-	template <int DstExp>
-	constexpr operator ste_length_type<DstExp, Power>() const noexcept { return _convert<DstExp, Exp>(val); }
 };
 
 template <int E1, int E2, int Power>
@@ -128,11 +126,35 @@ constexpr auto operator*(ste_length_type<Exp1, P1> lhs,
 	return result;
 }
 
+/*
+*	@brief	Also commonly known as a micron, micrometre is an SI derived unit of length equaling 1×10−6 of a metre. 
+*			SI symbol: μm
+*/
 using micrometre = ste_length_type<-6>;
+/*
+*	@brief	Millimetre is an SI derived unit of length equaling 1×10−3 of a metre.
+*			SI symbol: mm
+*/
 using millimetre = ste_length_type<-3>;
+/*
+*	@brief	Centimetre is an SI derived unit of length equaling 0.01 of a metre.
+*			SI symbol: cm
+*/
 using centimetre = ste_length_type<-2>;
+/*
+*	@brief	Decimetre is an SI derived unit of length equaling 0.1 of a metre.
+*			SI symbol: dm
+*/
 using decimetre = ste_length_type<-1>;
+/*
+*	@brief	Metre is the base SI unit of length.
+*			SI symbol: m
+*/
 using metre = ste_length_type<0>;
+/*
+*	@brief	Kilometre is an SI derived unit of length equaling 1000 metres.
+*			SI symbol: km
+*/
 using kilometre = ste_length_type<3>;
 
 using square_millimetre = ste_length_type<-6, 2>;
@@ -147,6 +169,8 @@ using cubic_decimetre = ste_length_type<-3, 3>;
 using cubic_metre = ste_length_type<0, 3>;
 using cubic_kilometre = ste_length_type<9, 3>;
 
+inline auto operator"" _μm(long double val) { return micrometre(static_cast<micrometre::value_type>(val)); }
+inline auto operator"" _μm(unsigned long long int val) { return micrometre(static_cast<micrometre::value_type>(val)); }
 inline auto operator"" _mm(long double val) { return millimetre(static_cast<millimetre::value_type>(val)); }
 inline auto operator"" _mm(unsigned long long int val) { return millimetre(static_cast<millimetre::value_type>(val)); }
 inline auto operator"" _cm(long double val) { return centimetre(static_cast<centimetre::value_type>(val)); }
@@ -156,23 +180,23 @@ inline auto operator"" _m(unsigned long long int val) { return metre(static_cast
 inline auto operator"" _km(long double val) { return kilometre(static_cast<kilometre::value_type>(val)); }
 inline auto operator"" _km(unsigned long long int val) { return kilometre(static_cast<kilometre::value_type>(val)); }
 
-inline auto operator"" _mm2(long double val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
-inline auto operator"" _mm2(unsigned long long int val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
-inline auto operator"" _cm2(long double val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
-inline auto operator"" _cm2(unsigned long long int val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
-inline auto operator"" _m2(long double val) { return square_metre(static_cast<square_metre::value_type>(val)); }
-inline auto operator"" _m2(unsigned long long int val) { return square_metre(static_cast<square_metre::value_type>(val)); }
-inline auto operator"" _km2(long double val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
-inline auto operator"" _km2(unsigned long long int val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
+inline auto operator"" _mm²(long double val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
+inline auto operator"" _mm²(unsigned long long int val) { return square_millimetre(static_cast<square_millimetre::value_type>(val)); }
+inline auto operator"" _cm²(long double val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
+inline auto operator"" _cm²(unsigned long long int val) { return square_centimetre(static_cast<square_centimetre::value_type>(val)); }
+inline auto operator"" _m²(long double val) { return square_metre(static_cast<square_metre::value_type>(val)); }
+inline auto operator"" _m²(unsigned long long int val) { return square_metre(static_cast<square_metre::value_type>(val)); }
+inline auto operator"" _km²(long double val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
+inline auto operator"" _km²(unsigned long long int val) { return square_kilometre(static_cast<square_kilometre::value_type>(val)); }
 
-inline auto operator"" _mm3(long double val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
-inline auto operator"" _mm3(unsigned long long int val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
-inline auto operator"" _cm3(long double val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
-inline auto operator"" _cm3(unsigned long long int val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
-inline auto operator"" _m3(long double val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
-inline auto operator"" _m3(unsigned long long int val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
-inline auto operator"" _km3(long double val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
-inline auto operator"" _km3(unsigned long long int val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
+inline auto operator"" _mm³(long double val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
+inline auto operator"" _mm³(unsigned long long int val) { return cubic_millimetre(static_cast<cubic_millimetre::value_type>(val)); }
+inline auto operator"" _cm³(long double val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
+inline auto operator"" _cm³(unsigned long long int val) { return cubic_centimetre(static_cast<cubic_centimetre::value_type>(val)); }
+inline auto operator"" _m³(long double val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
+inline auto operator"" _m³(unsigned long long int val) { return cubic_metre(static_cast<cubic_metre::value_type>(val)); }
+inline auto operator"" _km³(long double val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
+inline auto operator"" _km³(unsigned long long int val) { return cubic_kilometre(static_cast<cubic_kilometre::value_type>(val)); }
 
 class metre_vec2 {
 public:
@@ -180,7 +204,7 @@ public:
 	using value_type = T::value_type;
 	using vec_type = glm::tvec2<value_type>;
 
-	static constexpr auto length = 2;
+	static constexpr auto length() { return 2; }
 
 public:
 	T x;
@@ -203,8 +227,7 @@ public:
 		v() = std::move(rhs.v());
 		return *this;
 	}
-
-	metre_vec2& operator=(const metre_vec2 &rhs) noexcept {
+	constexpr metre_vec2& operator=(const metre_vec2 &rhs) noexcept {
 		v() = rhs.v();
 		return *this;
 	}
@@ -238,8 +261,8 @@ public:
 	metre_vec2& operator--() noexcept { --v(); return *this; }
 	metre_vec2 operator++(int) noexcept { return metre_vec2(v()++); }
 	metre_vec2 operator--(int) noexcept { return metre_vec2(v()--); }
-	metre_vec2 operator+() const noexcept { return metre_vec2(+v()); }
-	metre_vec2 operator-() const noexcept { return metre_vec2(-v()); }
+	constexpr metre_vec2 operator+() const noexcept { return metre_vec2(+v()); }
+	constexpr metre_vec2 operator-() const noexcept { return metre_vec2(-v()); }
 
 	friend metre_vec2 operator+(metre_vec2 lhs, metre_vec2 rhs) noexcept { return lhs += rhs; }
 	friend metre_vec2 operator-(metre_vec2 lhs, metre_vec2 rhs) noexcept { return lhs -= rhs; }
@@ -262,7 +285,7 @@ public:
 	using value_type = T::value_type;
 	using vec_type = glm::tvec3<value_type>;
 
-	static constexpr auto length = 3;
+	static constexpr auto length() { return 3; }
 
 public:
 	T x;
@@ -286,8 +309,7 @@ public:
 		v() = std::move(rhs.v());
 		return *this;
 	}
-
-	metre_vec3& operator=(const metre_vec3 &rhs) noexcept {
+	constexpr metre_vec3& operator=(const metre_vec3 &rhs) noexcept {
 		v() = rhs.v();
 		return *this;
 	}
@@ -321,8 +343,8 @@ public:
 	metre_vec3& operator--() noexcept { --v(); return *this; }
 	metre_vec3 operator++(int) noexcept { return metre_vec3(v()++); }
 	metre_vec3 operator--(int) noexcept { return metre_vec3(v()--); }
-	metre_vec3 operator+() const noexcept { return metre_vec3(+v()); }
-	metre_vec3 operator-() const noexcept { return metre_vec3(-v()); }
+	constexpr metre_vec3 operator+() const noexcept { return metre_vec3(+v()); }
+	constexpr metre_vec3 operator-() const noexcept { return metre_vec3(-v()); }
 
 	friend metre_vec3 operator+(metre_vec3 lhs, metre_vec3 rhs) noexcept { return lhs += rhs; }
 	friend metre_vec3 operator-(metre_vec3 lhs, metre_vec3 rhs) noexcept { return lhs -= rhs; }
@@ -346,7 +368,7 @@ public:
 	using value_type = T::value_type;
 	using vec_type = glm::tvec4<value_type>;
 
-	static constexpr auto length = 4;
+	static constexpr auto length() { return 4; }
 
 public:
 	T x;
@@ -371,8 +393,7 @@ public:
 		v() = std::move(rhs.v());
 		return *this;
 	}
-
-	metre_vec4& operator=(const metre_vec4 &rhs) noexcept {
+	constexpr metre_vec4& operator=(const metre_vec4 &rhs) noexcept {
 		v() = rhs.v();
 		return *this;
 	}
@@ -406,8 +427,8 @@ public:
 	metre_vec4& operator--() noexcept { --v(); return *this; }
 	metre_vec4 operator++(int) noexcept { return metre_vec4(v()++); }
 	metre_vec4 operator--(int) noexcept { return metre_vec4(v()--); }
-	metre_vec4 operator+() const noexcept { return metre_vec4(+v()); }
-	metre_vec4 operator-() const noexcept { return metre_vec4(-v()); }
+	constexpr metre_vec4 operator+() const noexcept { return metre_vec4(+v()); }
+	constexpr metre_vec4 operator-() const noexcept { return metre_vec4(-v()); }
 
 	friend metre_vec4 operator+(metre_vec4 lhs, metre_vec4 rhs) noexcept { return lhs += rhs; }
 	friend metre_vec4 operator-(metre_vec4 lhs, metre_vec4 rhs) noexcept { return lhs -= rhs; }

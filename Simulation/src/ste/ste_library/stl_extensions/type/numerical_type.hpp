@@ -10,7 +10,7 @@ namespace ste {
 /*
  *	@brief	Strong-typed wrapper around a numerical type T
  */
-template<class T>
+template <typename T, typename tag>
 class numerical_type {
 public:
 	using value_type = T;
