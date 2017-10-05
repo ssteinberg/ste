@@ -26,14 +26,14 @@ class vk_buffer_view : public allow_type_decay<vk_buffer_view<host_allocator>, V
 private:
 	optional<VkBufferView> view;
 	alias<const vk_logical_device<host_allocator>> device;
-	std::uint64_t size_bytes;
+	byte_t size_bytes;
 	VkFormat format;
 
 public:
 	vk_buffer_view(const vk_buffer<host_allocator> &parent,
 				   const VkFormat &format,
-				   std::uint64_t offset_bytes,
-				   std::uint64_t size_bytes,
+				   byte_t offset_bytes,
+				   byte_t size_bytes,
 				   const char *name)
 		: device(parent.get_creating_device()), size_bytes(size_bytes), format(format)
 	{
@@ -44,8 +44,8 @@ public:
 		create_info.pNext = nullptr;
 		create_info.flags = 0;
 		create_info.buffer = parent;
-		create_info.offset = offset_bytes;
-		create_info.range = size_bytes;
+		create_info.offset = static_cast<std::size_t>(offset_bytes);
+		create_info.range = static_cast<std::size_t>(size_bytes);
 		create_info.format = format;
 
 		const vk_result res = vkCreateBufferView(device.get(), &create_info, &host_allocator::allocation_callbacks(), &view);
@@ -64,8 +64,13 @@ public:
 	}
 	vk_buffer_view(const vk_buffer<host_allocator> &parent,
 				   const VkFormat &format,
-				   std::uint64_t offset_bytes = 0)
-		: vk_buffer_view(parent, format, offset_bytes, parent.get_size_bytes() - offset_bytes)
+				   byte_t offset_bytes,
+				   const char *name)
+		: vk_buffer_view(parent, 
+						 format, 
+						 offset_bytes, 
+						 parent.get_size_bytes() - offset_bytes,
+						 name)
 	{}
 	~vk_buffer_view() noexcept { destroy_view(); }
 

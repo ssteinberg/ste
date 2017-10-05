@@ -35,7 +35,7 @@ private:
 
 public:
 	vk_buffer(const vk_logical_device<host_allocator> &device,
-			  std::uint64_t bytes,
+			  byte_t bytes,
 			  const VkBufferUsageFlags &usage,
 			  bool sparse,
 			  const char *name)
@@ -47,7 +47,7 @@ public:
 		create_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		create_info.pNext = nullptr;
 		create_info.flags = sparse ? sparse_buffer_flags : 0;
-		create_info.size = bytes;
+		create_info.size = static_cast<std::size_t>(bytes);
 		create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		create_info.usage = usage;
 		create_info.queueFamilyIndexCount = 0;
@@ -92,10 +92,10 @@ public:
 	auto& get() const { return buffer.get(); }
 
 	auto& get_usage() const { return usage; }
-	std::uint64_t get_size_bytes() const { return get_elements_count() * get_element_size_bytes(); };
+	byte_t get_size_bytes() const { return get_elements_count() * get_element_size_bytes(); };
 
 	virtual std::uint64_t get_elements_count() const = 0;
-	virtual std::uint32_t get_element_size_bytes() const = 0;
+	virtual byte_t get_element_size_bytes() const = 0;
 	virtual bool is_sparse() const = 0;
 };
 

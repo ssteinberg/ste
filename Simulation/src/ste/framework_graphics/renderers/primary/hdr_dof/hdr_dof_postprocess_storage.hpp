@@ -33,7 +33,7 @@ private:
 		static constexpr auto format = gl::format::r32g32_sfloat;
 
 		auto hdr_human_vision_properties_data = resource::surface_2d<format>(glm::tvec2<std::size_t>{ 4096, 1 });
-		auto level = hdr_human_vision_properties_data[0];
+		auto level = hdr_human_vision_properties_data[0_mip];
 		{
 			for (std::uint32_t i = 0; i < hdr_human_vision_properties_data.extent().x; ++i) {
 				const float x = (static_cast<float>(i) + .5f) / static_cast<float>(hdr_human_vision_properties_data.extent().x);

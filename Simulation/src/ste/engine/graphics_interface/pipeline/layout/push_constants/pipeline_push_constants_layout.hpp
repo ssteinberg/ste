@@ -28,13 +28,13 @@ private:
 		const ste_shader_stage_variable *variable;
 		lib::string push_path;
 
-		std::uint32_t offset;
+		byte_t offset;
 		pipeline_binding_stages_collection stages;
 	};
 
 	struct stage_range {
 		stage_flag stage;
-		range<> r;
+		range<byte_t> r;
 	};
 
 	// Update push constants command
@@ -55,8 +55,8 @@ private:
 				auto push_layout = r.get_layout();
 				auto offset = push_layout.offset;
 				auto size = push_layout.size;
-				auto range_data = lib::string(p->data.begin() + offset,
-											  p->data.begin() + offset + size);
+				auto range_data = lib::string(p->data.begin() + static_cast<std::size_t>(offset),
+											  p->data.begin() + static_cast<std::size_t>(offset + size));
 
 				recorder << cmd_push_constants(pipeline_layout,
 											   static_cast<stage_flag>(push_layout.stageFlags),
@@ -73,7 +73,7 @@ private:
 
 private:
 	static void populate_push_variables(const ste_shader_stage_variable *variable,
-										std::uint32_t parent_offset,
+										byte_t parent_offset,
 										const pipeline_binding_stages_collection &stages,
 										const lib::string &path,
 										lib::vector<push_variable> &variables,
@@ -124,27 +124,27 @@ private:
 
 	static auto generate_ranges(const lib::vector<push_variable> &variables,
 								const pipeline_binding_stages_collection &all_stages,
-								std::size_t data_size) {
+								byte_t data_size) {
 		lib::vector<stage_range> ranges;
 		ranges.reserve(all_stages.size());
 
 		// Create a push range per stage
 		for (auto &stage : all_stages) {
-			std::uint32_t stage_range_start = static_cast<std::uint32_t>(data_size);
-			std::uint32_t stage_range_end = 0;
+			auto stage_range_start = data_size;
+			auto stage_range_end = 0_B;
 			for (auto it = variables.begin(); it != variables.end(); ++it) {
 				if (!it->stages.exists(stage))
 					continue;
 
-				const std::uint32_t offset = it->offset;
-				const std::uint32_t size = it->variable->size_bytes();
+				const auto offset = it->offset;
+				const auto size = it->variable->size_bytes();
 
 				stage_range_start = std::min(stage_range_start, offset);
 				stage_range_end =	std::max(stage_range_end,	offset + size);
 			}
 
 			// Create range
-			auto r = stage_range{ ste_shader_program_stage_to_stage_flag(stage), range<>(stage_range_start, stage_range_end - stage_range_start) };
+			auto r = stage_range{ ste_shader_program_stage_to_stage_flag(stage), range<byte_t>(stage_range_start, stage_range_end - stage_range_start) };
 
 			// Insert range for stage, sorted.
 			const auto it = std::upper_bound(ranges.begin(), ranges.end(), r, [](const auto &lhs, const auto &rhs) {
@@ -159,13 +159,13 @@ private:
 		for (std::size_t i=0; i<ranges.size();) {
 			stage_flag stages = ranges[i].stage;
 
-			auto j = i + 1;
+			const auto j = i + 1;
 			while (j<ranges.size() && ranges[i].r == ranges[j].r)
 				stages = stages | ranges[j].stage;
 
 			layouts.push_back(vk::vk_push_constant_layout(static_cast<VkShaderStageFlags>(stages),
-														  static_cast<std::uint32_t>(ranges[i].r.length),
-														  static_cast<std::uint32_t>(ranges[i].r.start)));
+														  ranges[i].r.length,
+														  ranges[i].r.start));
 
 			i = j;
 		}
@@ -196,7 +196,7 @@ public:
 
 			// Populate all push constants from binding
 			populate_push_variables(b.binding->variable.get(),
-									0,
+									0_B,
 									b.stages,
 									"",
 									variables,
@@ -209,12 +209,12 @@ public:
 		}
 
 		// Resize data, the push constants storage, to fit all the constants
-		data.resize(variables.back().offset + variables.back().variable->size_bytes());
+		data.resize(static_cast<std::size_t>(variables.back().offset + variables.back().variable->size_bytes()));
 
 		// Generate the stages' push ranges
 		this->push_ranges = generate_ranges(variables,
 											all_stages,
-											data.size());
+											byte_t(data.size()));
 	}
 	~pipeline_push_constants_layout() noexcept {}
 

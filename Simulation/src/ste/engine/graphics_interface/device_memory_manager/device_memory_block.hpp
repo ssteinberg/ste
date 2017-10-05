@@ -8,16 +8,15 @@
 namespace ste {
 namespace gl {
 
-template <typename T>
 class device_memory_block {
 private:
-	T offset;
-	T bytes;
+	byte_t offset;
+	byte_t bytes;
 
 public:
 	device_memory_block() = default;
-	device_memory_block(T offset, 
-						T bytes)
+	device_memory_block(byte_t offset,
+						byte_t bytes)
 		: offset(offset), bytes(bytes) {}
 	~device_memory_block() noexcept {}
 

@@ -24,9 +24,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\light\linked_light_lists\linked_light_lists.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
     <ClCompile Include="Simulation\src\ste\engine\graphics_interface\profiler\profiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\kelvin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -285,12 +285,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\oren_nayar_diffuse.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\RGB.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\spectrum.hpp">
@@ -2043,6 +2037,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\types\ste_types_luminance_units.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\rgb.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\kelvin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

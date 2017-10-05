@@ -29,7 +29,7 @@ public:
 	using engine_types = Types;
 	using storage_protocol = typename engine_types::storage_protocol;
 
-	static constexpr std::size_t cache_quota_size_bytes = 1024 * 1024 * 256;
+	static constexpr byte_t cache_quota_size_bytes = 256_MB;
 
 private:
 	typename engine_types::task_scheduler_t engine_task_scheduler;

@@ -17,8 +17,8 @@ class quad_light : public shaped_light {
 protected:
 	quad_light(light_type type,
 			   const rgb &color,
-			   float intensity,
-			   const glm::vec3 &position,
+			   cd_t intensity,
+			   const metre_vec3 &position,
 			   shaped_light_points_storage_info storage_info) : shaped_light(type,
 																			 color,
 																			 intensity,
@@ -33,17 +33,18 @@ public:
 
 	void set_points(const ste_context &ctx, 
 					gl::command_recorder &recorder,
-					const glm::vec3 *quad_points) {
-		glm::vec3 n = glm::cross(quad_points[1] - quad_points[0], quad_points[3] - quad_points[0]);
-		const float area = glm::length(n);
+					const metre_vec3 *quad_points) {
+		const auto n = glm::cross((quad_points[1] - quad_points[0]).v(),
+								  (quad_points[3] - quad_points[0]).v());
+		const auto area = glm::length(n);
 
 		Base::set_points(ctx,
 						 recorder,
-						 quad_points, 4, area, n / area);
+						 quad_points, 4, square_metre(area), n / area);
 	}
 	void set_points(const ste_context &ctx,
 					gl::command_recorder &recorder,
-					const std::array<glm::vec3, 4> &quad_points) {
+					const std::array<metre_vec3, 4> &quad_points) {
 		set_points(ctx,
 				   recorder,
 				   &quad_points[0]);
@@ -53,8 +54,8 @@ public:
 class quad_light_onesided : public quad_light {
 public:
 	quad_light_onesided(const rgb &color,
-						float intensity,
-						const glm::vec3 &position,
+						cd_t intensity,
+						const metre_vec3 &position,
 						shaped_light_points_storage_info storage_info) : quad_light(light_type::QuadOnesided,
 																					color, intensity, position,
 																					storage_info) {}
@@ -64,8 +65,8 @@ public:
 class quad_light_twosided : public quad_light {
 public:
 	quad_light_twosided(const rgb &color,
-						float intensity,
-						const glm::vec3 &position,
+						cd_t intensity,
+						const metre_vec3 &position,
 						shaped_light_points_storage_info storage_info) : quad_light(light_type::QuadTwosided,
 																					color, intensity, position,
 																					storage_info) {}

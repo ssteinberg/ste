@@ -30,10 +30,10 @@ private:
 	std::reference_wrapper<const device_image_base> image;
 
 	image_aspect aspect;
-	std::uint32_t base_level{ 0 };
-	std::uint32_t levels{ VK_REMAINING_MIP_LEVELS };
-	std::uint32_t base_layer{ 0 };
-	std::uint32_t layers{ VK_REMAINING_ARRAY_LAYERS };
+	levels_t base_level{ 0_mip };
+	levels_t levels{ all_mips };
+	layers_t base_layer{ 0_layer };
+	layers_t layers{ all_layers };
 
 public:
 	image_memory_barrier(const device_image_base &image,
@@ -56,10 +56,10 @@ public:
 	image_memory_barrier(const device_image_base &image,
 						 image_layout old_layout,
 						 image_layout new_layout,
-						 std::uint32_t base_mip_level,
-						 std::uint32_t mip_levels,
-						 std::uint32_t base_array_layer,
-						 std::uint32_t array_layers)
+						 levels_t base_mip_level,
+						 levels_t mip_levels,
+						 layers_t base_array_layer,
+						 layers_t array_layers)
 		: src(access_flags_for_image_layout(old_layout)), dst(access_flags_for_image_layout(new_layout)), 
 		old_layout(old_layout), new_layout(new_layout),
 		image(image),
@@ -71,10 +71,10 @@ public:
 						 image_layout new_layout,
 						 const access_flags &src_access,
 						 const access_flags &dst_access,
-						 std::uint32_t base_mip_level,
-						 std::uint32_t mip_levels,
-						 std::uint32_t base_array_layer,
-						 std::uint32_t array_layers)
+						 levels_t base_mip_level,
+						 levels_t mip_levels,
+						 layers_t base_array_layer,
+						 layers_t array_layers)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		image(image),
 		aspect(format_aspect(image.get_format())),
@@ -110,10 +110,10 @@ public:
 						 const access_flags &dst_access,
 						 const ste_queue_family &src_queue_family,
 						 const ste_queue_family &dst_queue_family,
-						 std::uint32_t base_mip_level,
-						 std::uint32_t mip_levels,
-						 std::uint32_t base_array_layer,
-						 std::uint32_t array_layers)
+						 levels_t base_mip_level,
+						 levels_t mip_levels,
+						 layers_t base_array_layer,
+						 layers_t array_layers)
 		: src(src_access), dst(dst_access), old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
 		image(image),
@@ -125,10 +125,10 @@ public:
 						 image_layout new_layout,
 						 const ste_queue_family &src_queue_family,
 						 const ste_queue_family &dst_queue_family,
-						 std::uint32_t base_mip_level,
-						 std::uint32_t mip_levels,
-						 std::uint32_t base_array_layer,
-						 std::uint32_t array_layers)
+						 levels_t base_mip_level,
+						 levels_t mip_levels,
+						 layers_t base_array_layer,
+						 layers_t array_layers)
 		: src(access_flags_for_image_layout(old_layout)), dst(access_flags_for_image_layout(new_layout)), 
 		old_layout(old_layout), new_layout(new_layout),
 		src_queue_family(src_queue_family), dst_queue_family(dst_queue_family),
@@ -155,10 +155,10 @@ public:
 		barrier.dstQueueFamilyIndex = static_cast<std::uint32_t>(dst_queue_family);
 		barrier.image = image.get().get_image_handle();
 		barrier.subresourceRange.aspectMask = static_cast<VkImageAspectFlags>(aspect);
-		barrier.subresourceRange.baseMipLevel = base_level;
-		barrier.subresourceRange.levelCount = levels;
-		barrier.subresourceRange.baseArrayLayer = base_layer;
-		barrier.subresourceRange.layerCount = layers;
+		barrier.subresourceRange.baseMipLevel = static_cast<std::uint32_t>(base_level);
+		barrier.subresourceRange.levelCount = static_cast<std::uint32_t>(levels);
+		barrier.subresourceRange.baseArrayLayer = static_cast<std::uint32_t>(base_layer);
+		barrier.subresourceRange.layerCount = static_cast<std::uint32_t>(layers);
 
 		return barrier;
 	}

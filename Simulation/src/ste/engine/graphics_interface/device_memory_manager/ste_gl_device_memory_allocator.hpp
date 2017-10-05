@@ -27,7 +27,7 @@ namespace gl {
 class ste_gl_device_memory_allocator : public unique_device_ptr_allocator {
 private:
 	using chunk_t = device_memory_heap;
-	using chunks_t = lib::unordered_map<std::uint64_t, chunk_t>;
+	using chunks_t = lib::unordered_map<vk::vk_handle, chunk_t>;
 	using memory_type_t = std::uint32_t;
 
 	struct heap_t {
@@ -44,14 +44,14 @@ private:
 
 public:
 	// Allocate 256MB chunks by default
-	static constexpr std::uint64_t default_minimal_allocation_size_bytes = 256 * 1024 * 1024;
+	static constexpr auto default_minimal_allocation_size_bytes = 256_MB;
 
 	using allocation_t = chunk_t::allocation_type;
 
 private:
 	alias<const vk::vk_logical_device<>> device;
 	mutable heaps_t heaps;
-	std::uint64_t minimal_allocation_size_bytes;
+	byte_t minimal_allocation_size_bytes;
 
 private:
 	static bool memory_type_matches_requirements(const memory_type_t &type,
@@ -99,19 +99,19 @@ private:
 			chunks_t &chunks = ptr.is_private_allocation() ?
 				heap.private_chunks :
 				heap.chunks;
-			auto it = chunks.find(ptr.get_heap_tag());
+			auto it = chunks.find(vk::vk_handle(ptr.get_heap_tag()));
 			
 			assert(it != chunks.end());
 
 			it->second.deallocate(ptr);
-			if (it->second.get_allocated_bytes() == 0) {
+			if (it->second.get_allocated_bytes() == 0_B) {
 				chunks.erase(it);
 			}
 		}
 	}
 
 	static auto allocate_from_heap(heap_t &heap, 
-								   std::uint64_t size, 
+								   byte_t size,
 								   std::uint64_t alignment) {
 		allocation_t allocation;
 		for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it) {
@@ -119,7 +119,7 @@ private:
 				allocation = it->second.allocate(size, alignment, false);
 
 			// Remove empty heaps
-			if (it->second.get_allocated_bytes() == 0)
+			if (it->second.get_allocated_bytes() == 0_B)
 				it = heap.chunks.erase(it);
 		}
 
@@ -127,7 +127,7 @@ private:
 	}
 
 	auto commit_device_memory_heap_for_memory_type(const memory_type_t &memory_type,
-												   std::uint64_t minimal_size,
+												   byte_t minimal_size,
 												   std::uint64_t alignment,
 												   bool dedicated_allocation) const {
 		// Calculate chunk size
@@ -141,7 +141,7 @@ private:
 		return vk::vk_device_memory<>(device, chunk_size, memory_type);
 	}
 
-	auto allocate(std::uint64_t size,
+	auto allocate(byte_t size,
 				  const memory_requirements &memory_requirements,
 				  const memory_properties_flags &required_flags,
 				  const memory_properties_flags &preferred_flags) const {
@@ -161,7 +161,7 @@ private:
 
 			// Prune private chunks
 			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it) {
-				if (it->second.get_allocated_bytes() == 0)
+				if (it->second.get_allocated_bytes() == 0_B)
 					it = heap.private_chunks.erase(it);
 			}
 
@@ -186,7 +186,7 @@ private:
 																			   dedicated_allocation);
 				// And use it to create a new chunk
 				auto ret = chunks.emplace(std::piecewise_construct,
-										  std::forward_as_tuple(static_cast<std::uint64_t>(vk::vk_handle(memory_object))),
+										  std::forward_as_tuple(vk::vk_handle(memory_object)),
 										  std::forward_as_tuple(this,
 																memory_type,
 																std::move(memory_object)));
@@ -202,7 +202,7 @@ private:
 
 public:
 	ste_gl_device_memory_allocator(const vk::vk_logical_device<> &device,
-								   std::uint64_t minimal_allocation_size_bytes = default_minimal_allocation_size_bytes)
+								   byte_t minimal_allocation_size_bytes = default_minimal_allocation_size_bytes)
 		: device(device), 
 		minimal_allocation_size_bytes(minimal_allocation_size_bytes)
 	{}
@@ -221,7 +221,7 @@ public:
 	*	@param required_flags	Required memory flags.
 	*	@param preferred_flags	Nice to have flags.
 	*/
-	auto allocate_device_memory(std::uint64_t size,
+	auto allocate_device_memory(byte_t size,
 								const memory_requirements &memory_requirements,
 								const memory_properties_flags &required_flags,
 								const memory_properties_flags &preferred_flags) const {
@@ -244,7 +244,7 @@ public:
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
 	*/
-	auto allocate_device_physical_memory(std::uint64_t size,
+	auto allocate_device_physical_memory(byte_t size,
 										 const memory_requirements &memory_requirements,
 										 const memory_properties_flags &required_flags = memory_properties_flags::none) const {
 		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::device_local;
@@ -267,7 +267,7 @@ public:
 	*	@param memory_requirements	Allocation memory requirements
 	*	@param required_flags	Required memory flags.
 	*/
-	auto allocate_host_visible_memory(std::uint64_t size,
+	auto allocate_host_visible_memory(byte_t size,
 									  const memory_requirements &memory_requirements,
 									  const memory_properties_flags &required_flags = memory_properties_flags::none) const {
 		const memory_properties_flags preferred_flags = required_flags | memory_properties_flags::host_visible;
@@ -293,7 +293,7 @@ public:
 	auto allocate_device_memory_for_resource(const memory_requirements &memory_requirements,
 											 const memory_properties_flags &required_flags,
 											 const memory_properties_flags &preferred_flags) const {
-		auto allocation = allocate(memory_requirements.size,
+		auto allocation = allocate(memory_requirements.bytes,
 								   memory_requirements,
 								   required_flags,
 								   preferred_flags);
@@ -361,9 +361,9 @@ public:
 				conforming_heaps.insert(type.heapIndex);
 		}
 
-		std::uint64_t total_device_memory = 0;
+		auto total_device_memory = 0_B;
 		for (auto &heap_idx : conforming_heaps) 
-			total_device_memory += properties.memoryHeaps[heap_idx].size;
+			total_device_memory += byte_t(properties.memoryHeaps[heap_idx].size);
 
 		return total_device_memory;
 	}
@@ -375,7 +375,7 @@ public:
 	*	@param	type	Memory type
 	*/
 	auto get_total_commited_memory_of_type(const memory_type_t &type) const {
-		std::uint64_t total_commited_memory = 0;
+		auto total_commited_memory = 0_B;
 
 		assert(type < heaps.size());
 		auto &heap = heaps[type];
@@ -400,7 +400,7 @@ public:
 	*/
 	auto get_total_commited_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
-		std::uint64_t total_commited_memory = 0;
+		auto total_commited_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
 			auto &mem_type = properties.memoryTypes[type];
@@ -418,7 +418,7 @@ public:
 	*	@param	type	Memory type
 	*/
 	auto get_total_allocated_memory_of_type(const memory_type_t &type) const {
-		std::uint64_t total_allocated_memory = 0;
+		auto total_allocated_memory = 0_B;
 
 		assert(type < heaps.size());
 		auto &heap = heaps[type];
@@ -443,7 +443,7 @@ public:
 	*/
 	auto get_total_allocated_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
 		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
-		std::uint64_t total_allocated_memory = 0;
+		auto total_allocated_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
 			auto &mem_type = properties.memoryTypes[type];

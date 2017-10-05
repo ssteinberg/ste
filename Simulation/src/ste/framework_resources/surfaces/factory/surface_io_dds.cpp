@@ -370,12 +370,12 @@ opaque_surface<3> surface_io::load_dds_3d(const std::experimental::filesystem::p
 
 void surface_io::write_dds(const std::experimental::filesystem::path &file_name, 
 						   const std::uint8_t *image_data, 
-						   std::size_t bytes, 
+						   byte_t bytes,
 						   gl::format format, 
 						   gl::image_type image_type, 
 						   const glm::u32vec3 &extent, 
-						   std::uint32_t levels, 
-						   std::uint32_t layers) {
+						   levels_t levels, 
+						   layers_t layers) {
 	const auto dimensions = gl::image_dimensions_for_type(image_type);
 	const auto format_traits = gl::format_id(format);
 
@@ -498,7 +498,7 @@ void surface_io::write_dds(const std::experimental::filesystem::path &file_name,
 	}
 
 	// Can not save arrays or 1D surface with old format
-	if (!dxgi_format && (layers > 1 || gl::image_dimensions_for_type(image_type) == 1)) {
+	if (!dxgi_format && (layers > 1_mips || gl::image_dimensions_for_type(image_type) == 1)) {
 		using namespace attributes;
 		ste_log_error() << "Surface type and format incompatible with DDS.";
 		throw surface_unsupported_format_error("Surface type and format incompatible with DDS");
@@ -555,6 +555,6 @@ void surface_io::write_dds(const std::experimental::filesystem::path &file_name,
 		// Write headers
 		std::copy(header, header + header_buffer_size, std::ostream_iterator<std::uint8_t>(fs));
 		// Write image data
-		std::copy(image_data, image_data + bytes, std::ostream_iterator<std::uint8_t>(fs));
+		std::copy(image_data, image_data + static_cast<std::size_t>(bytes), std::ostream_iterator<std::uint8_t>(fs));
 	}
 }

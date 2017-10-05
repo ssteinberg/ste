@@ -57,7 +57,7 @@ private:
 
 private:
 	const std::experimental::filesystem::path path;
-	const std::uint64_t quota;
+	const byte_t quota;
 	lib::aligned_padded_ptr<shared_data_t> shared_data;
 
 	index_type index;
@@ -90,7 +90,7 @@ public:
 	* 	@param path		Cache directory
 	*	@param quota	Max size in bytes. 0 for unlimited.
 	*/
-	lru_cache(const std::experimental::filesystem::path &path, std::uint64_t quota = 0)
+	lru_cache(const std::experimental::filesystem::path &path, byte_t quota = 0_B)
 		: path(path),
 		quota(quota),
 		index(path, shared_data->total_size),
@@ -110,14 +110,14 @@ public:
 				accessed_item = shared_data->accessed_queue.pop();
 			}
 
-			auto ts = shared_data->total_size.load(std::memory_order_relaxed);
+			auto ts = byte_t(shared_data->total_size.load(std::memory_order_relaxed));
 			while (ts > this->quota && this->quota) {
 				auto size = this->index.erase_back();
 				assert(size);
 				if (!size)
 					break;
 
-				ts = shared_data->total_size.fetch_sub(size, std::memory_order_relaxed);
+				ts = byte_t(shared_data->total_size.fetch_sub(size, std::memory_order_relaxed));
 			}
 
 			if (shared_data->ops.load(std::memory_order_relaxed) > write_index_every_ops) {

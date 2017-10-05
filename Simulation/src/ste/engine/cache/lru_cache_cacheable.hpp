@@ -29,7 +29,7 @@ private:
 	static constexpr auto archive_extension = ".stearchive";
 
 	K key;
-	std::uint64_t size{ 0 };
+	byte_t size{ 0 };
 	lru_iterator_type lru_it;
 	std::atomic<bool> live{ false };
 
@@ -83,7 +83,7 @@ public:
 		live.store(true, std::memory_order_release);
 
 		std::error_code err;
-		size = static_cast<std::uint64_t>(std::experimental::filesystem::file_size(f, err));
+		size = byte_t(std::experimental::filesystem::file_size(f, err));
 	}
 	void mark_for_deletion() {
 		live.store(false, std::memory_order_release);
@@ -103,7 +103,7 @@ public:
 		}
 
 		std::error_code err;
-		size = std::experimental::filesystem::file_size(f, err);
+		size = byte_t(std::experimental::filesystem::file_size(f, err));
 	}
 	template <typename V>
 	optional<V> unarchive() const {

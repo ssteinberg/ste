@@ -24,8 +24,8 @@ private:
 
 private:
 	auto generate_blank_texture(const ste_context &ctx) {
-		auto surface = resource::surface_2d<gl::format::r8_unorm>({ 1, 1 }, 1);
-		surface[0][0].r() = 0;
+		auto surface = resource::surface_2d<gl::format::r8_unorm>({ 1, 1 }, 1_mips);
+		surface[0_mip][0].r() = 0;
 
 		auto image = resource::surface_factory::image_from_surface_2d<gl::format::r8_unorm>(ctx,
 																							std::move(surface),

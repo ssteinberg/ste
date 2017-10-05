@@ -33,7 +33,7 @@ template <int dimensions, class allocation_policy>
 auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					  image_layout initial_layout,
 					  image_layout final_layout,
-					  std::uint32_t start_level,
+					  levels_t start_level,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
 					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	auto future = image.parent_context().engine().task_scheduler().schedule_now([=, &image, wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
@@ -43,7 +43,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 		auto mip_levels = image.get_mips();
 		auto size = image.get_extent();
 
-		assert(start_level > 0);
+		assert(start_level > 0_mip);
 		if (mip_levels <= start_level) {
 			// Nothing to do
 			return;
@@ -56,7 +56,7 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 
 		// Enqueue mipmap copy on a queue
 		auto enqueue_future = q.enqueue([&]() {
-			auto m = std::max<std::uint32_t>(start_level, 1);
+			auto m = std::max(start_level, 1_mips);
 
 			auto batch = ste_device_queue::thread_allocate_batch();
 			auto& command_buffer = batch->acquire_command_buffer();
@@ -79,26 +79,26 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 													image_memory_barrier(image,
 																		 initial_layout,
 																		 image_layout::transfer_dst_optimal,
-																		 m, 1, 0, 1),
+																		 m, 1_mip, 0_layer, 1_layers),
 													image_memory_barrier(image,
 																		 m == start_level ? initial_layout : image_layout::transfer_dst_optimal,
 																		 image_layout::transfer_src_optimal,
-																		 m - 1, 1, 0, 1));
+																		 m - 1_mips, 1_mip, 0_layer, 1_layers));
 					recorder << cmd_pipeline_barrier(barrier);
 
 					// Blit
 					VkImageBlit range = {};
-					range.srcSubresource = { aspect, m - 1, 0, 1 };
-					range.dstSubresource = { aspect, m, 0, 1 };
+					range.srcSubresource = { aspect, static_cast<std::uint32_t>(m) - 1, 0, 1 };
+					range.dstSubresource = { aspect, static_cast<std::uint32_t>(m), 0, 1 };
 					range.srcOffsets[1] = {
-						std::max<std::int32_t>(1, size.x >> (m - 1)),
-						std::max<std::int32_t>(1, size.y >> (m - 1)),
-						std::max<std::int32_t>(1, size.z >> (m - 1)),
+						std::max<std::int32_t>(1, size.x >> (static_cast<std::uint32_t>(m) - 1)),
+						std::max<std::int32_t>(1, size.y >> (static_cast<std::uint32_t>(m) - 1)),
+						std::max<std::int32_t>(1, size.z >> (static_cast<std::uint32_t>(m) - 1)),
 					};
 					range.dstOffsets[1] = {
-						std::max<std::int32_t>(1, size.x >> m),
-						std::max<std::int32_t>(1, size.y >> m),
-						std::max<std::int32_t>(1, size.z >> m),
+						std::max<std::int32_t>(1, size.x >> static_cast<std::uint32_t>(m)),
+						std::max<std::int32_t>(1, size.y >> static_cast<std::uint32_t>(m)),
+						std::max<std::int32_t>(1, size.z >> static_cast<std::uint32_t>(m)),
 					};
 					recorder << cmd_blit_image(image, image_layout::transfer_src_optimal,
 											   image, image_layout::transfer_dst_optimal,
@@ -111,18 +111,18 @@ auto generate_mipmaps(const device_image<dimensions, allocation_policy> &image,
 					image_memory_barrier(image,
 										 image_layout::transfer_src_optimal,
 										 final_layout,
-										 start_level - 1, mip_levels - start_level, 0, 1),
+										 start_level - 1_mips, mip_levels - start_level, 0_layer, 1_layers),
 					image_memory_barrier(image,
 										 image_layout::transfer_dst_optimal,
 										 final_layout,
-										 start_level + mip_levels - 2, 1, 0, 1),
+										 start_level + mip_levels - 2_mips, 1_mip, 0_layer, 1_layers),
 				};
-				if (start_level > 1) {
+				if (start_level > 1_mip) {
 					// Transfer untouched mipmap head from initial to final layout as well
 					image_barriers.push_back(image_memory_barrier(image,
 																  initial_layout,
 																  final_layout,
-																  0, start_level - 1, 0, 1));
+																  0_mip, start_level - 1_mips, 0_layer, 1_layers));
 				}
 				auto barrier = pipeline_barrier(pipeline_stage::transfer | pipeline_stages_for_initial_layout,
 												pipeline_stages_for_final_layout,

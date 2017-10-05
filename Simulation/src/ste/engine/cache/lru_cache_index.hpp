@@ -78,8 +78,8 @@ private:
 		oa << *this;
 	}
 
-	std::uint64_t populate_map(const std::experimental::filesystem::path &path) {
-		std::uint64_t size = 0;
+	auto populate_map(const std::experimental::filesystem::path &path) {
+		auto size = 0_B;
 		for (lru_list_iterator_type it = lru_list.begin(); it != lru_list.end(); ++it) {
 			auto &k = it->k;
 			val_type v(k, path, it->name);
@@ -139,7 +139,7 @@ private:
 		val_guard->replace(std::move(v));
 	}
 
-	std::uint64_t erase(const key_type &k) {
+	byte_t erase(const key_type &k) {
 		auto val_guard = map[k];
 		if (!val_guard.is_valid())
 			return 0;
@@ -150,7 +150,7 @@ private:
 		return val_guard->get_size();
 	}
 
-	std::uint64_t erase_back() {
+	byte_t erase_back() {
 		if (!lru_list.size()) return 0;
 		auto k = lru_list.back().k;
 

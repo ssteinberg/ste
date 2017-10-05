@@ -55,6 +55,7 @@ template<> struct _format_for_type<u8vec2_norm, false> { static constexpr format
 template<> struct _format_for_type<u16vec2_norm, false> { static constexpr format value = format::r16g16_unorm; };
 template<> struct _format_for_type<glm::tvec2<half_float::half>, false> { static constexpr format value = format::r16g16_sfloat; };
 template<> struct _format_for_type<glm::vec2, false> { static constexpr format value = format::r32g32_sfloat; };
+template<> struct _format_for_type<metre_vec2, false> { static constexpr format value = format::r32g32_sfloat; };
 template<> struct _format_for_type<glm::f64vec2, false> { static constexpr format value = format::r64g64_sfloat; };
 template<> struct _format_for_type<glm::i8vec3, false> { static constexpr format value = format::r8g8b8_sint; };
 template<> struct _format_for_type<glm::i16vec3, false> { static constexpr format value = format::r16g16b16_sint; };
@@ -74,6 +75,7 @@ template<> struct _format_for_type<u8vec3_norm, false> { static constexpr format
 template<> struct _format_for_type<u16vec3_norm, false> { static constexpr format value = format::r16g16b16_unorm; };
 template<> struct _format_for_type<glm::tvec3<half_float::half>, false> { static constexpr format value = format::r16g16b16_sfloat; };
 template<> struct _format_for_type<glm::vec3, false> { static constexpr format value = format::r32g32b32_sfloat; };
+template<> struct _format_for_type<metre_vec3, false> { static constexpr format value = format::r32g32b32_sfloat; };
 template<> struct _format_for_type<glm::f64vec3, false> { static constexpr format value = format::r64g64b64_sfloat; };
 template<> struct _format_for_type<glm::i8vec4, false> { static constexpr format value = format::r8g8b8a8_sint; };
 template<> struct _format_for_type<glm::i16vec4, false> { static constexpr format value = format::r16g16b16a16_sint; };
@@ -93,6 +95,7 @@ template<> struct _format_for_type<u8vec4_norm, false> { static constexpr format
 template<> struct _format_for_type<u16vec4_norm, false> { static constexpr format value = format::r16g16b16a16_unorm; };
 template<> struct _format_for_type<glm::tvec4<half_float::half>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
 template<> struct _format_for_type<glm::vec4, false> { static constexpr format value = format::r32g32b32a32_sfloat; };
+template<> struct _format_for_type<metre_vec4, false> { static constexpr format value = format::r32g32b32a32_sfloat; };
 template<> struct _format_for_type<glm::f64vec4, false> { static constexpr format value = format::r64g64b64a64_sfloat; };
 template<> struct _format_for_type<glm::tquat<half_float::half, glm::qualifier::lowp>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };
 template<> struct _format_for_type<glm::tquat<half_float::half, glm::qualifier::mediump>, false> { static constexpr format value = format::r16g16b16a16_sfloat; };

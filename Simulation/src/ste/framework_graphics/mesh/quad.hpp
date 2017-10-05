@@ -15,26 +15,26 @@ public:
 	quad() {
 		lib::vector<object_vertex_data> vert;
 		object_vertex_data vd;
-		glm::vec3 n = { 0,0,1 };
-		glm::vec3 t = { 1,0,0 };
-		glm::vec3 b = { 0,1,0 };
+		const glm::vec3 n = { 0,0,1 };
+		const glm::vec3 t = { 1,0,0 };
+		const glm::vec3 b = { 0,1,0 };
 
 		vd.tangent_frame_from_tbn(t,b,n);
 
-		vd.p = { -1, -1, 0 };
-		vd.uv = { 0,0 };
+		vd.p() = { -1_m, -1_m, 0_m };
+		vd.uv() = { 0,0 };
 		vert.push_back(vd);
 
-		vd.p = { 1, -1, 0 };
-		vd.uv = { 1,0 };
+		vd.p() = { 1_m, -1_m, 0_m };
+		vd.uv() = { 1,0 };
 		vert.push_back(vd);
 
-		vd.p = { -1, 1, 0 };
-		vd.uv = { 0,1 };
+		vd.p() = { -1_m, 1_m, 0_m };
+		vd.uv() = { 0,1 };
 		vert.push_back(vd);
 
-		vd.p = { 1, 1, 0 };
-		vd.uv = { 1,1 };
+		vd.p() = { 1_m, 1_m, 0_m };
+		vd.uv() = { 1,1 };
 		vert.push_back(vd);
 
 		set_vertices(vert);

@@ -21,7 +21,7 @@ public:
 	using allocator_t = unique_device_ptr_allocator;
 
 	using size_type = std::uint64_t;
-	using block_type = device_memory_block<size_type>;
+	using block_type = device_memory_block;
 	using blocks_list_t = lib::vector<block_type>;
 	using allocation_type = unique_device_ptr;
 
@@ -35,16 +35,16 @@ private:
 	vk::vk_device_memory<> memory;
 
 	blocks_list_t blocks;
-	size_type total_used_size{ 0 };
+	byte_t total_used_size{ 0 };
 
 public:
-	static auto align_round_down(size_type offset, size_type alignment) {
+	static auto align_round_down(byte_t offset, size_type alignment) {
 		alignment = std::max(alignment, base_alignment);
-		return (offset / alignment) * alignment;
+		return offset / alignment * alignment;
 	}
-	static auto align(size_type size, size_type alignment) {
+	static auto align(byte_t size, size_type alignment) {
 		alignment = std::max(alignment, base_alignment);
-		return ((size + alignment - 1) / alignment) * alignment;
+		return ((size + byte_t(alignment) - 1_B) / alignment) * alignment;
 	}
 
 public:
@@ -76,20 +76,22 @@ public:
 	/**
 	*	@brief	Attempts to allocate memory. Returns an empty allocation on error.
 	*
-	*	@param size			Allocation size in bytes
+	*	@param bytes			Allocation size in bytes
 	*	@param alignment		Allocation alignment
 	*	
 	*	@return	Returns the allocation object
 	*/
-	allocation_type allocate(size_type size, size_type alignment, bool private_allocation) {
-		size = align(size, alignment);
+	allocation_type allocate(byte_t bytes, 
+							 size_type alignment, 
+							 bool private_allocation) {
+		bytes = align(bytes, alignment);
 
-		if (get_heap_size() < size) {
+		if (get_heap_size() < bytes) {
 			// Heap too small
 			return allocation_type();
 		}
 
-		size_type start = 0;
+		byte_t start = 0_B;
 		auto it = blocks.begin();
 		for (;;) {
 			const bool last = it == blocks.end();
@@ -103,12 +105,12 @@ public:
 
 			start = align(start, alignment);
 			if (end > start &&
-				end - start >= size) {
+				end - start >= bytes) {
 				// Allocate
-				const block_type block(start, size);
+				const block_type block(start, bytes);
 
 				blocks.insert(it, block);
-				total_used_size += size;
+				total_used_size += bytes;
 
 				return allocation_type(&memory, 
 									   owner, 
@@ -134,11 +136,11 @@ public:
 	/**
 	*	@brief	Returns the amount of allocated memory, in bytes, from this heap.
 	*/
-	size_type get_allocated_bytes() const { return total_used_size; }
+	byte_t get_allocated_bytes() const { return total_used_size; }
 	/**
 	*	@brief	Returns the heap size, in bytes.
 	*/
-	size_type get_heap_size() const { return memory.get_size(); }
+	byte_t get_heap_size() const { return memory.get_size(); }
 
 	std::uint64_t tag() const { return vk::vk_handle(get_device_memory()); }
 };

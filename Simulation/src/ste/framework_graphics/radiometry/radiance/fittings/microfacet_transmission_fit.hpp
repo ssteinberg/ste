@@ -83,9 +83,9 @@ public:
 	resource::surface_2d_array<gl::format::r32g32b32a32_sfloat> create_lut() const override {
 		const auto size = static_cast<std::uint32_t>(fit_data->header.size);
 
-		auto lut = resource::surface_2d_array<gl::format::r32g32b32a32_sfloat>({ size, size }, 2);
-		auto lut0 = lut[0][0];
-		auto lut1 = lut[1][0];
+		auto lut = resource::surface_2d_array<gl::format::r32g32b32a32_sfloat>({ size, size }, 2_layers);
+		auto lut0 = lut[0_layer][0_mip];
+		auto lut1 = lut[1_layer][0_mip];
 
 		for (std::uint32_t y = 0; y < size; ++y) {
 			for (std::uint32_t x = 0; x < size; ++x) {

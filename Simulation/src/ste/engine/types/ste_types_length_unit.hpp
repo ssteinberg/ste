@@ -103,7 +103,6 @@ public:
 	explicit constexpr operator value_type() const noexcept { return val; }
 	template <typename S, typename = std::enable_if_t<std::is_convertible_v<value_type, S>>>
 	explicit constexpr operator S() const noexcept { return static_cast<S>(val); }
-	constexpr operator bool() const noexcept { return val; }
 };
 
 template <int E1, int E2, int Power>

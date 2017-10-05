@@ -20,8 +20,8 @@ class polygonal_light : public shaped_light {
 protected:
 	polygonal_light(light_type type, 
 					const rgb &color,
-					float intensity,
-					const glm::vec3 &position, 
+					cd_t intensity,
+					const metre_vec3 &position,
 					shaped_light_points_storage_info storage_info) : shaped_light(type,
 																				  color, 
 																				  intensity,
@@ -31,40 +31,47 @@ protected:
 			   && "Type is not a polygonal light!");
 	}
 
-	static float calculate_area(const glm::vec3 *points, std::size_t size, const glm::vec3 &n) {
-		glm::vec3 res = { 0,0,0 };
+	static auto calculate_area(const metre_vec3 *points, std::size_t size, const glm::vec3 &n) {
+		glm::vec3 res = { 0, 0, 0 };
 		for (unsigned i=0; i<size; ++i) {
-			glm::vec3 v0 = points[i];
-			glm::vec3 v1 = points[i + 1 == size ? 0 : i + 1];
-			res += glm::cross(v0, v1);
+			const auto &v0 = points[i];
+			const auto &v1 = points[(i + 1) % size];
+			res += glm::cross(v0.v(), v1.v());
 		}
 
-		return .5f * glm::abs(glm::dot(n, res));
+		return .5_m² * glm::abs(glm::dot(n, res));
 	}
 
 public:
 	virtual ~polygonal_light() noexcept {}
 
-	void set_points(gl::command_recorder &recorder, 
-					const glm::vec3 *points, std::size_t size) {
+	void set_points(const ste_context &ctx,
+					gl::command_recorder &recorder,
+					const metre_vec3 *points, std::size_t size) {
 		glm::vec3 n = { 0,0,0 };
-		float area = .0f;
+		auto area = .0_m²;
 		if (size > 2) {
-			n = glm::normalize(glm::cross(points[1] - points[0], points[2] - points[0]));
+			n = glm::normalize(glm::cross((points[1] - points[0]).v(), 
+										  (points[2] - points[0]).v()));
 			area = calculate_area(points, size, n);
 		}
-		Base::set_points(recorder,
+		Base::set_points(ctx,
+						 recorder,
 						 points, size, area, n);
 	}
-	void set_points(gl::command_recorder &recorder, 
-					const lib::vector<glm::vec3> &points) {
-		set_points(recorder,
+	void set_points(const ste_context &ctx,
+					gl::command_recorder &recorder,
+					const lib::vector<metre_vec3> &points) {
+		set_points(ctx,
+				   recorder,
 				   &points[0], points.size());
 	}
 	template <int N>
-	void set_points(gl::command_recorder &recorder, 
-					const std::array<glm::vec3, N> &points) {
-		set_points(recorder,
+	void set_points(const ste_context &ctx,
+					gl::command_recorder &recorder,
+					const std::array<metre_vec3, N> &points) {
+		set_points(ctx,
+				   recorder,
 				   &points[0], points.size());
 	}
 };
@@ -72,8 +79,8 @@ public:
 class polygonal_light_onesided : public polygonal_light {
 public:
 	polygonal_light_onesided(const rgb &color,
-							 float intensity,
-							 const glm::vec3 &position,
+							 cd_t intensity,
+							 const metre_vec3 &position,
 							 shaped_light_points_storage_info storage_info) : polygonal_light(light_type::PolygonOnesided,
 																							  color, intensity, position,
 																							  storage_info) {}
@@ -83,8 +90,8 @@ public:
 class polygonal_light_twosided : public polygonal_light {
 public:
 	polygonal_light_twosided(const rgb &color,
-							 float intensity,
-							 const glm::vec3 &position,
+							 cd_t intensity,
+							 const metre_vec3 &position,
 							 shaped_light_points_storage_info storage_info) : polygonal_light(light_type::PolygonTwosided,
 																							  color, intensity, position,
 																							  storage_info) {}

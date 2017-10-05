@@ -92,7 +92,7 @@ auto inline format_elements(const format &format) {
 *	@throws	std::runtime_error	If format not found
 */
 auto inline format_texel_size(const format &format) {
-	return format_id(format).block_bytes;
+	return byte_t(format_id(format).block_bytes);
 }
 
 /**

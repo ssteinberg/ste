@@ -38,10 +38,10 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 					  Surface &&surface,
 					  image_layout final_layout,
 					  ste_queue_selector<selector_policy> &&final_queue_selector,
-					  std::uint32_t initial_layer,
-					  std::uint32_t initial_level,
-					  std::uint32_t max_layer,
-					  std::uint32_t max_level,
+					  layers_t initial_layer,
+					  levels_t initial_level,
+					  layers_t max_layer,
+					  levels_t max_level,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
 					  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	static_assert(resource::is_surface_v<Surface>);
@@ -73,12 +73,12 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		const auto bytes = surface.bytes();
 
 		// Calculate layers and levels to copy
-		auto layers = std::min(static_cast<std::uint32_t>(surface.layers()),
-							   image.get_layers());
-		layers = std::min(layers, max_layer + 1);
-		auto mips = std::min(static_cast<std::uint32_t>(surface.levels()),
-							 image.get_mips());
-		mips = std::min(mips, max_level + 1);
+		const auto layers = layers_t(std::min(std::min(surface.layers(),
+													   image.get_layers()),
+											  max_layer + 1_layers));
+		const auto mips = levels_t(std::min(std::min(surface.levels(),
+													 image.get_mips()),
+											max_level + 1_mip));
 
 		// Validate size
 		if (surface_extent != image_extent) {
@@ -87,7 +87,7 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 
 		// Create staging buffer
 		using staging_buffer_t = device_buffer<block_type, device_resource_allocation_policy_host_visible>;
-		const auto blocks = surface.blocks_layer() * layers;
+		const auto blocks = surface.blocks_layer() * static_cast<std::uint64_t>(layers);
 		staging_buffer_t staging_buffer(ctx,
 										blocks,
 										gl::buffer_usage::transfer_src,
@@ -105,15 +105,15 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 
 		// Create regions to copy
 		lib::vector<VkBufferImageCopy> regions;
-		regions.reserve((layers - initial_layer) * (mips - initial_level));
-		for (std::uint32_t l = initial_layer; l < layers; ++l) {
-			for (std::uint32_t m = initial_level; m < mips; ++m) {
+		regions.reserve(static_cast<std::size_t>(layers - initial_layer) * static_cast<std::size_t>(mips - initial_level));
+		for (auto l = initial_layer; l < layers; ++l) {
+			for (auto m = initial_level; m < mips; ++m) {
 				auto extent = surface.extent(m);
 				auto buffer_offset = surface.offset_blocks(l, m);
 
 				VkBufferImageCopy copy_region = {
 					buffer_offset, 0, 0,
-					{ aspect, m, l, 1 },
+					{ aspect, static_cast<std::uint32_t>(m), static_cast<std::uint32_t>(l), 1 },
 					{ 0, 0, 0 },
 					{ 1, 1, 1 }
 				};
@@ -209,17 +209,17 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 				resource::surface_1d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				levels_t initial_level = 0_mip,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
 										 std::move(final_queue_selector),
-										 0,
+										 0_layer,
 										 initial_level,
-										 std::numeric_limits<std::uint32_t>::max() - 1,
+										 all_layers,
 										 max_level,
 										 std::move(wait_semaphores),
 										 std::move(signal_semaphores));
@@ -240,10 +240,10 @@ auto fill_image(const device_image<1, allocation_policy> &image,
 				resource::surface_1d_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_layer = 0,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				layers_t initial_layer = 0_layer,
+				levels_t initial_level = 0_mip,
+				layers_t max_layer = all_layers,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
@@ -273,17 +273,17 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				resource::surface_2d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				levels_t initial_level = 0_mip,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
 										 std::move(final_queue_selector),
-										 0,
+										 0_layer,
 										 initial_level,
-										 std::numeric_limits<std::uint32_t>::max() - 1,
+										 all_layers,
 										 max_level,
 										 std::move(wait_semaphores),
 										 std::move(signal_semaphores));
@@ -304,10 +304,10 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				resource::surface_2d_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_layer = 0,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				layers_t initial_layer = 0_layer,
+				levels_t initial_level = 0_mip,
+				layers_t max_layer = all_layers,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
@@ -337,17 +337,17 @@ auto fill_image(const device_image<3, allocation_policy> &image,
 				resource::surface_3d<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				levels_t initial_level = 0_mip,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
 										 std::move(surface),
 										 final_layout,
 										 std::move(final_queue_selector),
-										 0,
+										 0_layer,
 										 initial_level,
-										 std::numeric_limits<std::uint32_t>::max() - 1,
+										 all_layers,
 										 max_level,
 										 std::move(wait_semaphores),
 										 std::move(signal_semaphores));
@@ -368,10 +368,10 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				resource::surface_cubemap<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_layer = 0,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				layers_t initial_layer = 0_layer,
+				levels_t initial_level = 0_mip,
+				layers_t max_layer = all_layers,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
@@ -401,10 +401,10 @@ auto fill_image(const device_image<2, allocation_policy> &image,
 				resource::surface_cubemap_array<format> &&surface,
 				image_layout final_layout,
 				ste_queue_selector<selector_policy> &&final_queue_selector,
-				std::uint32_t initial_layer = 0,
-				std::uint32_t initial_level = 0,
-				std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
-				std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
+				layers_t initial_layer = 0_layer,
+				levels_t initial_level = 0_mip,
+				layers_t max_layer = all_layers,
+				levels_t max_level = all_mips,
 				lib::vector<wait_semaphore> &&wait_semaphores = {},
 				lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::fill_image_array<>(image,
@@ -440,10 +440,10 @@ auto fill_image(const device_image<dimensions, allocation_policy> &image,
 										 std::move(surface),
 										 final_layout,
 										 std::move(final_queue_selector),
-										 0,
-										 0,
-										 std::numeric_limits<std::uint32_t>::max() - 1,
-										 std::numeric_limits<std::uint32_t>::max() - 1,
+										 0_layer,
+										 0_mip,
+										 all_layers,
+										 all_mips,
 										 std::move(wait_semaphores),
 										 std::move(signal_semaphores));
 }

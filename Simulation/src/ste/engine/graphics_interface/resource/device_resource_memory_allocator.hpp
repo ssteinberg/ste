@@ -38,7 +38,7 @@ struct device_resource_memory_allocator {
 	}
 
 	auto operator()(const ste_gl_device_memory_allocator &allocator,
-					std::uint64_t size,
+					byte_t size,
 					memory_requirements memory_requirements) const {
 		if (allocation_policy().requires_dedicated_allocation()) {
 			// If allocation policy demands a dedicated allocation, override memory requirements settings

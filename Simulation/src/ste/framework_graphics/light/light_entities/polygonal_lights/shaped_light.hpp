@@ -29,9 +29,9 @@ protected:
 protected:
 	shaped_light(light_type type,
 				 const rgb &color,
-				 float intensity,
-				 const glm::vec3 &position,
-				 shaped_light_points_storage_info storage_info) : light(color, intensity, .0f),
+				 cd_t intensity,
+				 const metre_vec3 &position,
+				 shaped_light_points_storage_info storage_info) : light(color, intensity, 0_m),
 		storage_info(storage_info) {
 		assert(static_cast<std::uint32_t>(type) & light_type_shape_bit && "Type is not a shaped light!");
 
@@ -42,9 +42,9 @@ protected:
 
 	void set_points(const ste_context &ctx,
 					gl::command_recorder &recorder,
-					const glm::vec3 *points,
+					const metre_vec3 *points,
 					std::size_t size,
-					float surface_area,
+					square_metre surface_area,
 					const glm::vec3 &n) {
 		lib::vector<shaped_light_point_type> points_copy;
 		float r = .0f;
@@ -53,11 +53,11 @@ protected:
 			points_copy.reserve(size);
 
 			// Center points and compute radius
-			glm::vec3 center = { 0,0,0 };
+			metre_vec3 center = { 0_m, 0_m, 0_m };
 			for (auto *p = points; p != points + size; ++p)
-				center += glm::vec3{ p->x, p->y, p->z } / static_cast<float>(size);
+				center += metre_vec3{ p->x, p->y, p->z } / static_cast<float>(size);
 			for (auto *p = points; p != points + size; ++p)
-				r = glm::max(r, glm::length(*p - center));
+				r = glm::max(r, glm::length((*p - center).v()));
 
 			for (auto *p = points; p != points + size; ++p) {
 				const auto t = *p - center;
@@ -93,12 +93,12 @@ protected:
 			recorder << storage_info.storage->insert_cmd(ctx, points_copy, idx);
 		}
 
-		const float sqrt_surface_area = glm::sqrt(surface_area);
+		const float sqrt_surface_area = glm::sqrt(static_cast<float>(surface_area));
 
 		// Update descriptor
 		descriptor.set_polygonal_light_points(static_cast<std::uint8_t>(size),
 											  static_cast<std::uint32_t>(idx));
-		descriptor.radius = r;
+		descriptor.radius = metre(r);
 		update_effective_range(sqrt_surface_area);
 		Base::notify();
 	}
@@ -113,11 +113,11 @@ public:
 
 	std::uint32_t get_points_count() const { return descriptor.get_polygonal_light_point_count(); }
 
-	void set_position(const glm::vec3 &p) {
+	void set_position(const metre_vec3 &p) {
 		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
 		Base::notify();
 	}
-	glm::vec3 get_position() const override { return{ descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
+	metre_vec3 get_position() const override { return{ metre(descriptor.position.x), metre(descriptor.position.y), metre(descriptor.position.z) }; }
 };
 
 }

@@ -15,13 +15,13 @@ namespace vk {
 class vk_push_constant_layout {
 private:
 	VkShaderStageFlags stage;
-	std::uint32_t size;
-	std::uint32_t offset;
+	byte_t size;
+	byte_t offset;
 
 public:
 	vk_push_constant_layout(const VkShaderStageFlags &stage,
-							std::uint32_t size,
-							std::uint32_t offset = 0)
+							byte_t size,
+							byte_t offset = 0_B)
 		: stage(stage), size(size), offset(offset)
 	{}
 
@@ -33,8 +33,8 @@ public:
 	auto get_layout() const {
 		VkPushConstantRange layout = {};
 		layout.stageFlags = stage;
-		layout.size = size;
-		layout.offset = offset;
+		layout.size = static_cast<std::uint32_t>(size);
+		layout.offset = static_cast<std::uint32_t>(offset);
 
 		return layout;
 	}

@@ -56,11 +56,11 @@ private:
 		// Convert surface to target image_format
 		auto surface = surface_convert::convert<image_format>(std::move(source));
 
-		auto layers = static_cast<std::uint32_t>(surface.layers());
+		auto layers = surface.layers();
 		auto extent = surface.extent();
 
-		auto m = static_cast<std::uint32_t>(surface.levels());
-		auto mip_levels = generate_mipmaps ? static_cast<std::uint32_t>(surface_utilities::max_levels(extent)) : m;
+		auto m = surface.levels();
+		auto mip_levels = generate_mipmaps ? surface_utilities::max_levels(extent) : m;
 
 		gl::device_image_flags flags = gl::device_image_flags::none;
 		if (!format_properties.optimal_tiling)	flags = flags | gl::device_image_flags::linear_tiling;
@@ -182,8 +182,8 @@ private:
 	                                        const gl::image_usage& usage,
 	                                        const gl::image_layout& layout,
 	                                        const gl::image_extent_type_t<dimensions>& extent,
-	                                        std::uint32_t layers,
-	                                        std::uint32_t levels,
+	                                        layers_t layers,
+	                                        levels_t levels,
 	                                        bool supports_cube_views) {
 		// Create image from surface
 		return ste_resource<gl::device_image<dimensions, image_allocation_policy>, resource_deferred_policy>(
@@ -506,8 +506,8 @@ public:
 	                           const gl::image_layout& layout,
 							   const lib::string &name,
 	                           const gl::image_extent_type_t<1>& extent,
-	                           std::uint32_t layers = 1,
-	                           std::uint32_t levels = 1) {
+	                           layers_t layers = 1_layers,
+	                           levels_t levels = 1_mips) {
 		return _image_empty_async_internal<1, image_format, resource_deferred_policy>(ctx,
 																					  name,
 		                                                                              usage,
@@ -538,8 +538,8 @@ public:
 								   const gl::image_layout& layout,
 								   const lib::string &name,
 								   const gl::image_extent_type_t<2>& extent,
-								   std::uint32_t layers = 1,
-								   std::uint32_t levels = 1) {
+								   layers_t layers = 1_layers,
+								   levels_t levels = 1_mips) {
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
 																					  name,
 																					  usage,
@@ -571,7 +571,7 @@ public:
 										const lib::string &name,
 										std::uint32_t extent,
 										std::uint32_t cubemap_layers,
-										std::uint32_t levels = 1) {
+										levels_t levels = 1_mips) {
 		const auto layers = cubemap_layers * 6;
 		return _image_empty_async_internal<2, image_format, resource_deferred_policy>(ctx,
 																					  name,
@@ -603,8 +603,8 @@ public:
 	                           const gl::image_layout& layout,
 							   const lib::string &name,
 	                           const gl::image_extent_type_t<3>& extent,
-	                           std::uint32_t layers = 1,
-	                           std::uint32_t levels = 1) {
+	                           layers_t layers = 1_layers,
+	                           levels_t levels = 1_mips) {
 		return _image_empty_async_internal<3, image_format, resource_deferred_policy>(ctx,
 																					  name,
 		                                                                              usage,

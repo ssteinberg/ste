@@ -67,13 +67,13 @@ public:
 
 private:
 	extent_type surface_extent;
-	std::size_t surface_levels;
-	std::size_t surface_layers;
+	levels_t surface_levels;
+	layers_t surface_layers;
 
 protected:
 	surface_base(const extent_type &extent,
-				 std::size_t levels,
-				 std::size_t layers)
+				 levels_t levels,
+				 layers_t layers)
 		: surface_extent(extent), surface_levels(levels), surface_layers(layers)
 	{
 		assert(layers > 0);
@@ -103,7 +103,7 @@ public:
 	*	@param	layer			Surface layer
 	*	@param	level			Surface level
 	*/
-	block_type* data_at(std::size_t layer, std::size_t level = 0) {
+	block_type* data_at(layers_t layer, levels_t level = 0_mips) {
 		return data() + offset_blocks(layer, level);
 	}
 	/**
@@ -112,7 +112,7 @@ public:
 	*	@param	layer			Surface layer
 	*	@param	level			Surface level
 	*/
-	const block_type* data_at(std::size_t layer, std::size_t level = 0) const {
+	const block_type* data_at(layers_t layer, levels_t level = 0_mips) const {
 		return data() + offset_blocks(layer, level);
 	}
 
@@ -121,7 +121,7 @@ public:
 	*
 	*	@param	level	Surface level
 	*/
-	auto extent(std::size_t level = 0) const {
+	auto extent(levels_t level = 0_mips) const {
 		return surface_utilities::extent(surface_extent,
 										 level);
 	}
@@ -130,7 +130,7 @@ public:
 	*
 	*	@param	level	Surface level
 	*/
-	auto extent_in_blocks(std::size_t level = 0) const {
+	auto extent_in_blocks(levels_t level = 0_mips) const {
 		return surface_utilities::extent_in_blocks<format>(surface_extent,
 														   level);
 	}
@@ -169,7 +169,7 @@ public:
 	/**
 	*	@brief	Returns the block count in a single surface level
 	*/
-	auto blocks(std::size_t level) const {
+	auto blocks(levels_t level) const {
 		return surface_utilities::blocks<format>(surface_extent, 
 												 level);
 	}
@@ -188,7 +188,7 @@ public:
 	*	@param	layer			Surface layer
 	*	@param	level			Surface level
 	*/
-	std::size_t offset_blocks(std::size_t layer, std::size_t level) const {
+	std::size_t offset_blocks(layers_t layer, levels_t level) const {
 		return surface_utilities::offset_blocks<format>(surface_extent, 
 														levels(),
 														layer,
@@ -216,7 +216,7 @@ public:
 	*	
 	*	@param	level			Surface level
 	*/
-	auto bytes(std::size_t level) const {
+	auto bytes(levels_t level) const {
 		return surface_utilities::bytes<format>(surface_extent,
 												level);
 	}

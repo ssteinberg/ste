@@ -27,7 +27,7 @@ public:
 	                         std::uint64_t location,
 	                         vector* v) {
 		// Calculate the maximal amount of elements possible to update in a single update buffer command
-		auto elements_per_chunk = cmd_update_buffer::maximal_update_bytes / sizeof(typename vector::value_type);
+		auto elements_per_chunk = static_cast<std::size_t>(cmd_update_buffer::maximal_update_bytes) / sizeof(typename vector::value_type);
 
 		// Create update buffer commands
 		for (std::size_t e = 0; e < size; e += elements_per_chunk, location += elements_per_chunk) {

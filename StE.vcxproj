@@ -713,6 +713,7 @@
     </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\atmospherics\atmospherics_lut_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material_lut_storage\material_lut_storage.cpp" />
+    <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\kelvin.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\renderers\primary\primary_renderer_buffers.cpp" />
@@ -776,6 +777,8 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\material\material_textures_storage\material_textures_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\quad.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\mesh\sphere.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\kelvin.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\rgb.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\srgb.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\hdr_dof_postprocess_storage.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\steps\hdr_adaptation_fragment.hpp" />
@@ -1149,9 +1152,6 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\material.cpp" />
     <ClCompile Include="Simulation\src\ste\framework_graphics\material\layer\material_layer_descriptor.cpp" />
-    <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
     </ClCompile>
@@ -1266,8 +1266,6 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\disney_diffuse\disney_diffuse.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\improved_oren_nayar_diffuse.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\radiance\BxDFs\oren_nayar_diffuse\oren_nayar_diffuse.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\Kelvin.hpp" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\RGB.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\spectrum.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\xyY.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\radiometry\spectral\XYZ.hpp" />

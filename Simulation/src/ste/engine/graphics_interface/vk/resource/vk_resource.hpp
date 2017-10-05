@@ -21,7 +21,7 @@ public:
 	using allocation_t = device_memory_heap::allocation_type;
 
 protected:
-	virtual void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) = 0;
+	virtual void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) = 0;
 
 public:
 	virtual memory_requirements get_memory_requirements() const = 0;

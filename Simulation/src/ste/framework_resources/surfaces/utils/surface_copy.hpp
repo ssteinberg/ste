@@ -15,11 +15,11 @@ namespace resource {
 class surface_copy {
 	struct _impl {
 		template <typename Target>
-		static auto create_target_surface(const typename Target::extent_type &extent, std::size_t levels, std::size_t layers) {
+		static auto create_target_surface(const typename Target::extent_type &extent, levels_t levels, layers_t layers) {
 			if constexpr (gl::image_has_arrays_v<Target::surface_image_type()>)
 				return Target(extent, layers, levels);
 			else {
-				assert(layers == 1);
+				assert(layers == 1_layers);
 				return Target(extent, levels);
 			}
 		}
@@ -37,7 +37,7 @@ public:
 		auto extent = surface.extent();
 		auto levels = surface.levels();
 		auto layers = surface.layers();
-		Surface target = _impl::create_target_surface<Surface>(extent, layers, levels);
+		Surface target = _impl::create_target_surface<Surface>(extent, levels, layers);
 
 		auto bytes = surface.bytes();
 		assert(target.bytes() == surface.bytes());

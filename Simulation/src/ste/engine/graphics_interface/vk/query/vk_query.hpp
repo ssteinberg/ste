@@ -35,9 +35,26 @@ public:
 	vk_query(const vk_query &) = delete;
 	vk_query &operator=(const vk_query &) = delete;
 
-	lib::string read_results(std::size_t data_size,
+	/*
+	 *	@brief	Attempts to read query result.
+	 *			If query is unavailable, returns empty data.
+	 *			
+	 *	@return	Query data if available, empty data otherwise.
+	 *	
+	 *	@throws	vk_exception	On Vulkan exception
+	 */
+	lib::string read_results(byte_t data_size,
 							 VkQueryResultFlags flags = 0) const {
-		return pool.read_results(data_size, index, 1, data_size, flags);
+		lib::string data;
+		data.resize(static_cast<std::size_t>(data_size));
+		if (!pool.read_results(data.data(),
+							   index, 1,
+							   data_size,
+							   flags)) {
+			return lib::string{};
+		}
+
+		return data;
 	}
 
 	auto& get_pool() const { return pool; }

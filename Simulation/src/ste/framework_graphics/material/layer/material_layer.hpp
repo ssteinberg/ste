@@ -57,8 +57,8 @@ private:
 
 private:
 	auto create_scalar_map(float scalar) {
-		auto surface = resource::surface_2d<gl::format::r32_sfloat>({ 1, 1 }, 1);
-		surface[0][0].r() = scalar;
+		auto surface = resource::surface_2d<gl::format::r32_sfloat>({ 1, 1 });
+		surface[0_mip][0].r() = scalar;
 	
 		auto image = resource::surface_factory::image_from_surface_2d<gl::format::r32_sfloat>(ctx,
 																							  std::move(surface),

@@ -166,7 +166,7 @@ ste::task_future<void> model_factory::process_model_mesh(const ste_context &ctx,
 	vbo_data.reserve(vertices.size());
 	for (auto &v : vertices) {
 		graphics::object_vertex_data vo;
-		vo.p() = v.p;
+		vo.p() = { metre(v.p.x), metre(v.p.y), metre(v.p.z) };
 		vo.uv() = v.uv;
 
 		// Gram-Schmidt orthogonalization process

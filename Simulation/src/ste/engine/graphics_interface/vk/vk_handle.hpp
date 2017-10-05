@@ -30,12 +30,27 @@ struct vk_handle<4> {
 	std::uint64_t handle;
 	vk_handle(std::uint64_t handle) : handle(handle) {}
 	operator std::uint64_t() const { return handle; }
+
+	vk_handle(vk_handle&&) = default;
+	vk_handle(const vk_handle &) = default;
+	vk_handle &operator=(vk_handle&&) = default;
+	vk_handle &operator=(const vk_handle &) = default;
+
+	bool operator<(vk_handle rhs) const { return handle < rhs.handle; }
 };
 template <>
 struct vk_handle<8> {
 	std::uint64_t handle;
+	vk_handle(std::uint64_t handle) : handle(handle) {}
 	vk_handle(const void* const handle) : handle(reinterpret_cast<std::uint64_t>(handle)) {}
 	operator std::uint64_t() const { return handle; }
+
+	vk_handle(vk_handle&&) = default;
+	vk_handle(const vk_handle &) = default;
+	vk_handle &operator=(vk_handle&&) = default;
+	vk_handle &operator=(const vk_handle &) = default;
+
+	bool operator<(vk_handle rhs) const { return handle < rhs.handle; }
 };
 
 }
@@ -47,4 +62,12 @@ using vk_handle = _detail::vk_handle<sizeof(void*)>;
 }
 
 }
+}
+
+namespace std {
+template <int S> struct hash<ste::gl::vk::_detail::vk_handle<S>> {
+	size_t operator()(const ste::gl::vk::_detail::vk_handle<S> &x) const {
+		return std::hash<std::uint64_t>()(x);
+	}
+};
 }

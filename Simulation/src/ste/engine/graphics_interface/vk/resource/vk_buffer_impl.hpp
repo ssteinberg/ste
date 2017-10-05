@@ -26,11 +26,11 @@ class vk_buffer_impl : public vk_buffer<host_allocator>, public vk_resource<host
 	using Base = vk_buffer<host_allocator>;
 
 private:
-	std::uint32_t element_size;
+	byte_t element_size;
 	std::uint64_t count;
 
 protected:
-	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
+	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) override {
 		const vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
 		if (!res) {
 			throw vk_exception(res);
@@ -39,7 +39,7 @@ protected:
 
 public:
 	vk_buffer_impl(const vk_logical_device<host_allocator> &device,
-				   std::uint32_t element_size,
+				   byte_t element_size,
 				   std::uint64_t count,
 				   const VkBufferUsageFlags &usage,
 				   const char *name)
@@ -80,7 +80,7 @@ public:
 	}
 
 	std::uint64_t get_elements_count() const override final { return count; }
-	std::uint32_t get_element_size_bytes() const override final { return element_size; };
+	byte_t get_element_size_bytes() const override final { return element_size; };
 	bool is_sparse() const override final { return sparse; };
 };
 

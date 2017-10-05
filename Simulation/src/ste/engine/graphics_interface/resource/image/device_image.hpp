@@ -58,8 +58,8 @@ public:
 				 const format &image_format,
 				 const extent_type &extent,
 				 const image_usage &usage,
-				 std::uint32_t mips,
-				 std::uint32_t layers,
+				 levels_t mips,
+				 layers_t layers,
 				 const char *name,
 				 device_image_flags flags = device_image_flags::none)
 		: Base(ctx,

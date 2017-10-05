@@ -14,7 +14,7 @@ namespace gl {
 
 class cmd_update_buffer : public command {
 public:
-	static constexpr std::size_t maximal_update_bytes = 65536;
+	static constexpr auto maximal_update_bytes = 64_kB;
 
 private:
 	VkBuffer buffer;

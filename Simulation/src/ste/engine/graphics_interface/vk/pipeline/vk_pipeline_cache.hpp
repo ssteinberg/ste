@@ -154,7 +154,7 @@ public:
 
 		{
 			// Read data size
-			vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, nullptr);
+			const vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, nullptr);
 			if (!res) {
 				throw vk_exception(res);
 			}
@@ -163,7 +163,7 @@ public:
 		{
 			// Read data
 			data.resize(size);
-			vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, &data[0]);
+			const vk_result res = vkGetPipelineCacheData(device.get(), *this, &size, &data[0]);
 			if (!res) {
 				throw vk_exception(res);
 			}

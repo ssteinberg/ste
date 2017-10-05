@@ -58,7 +58,7 @@ private:
 
 	std::function<void(const glm::ivec2 &)> user_gui_lambda;
 
-	glm::vec3 camera_position;
+	metre_vec3 camera_position;
 	lib::vector<float> frame_times;
 
 	std::array<std::atomic_flag, 3> pointer_buttons_pressed_signals{ 0, 0, 0 };
@@ -147,7 +147,7 @@ public:
 	/*
 	 *	@brief	Updates current camera position for debug display
 	 */
-	void set_camera_position(const glm::vec3 &p) {
+	void set_camera_position(metre_vec3 p) {
 		camera_position = p;
 	}
 };
