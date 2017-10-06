@@ -100,7 +100,7 @@ private:
 		}
 		else {
 			// Non-struct variable, insert into variables in correct position
-			auto it = std::lower_bound(variables.begin(), variables.end(), offset, [](const auto &v, std::uint32_t o) {
+			auto it = std::lower_bound(variables.begin(), variables.end(), offset, [](const auto &v, byte_t o) {
 				return v.offset < o;
 			});
 
@@ -183,7 +183,7 @@ private:
 
 		// And copy to push constants data
 		auto offset = constant->offset();
-		*reinterpret_cast<S*>(data.data() + offset) = t;
+		*reinterpret_cast<S*>(data.data() + static_cast<std::size_t>(offset)) = t;
 	}
 
 public:

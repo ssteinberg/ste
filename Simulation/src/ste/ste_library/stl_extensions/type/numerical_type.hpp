@@ -21,8 +21,8 @@ protected:
 public:
 	constexpr numerical_type() = default;
 	explicit constexpr numerical_type(value_type v) noexcept : val(v) {}
-	template <typename S, typename = std::enable_if_t<std::is_convertible_v<S, value_type>>>
-	explicit constexpr numerical_type(S v) noexcept : val(static_cast<value_type>(v)) {}
+	template <typename S, typename = std::enable_if_t<std::is_constructible_v<value_type, S>>>
+	explicit constexpr numerical_type(S v) noexcept : val(value_type(v)) {}
 
 	numerical_type(numerical_type&&) = default;
 	numerical_type(const numerical_type&) = default;
@@ -111,7 +111,9 @@ public:
 	template <typename V>
 	constexpr friend numerical_type operator*(numerical_type lhs, V rhs) noexcept { return lhs *= rhs; }
 	template <typename V>
-	constexpr friend numerical_type operator*(V lhs, numerical_type rhs) noexcept { return lhs *= rhs; }
+	constexpr friend numerical_type operator*(V lhs, numerical_type rhs) noexcept {
+		return numerical_type(lhs * rhs.val);
+	}
 	template <typename V>
 	constexpr friend numerical_type operator/(numerical_type lhs, V rhs) noexcept { return lhs /= rhs; }
 

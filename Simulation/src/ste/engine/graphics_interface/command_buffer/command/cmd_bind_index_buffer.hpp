@@ -26,11 +26,11 @@ public:
 						  std::uint64_t offset = 0)
 		: buffer(buffer.get_buffer_handle()),
 		  offset(offset), index_type(VK_INDEX_TYPE_UINT32) {
-		if (buffer.get_element_size_bytes() == 2) {
+		if (buffer.get_element_size_bytes() == 2_B) {
 			index_type = VK_INDEX_TYPE_UINT16;
 			this->offset *= 2;
 		}
-		else if (buffer.get_element_size_bytes() == 4) {
+		else if (buffer.get_element_size_bytes() == 4_B) {
 			index_type = VK_INDEX_TYPE_UINT32;
 			this->offset *= 4;
 		}

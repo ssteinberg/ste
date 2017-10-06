@@ -715,7 +715,7 @@ int main()
 	auto light0 = create_sphere_light_object(ctx, &scene, 2000_K, 2000_cd, 2_m, light0_pos, materials, material_layers);
 	auto light1 = create_sphere_light_object(ctx, &scene, 7000_K, 8000_cd, 4_m, light1_pos, materials, material_layers);
 
-	const metre_vec3 sun_direction = metre_vec3(glm::normalize(glm::vec3{ 0.f, -1.f, 0.f }));
+	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
 	auto sun_light = scene.properties().lights_storage().allocate_directional_light(5770_K,
 																					1.88e+9_cd, 1496e+5_km, 695e+3_km, sun_direction);
 

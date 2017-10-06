@@ -31,7 +31,10 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) override {
-		const vk_result res = vkBindBufferMemory(Base::device.get(), *this, memory, offset);
+		const vk_result res = vkBindBufferMemory(Base::device.get(), 
+												 *this, 
+												 memory, 
+												 static_cast<std::size_t>(offset));
 		if (!res) {
 			throw vk_exception(res);
 		}

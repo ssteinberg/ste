@@ -46,8 +46,8 @@ public:
 	camera() = default;
 
 	camera(const projection_model_t &proj)
-		: camera_position({ 0_m, 0_m, 0_m }),
-		  camera_look_at({ 0_m, 0_m, -1_m }),
+		: camera_position{ 0_m, 0_m, 0_m },
+		  camera_look_at{ 0_m, 0_m, -1_m },
 		  camera_direction({ 0,0,-1 }),
 		  camera_up({ 0,1,0 }),
 		  camera_speed(1),

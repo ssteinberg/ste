@@ -38,7 +38,7 @@ private:
 	struct ctor {};
 
 public:
-	using bind_range_t = range<std::uint64_t>;
+	using bind_range_t = range<std::size_t>;
 
 	/*
 	 *	@brief	Result returned from allocate_sparse_memory.
@@ -63,28 +63,28 @@ private:
 	using resource_t = vk::vk_buffer_sparse<>;
 	using alloc_t = device_memory_heap::allocation_type;
 
-	static constexpr auto element_size = static_cast<bind_range_t::value_type>(sizeof(T));
+	static constexpr auto element_size = byte_t(sizeof(T));
 
 private:
 	alias<const ste_context> ctx;
 	resource_t resource;
 	memory_requirements resource_memory_requirements{};
 
-	lib::flat_map<bind_range_t, alloc_t> bound_ranges;
-	range_list<std::uint64_t> ranges_to_unbind;
+	lib::flat_map<range<byte_t>, alloc_t> bound_ranges;
+	range_list<byte_t> ranges_to_unbind;
 	std::mutex bound_ranges_mutex;
 
 public:
 	auto atom_size() const {
-		return glm::max<std::size_t>(resource_memory_requirements.alignment, 
-									 element_size);
+		return std::max(byte_t(resource_memory_requirements.alignment),
+						element_size);
 	}
 
-	bind_range_t align(const bind_range_t &range) const {
-		auto alignment = static_cast<std::size_t>(atom_size());
+	range<byte_t> align(const bind_range_t &r) const {
+		auto alignment = atom_size();
 
-		bind_range_t ret = range * element_size;
-		return ret.align(alignment);
+		const bind_range_t ret = r * static_cast<std::size_t>(element_size);
+		return range<byte_t>(ret.align(static_cast<std::size_t>(alignment)));
 	}
 
 private:
@@ -108,7 +108,7 @@ private:
 		}
 
 		// Attempt to unbind allocations
-		auto pred = [](const std::pair<bind_range_t, alloc_t> &lhs, const bind_range_t &rhs) {
+		auto pred = [](const std::pair<range<byte_t>, alloc_t> &lhs, const range<byte_t> &rhs) {
 			return lhs.first < rhs;
 		};
 		auto it_unbind_ranges = ranges_to_unbind.begin();
@@ -141,8 +141,8 @@ private:
 			return memory_binds;
 
 		// Accumulate bind ranges
-		range_list<std::uint64_t> ranges_to_bind;
-		std::uint64_t bind_range_top = 0;
+		range_list<byte_t> ranges_to_bind;
+		auto bind_range_top = 0_B;
 		for (auto &r : bind_regions) {
 			const auto aligned_range = align(r);
 
@@ -155,7 +155,8 @@ private:
 
 		// Remove already bound ranges
 		{
-			auto it = bound_ranges.lower_bound(bind_regions.front());
+			const auto r = bind_regions.front();
+			auto it = bound_ranges.lower_bound(range<byte_t>(r));
 			if (it != bound_ranges.begin()) it = std::prev(it);
 			for (; it != bound_ranges.end() && it->first.start < bind_range_top; ++it)
 				ranges_to_bind.remove(it->first);
@@ -273,7 +274,7 @@ public:
 	auto &parent_context() const { return ctx.get(); }
 
 	std::uint64_t get_elements_count() const override final { return this->get().get_elements_count(); }
-	std::uint32_t get_element_size_bytes() const override final { return element_size; };
+	byte_t get_element_size_bytes() const override final { return element_size; };
 	bool is_sparse() const override final { return true; };
 };
 

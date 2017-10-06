@@ -33,8 +33,8 @@ public:
 		if (this->ranges.size() == 0) {
 			const VkBufferCopy c = {
 				0, 0,
-				std::min(src_buffer.get_elements_count() * src_buffer.get_element_size_bytes(),
-						 dst_buffer.get_elements_count() * dst_buffer.get_element_size_bytes())
+				static_cast<std::size_t>(std::min(src_buffer.get_elements_count() * src_buffer.get_element_size_bytes(),
+												  dst_buffer.get_elements_count() * dst_buffer.get_element_size_bytes()))
 			};
 			this->ranges.push_back(c);
 		}

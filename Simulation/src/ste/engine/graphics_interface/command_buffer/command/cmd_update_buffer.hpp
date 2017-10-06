@@ -33,7 +33,7 @@ public:
 		: buffer(buffer->get_buffer_handle()),
 		  offset(buffer.offset_bytes()),
 		  data(std::forward<Blob>(data)) {
-		assert(this->data.size() <= buffer.range_bytes());
+		assert(byte_t(this->data.size()) <= buffer.range_bytes());
 	}
 
 	virtual ~cmd_update_buffer() noexcept {}

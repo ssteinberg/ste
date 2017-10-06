@@ -15,6 +15,8 @@ struct range {
 	T length{ static_cast<T>(0) };
 
 	range() = default;
+	template <typename S, typename = std::enable_if_t<std::is_constructible_v<T, S>>>
+	explicit range(range<S> r) : start(T(r.start)), length(T(r.length)) {}
 	range(const T &start, const T &length) : start(start), length(length) {}
 
 	/*
@@ -68,16 +70,27 @@ struct range {
 		return r < *this;
 	}
 
-	range& operator/=(const T &t) {
+	template <typename S>
+	range& operator/=(const S &t) {
 		start /= t;
 		length /= t;
 		return *this;
 	}
 
-	range& operator*=(const T &t) {
+	template <typename S>
+	range& operator*=(const S &t) {
 		start *= t;
 		length *= t;
 		return *this;
+	}
+
+	template <typename S, typename = std::enable_if_t<std::is_convertible_v<T, S>>>
+	explicit operator range<S>() const {
+		range<S> r;
+		r.start = static_cast<S>(start);
+		r.length = static_cast<S>(length);
+
+		return r;
 	}
 };
 
@@ -91,19 +104,27 @@ bool operator!=(const range<T> &lhs, const range<S> &rhs) {
 	return !(lhs == rhs);
 }
 
-template <typename T>
-auto operator/(const range<T> &lhs, const T &t) {
+template <typename T, typename S>
+auto operator/(const range<T> &lhs, const S &t) {
 	range<T> ret;
 	ret.start = lhs.start / t;
 	ret.length = lhs.length / t;
 	return ret;
 }
 
-template <typename T>
-auto operator*(const range<T> &lhs, const T &t) {
+template <typename T, typename S>
+auto operator*(const range<T> &lhs, const S &t) {
 	range<T> ret;
 	ret.start = lhs.start * t;
 	ret.length = lhs.length * t;
+	return ret;
+}
+
+template <typename T, typename S>
+auto operator*(const S &t, const range<T> &rhs) {
+	range<T> ret;
+	ret.start = t * rhs.start;
+	ret.length = t * rhs.length;
 	return ret;
 }
 

@@ -83,8 +83,8 @@ private:
 		// Command creates a sparse binding batch, submits and creates a dependency
 
 		// (Un)bind sparse, if needed
-		lib::vector<range<std::uint64_t>> unbind_regions;
-		lib::vector<range<std::uint64_t>> bind_regions;
+		lib::vector<range<std::size_t>> unbind_regions;
+		lib::vector<range<std::size_t>> bind_regions;
 		if (new_size > old_size)
 			bind_regions.emplace_back(old_size, new_size - old_size);
 		else if (new_size < old_size)

@@ -72,7 +72,7 @@ private:
 			auto levels = surface.levels();
 			auto layers = surface.layers();
 			auto elements = glm::max(src_traits.elements, gl::format_traits<target_format>::elements);
-			Target target = create_target_surface<Target>(extent, layers, levels);
+			Target target = create_target_surface<Target>(extent, levels, layers);
 
 			// Convert blocks
 			for (auto a = 0_layers; a < layers; ++a) {

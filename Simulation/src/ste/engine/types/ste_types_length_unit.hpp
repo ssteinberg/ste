@@ -39,8 +39,8 @@ private:
 public:
 	constexpr ste_length_type() = default;
 	explicit constexpr ste_length_type(value_type v) noexcept : val(v) {}
-	template <typename S, typename = std::enable_if_t<std::is_convertible_v<S, value_type>>>
-	explicit constexpr ste_length_type(S v) noexcept : val(static_cast<value_type>(v)) {}
+	template <typename S, typename = std::enable_if_t<std::is_constructible_v<value_type, S>>>
+	explicit constexpr ste_length_type(S v) noexcept : val(value_type(v)) {}
 	template <int SrcExp>
 	constexpr ste_length_type(ste_length_type<SrcExp, Power> src) noexcept : val(_convert<Exp, SrcExp>(static_cast<value_type>(src))) {}
 

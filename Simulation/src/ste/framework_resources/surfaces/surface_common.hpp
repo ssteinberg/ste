@@ -76,8 +76,8 @@ protected:
 				 layers_t layers)
 		: surface_extent(extent), surface_levels(levels), surface_layers(layers)
 	{
-		assert(layers > 0);
-		assert(levels > 0);
+		assert(layers > 0_layers);
+		assert(levels > 0_mips);
 	}
 
 public:

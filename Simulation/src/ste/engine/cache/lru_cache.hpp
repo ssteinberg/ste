@@ -117,7 +117,7 @@ public:
 				if (!size)
 					break;
 
-				ts = byte_t(shared_data->total_size.fetch_sub(size, std::memory_order_relaxed));
+				ts = byte_t(shared_data->total_size.fetch_sub(static_cast<std::size_t>(size), std::memory_order_relaxed));
 			}
 
 			if (shared_data->ops.load(std::memory_order_relaxed) > write_index_every_ops) {
@@ -161,7 +161,7 @@ public:
 
 		auto item_size = val_guard->get_size();
 		assert(item_size);
-		shared_data->total_size.fetch_add(item_size, std::memory_order_relaxed);
+		shared_data->total_size.fetch_add(static_cast<std::size_t>(item_size), std::memory_order_relaxed);
 		item_accessed(std::move(val_guard));
 
 		++shared_data->ops;

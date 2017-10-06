@@ -53,10 +53,10 @@ protected:
 		VkImageView view;
 
 		VkImageSubresourceRange range = {};
-		range.baseArrayLayer = base_layer;
-		range.layerCount = layers;
-		range.baseMipLevel = base_mip;
-		range.levelCount = mips;
+		range.baseArrayLayer = static_cast<std::uint32_t>(base_layer);
+		range.layerCount = static_cast<std::uint32_t>(layers);
+		range.baseMipLevel = static_cast<std::uint32_t>(base_mip);
+		range.levelCount = static_cast<std::uint32_t>(mips);
 		range.aspectMask = static_cast<VkImageAspectFlags>(format_aspect(static_cast<format>(image_format)));
 
 		VkImageViewCreateInfo create_info = {};
@@ -99,9 +99,9 @@ public:
 		: vk_image_view(parent,
 						image_format,
 						base_mip,
-						glm::min(parent.get_mips() - base_mip, mips),
+						std::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
-						1 * ctor_array_layers_multiplier,
+						1_layer * ctor_array_layers_multiplier,
 						swizzle,
 						ctor()) {}
 	/**
@@ -123,8 +123,8 @@ public:
 		: vk_image_view(parent,
 						image_format,
 						base_layer,
-						0,
-						glm::min(parent.get_mips(), mips),
+						0_mip,
+						std::min(parent.get_mips(), mips),
 						swizzle) {}
 	/**
 	*	@brief	Ctor for non-array image view.
@@ -167,7 +167,7 @@ public:
 		: vk_image_view(parent,
 						image_format,
 						base_mip,
-						glm::min(parent.get_mips() - base_mip, mips),
+						std::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
 						layers * ctor_array_layers_multiplier,
 						swizzle,

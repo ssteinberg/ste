@@ -199,7 +199,7 @@ public:
 	*/
 	auto blocks_layer() const {
 		std::size_t b = 0;
-		for (std::size_t l = 0; l < levels(); ++l)
+		for (auto l = 0_mip; l < levels(); ++l)
 			b += blocks(l);
 
 		return b;
@@ -210,10 +210,10 @@ public:
 	*/
 	auto offset_blocks(layers_t layer, levels_t level) const {
 		std::size_t level_offset = 0;
-		for (std::size_t l = 0; l < level; ++l)
+		for (auto l = 0_mip; l < level; ++l)
 			level_offset += blocks(l);
 
-		return blocks_layer() * layer + level_offset;
+		return blocks_layer() * static_cast<std::size_t>(layer) + level_offset;
 	}
 
 	/**

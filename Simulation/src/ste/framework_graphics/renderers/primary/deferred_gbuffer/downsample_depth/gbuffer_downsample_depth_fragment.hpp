@@ -38,7 +38,7 @@ private:
         for (auto l = 0_mip; l < levels; ++l)
             level_views.emplace_back(downsampled,
                                      downsampled.get_format(),
-                                     0_layer, l, 1);
+                                     0_layer, l, 1_mip);
         downsampled_depth_levels = std::move(level_views);
 
         // Attach to pipeline

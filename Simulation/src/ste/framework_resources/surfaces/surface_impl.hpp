@@ -129,14 +129,14 @@ protected:
 
 	const_surface(const extent_type& extent,
 				  levels_t levels)
-		: Base(extent, levels, 1),
+		: Base(extent, levels, 1_layer),
 		  storage(Base::blocks_layer() * Base::layers()) {}
 
 public:
 	const_surface(const extent_type& extent,
 				  levels_t levels,
 	              const surface_storage<block_type>& storage)
-		: Base(extent, levels, 1),
+		: Base(extent, levels, 1_layer),
 		  storage(storage) {}
 
 	~const_surface() noexcept {}
