@@ -24,7 +24,7 @@ public:
 template <image_type type>
 class image_view
 	: public image_view_generic,
-	public allow_type_decay<image_view<type>, vk::vk_image_view<type>>
+	  public allow_type_decay<image_view<type>, vk::vk_image_view<type>>
 {
 private:
 	vk::vk_image_view<type> view;

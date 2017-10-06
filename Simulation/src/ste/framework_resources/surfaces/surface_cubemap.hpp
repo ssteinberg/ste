@@ -32,7 +32,7 @@ public:
 	using Base::block_type;
 	using Base::traits;
 
-	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
+	static_assert(byte_t(sizeof(block_type)) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;

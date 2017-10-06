@@ -121,7 +121,7 @@ public:
 	using Base::block_type;
 	using Base::traits;
 
-	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
+	static_assert(byte_t(sizeof(block_type)) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
 
 protected:
@@ -157,7 +157,7 @@ public:
 	*	@param	level_index		Level index
 	*/
 	const_layer_type operator[](levels_t level_index) const {
-		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
+		auto ptr = &data()[Base::offset_blocks(0_layer, level_index)];
 		return const_layer_type(Base::extent(),
 		                        Base::block_extent(),
 		                        ptr,

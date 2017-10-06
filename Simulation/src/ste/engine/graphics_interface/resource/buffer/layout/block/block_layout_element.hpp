@@ -47,12 +47,12 @@ struct layout_element_asserter_impl<base_alignment, T, false> {
 	static_assert(!is_matrix<T>::value || matrix_rows_count<T>::value != 3,
 				  "Matrix columns must be 2 or 4 component vectors.");
 	static_assert(!std::is_array_v<T> || 
-				  block_layout_type_base_alignment<T>::value == sizeof(std::remove_all_extents_t<T>),
+				  block_layout_type_base_alignment<T>::value == byte_t(sizeof(std::remove_all_extents_t<T>)),
 				  "Arrays in block layout must be manually aligned.");
 };
 template <std::size_t base_alignment, typename T>
 struct layout_element_asserter_impl<base_alignment, T, true> {
-	static_assert(base_alignment >= T::block_base_alignment,
+	static_assert(byte_t(base_alignment) >= T::block_base_alignment,
 				  "T is a block layout of greater base alignment than parent. This happens when mixing blocks of different layouts, "
 				  "e.g. std430 inside a std140 layout.");
 };
@@ -64,7 +64,7 @@ struct alignas(1) layout_element {};
 
 template <std::size_t base_alignment, std::size_t accumulated, typename T0, typename T1, typename... Ts>
 struct alignas(1) layout_element<base_alignment, accumulated, T0, T1, Ts...> : layout_element_asserter<base_alignment, T0> {
-	static constexpr std::size_t padding_size = block_layout_member_padding<accumulated, T0, T1>::value;
+	static constexpr std::size_t padding_size = static_cast<std::size_t>(block_layout_member_padding<accumulated, T0, T1>::value);
 	alignas(1) layout_element_member<T0, padding_size> data;
 	alignas(1) layout_element<base_alignment, accumulated + sizeof(T0) + padding_size, T1, Ts...> next;
 
@@ -72,7 +72,7 @@ struct alignas(1) layout_element<base_alignment, accumulated, T0, T1, Ts...> : l
 };
 template <std::size_t base_alignment, std::size_t accumulated, typename T0, typename T1>
 struct alignas(1) layout_element<base_alignment, accumulated, T0, T1> : layout_element_asserter<base_alignment, T0> {
-	static constexpr std::size_t padding_size = block_layout_member_padding<accumulated, T0, T1>::value;
+	static constexpr std::size_t padding_size = static_cast<std::size_t>(block_layout_member_padding<accumulated, T0, T1>::value);
 	alignas(1) layout_element_member<T0, padding_size> data;
 	alignas(1) layout_element<base_alignment, accumulated + sizeof(T0) + padding_size, T1> next;
 
@@ -92,7 +92,7 @@ struct layout_element<base_alignment, 0, T0, T1, Ts...> : layout_element_asserte
 #else
 	static_assert(false, "TODO");
 #endif
-	static constexpr std::size_t padding_size = block_layout_member_padding<0, T0, T1>::value;
+	static constexpr std::size_t padding_size = static_cast<std::size_t>(block_layout_member_padding<0, T0, T1>::value);
 	alignas(1) layout_element_member<T0, padding_size> data;
 	alignas(1) layout_element<base_alignment, sizeof(T0) + padding_size, T1, Ts...> next;
 #pragma pack (pop)
@@ -106,7 +106,7 @@ struct layout_element<base_alignment, 0, T0, T1> : layout_element_asserter<base_
 #else
 	static_assert(false, "TODO");
 #endif
-	static constexpr std::size_t padding_size = block_layout_member_padding<0, T0, T1>::value;
+	static constexpr std::size_t padding_size = static_cast<std::size_t>(block_layout_member_padding<0, T0, T1>::value);
 	alignas(1) layout_element_member<T0, padding_size> data;
 	alignas(1) layout_element<base_alignment, sizeof(T0) + padding_size, T1> next;
 #pragma pack (pop)
@@ -166,7 +166,7 @@ struct block_layout_member_offset {
 	}
 	template <typename ElementT>
 	static constexpr auto offset() {
-		static constexpr std::size_t offset_to_next = offsetof(ElementT, next);
+		static constexpr auto offset_to_next = byte_t(offsetof(ElementT, next));
 		return offset_to_next + block_layout_member_offset<N - 1>::template offset<decltype(ElementT::next)>();
 	}
 };
@@ -179,7 +179,7 @@ struct block_layout_member_offset<0> {
 	}
 	template <typename ElementT>
 	static constexpr auto offset() {
-		return offsetof(ElementT, data.member);
+		return byte_t(offsetof(ElementT, data.member));
 	}
 };
 

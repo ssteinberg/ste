@@ -18,7 +18,7 @@ public:
 				  const metre_vec3 &position,
 				  metre radius) : light(color, intensity, radius) {
 		descriptor.type = light_type::Point;
-		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
+		descriptor.position = position;
 	}
 
 	virtual ~virtual_light() noexcept {}

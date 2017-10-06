@@ -63,10 +63,10 @@ private:
 		ar << static_cast<std::uint32_t>(glyph_distance_field->extent().y);
 		ar << static_cast<std::uint32_t>(glyph_distance_field->levels());
 
-		const auto size = glyph_distance_field->bytes();
+		const auto size = static_cast<std::size_t>(glyph_distance_field->bytes());
 		lib::string data;
 		data.resize(size);
-		std::memcpy(&data[0], (*glyph_distance_field)[0].data(), size);
+		std::memcpy(&data[0], (*glyph_distance_field)[0_mip].data(), size);
 
 		ar << data;
 	}
@@ -80,15 +80,17 @@ private:
 		ar >> w;
 		ar >> h;
 		ar >> l;
-		glyph_distance_field = lib::allocate_unique<glyph_distance_field_surface_t>(glm::u32vec2{ w, h }, l);
+		glyph_distance_field = lib::allocate_unique<glyph_distance_field_surface_t>(glm::u32vec2{ w, h }, 
+																					levels_t(l));
 
 		lib::string data;
 		ar >> data;
-		const auto size = glm::min(data.size(), glyph_distance_field->bytes());
+		const auto size = std::min(data.size(),
+								   static_cast<std::size_t>(glyph_distance_field->bytes()));
 
 		assert(size == data.size());
 
-		std::memcpy((*glyph_distance_field)[0].data(), &data[0], size);
+		std::memcpy((*glyph_distance_field)[0_mip].data(), &data[0], size);
 	}
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();

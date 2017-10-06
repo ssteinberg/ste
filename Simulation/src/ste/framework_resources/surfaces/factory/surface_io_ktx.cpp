@@ -244,9 +244,9 @@ opaque_surface<dimensions> load_ktx(const std::experimental::filesystem::path &p
 	extent.x = header.PixelWidth;
 	if constexpr (dimensions > 1)	extent.y = static_cast<std::uint32_t>(header.PixelHeight);
 	if constexpr (dimensions > 2)	extent.z = static_cast<std::uint32_t>(header.PixelDepth);
-	const std::uint32_t arrays = glm::max<std::uint32_t>(1, header.NumberOfArrayElements);
-	const std::uint32_t levels = header.NumberOfMipmapLevels;
-	const std::uint32_t layers = image_type == gl::image_type::image_cubemap || image_type == gl::image_type::image_cubemap_array ? 
+	const auto arrays = std::max(1_layers, layers_t(header.NumberOfArrayElements));
+	const auto levels = levels_t(header.NumberOfMipmapLevels);
+	const auto layers = image_type == gl::image_type::image_cubemap || image_type == gl::image_type::image_cubemap_array ? 
 		arrays * header.NumberOfFaces : arrays;
 
 	if ((image_type == gl::image_type::image_cubemap || image_type == gl::image_type::image_cubemap_array) &&
@@ -263,24 +263,26 @@ opaque_surface<dimensions> load_ktx(const std::experimental::filesystem::path &p
 				  layers);
 
 	// Read data into surface
-	std::size_t read_bytes = 0;
-	for (std::uint32_t level = 0; level < levels; ++level) {
+	auto read_bytes = 0_B;
+	for (auto level = 0_mip; level < levels; ++level) {
 		offset = ((offset + 3) / 4) * 4;
 
 		// Read level size
-		const auto image_size = *reinterpret_cast<const std::uint32_t*>(data + offset);
+		const auto image_size = byte_t(*reinterpret_cast<const std::uint32_t*>(data + offset));
 		offset += 4;
 
 		assert(tex.bytes(level) == image_size);
 
 		// Read all level data
-		std::size_t level_bytes_read = 0;
-		for (std::uint32_t layer = 0; layer < layers; ++layer) {
-			const auto blocks = tex.blocks(level) / levels;
+		auto level_bytes_read = 0_B;
+		for (auto layer = 0_layer; layer < layers; ++layer) {
+			const auto blocks = tex.blocks(level) / static_cast<std::size_t>(levels);
 			const auto bytes = blocks * tex.block_bytes();
 
 			auto image_data = tex.data_at(layer, level);
-			std::memcpy(image_data, data + offset + level_bytes_read, bytes);
+			std::memcpy(image_data, 
+						data + offset + static_cast<std::size_t>(level_bytes_read), 
+						static_cast<std::size_t>(bytes));
 
 			level_bytes_read += bytes;
 		}
@@ -288,7 +290,7 @@ opaque_surface<dimensions> load_ktx(const std::experimental::filesystem::path &p
 		assert(level_bytes_read == image_size);
 
 		read_bytes += image_size;
-		offset += image_size;
+		offset += static_cast<std::size_t>(image_size);
 	}
 
 	assert(tex.bytes() == read_bytes);

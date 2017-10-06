@@ -13,9 +13,9 @@ namespace gl {
 class cmd_draw_indirect : public command {
 private:
 	VkBuffer buffer;
-	std::uint32_t offset;
+	byte_t offset;
 	std::uint32_t draw_count;
-	std::uint32_t stride;
+	byte_t stride;
 
 public:
 	cmd_draw_indirect(cmd_draw_indirect &&) = default;
@@ -36,7 +36,11 @@ public:
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
-		vkCmdDrawIndirect(command_buffer, buffer, offset, draw_count, stride);
+		vkCmdDrawIndirect(command_buffer, 
+						  buffer, 
+						  static_cast<std::size_t>(offset), 
+						  draw_count, 
+						  static_cast<std::uint32_t>(stride));
 	}
 };
 

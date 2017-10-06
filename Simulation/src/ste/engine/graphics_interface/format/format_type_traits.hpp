@@ -117,7 +117,7 @@ template<format>
 struct format_traits {};
 template<> struct format_traits<format::r4g4_unorm_pack8> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr byte_t block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 	
 	static constexpr bool is_depth = false,
@@ -136,7 +136,7 @@ template<> struct format_traits<format::r4g4_unorm_pack8> {
 };
 template<> struct format_traits<format::r4g4b4a4_unorm_pack16> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -155,7 +155,7 @@ template<> struct format_traits<format::r4g4b4a4_unorm_pack16> {
 };
 template<> struct format_traits<format::b4g4r4a4_unorm_pack16> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -174,7 +174,7 @@ template<> struct format_traits<format::b4g4r4a4_unorm_pack16> {
 };
 template<> struct format_traits<format::r5g6b5_unorm_pack16> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -193,7 +193,7 @@ template<> struct format_traits<format::r5g6b5_unorm_pack16> {
 };
 template<> struct format_traits<format::b5g6r5_unorm_pack16> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -212,7 +212,7 @@ template<> struct format_traits<format::b5g6r5_unorm_pack16> {
 };
 template<> struct format_traits<format::r5g5b5a1_unorm_pack16> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -231,7 +231,7 @@ template<> struct format_traits<format::r5g5b5a1_unorm_pack16> {
 };
 template<> struct format_traits<format::b5g5r5a1_unorm_pack16> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -250,7 +250,7 @@ template<> struct format_traits<format::b5g5r5a1_unorm_pack16> {
 };
 template<> struct format_traits<format::a1r5g5b5_unorm_pack16> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -269,7 +269,7 @@ template<> struct format_traits<format::a1r5g5b5_unorm_pack16> {
 };
 template<> struct format_traits<format::r8_unorm> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -289,7 +289,7 @@ template<> struct format_traits<format::r8_unorm> {
 };
 template<> struct format_traits<format::r8_snorm> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -309,7 +309,7 @@ template<> struct format_traits<format::r8_snorm> {
 };
 template<> struct format_traits<format::r8_uscaled> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -329,7 +329,7 @@ template<> struct format_traits<format::r8_uscaled> {
 };
 template<> struct format_traits<format::r8_sscaled> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -349,7 +349,7 @@ template<> struct format_traits<format::r8_sscaled> {
 };
 template<> struct format_traits<format::r8_uint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -369,7 +369,7 @@ template<> struct format_traits<format::r8_uint> {
 };
 template<> struct format_traits<format::r8_sint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -389,7 +389,7 @@ template<> struct format_traits<format::r8_sint> {
 };
 template<> struct format_traits<format::r8_srgb> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 1;
+	static constexpr auto block_bytes = 1_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -409,7 +409,7 @@ template<> struct format_traits<format::r8_srgb> {
 };
 template<> struct format_traits<format::r8g8_unorm> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -429,7 +429,7 @@ template<> struct format_traits<format::r8g8_unorm> {
 };
 template<> struct format_traits<format::r8g8_snorm> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -449,7 +449,7 @@ template<> struct format_traits<format::r8g8_snorm> {
 };
 template<> struct format_traits<format::r8g8_uscaled> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -469,7 +469,7 @@ template<> struct format_traits<format::r8g8_uscaled> {
 };
 template<> struct format_traits<format::r8g8_sscaled> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -489,7 +489,7 @@ template<> struct format_traits<format::r8g8_sscaled> {
 };
 template<> struct format_traits<format::r8g8_uint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -509,7 +509,7 @@ template<> struct format_traits<format::r8g8_uint> {
 };
 template<> struct format_traits<format::r8g8_sint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -529,7 +529,7 @@ template<> struct format_traits<format::r8g8_sint> {
 };
 template<> struct format_traits<format::r8g8_srgb> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -549,7 +549,7 @@ template<> struct format_traits<format::r8g8_srgb> {
 };
 template<> struct format_traits<format::r8g8b8_unorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -569,7 +569,7 @@ template<> struct format_traits<format::r8g8b8_unorm> {
 };
 template<> struct format_traits<format::r8g8b8_snorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -589,7 +589,7 @@ template<> struct format_traits<format::r8g8b8_snorm> {
 };
 template<> struct format_traits<format::r8g8b8_uscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -609,7 +609,7 @@ template<> struct format_traits<format::r8g8b8_uscaled> {
 };
 template<> struct format_traits<format::r8g8b8_sscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -629,7 +629,7 @@ template<> struct format_traits<format::r8g8b8_sscaled> {
 };
 template<> struct format_traits<format::r8g8b8_uint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -649,7 +649,7 @@ template<> struct format_traits<format::r8g8b8_uint> {
 };
 template<> struct format_traits<format::r8g8b8_sint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -669,7 +669,7 @@ template<> struct format_traits<format::r8g8b8_sint> {
 };
 template<> struct format_traits<format::r8g8b8_srgb> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -689,7 +689,7 @@ template<> struct format_traits<format::r8g8b8_srgb> {
 };
 template<> struct format_traits<format::b8g8r8_unorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -709,7 +709,7 @@ template<> struct format_traits<format::b8g8r8_unorm> {
 };
 template<> struct format_traits<format::b8g8r8_snorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -729,7 +729,7 @@ template<> struct format_traits<format::b8g8r8_snorm> {
 };
 template<> struct format_traits<format::b8g8r8_uscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -749,7 +749,7 @@ template<> struct format_traits<format::b8g8r8_uscaled> {
 };
 template<> struct format_traits<format::b8g8r8_sscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -769,7 +769,7 @@ template<> struct format_traits<format::b8g8r8_sscaled> {
 };
 template<> struct format_traits<format::b8g8r8_uint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -789,7 +789,7 @@ template<> struct format_traits<format::b8g8r8_uint> {
 };
 template<> struct format_traits<format::b8g8r8_sint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -809,7 +809,7 @@ template<> struct format_traits<format::b8g8r8_sint> {
 };
 template<> struct format_traits<format::b8g8r8_srgb> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 3;
+	static constexpr auto block_bytes = 3_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -829,7 +829,7 @@ template<> struct format_traits<format::b8g8r8_srgb> {
 };
 template<> struct format_traits<format::r8g8b8a8_unorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -849,7 +849,7 @@ template<> struct format_traits<format::r8g8b8a8_unorm> {
 };
 template<> struct format_traits<format::r8g8b8a8_snorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -869,7 +869,7 @@ template<> struct format_traits<format::r8g8b8a8_snorm> {
 };
 template<> struct format_traits<format::r8g8b8a8_uscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -889,7 +889,7 @@ template<> struct format_traits<format::r8g8b8a8_uscaled> {
 };
 template<> struct format_traits<format::r8g8b8a8_sscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -909,7 +909,7 @@ template<> struct format_traits<format::r8g8b8a8_sscaled> {
 };
 template<> struct format_traits<format::r8g8b8a8_uint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -929,7 +929,7 @@ template<> struct format_traits<format::r8g8b8a8_uint> {
 };
 template<> struct format_traits<format::r8g8b8a8_sint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -949,7 +949,7 @@ template<> struct format_traits<format::r8g8b8a8_sint> {
 };
 template<> struct format_traits<format::r8g8b8a8_srgb> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -969,7 +969,7 @@ template<> struct format_traits<format::r8g8b8a8_srgb> {
 };
 template<> struct format_traits<format::b8g8r8a8_unorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -989,7 +989,7 @@ template<> struct format_traits<format::b8g8r8a8_unorm> {
 };
 template<> struct format_traits<format::b8g8r8a8_snorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1009,7 +1009,7 @@ template<> struct format_traits<format::b8g8r8a8_snorm> {
 };
 template<> struct format_traits<format::b8g8r8a8_uscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1029,7 +1029,7 @@ template<> struct format_traits<format::b8g8r8a8_uscaled> {
 };
 template<> struct format_traits<format::b8g8r8a8_sscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1049,7 +1049,7 @@ template<> struct format_traits<format::b8g8r8a8_sscaled> {
 };
 template<> struct format_traits<format::b8g8r8a8_uint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1069,7 +1069,7 @@ template<> struct format_traits<format::b8g8r8a8_uint> {
 };
 template<> struct format_traits<format::b8g8r8a8_sint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1089,7 +1089,7 @@ template<> struct format_traits<format::b8g8r8a8_sint> {
 };
 template<> struct format_traits<format::b8g8r8a8_srgb> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1109,7 +1109,7 @@ template<> struct format_traits<format::b8g8r8a8_srgb> {
 };
 template<> struct format_traits<format::a8b8g8r8_unorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1129,7 +1129,7 @@ template<> struct format_traits<format::a8b8g8r8_unorm_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_snorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1149,7 +1149,7 @@ template<> struct format_traits<format::a8b8g8r8_snorm_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_uscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1169,7 +1169,7 @@ template<> struct format_traits<format::a8b8g8r8_uscaled_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_sscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1189,7 +1189,7 @@ template<> struct format_traits<format::a8b8g8r8_sscaled_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_uint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1209,7 +1209,7 @@ template<> struct format_traits<format::a8b8g8r8_uint_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_sint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1229,7 +1229,7 @@ template<> struct format_traits<format::a8b8g8r8_sint_pack32> {
 };
 template<> struct format_traits<format::a8b8g8r8_srgb_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1249,7 +1249,7 @@ template<> struct format_traits<format::a8b8g8r8_srgb_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_unorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1268,7 +1268,7 @@ template<> struct format_traits<format::a2r10g10b10_unorm_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_snorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1287,7 +1287,7 @@ template<> struct format_traits<format::a2r10g10b10_snorm_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_uscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1306,7 +1306,7 @@ template<> struct format_traits<format::a2r10g10b10_uscaled_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_sscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1325,7 +1325,7 @@ template<> struct format_traits<format::a2r10g10b10_sscaled_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_uint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1344,7 +1344,7 @@ template<> struct format_traits<format::a2r10g10b10_uint_pack32> {
 };
 template<> struct format_traits<format::a2r10g10b10_sint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1363,7 +1363,7 @@ template<> struct format_traits<format::a2r10g10b10_sint_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_unorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1382,7 +1382,7 @@ template<> struct format_traits<format::a2b10g10r10_unorm_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_snorm_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1401,7 +1401,7 @@ template<> struct format_traits<format::a2b10g10r10_snorm_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_uscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1420,7 +1420,7 @@ template<> struct format_traits<format::a2b10g10r10_uscaled_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_sscaled_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1439,7 +1439,7 @@ template<> struct format_traits<format::a2b10g10r10_sscaled_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_uint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1458,7 +1458,7 @@ template<> struct format_traits<format::a2b10g10r10_uint_pack32> {
 };
 template<> struct format_traits<format::a2b10g10r10_sint_pack32> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1477,7 +1477,7 @@ template<> struct format_traits<format::a2b10g10r10_sint_pack32> {
 };
 template<> struct format_traits<format::r16_unorm> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1497,7 +1497,7 @@ template<> struct format_traits<format::r16_unorm> {
 };
 template<> struct format_traits<format::r16_snorm> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1517,7 +1517,7 @@ template<> struct format_traits<format::r16_snorm> {
 };
 template<> struct format_traits<format::r16_uscaled> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1537,7 +1537,7 @@ template<> struct format_traits<format::r16_uscaled> {
 };
 template<> struct format_traits<format::r16_sscaled> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1557,7 +1557,7 @@ template<> struct format_traits<format::r16_sscaled> {
 };
 template<> struct format_traits<format::r16_uint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1577,7 +1577,7 @@ template<> struct format_traits<format::r16_uint> {
 };
 template<> struct format_traits<format::r16_sint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1597,7 +1597,7 @@ template<> struct format_traits<format::r16_sint> {
 };
 template<> struct format_traits<format::r16_sfloat> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1617,7 +1617,7 @@ template<> struct format_traits<format::r16_sfloat> {
 };
 template<> struct format_traits<format::r16g16_unorm> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1637,7 +1637,7 @@ template<> struct format_traits<format::r16g16_unorm> {
 };
 template<> struct format_traits<format::r16g16_snorm> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1657,7 +1657,7 @@ template<> struct format_traits<format::r16g16_snorm> {
 };
 template<> struct format_traits<format::r16g16_uscaled> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1677,7 +1677,7 @@ template<> struct format_traits<format::r16g16_uscaled> {
 };
 template<> struct format_traits<format::r16g16_sscaled> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1697,7 +1697,7 @@ template<> struct format_traits<format::r16g16_sscaled> {
 };
 template<> struct format_traits<format::r16g16_uint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1717,7 +1717,7 @@ template<> struct format_traits<format::r16g16_uint> {
 };
 template<> struct format_traits<format::r16g16_sint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1737,7 +1737,7 @@ template<> struct format_traits<format::r16g16_sint> {
 };
 template<> struct format_traits<format::r16g16_sfloat> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1757,7 +1757,7 @@ template<> struct format_traits<format::r16g16_sfloat> {
 };
 template<> struct format_traits<format::r16g16b16_unorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1777,7 +1777,7 @@ template<> struct format_traits<format::r16g16b16_unorm> {
 };
 template<> struct format_traits<format::r16g16b16_snorm> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1797,7 +1797,7 @@ template<> struct format_traits<format::r16g16b16_snorm> {
 };
 template<> struct format_traits<format::r16g16b16_uscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1817,7 +1817,7 @@ template<> struct format_traits<format::r16g16b16_uscaled> {
 };
 template<> struct format_traits<format::r16g16b16_sscaled> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1837,7 +1837,7 @@ template<> struct format_traits<format::r16g16b16_sscaled> {
 };
 template<> struct format_traits<format::r16g16b16_uint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1857,7 +1857,7 @@ template<> struct format_traits<format::r16g16b16_uint> {
 };
 template<> struct format_traits<format::r16g16b16_sint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1877,7 +1877,7 @@ template<> struct format_traits<format::r16g16b16_sint> {
 };
 template<> struct format_traits<format::r16g16b16_sfloat> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 6;
+	static constexpr auto block_bytes = 6_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1897,7 +1897,7 @@ template<> struct format_traits<format::r16g16b16_sfloat> {
 };
 template<> struct format_traits<format::r16g16b16a16_unorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1917,7 +1917,7 @@ template<> struct format_traits<format::r16g16b16a16_unorm> {
 };
 template<> struct format_traits<format::r16g16b16a16_snorm> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1937,7 +1937,7 @@ template<> struct format_traits<format::r16g16b16a16_snorm> {
 };
 template<> struct format_traits<format::r16g16b16a16_uscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1957,7 +1957,7 @@ template<> struct format_traits<format::r16g16b16a16_uscaled> {
 };
 template<> struct format_traits<format::r16g16b16a16_sscaled> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1977,7 +1977,7 @@ template<> struct format_traits<format::r16g16b16a16_sscaled> {
 };
 template<> struct format_traits<format::r16g16b16a16_uint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -1997,7 +1997,7 @@ template<> struct format_traits<format::r16g16b16a16_uint> {
 };
 template<> struct format_traits<format::r16g16b16a16_sint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2017,7 +2017,7 @@ template<> struct format_traits<format::r16g16b16a16_sint> {
 };
 template<> struct format_traits<format::r16g16b16a16_sfloat> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2037,7 +2037,7 @@ template<> struct format_traits<format::r16g16b16a16_sfloat> {
 };
 template<> struct format_traits<format::r32_uint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2057,7 +2057,7 @@ template<> struct format_traits<format::r32_uint> {
 };
 template<> struct format_traits<format::r32_sint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2077,7 +2077,7 @@ template<> struct format_traits<format::r32_sint> {
 };
 template<> struct format_traits<format::r32_sfloat> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2097,7 +2097,7 @@ template<> struct format_traits<format::r32_sfloat> {
 };
 template<> struct format_traits<format::r32g32_uint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2117,7 +2117,7 @@ template<> struct format_traits<format::r32g32_uint> {
 };
 template<> struct format_traits<format::r32g32_sint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2137,7 +2137,7 @@ template<> struct format_traits<format::r32g32_sint> {
 };
 template<> struct format_traits<format::r32g32_sfloat> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2157,7 +2157,7 @@ template<> struct format_traits<format::r32g32_sfloat> {
 };
 template<> struct format_traits<format::r32g32b32_uint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 12;
+	static constexpr auto block_bytes = 12_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2177,7 +2177,7 @@ template<> struct format_traits<format::r32g32b32_uint> {
 };
 template<> struct format_traits<format::r32g32b32_sint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 12;
+	static constexpr auto block_bytes = 12_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2197,7 +2197,7 @@ template<> struct format_traits<format::r32g32b32_sint> {
 };
 template<> struct format_traits<format::r32g32b32_sfloat> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 12;
+	static constexpr auto block_bytes = 12_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2217,7 +2217,7 @@ template<> struct format_traits<format::r32g32b32_sfloat> {
 };
 template<> struct format_traits<format::r32g32b32a32_uint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2237,7 +2237,7 @@ template<> struct format_traits<format::r32g32b32a32_uint> {
 };
 template<> struct format_traits<format::r32g32b32a32_sint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2257,7 +2257,7 @@ template<> struct format_traits<format::r32g32b32a32_sint> {
 };
 template<> struct format_traits<format::r32g32b32a32_sfloat> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2277,7 +2277,7 @@ template<> struct format_traits<format::r32g32b32a32_sfloat> {
 };
 template<> struct format_traits<format::r64_uint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2297,7 +2297,7 @@ template<> struct format_traits<format::r64_uint> {
 };
 template<> struct format_traits<format::r64_sint> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2317,7 +2317,7 @@ template<> struct format_traits<format::r64_sint> {
 };
 template<> struct format_traits<format::r64_sfloat> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2337,7 +2337,7 @@ template<> struct format_traits<format::r64_sfloat> {
 };
 template<> struct format_traits<format::r64g64_uint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2357,7 +2357,7 @@ template<> struct format_traits<format::r64g64_uint> {
 };
 template<> struct format_traits<format::r64g64_sint> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2377,7 +2377,7 @@ template<> struct format_traits<format::r64g64_sint> {
 };
 template<> struct format_traits<format::r64g64_sfloat> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2397,7 +2397,7 @@ template<> struct format_traits<format::r64g64_sfloat> {
 };
 template<> struct format_traits<format::r64g64b64_uint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 24;
+	static constexpr auto block_bytes = 24_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2417,7 +2417,7 @@ template<> struct format_traits<format::r64g64b64_uint> {
 };
 template<> struct format_traits<format::r64g64b64_sint> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 24;
+	static constexpr auto block_bytes = 24_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2437,7 +2437,7 @@ template<> struct format_traits<format::r64g64b64_sint> {
 };
 template<> struct format_traits<format::r64g64b64_sfloat> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 24;
+	static constexpr auto block_bytes = 24_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2457,7 +2457,7 @@ template<> struct format_traits<format::r64g64b64_sfloat> {
 };
 template<> struct format_traits<format::r64g64b64a64_uint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 32;
+	static constexpr auto block_bytes = 32_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2477,7 +2477,7 @@ template<> struct format_traits<format::r64g64b64a64_uint> {
 };
 template<> struct format_traits<format::r64g64b64a64_sint> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 32;
+	static constexpr auto block_bytes = 32_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2497,7 +2497,7 @@ template<> struct format_traits<format::r64g64b64a64_sint> {
 };
 template<> struct format_traits<format::r64g64b64a64_sfloat> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 32;
+	static constexpr auto block_bytes = 32_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = false,
@@ -2517,7 +2517,7 @@ template<> struct format_traits<format::r64g64b64a64_sfloat> {
 };
 template<> struct format_traits<format::d16_unorm> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 2;
+	static constexpr auto block_bytes = 2_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = true,
@@ -2537,7 +2537,7 @@ template<> struct format_traits<format::d16_unorm> {
 };
 template<> struct format_traits<format::x8_d24_unorm_pack32> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = true,
@@ -2556,7 +2556,7 @@ template<> struct format_traits<format::x8_d24_unorm_pack32> {
 };
 template<> struct format_traits<format::d32_sfloat> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 4;
+	static constexpr auto block_bytes = 4_B;
 	static constexpr image_extent_type_t<2> block_extent = { 1, 1 };
 
 	static constexpr bool is_depth = true,
@@ -2576,7 +2576,7 @@ template<> struct format_traits<format::d32_sfloat> {
 };
 template<> struct format_traits<format::bc1_rgb_unorm_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2593,7 +2593,7 @@ template<> struct format_traits<format::bc1_rgb_unorm_block> {
 };
 template<> struct format_traits<format::bc1_rgb_srgb_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2610,7 +2610,7 @@ template<> struct format_traits<format::bc1_rgb_srgb_block> {
 };
 template<> struct format_traits<format::bc1_rgba_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2627,7 +2627,7 @@ template<> struct format_traits<format::bc1_rgba_unorm_block> {
 };
 template<> struct format_traits<format::bc1_rgba_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2644,7 +2644,7 @@ template<> struct format_traits<format::bc1_rgba_srgb_block> {
 };
 template<> struct format_traits<format::bc2_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2661,7 +2661,7 @@ template<> struct format_traits<format::bc2_unorm_block> {
 };
 template<> struct format_traits<format::bc2_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2678,7 +2678,7 @@ template<> struct format_traits<format::bc2_srgb_block> {
 };
 template<> struct format_traits<format::bc3_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2695,7 +2695,7 @@ template<> struct format_traits<format::bc3_unorm_block> {
 };
 template<> struct format_traits<format::bc3_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2712,7 +2712,7 @@ template<> struct format_traits<format::bc3_srgb_block> {
 };
 template<> struct format_traits<format::bc4_unorm_block> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2729,7 +2729,7 @@ template<> struct format_traits<format::bc4_unorm_block> {
 };
 template<> struct format_traits<format::bc4_snorm_block> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2746,7 +2746,7 @@ template<> struct format_traits<format::bc4_snorm_block> {
 };
 template<> struct format_traits<format::bc5_unorm_block> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2763,7 +2763,7 @@ template<> struct format_traits<format::bc5_unorm_block> {
 };
 template<> struct format_traits<format::bc5_snorm_block> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2780,7 +2780,7 @@ template<> struct format_traits<format::bc5_snorm_block> {
 };
 template<> struct format_traits<format::bc6h_ufloat_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2797,7 +2797,7 @@ template<> struct format_traits<format::bc6h_ufloat_block> {
 };
 template<> struct format_traits<format::bc6h_sfloat_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2814,7 +2814,7 @@ template<> struct format_traits<format::bc6h_sfloat_block> {
 };
 template<> struct format_traits<format::bc7_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2831,7 +2831,7 @@ template<> struct format_traits<format::bc7_unorm_block> {
 };
 template<> struct format_traits<format::bc7_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2848,7 +2848,7 @@ template<> struct format_traits<format::bc7_srgb_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8_unorm_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2865,7 +2865,7 @@ template<> struct format_traits<format::etc2_r8g8b8_unorm_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8_srgb_block> {
 	static constexpr std::uint8_t elements = 3;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2882,7 +2882,7 @@ template<> struct format_traits<format::etc2_r8g8b8_srgb_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8a1_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2899,7 +2899,7 @@ template<> struct format_traits<format::etc2_r8g8b8a1_unorm_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8a1_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2916,7 +2916,7 @@ template<> struct format_traits<format::etc2_r8g8b8a1_srgb_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8a8_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2933,7 +2933,7 @@ template<> struct format_traits<format::etc2_r8g8b8a8_unorm_block> {
 };
 template<> struct format_traits<format::etc2_r8g8b8a8_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2950,7 +2950,7 @@ template<> struct format_traits<format::etc2_r8g8b8a8_srgb_block> {
 };
 template<> struct format_traits<format::eac_r11_unorm_block> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2967,7 +2967,7 @@ template<> struct format_traits<format::eac_r11_unorm_block> {
 };
 template<> struct format_traits<format::eac_r11_snorm_block> {
 	static constexpr std::uint8_t elements = 1;
-	static constexpr std::uint8_t block_bytes = 8;
+	static constexpr auto block_bytes = 8_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -2984,7 +2984,7 @@ template<> struct format_traits<format::eac_r11_snorm_block> {
 };
 template<> struct format_traits<format::eac_r11g11_unorm_block> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3001,7 +3001,7 @@ template<> struct format_traits<format::eac_r11g11_unorm_block> {
 };
 template<> struct format_traits<format::eac_r11g11_snorm_block> {
 	static constexpr std::uint8_t elements = 2;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3018,7 +3018,7 @@ template<> struct format_traits<format::eac_r11g11_snorm_block> {
 };
 template<> struct format_traits<format::astc_4x4_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3035,7 +3035,7 @@ template<> struct format_traits<format::astc_4x4_unorm_block> {
 };
 template<> struct format_traits<format::astc_4x4_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 4, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3052,7 +3052,7 @@ template<> struct format_traits<format::astc_4x4_srgb_block> {
 };
 template<> struct format_traits<format::astc_5x4_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 5, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3069,7 +3069,7 @@ template<> struct format_traits<format::astc_5x4_unorm_block> {
 };
 template<> struct format_traits<format::astc_5x4_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 5, 4 };
 
 	static constexpr bool is_depth = false,
@@ -3086,7 +3086,7 @@ template<> struct format_traits<format::astc_5x4_srgb_block> {
 };
 template<> struct format_traits<format::astc_5x5_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 5, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3103,7 +3103,7 @@ template<> struct format_traits<format::astc_5x5_unorm_block> {
 };
 template<> struct format_traits<format::astc_5x5_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 5, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3120,7 +3120,7 @@ template<> struct format_traits<format::astc_5x5_srgb_block> {
 };
 template<> struct format_traits<format::astc_6x5_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 6, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3137,7 +3137,7 @@ template<> struct format_traits<format::astc_6x5_unorm_block> {
 };
 template<> struct format_traits<format::astc_6x5_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 6, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3154,7 +3154,7 @@ template<> struct format_traits<format::astc_6x5_srgb_block> {
 };
 template<> struct format_traits<format::astc_6x6_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 6, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3171,7 +3171,7 @@ template<> struct format_traits<format::astc_6x6_unorm_block> {
 };
 template<> struct format_traits<format::astc_6x6_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 6, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3188,7 +3188,7 @@ template<> struct format_traits<format::astc_6x6_srgb_block> {
 };
 template<> struct format_traits<format::astc_8x5_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3205,7 +3205,7 @@ template<> struct format_traits<format::astc_8x5_unorm_block> {
 };
 template<> struct format_traits<format::astc_8x5_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3222,7 +3222,7 @@ template<> struct format_traits<format::astc_8x5_srgb_block> {
 };
 template<> struct format_traits<format::astc_8x6_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3239,7 +3239,7 @@ template<> struct format_traits<format::astc_8x6_unorm_block> {
 };
 template<> struct format_traits<format::astc_8x6_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3256,7 +3256,7 @@ template<> struct format_traits<format::astc_8x6_srgb_block> {
 };
 template<> struct format_traits<format::astc_8x8_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 8 };
 
 	static constexpr bool is_depth = false,
@@ -3273,7 +3273,7 @@ template<> struct format_traits<format::astc_8x8_unorm_block> {
 };
 template<> struct format_traits<format::astc_8x8_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 8, 8 };
 
 	static constexpr bool is_depth = false,
@@ -3290,7 +3290,7 @@ template<> struct format_traits<format::astc_8x8_srgb_block> {
 };
 template<> struct format_traits<format::astc_10x5_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3307,7 +3307,7 @@ template<> struct format_traits<format::astc_10x5_unorm_block> {
 };
 template<> struct format_traits<format::astc_10x5_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 5 };
 
 	static constexpr bool is_depth = false,
@@ -3324,7 +3324,7 @@ template<> struct format_traits<format::astc_10x5_srgb_block> {
 };
 template<> struct format_traits<format::astc_10x6_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3341,7 +3341,7 @@ template<> struct format_traits<format::astc_10x6_unorm_block> {
 };
 template<> struct format_traits<format::astc_10x6_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 6 };
 
 	static constexpr bool is_depth = false,
@@ -3358,7 +3358,7 @@ template<> struct format_traits<format::astc_10x6_srgb_block> {
 };
 template<> struct format_traits<format::astc_10x8_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 8 };
 
 	static constexpr bool is_depth = false,
@@ -3375,7 +3375,7 @@ template<> struct format_traits<format::astc_10x8_unorm_block> {
 };
 template<> struct format_traits<format::astc_10x8_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 8 };
 
 	static constexpr bool is_depth = false,
@@ -3392,7 +3392,7 @@ template<> struct format_traits<format::astc_10x8_srgb_block> {
 };
 template<> struct format_traits<format::astc_10x10_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 10 };
 
 	static constexpr bool is_depth = false,
@@ -3409,7 +3409,7 @@ template<> struct format_traits<format::astc_10x10_unorm_block> {
 };
 template<> struct format_traits<format::astc_10x10_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 10, 10 };
 
 	static constexpr bool is_depth = false,
@@ -3426,7 +3426,7 @@ template<> struct format_traits<format::astc_10x10_srgb_block> {
 };
 template<> struct format_traits<format::astc_12x10_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 12, 10 };
 
 	static constexpr bool is_depth = false,
@@ -3443,7 +3443,7 @@ template<> struct format_traits<format::astc_12x10_unorm_block> {
 };
 template<> struct format_traits<format::astc_12x10_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 12, 10 };
 
 	static constexpr bool is_depth = false,
@@ -3460,7 +3460,7 @@ template<> struct format_traits<format::astc_12x10_srgb_block> {
 };
 template<> struct format_traits<format::astc_12x12_unorm_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 12, 12 };
 
 	static constexpr bool is_depth = false,
@@ -3477,7 +3477,7 @@ template<> struct format_traits<format::astc_12x12_unorm_block> {
 };
 template<> struct format_traits<format::astc_12x12_srgb_block> {
 	static constexpr std::uint8_t elements = 4;
-	static constexpr std::uint8_t block_bytes = 16;
+	static constexpr auto block_bytes = 16_B;
 	static constexpr image_extent_type_t<2> block_extent = { 12, 12 };
 
 	static constexpr bool is_depth = false,

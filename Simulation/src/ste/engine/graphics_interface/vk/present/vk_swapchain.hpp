@@ -56,7 +56,7 @@ public:
 				 const VkFormat &image_format,
 				 const VkColorSpaceKHR &image_colorspace,
 				 const glm::u32vec2 &size,
-				 std::uint32_t array_layers,
+				 layers_t array_layers,
 				 const VkSurfaceTransformFlagBitsKHR &transform,
 				 VkCompositeAlphaFlagBitsKHR &composite_flags,
 				 const VkPresentModeKHR &present_mode,
@@ -73,7 +73,7 @@ public:
 		swapchain_create_info.imageFormat = image_format;
 		swapchain_create_info.imageColorSpace = image_colorspace;
 		swapchain_create_info.imageExtent = { size.x, size.y };
-		swapchain_create_info.imageArrayLayers = array_layers;
+		swapchain_create_info.imageArrayLayers = static_cast<std::uint32_t>(array_layers);
 		swapchain_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 		swapchain_create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		swapchain_create_info.queueFamilyIndexCount = 0;
@@ -127,7 +127,7 @@ public:
 	auto get_format() const { return swapchain_create_info.imageFormat; }
 	auto get_colorspace() const { return swapchain_create_info.imageColorSpace; }
 	auto get_present_mode() const { return swapchain_create_info.presentMode; }
-	auto get_layers() const { return swapchain_create_info.imageArrayLayers; }
+	auto get_layers() const { return layers_t(swapchain_create_info.imageArrayLayers); }
 	auto get_extent() const {
 		return glm::u32vec2{ swapchain_create_info.imageExtent.width, swapchain_create_info.imageExtent.height };
 	}

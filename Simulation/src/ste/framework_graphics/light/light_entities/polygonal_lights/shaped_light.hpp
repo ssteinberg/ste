@@ -36,7 +36,7 @@ protected:
 		assert(static_cast<std::uint32_t>(type) & light_type_shape_bit && "Type is not a shaped light!");
 
 		descriptor.type = type;
-		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
+		descriptor.position = position;
 		descriptor.set_polygonal_light_points(0, 0);
 	}
 
@@ -114,7 +114,7 @@ public:
 	std::uint32_t get_points_count() const { return descriptor.get_polygonal_light_point_count(); }
 
 	void set_position(const metre_vec3 &p) {
-		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
+		descriptor.position = p;
 		Base::notify();
 	}
 	metre_vec3 get_position() const override { return{ metre(descriptor.position.x), metre(descriptor.position.y), metre(descriptor.position.z) }; }

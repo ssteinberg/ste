@@ -98,7 +98,7 @@ private:
 
 protected:
 	ste_shader_stage_variable(lib::string name,
-							  std::uint16_t offset_bytes = 0)
+							  byte_t offset_bytes = 0_B)
 		: var_name(name), offset_bytes(offset_bytes)
 	{}
 
@@ -244,7 +244,7 @@ private:
 public:
 	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_type &type,
 									 lib::string name,
-									 std::uint16_t offset_bytes)
+									 byte_t offset_bytes)
 		: Base(name, offset_bytes),
 		var_type(type)
 	{}
@@ -295,8 +295,8 @@ private:
 public:
 	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_type &type,
 									 lib::string name,
-									 std::uint16_t offset_bytes,
-									 std::uint16_t width)
+									 byte_t offset_bytes,
+									 byte_t width)
 		: Base(name, offset_bytes),
 		var_type(type),
 		var_width(width)
@@ -363,10 +363,10 @@ private:
 public:
 	ste_shader_stage_variable_matrix(lib::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
 									 lib::string name,
-									 std::uint16_t offset_bytes,
+									 byte_t offset_bytes,
 									 std::uint32_t rows,
 									 std::uint32_t columns = 1,
-									 std::uint16_t matrix_stride = 0)
+									 byte_t matrix_stride = 0_B)
 		: Base(name, offset_bytes),
 		var_matrix_stride(matrix_stride),
 		var_rows(rows),
@@ -456,9 +456,9 @@ private:
 public:
 	ste_shader_stage_variable_array(lib::unique_ptr<ste_shader_stage_variable> &&var,
 									lib::string name,
-									std::uint16_t offset_bytes,
+									byte_t offset_bytes,
 									std::uint32_t array_elements,
-									std::uint16_t array_stride,
+									byte_t array_stride,
 									optional<const ste_shader_stage_variable_scalar*> length_specialization_constant = none)
 		: Base(name, offset_bytes),
 		array_elements(array_elements),
@@ -521,7 +521,7 @@ public:
 
 			if (std::extent_v<T> != array_elements)
 				throw ste_shader_variable_layout_verification_array_length_mismatch("Array length mismatch");
-			if (sizeof(ElementT) != stride())
+			if (byte_t(sizeof(ElementT)) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
 			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
@@ -533,7 +533,7 @@ public:
 
 			if (std::extent_v<T2> != array_elements)
 				throw ste_shader_variable_layout_verification_array_length_mismatch("Array length mismatch");
-			if (sizeof(ElementT) != stride())
+			if (byte_t(sizeof(ElementT)) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
 			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
@@ -566,7 +566,7 @@ public:
 namespace _internal {
 
 template <typename T>
-void ste_shader_stage_variable_type_validator(std::uint32_t offset,
+void ste_shader_stage_variable_type_validator(byte_t offset,
 											  const ste_shader_stage_variable *var) {
 	if (var->offset() != offset)
 		throw ste_shader_variable_layout_verification_offset_mismatch("Struct member offset mismatch");
@@ -580,7 +580,7 @@ struct ste_shader_stage_variable_struct_validator {
 		auto offset = block_offset_of<N, B>();
 
 		try {
-			ste_shader_stage_variable_type_validator<T>(static_cast<std::uint32_t>(offset), (*var)[N].get());
+			ste_shader_stage_variable_type_validator<T>(offset, (*var)[N].get());
 		}
 		catch (gl::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow
@@ -631,7 +631,7 @@ private:
 public:
 	ste_shader_stage_variable_struct(lib::vector<lib::unique_ptr<ste_shader_stage_variable>> &&elements,
 									 lib::string name,
-									 std::uint16_t offset_bytes)
+									 byte_t offset_bytes)
 		: Base(name, offset_bytes),
 		elements(std::move(elements))
 	{}

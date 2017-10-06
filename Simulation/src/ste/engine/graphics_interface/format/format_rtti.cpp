@@ -12,7 +12,7 @@ constexpr format_rtti format_rtti_for_format() {
 	format_rtti ret;
 
 	ret.elements = format_traits<Format>::elements;
-	ret.block_bytes = format_traits<Format>::block_bytes;
+	ret.block_bytes = byte_t(format_traits<Format>::block_bytes);
 	ret.block_extent = format_traits<Format>::block_extent;
 
 	ret.is_depth = format_traits<Format>::is_depth;
@@ -44,7 +44,7 @@ constexpr format_rtti format_rtti_for_format() {
 
 		static_assert(format_traits<Format>::elements == block_type::elements, "Elements count mismatch");
 		static_assert(format_traits<Format>::block_bytes == block_type::bytes, "Block size mismatch");
-		static_assert(format_traits<Format>::block_bytes == sizeof(block_type), "wrong sizeof block class");
+		static_assert(format_traits<Format>::block_bytes == byte_t(sizeof(block_type)), "wrong sizeof block class");
 
 		if constexpr (format_traits<Format>::is_scaled_integer && !format_traits<Format>::is_signed)
 			static_assert(block_type::blocktype == resource::block_type::block_uscaled);

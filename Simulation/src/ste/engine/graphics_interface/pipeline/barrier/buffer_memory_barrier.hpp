@@ -23,8 +23,8 @@ private:
 	ste_queue_family src_queue_family{ VK_QUEUE_FAMILY_IGNORED };
 	ste_queue_family dst_queue_family{ VK_QUEUE_FAMILY_IGNORED };
 	std::reference_wrapper<const device_buffer_base> buffer;
-	std::uint64_t offset{ 0 };
-	std::uint64_t size{ VK_WHOLE_SIZE };
+	byte_t offset{ 0_B };
+	byte_t size{ ~0_B };
 
 public:
 	buffer_memory_barrier(const device_buffer_base &buffer,
@@ -66,8 +66,8 @@ public:
 		barrier.srcQueueFamilyIndex = static_cast<std::uint32_t>(src_queue_family);
 		barrier.dstQueueFamilyIndex = static_cast<std::uint32_t>(dst_queue_family);
 		barrier.buffer = buffer.get().get_buffer_handle();
-		barrier.offset = offset;
-		barrier.size = size;
+		barrier.offset = static_cast<std::size_t>(offset);
+		barrier.size = static_cast<std::size_t>(size);
 
 		return barrier;
 	}

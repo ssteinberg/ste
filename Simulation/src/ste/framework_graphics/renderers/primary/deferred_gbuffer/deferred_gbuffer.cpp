@@ -20,8 +20,9 @@ gl::framebuffer_layout deferred_gbuffer::create_depth_fbo_layout() {
 
 deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 								   const glm::uvec2 &extent,
-								   int depth_buffer_levels)
+								   levels_t depth_levels)
 	: ctx(ctx),
+	depth_buffer_levels(depth_levels - 1_mip),
 	depth_target(ctx,
 				 resource::surface_factory::image_empty_2d<gl::format::d32_sfloat>(ctx,
 																				   gl::image_usage::sampled | gl::image_usage::depth_stencil_attachment,
@@ -39,18 +40,18 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 																								  gl::image_usage::sampled | gl::image_usage::storage,
 																								  gl::image_layout::shader_read_only_optimal,
 																								  "gbuffer downsampled depth target",
-																								  extent / 2u, 1, depth_buffer_levels - 1)),
+																								  extent / 2u, 1_layers, depth_buffer_levels)),
 	gbuffer(resource::surface_factory::image_empty_2d<gl::format::r32g32b32a32_sfloat>(ctx,
 																					   gl::image_usage::sampled | gl::image_usage::color_attachment,
 																					   gl::image_layout::color_attachment_optimal,
 																					   "gbuffer",
-																					   extent, 2).get()),
+																					   extent, 2_layers).get()),
 	gbuffer_level_0(gbuffer.get_image(), 
 					gbuffer->get_format(), 
-					0, 1),
+					0_layer),
 	gbuffer_level_1(gbuffer.get_image(), 
 					gbuffer->get_format(), 
-					1, 1),
+					1_layer),
 	fbo(ctx, 
 		"gbuffer framebuffer",
 		create_fbo_layout(), 
@@ -63,7 +64,6 @@ deferred_gbuffer::deferred_gbuffer(const ste_context &ctx,
 					   "gbuffer back-face depth framebuffer", 
 					   create_depth_fbo_layout(), 
 					   extent),
-	depth_buffer_levels(depth_buffer_levels),
 	extent(extent)
 {
 	fbo[gl::pipeline_depth_attachment_location] = gl::framebuffer_attachment(depth_target.get(), glm::vec4(.0f));
@@ -98,18 +98,18 @@ void deferred_gbuffer::resize(const glm::uvec2 &extent) {
 																																						gl::image_usage::sampled | gl::image_usage::storage,
 																																						gl::image_layout::shader_read_only_optimal,
 																																						"gbuffer downsampled depth target",
-																																						extent / 2u, 1, depth_buffer_levels - 1));
+																																						extent / 2u, 1_layers, depth_buffer_levels));
 	gbuffer = resource::surface_factory::image_empty_2d<gl::format::r32g32b32a32_sfloat>(ctx,
 																						 gl::image_usage::sampled | gl::image_usage::color_attachment,
 																						 gl::image_layout::color_attachment_optimal,
 																						 "gbuffer",
-																						 extent, 2).get();
+																						 extent, 2_layers).get();
 	gbuffer_level_0 = gl::image_view<gl::image_type::image_2d>(gbuffer.get_image(), 
 															   gbuffer->get_format(), 
-															   0, 1);
+															   0_layer);
 	gbuffer_level_1 = gl::image_view<gl::image_type::image_2d>(gbuffer.get_image(), 
 															   gbuffer->get_format(), 
-															   1, 1);
+															   1_layer);
 
 	// Recreate framebuffers
 	fbo = gl::framebuffer(ctx,

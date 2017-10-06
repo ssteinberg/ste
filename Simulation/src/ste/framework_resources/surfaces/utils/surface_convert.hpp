@@ -86,7 +86,7 @@ private:
 
 					for (std::size_t b = 0; b < src_blocks_count; b += 8) {
 						// Set source and destination
-						auto src = src_layer_data + b * src_traits.block_bytes;
+						auto src = src_layer_data + b * static_cast<std::size_t>(src_traits.block_bytes);
 						auto dst = dst_layer_data + b;
 
 						// Maximal count of blocks to decode (limited to 8)

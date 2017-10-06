@@ -28,7 +28,7 @@ constexpr auto operator"" _layer(unsigned long long int val) { return layers_t(s
 constexpr auto operator"" _mips(unsigned long long int val) { return levels_t(static_cast<levels_t::value_type>(val)); }
 constexpr auto operator"" _mip(unsigned long long int val) { return levels_t(static_cast<levels_t::value_type>(val)); }
 
-static constexpr auto all_layers = layers_t(std::numeric_limits<layers_t::value_type>::max() - 1);
-static constexpr auto all_mips = levels_t(std::numeric_limits<levels_t::value_type>::max() - 1);
+static constexpr auto all_layers = layers_t(std::numeric_limits<layers_t::value_type>::max());
+static constexpr auto all_mips = levels_t(std::numeric_limits<levels_t::value_type>::max());
 
 }

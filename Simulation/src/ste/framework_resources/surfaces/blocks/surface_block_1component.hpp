@@ -44,7 +44,7 @@ public:
 	}
 
 	static constexpr unsigned total_bits = comp0_bits;
-	static constexpr unsigned bytes = total_bits / 8;
+	static constexpr byte_t bytes = byte_t(total_bits) >> 3;
 
 	using r_comp_type = typename _detail::block_primary_type_selector<type, r_bits>::type;
 	using r_comp_writer_type = typename _detail::block_primary_type_selector<type, r_bits>::block_writer_type;
@@ -58,9 +58,9 @@ public:
 
 private:
 	static_assert((total_bits % 8) == 0, "Block straddles bytes");
-	static_assert(bytes > 0, "bytes is zero");
+	static_assert(bytes > 0_B, "bytes is zero");
 
-	using data_t = std::uint8_t[bytes];
+	using data_t = std::uint8_t[static_cast<std::size_t>(bytes)];
 
 	data_t data{};
 

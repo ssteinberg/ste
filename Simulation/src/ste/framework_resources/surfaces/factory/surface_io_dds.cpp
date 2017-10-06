@@ -321,11 +321,11 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 	}
 
 	// Create surface
-	const std::size_t mipmap_count = (header.Flags & DDSD_MIPMAPCOUNT) ? header.MipMapLevels : 1;
-	const std::size_t face_count = header.CubemapFlags & DDSCAPS2_CUBEMAP ? static_cast<std::size_t>(glm::bitCount(header.CubemapFlags & DDSCAPS2_CUBEMAP_ALLFACES)) : 1;
-	const std::size_t depth_count = header.CubemapFlags & DDSCAPS2_VOLUME ? header.Depth : 1;
-	const std::size_t array_size = glm::max<std::size_t>(Header10.ArraySize, 1);
-	const std::size_t layers = image_type == gl::image_type::image_cubemap || image_type == gl::image_type::image_cubemap_array ?
+	const auto mipmap_count = (header.Flags & DDSD_MIPMAPCOUNT) ? levels_t(header.MipMapLevels) : 1_mips;
+	const std::uint32_t face_count = header.CubemapFlags & DDSCAPS2_CUBEMAP ? static_cast<std::uint32_t>(glm::bitCount(header.CubemapFlags & DDSCAPS2_CUBEMAP_ALLFACES)) : 1;
+	const std::uint32_t depth_count = header.CubemapFlags & DDSCAPS2_VOLUME ? static_cast<std::uint32_t>(header.Depth) : 1;
+	const auto array_size = std::max(layers_t(Header10.ArraySize), 1_layers);
+	const auto layers = image_type == gl::image_type::image_cubemap || image_type == gl::image_type::image_cubemap_array ?
 		array_size * face_count :
 		array_size;
 
@@ -339,9 +339,9 @@ opaque_surface<dimensions> load_dds(const std::experimental::filesystem::path &p
 	extent_type extent;
 	extent.x = header.Width;
 	if constexpr (dimensions > 1)	extent.y = static_cast<std::uint32_t>(header.Height);
-	if constexpr (dimensions > 2)	extent.z = static_cast<std::uint32_t>(depth_count);
+	if constexpr (dimensions > 2)	extent.z = depth_count;
 
-	std::size_t bytes = content.size() - header_bytes;
+	auto bytes = byte_t(content.size() - header_bytes);
 	surface_t surface(format.get(),
 					  image_type,
 					  extent,
@@ -489,7 +489,7 @@ void surface_io::write_dds(const std::experimental::filesystem::path &file_name,
 	}
 	}
 
-	dds_format.bpp = format_traits.block_bytes * 8;
+	dds_format.bpp = static_cast<std::uint32_t>(format_traits.block_bytes) * 8;
 	if (format_traits.elements < 4)		dds_format.flags = DDPF_RGB;
 	else								dds_format.flags = DDPF_RGBA;
 	if (dxgi_format) {
@@ -498,7 +498,7 @@ void surface_io::write_dds(const std::experimental::filesystem::path &file_name,
 	}
 
 	// Can not save arrays or 1D surface with old format
-	if (!dxgi_format && (layers > 1_mips || gl::image_dimensions_for_type(image_type) == 1)) {
+	if (!dxgi_format && (layers > 1_layers || gl::image_dimensions_for_type(image_type) == 1)) {
 		using namespace attributes;
 		ste_log_error() << "Surface type and format incompatible with DDS.";
 		throw surface_unsupported_format_error("Surface type and format incompatible with DDS");
@@ -524,7 +524,7 @@ void surface_io::write_dds(const std::experimental::filesystem::path &file_name,
 	Header.Width = extent.x;
 	Header.Height = extent.y;
 	Header.Depth = extent.z > 1 ? extent.z : 0;
-	Header.Pitch = static_cast<std::uint32_t>(format_traits.is_compressed ? glm::max(1u, format_traits.block_bytes * (extent.x + 3) / 4) : (extent.x * dds_format.bpp + 7) / 8);
+	Header.Pitch = static_cast<std::uint32_t>(format_traits.is_compressed ? std::max(1_B, format_traits.block_bytes * (extent.x + 3) / 4) : byte_t(extent.x * dds_format.bpp + 7) / 8);
 	Header.MipMapLevels = static_cast<std::uint32_t>(levels);
 	Header.Format = dds_format;
 	Header.SurfaceFlags = DDSCAPS_TEXTURE | DDSCAPS_MIPMAP;

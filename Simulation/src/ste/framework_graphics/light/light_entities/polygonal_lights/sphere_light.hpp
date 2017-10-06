@@ -18,12 +18,12 @@ public:
 				 const metre_vec3 &position,
 				 metre radius) : light(color, intensity, radius) {
 		descriptor.type = light_type::Sphere;
-		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
+		descriptor.position = position;
 	}
 	virtual ~sphere_light() noexcept {}
 
 	void set_position(const metre_vec3 &p) {
-		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
+		descriptor.position = p;
 		Base::notify();
 	}
 	void set_radius(metre r) {

@@ -21,7 +21,7 @@ namespace gl {
 
 struct format_rtti {
 	std::uint8_t elements;
-	std::uint8_t block_bytes;
+	byte_t block_bytes;
 	glm::u8vec2 block_extent;
 
 	unsigned is_depth : 1;
@@ -92,7 +92,7 @@ auto inline format_elements(const format &format) {
 *	@throws	std::runtime_error	If format not found
 */
 auto inline format_texel_size(const format &format) {
-	return byte_t(format_id(format).block_bytes);
+	return format_id(format).block_bytes;
 }
 
 /**

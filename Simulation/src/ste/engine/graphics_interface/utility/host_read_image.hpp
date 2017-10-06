@@ -46,18 +46,19 @@ auto host_read_image(const ste_context &ctx,
 	using extent_type = glm::u32vec3;
 	static constexpr int dimensions = image_dimensions_v<image_type>;
 
-	const auto aspect = static_cast<VkImageAspectFlags>(format_aspect(format));
-
 	// Validate format
 	if (image.get_format() != format) {
 		throw device_image_format_exception("Surface and image format mismatch");
 	}
 
 	// Calculate layers and levels to copy
-	const auto layers = layers_t(std::min(max_layer + 1_layers,
-										  image.get_layers()));
-	const auto mips = levels_t(std::min(max_level + 1_mips,
-										image.get_mips()));
+	const auto last_layer = std::min(image.get_layers() - 1_layer,
+									 max_layer);
+	const auto last_mip = std::min(image.get_mips() - 1_mip,
+								   max_level);
+	const auto layers = last_layer - initial_layer + 1_layer;
+	const auto mips = last_mip - initial_level + 1_mip;
+
 	if (layers <= initial_layer) {
 		throw device_image_format_exception("initial_layer out of bounds");
 	}
@@ -66,35 +67,33 @@ auto host_read_image(const ste_context &ctx,
 	}
 
 	// Surface properties
+	const auto block_bytes = resource::surface_utilities::block_bytes<format>();
 	const auto surface_extent = resource::surface_utilities::extent(image.get_extent(), initial_level);
-	const auto surface_levels = mips - initial_level;
-	const auto surface_layers = layers - initial_layer;
 	const auto surface_bytes = resource::surface_utilities::bytes<format>(surface_extent,
-																		  surface_levels,
-																		  surface_layers);
-	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent, surface_levels) * surface_layers;
-	assert(surface_bytes == surface_blocks * sizeof(block_type));
+																		  mips,
+																		  layers);
+	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent) * static_cast<std::uint64_t>(layers);
 
 	// Create regions to copy
-	lib::vector<VkBufferImageCopy> regions;
-	regions.reserve(static_cast<std::size_t>(surface_layers) * static_cast<std::size_t>(surface_levels));
-	for (auto l = initial_layer; l < layers; ++l) {
-		for (auto m = initial_level; m < mips; ++m) {
+	lib::vector<buffer_image_copy_region_t> regions;
+	regions.reserve(static_cast<std::size_t>(layers) * static_cast<std::size_t>(mips));
+	for (auto l = initial_layer; l <= last_layer; ++l) {
+		for (auto m = initial_level; m <= last_mip; ++m) {
 			auto extent = resource::surface_utilities::extent(image.get_extent(), m);
 			auto buffer_offset_blocks = resource::surface_utilities::offset_blocks<format>(surface_extent,
-																						   surface_levels,
+																						   mips,
 																						   l - initial_layer,
 																						   m - initial_level);
 
-			VkBufferImageCopy copy_region = {
-				buffer_offset_blocks, 0, 0,
-				{ aspect, m, l, 1 },
-				{ 0, 0, 0 },
-				{ 1, 1, 1 }
-			};
-			if constexpr (dimensions > 0) copy_region.imageExtent.width = static_cast<std::uint32_t>(extent[0]);
-			if constexpr (dimensions > 1) copy_region.imageExtent.height = static_cast<std::uint32_t>(extent[1]);
-			if constexpr (dimensions > 2) copy_region.imageExtent.depth = static_cast<std::uint32_t>(extent[2]);
+			buffer_image_copy_region_t copy_region;
+			copy_region.buffer_offset = buffer_offset_blocks;
+			copy_region.image_format = format;
+			copy_region.mip = m;
+			copy_region.base_layer = l;
+			copy_region.layers = 1_layer;
+			if constexpr (dimensions > 0) copy_region.extent.x = static_cast<std::uint32_t>(extent[0]);
+			if constexpr (dimensions > 1) copy_region.extent.y = static_cast<std::uint32_t>(extent[1]);
+			if constexpr (dimensions > 2) copy_region.extent.z = static_cast<std::uint32_t>(extent[2]);
 
 			regions.push_back(copy_region);
 		}
@@ -150,8 +149,8 @@ auto host_read_image(const ste_context &ctx,
 	return ctx.engine().task_scheduler().schedule_now([=, staging_ptr = std::move(staging_ptr), fence = std::move(fence)]() {
 		// Create surface
 		auto surface = lib::allocate_unique<resource::surface<format, image_type>>(surface_extent,
-																				   surface_layers,
-																				   surface_levels);
+																				   layers,
+																				   mips);
 
 		// Wait for device completion 
 		(*fence)->get_wait();
@@ -162,7 +161,7 @@ auto host_read_image(const ste_context &ctx,
 		// Copy from staging
 		std::memcpy(surface->data(),
 					staging_ptr->get_mapped_ptr(),
-					surface_bytes);
+					surface_blocks * static_cast<std::size_t>(block_bytes));
 
 		return surface;
 	});

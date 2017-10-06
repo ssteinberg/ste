@@ -96,7 +96,7 @@ public:
 				   layers_t layers)
 		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
-		storage = lib::allocate_unique<std::uint8_t[]>(bytes());
+		storage = lib::allocate_unique<std::uint8_t[]>(static_cast<std::size_t>(bytes()));
 	}
 	~opaque_surface() noexcept {}
 
@@ -220,14 +220,14 @@ public:
 	*	@brief	Returns the size, in bytes, of a block
 	*/
 	auto block_bytes() const {
-		return byte_t(format_traits.block_bytes);
+		return format_traits.block_bytes;
 	}
 
 	/**
 	*	@brief	Returns the size, in bytes, of the surface data
 	*/
 	auto bytes() const {
-		return block_bytes() * blocks_layer() * layers();
+		return block_bytes() * blocks_layer() * static_cast<std::size_t>(layers());
 	}
 
 	/**

@@ -21,7 +21,7 @@ void light_preprocessor_fragment::update_projection_planes(const primary_rendere
 	// Extract frustum planes
 	const float aspect = camera_projection.get_aspect();
 	const float fovy = camera_projection.get_fovy();
-	const float fnear = camera_projection.get_near_clip_plane();
+	const float fnear = static_cast<float>(camera_projection.get_near_clip_plane());
 	extract_projection_frustum_planes(fnear * 2, fnear, fovy, aspect,
 									  &np, &fp, &rp, &lp, &tp, &bp);
 

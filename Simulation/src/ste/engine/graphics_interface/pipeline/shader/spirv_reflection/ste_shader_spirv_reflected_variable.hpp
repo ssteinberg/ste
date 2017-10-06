@@ -21,14 +21,14 @@ struct ste_shader_spirv_reflected_variable {
 
 	std::uint32_t rows{ 1 };						// Matrix/vector rows. 1 for scalars.
 	std::uint32_t columns{ 1 };						// Columns. >1 for matrix types.
-	std::uint16_t matrix_stride{ 0 };				// Array stride between elements. 0 for tightly packed.
+	byte_t matrix_stride{ 0_B };					// Array stride between elements. 0 for tightly packed.
 
 	std::uint32_t array_elements{ 1 };				// Array elements. >1 for arrays or 0 for a run-time array.
-	std::uint16_t array_stride{ 0 };				// Array stride between elements. 0 for tightly packed.
+	byte_t array_stride{ 0_B };						// Array stride between elements. 0 for tightly packed.
 	optional<std::uint32_t> array_length_specialization_constant_id;	// id of array length specialization constant
 
-	std::uint16_t offset{ 0 };						// Member offset in a struct.
-	std::uint16_t width{ 0 };						// Integer/float width, only used for int_t and uint_t.
+	byte_t offset{ 0_B };							// Member offset in a struct.
+	byte_t width{ 0_B };							// Integer/float width, only used for int_t and uint_t.
 	optional<std::uint64_t> constant_value;			// Constant integer value, if available.
 
 	lib::vector<ste_shader_spirv_reflected_variable> struct_members;
@@ -43,7 +43,7 @@ struct ste_shader_spirv_reflected_variable {
 		this->name = std::move(name);
 		this->rows = src.rows;
 		this->columns = src.columns;
-		if (src.matrix_stride != 0)
+		if (src.matrix_stride > 0_B)
 			this->matrix_stride = src.matrix_stride;
 
 		if (src.type != ste_shader_stage_variable_type::unknown) {
@@ -55,7 +55,7 @@ struct ste_shader_spirv_reflected_variable {
 			this->array_elements = src.array_elements;
 			this->array_length_specialization_constant_id = src.array_length_specialization_constant_id;
 		}
-		if (src.array_stride > 0)
+		if (src.array_stride > 0_B)
 			this->array_stride = src.array_stride;
 
 		if (src.constant_value)
@@ -132,7 +132,7 @@ struct ste_shader_spirv_reflected_variable {
             // Some SPIR-v compilers omit the offset. In this case allow recostruction manually
             bool reconstruct_offsets = true;
             for (auto &e : struct_members)
-                reconstruct_offsets &= e.offset == 0;
+                reconstruct_offsets &= e.offset == 0_B;
 
             if (!reconstruct_offsets) {
                 // We have offsets, generate variables and sort by offset
@@ -147,7 +147,7 @@ struct ste_shader_spirv_reflected_variable {
             }
             else {
                 // We create offsets, assuming tight packing and correct sorting
-                std::uint16_t offset = 0;
+                auto offset = 0_B;
                 for (auto &e : struct_members) {
                     e.offset = offset;
                     auto member_variable = e.generate_variable(false,
@@ -160,8 +160,8 @@ struct ste_shader_spirv_reflected_variable {
             }
 
 			var = lib::unique_ptr<ste_shader_stage_variable>(lib::allocate_unique<ste_shader_stage_variable_struct>(std::move(elements),
-																												name,
-																												offset));
+																													name,
+																													offset));
 		}
 		else {
 			// Handle scalars, vectors and matrices

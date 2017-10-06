@@ -34,7 +34,7 @@
 18. <strike>Device resources' debug names via VK_EXT_debug_marker</strike>
 19. <strike>Sponza Vulkan demo UI and ImGUI</strike>
 20. <strike>Profiler</strike>
-21. Units, meters, km, kelvin, bytes, kb, etc.
+21. <strike>Units, meters, km, kelvin, bytes, kb, etc.</strike>
 22. Task scheduler and thread pool. Deal with blocking calls on workers better.
 23. Queue transfer, correctly, in time.
 24. <strike>Get rid of host commands altogether.</strike>
@@ -52,5 +52,6 @@
 36. Voxel GI:
 	- Sparse voxelize
 37. Polygonal lights: Beam focusing
-38. Geometry culling: Better bounding volume or low-poly geometry
-39. 
+38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
+39. Geometry culling: Better bounding volume or low-poly geometry
+40. 

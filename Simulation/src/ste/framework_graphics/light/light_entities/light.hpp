@@ -39,6 +39,7 @@ protected:
 		descriptor.radius = radius;
 		descriptor.emittance = c * static_cast<float>(intensity);
 
+		sqrt_surface_area = static_cast<float>(radius) * glm::sqrt(glm::pi<float>());
 		update_effective_range();
 	}
 

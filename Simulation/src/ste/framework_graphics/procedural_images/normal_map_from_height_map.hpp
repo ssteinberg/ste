@@ -28,11 +28,11 @@ public:
 		static_assert(!gl::format_traits<src_format>::is_compressed && !gl::format_traits<Format>::is_compressed, "Formats must be uncompressed formats");
 
 		auto dim = height_map.extent();
-		resource::surface_2d<Format> nm(dim, 1);
+		resource::surface_2d<Format> nm(dim, 1_mips);
 
 		// Generate normal map
-		auto nm_level = nm[0];
-		auto height_map_level = height_map[0];
+		auto nm_level = nm[0_mip];
+		auto height_map_level = height_map[0_mip];
 		for (std::uint32_t y = 0; y < dim.y; ++y) {
 			for (std::uint32_t x = 0; x < dim.x; ++x) {
 				glm::vec3 n;

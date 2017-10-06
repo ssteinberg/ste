@@ -40,7 +40,7 @@ public:
 	using value_type = T;
 
 	static constexpr bool sparse_container = true;
-	static constexpr auto sparse_size = max_sparse_size_bytes;
+	static constexpr auto sparse_size = byte_t(max_sparse_size_bytes);
 
 	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, max_sparse_size_bytes>>;
 	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, max_sparse_size_bytes>>;

@@ -43,7 +43,7 @@ public:
 		assert(target.bytes() == surface.bytes());
 
 		// Copy data
-		std::memcpy(target.data(), surface.data(), bytes);
+		std::memcpy(target.data(), surface.data(), static_cast<std::size_t>(bytes));
 
 		return target;
 	}

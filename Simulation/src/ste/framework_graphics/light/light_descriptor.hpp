@@ -1,5 +1,5 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -12,7 +12,7 @@ namespace ste {
 namespace graphics {
 
 struct light_descriptor {
-	using buffer_data = gl::std430<glm::vec3, float, glm::vec3, std::uint32_t, std::uint32_t, float, std::uint32_t, float, glm::vec3, float>;
+	using buffer_data = gl::std430<metre_vec3, metre, glm::vec3, std::uint32_t, std::uint32_t, metre, std::uint32_t, float, glm::vec3, float>;
 
 	metre_vec3		position;		metre radius{ 0_m };
 	glm::vec3		emittance;		light_type type;
@@ -40,10 +40,10 @@ public:
 	}
 
 	auto get() const {
-		return buffer_data(std::make_tuple(position.v(), static_cast<float>(radius), 
+		return buffer_data(std::make_tuple(position, radius, 
 										   emittance, static_cast<std::uint32_t>(type), 
 										   texture_idx, 
-										   static_cast<float>(effective_range_or_directional_distance), 
+										   effective_range_or_directional_distance, 
 										   polygonal_light_points_and_offset_or_cascade_idx, 
 										   .0f,
 										   glm::vec3{ .0f },

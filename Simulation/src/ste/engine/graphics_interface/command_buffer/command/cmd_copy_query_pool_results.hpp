@@ -17,8 +17,8 @@ private:
 	VkBuffer buffer;
 	std::uint32_t first;
 	std::uint32_t count;
-	std::uint64_t offset;
-	std::uint64_t stride;
+	byte_t offset;
+	byte_t stride;
 	VkQueryResultFlags flags;
 
 public:
@@ -51,8 +51,8 @@ private:
 								  first,
 								  count,
 								  buffer,
-								  offset,
-								  stride,
+								  static_cast<std::size_t>(offset),
+								  static_cast<std::size_t>(stride),
 								  flags);
 	}
 };

@@ -18,7 +18,7 @@ public:
 
 private:
 	VkBuffer buffer;
-	std::size_t offset;
+	byte_t offset;
 	lib::blob data;
 
 public:
@@ -43,7 +43,7 @@ private:
 
 		vkCmdUpdateBuffer(command_buffer,
 						  buffer,
-						  offset,
+						  static_cast<std::size_t>(offset),
 						  data.size(),
 						  data.data());
 	}

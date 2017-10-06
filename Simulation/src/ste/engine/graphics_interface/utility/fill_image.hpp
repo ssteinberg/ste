@@ -66,24 +66,23 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 		[=, &image, surface = std::move(surface), final_queue_selector = std::move(final_queue_selector), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		const ste_context &ctx = image.parent_context();
 
-		const auto surface_block_bytes = surface.block_bytes();
 		const extent_type image_extent = resource::surface_utilities::extent(image.get_extent(), initial_level);
 		const extent_type surface_extent = surface.extent();
-		const auto aspect = static_cast<VkImageAspectFlags>(format_aspect(image_format));
-		const auto bytes = surface.bytes();
 
 		// Calculate layers and levels to copy
-		const auto layers = layers_t(std::min(std::min(surface.layers(),
-													   image.get_layers()),
-											  max_layer + 1_layers));
-		const auto mips = levels_t(std::min(std::min(surface.levels(),
-													 image.get_mips()),
-											max_level + 1_mip));
+		const auto last_layer = std::min(std::min(surface.layers(), image.get_layers()) - 1_layer,
+										 max_layer);
+		const auto last_mip = std::min(std::min(surface.levels(), image.get_mips())  - 1_mip,
+									   max_level);
+		const auto layers = last_layer - initial_layer + 1_layer;
+		const auto mips = last_mip - initial_level + 1_mip;
 
 		// Validate size
 		if (surface_extent != image_extent) {
 			throw device_image_format_exception("Surface and image extent mismatch. Surface extent at level 0 must equal to image extent at level initial_level.");
 		}
+
+		const auto block_bytes = resource::surface_utilities::block_bytes<format>();
 
 		// Create staging buffer
 		using staging_buffer_t = device_buffer<block_type, device_resource_allocation_policy_host_visible>;
@@ -98,28 +97,31 @@ auto fill_image_array(const device_image<dimensions, allocation_policy> &image,
 			auto mmap_blocks_ptr = staging_buffer.get_underlying_memory().template mmap<block_type>(0, blocks);
 			std::memcpy(mmap_blocks_ptr->get_mapped_ptr(),
 						surface.data(),
-						bytes);
+						blocks * static_cast<std::size_t>(block_bytes));
 			// Flush written memory
 			mmap_blocks_ptr->flush_ranges({ vk::vk_mapped_memory_range{ 0, blocks } });
 		}
 
 		// Create regions to copy
-		lib::vector<VkBufferImageCopy> regions;
-		regions.reserve(static_cast<std::size_t>(layers - initial_layer) * static_cast<std::size_t>(mips - initial_level));
-		for (auto l = initial_layer; l < layers; ++l) {
-			for (auto m = initial_level; m < mips; ++m) {
+		lib::vector<buffer_image_copy_region_t> regions;
+		regions.reserve(static_cast<std::size_t>(layers) * static_cast<std::size_t>(mips));
+		for (auto l = initial_layer; l <= last_layer; ++l) {
+			for (auto m = initial_level; m <= last_mip; ++m) {
 				auto extent = surface.extent(m);
-				auto buffer_offset = surface.offset_blocks(l, m);
+				auto buffer_offset_blocks = resource::surface_utilities::offset_blocks<format>(surface_extent,
+																							   mips,
+																							   l - initial_layer,
+																							   m - initial_level);
 
-				VkBufferImageCopy copy_region = {
-					buffer_offset, 0, 0,
-					{ aspect, static_cast<std::uint32_t>(m), static_cast<std::uint32_t>(l), 1 },
-					{ 0, 0, 0 },
-					{ 1, 1, 1 }
-				};
-				if constexpr (dimensions > 0) copy_region.imageExtent.width = static_cast<std::uint32_t>(extent[0]);
-				if constexpr (dimensions > 1) copy_region.imageExtent.height = static_cast<std::uint32_t>(extent[1]);
-				if constexpr (dimensions > 2) copy_region.imageExtent.depth = static_cast<std::uint32_t>(extent[2]);
+				buffer_image_copy_region_t copy_region;
+				copy_region.buffer_offset = buffer_offset_blocks;
+				copy_region.image_format = image_format;
+				copy_region.mip = m;
+				copy_region.base_layer = l;
+				copy_region.layers = 1_layer;
+				if constexpr (dimensions > 0) copy_region.extent.x = static_cast<std::uint32_t>(extent[0]);
+				if constexpr (dimensions > 1) copy_region.extent.y = static_cast<std::uint32_t>(extent[1]);
+				if constexpr (dimensions > 2) copy_region.extent.z = static_cast<std::uint32_t>(extent[2]);
 
 				regions.push_back(copy_region);
 			}

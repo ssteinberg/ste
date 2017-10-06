@@ -22,6 +22,8 @@ class deferred_gbuffer {
 private:
 	alias<const ste_context> ctx;
 
+	levels_t depth_buffer_levels;
+
 	ste_resource<gl::texture<gl::image_type::image_2d>> depth_target;
 	ste_resource<gl::texture<gl::image_type::image_2d>> backface_depth_target;
 	ste_resource<gl::texture<gl::image_type::image_2d>> downsampled_depth_target;
@@ -31,8 +33,6 @@ private:
 	gl::image_view<gl::image_type::image_2d> gbuffer_level_1;
 
 	gl::framebuffer fbo, depth_fbo, depth_backface_fbo;
-
-	int depth_buffer_levels;
 	glm::uvec2 extent;
 
 	mutable signal<> gbuffer_resized_signal;
@@ -44,7 +44,7 @@ private:
 public:
 	deferred_gbuffer(const ste_context &ctx,
 					 const glm::uvec2 &extent,
-					 int depth_buffer_levels);
+					 levels_t depth_buffer_levels);
 	~deferred_gbuffer() noexcept {}
 
 	deferred_gbuffer(deferred_gbuffer&&) = default;
