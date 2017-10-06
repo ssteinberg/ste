@@ -19,7 +19,7 @@ class camera_projection_reversed_infinite_perspective : public camera_projection
 private:
 	T fovy;
 	T aspect;
-	T near_clip_plane;
+	metre near_clip_plane;
 
 	T tan_half_fovy{};
 	glm::tvec4<T> proj_xywz;
@@ -30,18 +30,18 @@ public:
 	*	@param	aspect		Aspect ratio of x to y
 	*	@param	near_clip_plane	Distance to the near clip plane
 	*/
-	camera_projection_reversed_infinite_perspective(const T &fovy, 
-													const T &aspect, 
-													const T &near_clip_plane)
+	camera_projection_reversed_infinite_perspective(T fovy, 
+													T aspect, 
+													metre near_clip_plane)
 		: fovy(fovy), aspect(aspect), near_clip_plane(near_clip_plane)
 	{
 		assert(aspect > 0);
 		assert(fovy > 0);
-		assert(near_clip_plane > 0);
+		assert(near_clip_plane > 0_m);
 
 		tan_half_fovy = glm::tan(fovy / static_cast<T>(2));
-		const float one_over_tan_half_fovy = static_cast<T>(1) / tan_half_fovy;
-		const float one_over_aspect_tan_half_fovy = static_cast<T>(1) / (aspect * tan_half_fovy);
+		const auto one_over_tan_half_fovy = static_cast<T>(1) / tan_half_fovy;
+		const auto one_over_aspect_tan_half_fovy = static_cast<T>(1) / (aspect * tan_half_fovy);
 
 		proj_xywz = { one_over_aspect_tan_half_fovy, -one_over_tan_half_fovy, near_clip_plane, static_cast<T>(-1) };
 	}
@@ -55,42 +55,42 @@ public:
 	/*
 	*	@brief	Projects a eye space position to homogeneous clip coordinates.
 	*/
-	glm::tvec4<T> project(const glm::tvec4<T> &v) const final override {
-		return glm::tvec4<T>{ v.x, v.y, v.w, v.z } * proj_xywz;
+	glm::tvec4<T> project(metre_vec4 v) const final override {
+		return glm::tvec4<T>{ static_cast<T>(v.x), static_cast<T>(v.y), static_cast<T>(v.w), static_cast<T>(v.z) } * proj_xywz;
 	}
 
 	/*
 	*	@brief	Projects a z value to a depth value.
 	*/
-	T project_depth(const T &z) const final override {
-		return -near_clip_plane / z;
+	metre project_depth(metre z) const final override {
+		return -near_clip_plane / static_cast<T>(z);
 	}
 
 	/*
 	*	@brief	Unprojects a depth value to the z value
 	*/
-	T unproject_depth(const T &d) const final override {
-		return -near_clip_plane / d;
+	metre unproject_depth(metre d) const final override {
+		return -near_clip_plane / static_cast<T>(d);
 	}
 
 	/*
 	*	@brief	Unprojects a screen position, given with depth value and normalized screen coordinates, into eye space.
 	*/
-	glm::tvec3<T> unproject_screen_position(const T &depth, const glm::tvec2<T> &norm_frag_coords) const final override {
-		float z = unproject_depth(depth);
+	metre_vec3 unproject_screen_position(metre depth, const glm::tvec2<T> &norm_frag_coords) const final override {
+		auto z = unproject_depth(depth);
 		return unproject_screen_position_with_z(z, norm_frag_coords);
 	}
 
 	/*
 	*	@brief	Unprojects a screen position, given with a eye space z value and normalized screen coordinates, into eye space.
 	*/
-	glm::tvec3<T> unproject_screen_position_with_z(const T &z, const glm::tvec2<T> &norm_frag_coords) const final override {
+	metre_vec3 unproject_screen_position_with_z(metre z, const glm::tvec2<T> &norm_frag_coords) const final override {
 		auto t = norm_frag_coords * static_cast<T>(2);
 		t -= glm::tvec2<T>(1);
 
-		glm::tvec2<T> xy = (t * z) / glm::tvec2<T>(proj_xywz.x, proj_xywz.y);
+		glm::tvec2<T> xy = (t * static_cast<T>(z)) / glm::tvec2<T>(proj_xywz.x, proj_xywz.y);
 
-		return glm::tvec3<T>(-xy.x, -xy.y, z);
+		return { metre(-xy.x), metre(-xy.y), z };
 	}
 
 	/*
@@ -99,7 +99,7 @@ public:
 	glm::tmat4x4<T> projection_matrix() const final override {
 		return reversed_infinite_perspective<T>(fovy,
 												aspect,
-												near_clip_plane);
+												static_cast<float>(near_clip_plane));
 	}
 
 	auto get_fovy() const { return fovy; }

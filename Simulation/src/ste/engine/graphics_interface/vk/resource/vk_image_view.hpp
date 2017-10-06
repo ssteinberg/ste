@@ -30,12 +30,9 @@ namespace vk {
 template <image_type type, typename host_allocator = vk_host_allocator<>>
 class vk_image_view : public allow_type_decay<vk_image_view<type, host_allocator>, VkImageView> {
 private:
-	static constexpr int ctor_array_layers_multiplier = image_is_cubemap<type>::value ? 6 : 1;
+	static constexpr std::uint32_t ctor_array_layers_multiplier = image_is_cubemap<type>::value ? 6 : 1;
 
 	struct ctor {};
-
-public:
-	static constexpr int all_mip_levels = std::numeric_limits<std::uint32_t>::max();
 
 private:
 	optional<VkImageView> view;
@@ -45,10 +42,10 @@ private:
 protected:
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t base_mip,
-				  std::uint32_t mips,
-				  std::uint32_t base_layer,
-				  std::uint32_t layers,
+				  levels_t base_mip,
+				  levels_t mips,
+				  layers_t base_layer,
+				  layers_t layers,
 				  const image_view_swizzle &swizzle,
 				  const ctor&)
 		: device(parent.get_creating_device()), image_format(image_format)
@@ -56,10 +53,10 @@ protected:
 		VkImageView view;
 
 		VkImageSubresourceRange range = {};
-		range.baseArrayLayer = base_layer;
-		range.layerCount = layers;
-		range.baseMipLevel = base_mip;
-		range.levelCount = mips;
+		range.baseArrayLayer = static_cast<std::uint32_t>(base_layer);
+		range.layerCount = static_cast<std::uint32_t>(layers);
+		range.baseMipLevel = static_cast<std::uint32_t>(base_mip);
+		range.levelCount = static_cast<std::uint32_t>(mips);
 		range.aspectMask = static_cast<VkImageAspectFlags>(format_aspect(static_cast<format>(image_format)));
 
 		VkImageViewCreateInfo create_info = {};
@@ -94,17 +91,17 @@ public:
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t base_layer,
-				  std::uint32_t base_mip,
-				  std::uint32_t mips,
+				  layers_t base_layer,
+				  levels_t base_mip,
+				  levels_t mips,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
 						image_format,
 						base_mip,
-						glm::min(parent.get_mips() - base_mip, mips),
+						std::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
-						1 * ctor_array_layers_multiplier,
+						1_layer * ctor_array_layers_multiplier,
 						swizzle,
 						ctor()) {}
 	/**
@@ -119,15 +116,15 @@ public:
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t base_layer,
-				  std::uint32_t mips = all_mip_levels,
+				  layers_t base_layer,
+				  levels_t mips = all_mips,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
 						image_format,
 						base_layer,
-						0,
-						glm::min(parent.get_mips(), mips),
+						0_mip,
+						std::min(parent.get_mips(), mips),
 						swizzle) {}
 	/**
 	*	@brief	Ctor for non-array image view.
@@ -143,8 +140,8 @@ public:
 				  std::enable_if_t<!sfinae>* = nullptr)
 		: vk_image_view(parent,
 						image_format,
-						0,
-						all_mip_levels,
+						0_layer,
+						all_mips,
 						swizzle) {}
 
 	/**
@@ -161,16 +158,16 @@ public:
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t base_layer,
-				  std::uint32_t base_mip,
-				  std::uint32_t layers,
-				  std::uint32_t mips = all_mip_levels,
+				  layers_t base_layer,
+				  levels_t base_mip,
+				  layers_t layers,
+				  levels_t mips = all_mips,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
 						image_format,
 						base_mip,
-						glm::min(parent.get_mips() - base_mip, mips),
+						std::min(parent.get_mips() - base_mip, mips),
 						base_layer * ctor_array_layers_multiplier,
 						layers * ctor_array_layers_multiplier,
 						swizzle,
@@ -188,16 +185,16 @@ public:
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t base_layer,
-				  std::uint32_t layers,
+				  layers_t base_layer,
+				  layers_t layers,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
 						image_format,
 						base_layer,
-						0,
+						0_mip,
 						layers,
-						all_mip_levels,
+						all_mips,
 						swizzle) {}
 	/**
 	*	@brief	Ctor for array image view.
@@ -210,7 +207,7 @@ public:
 	template <bool sfinae = image_has_arrays<type>::value>
 	vk_image_view(const vk::vk_image<host_allocator> &parent,
 				  VkFormat image_format,
-				  std::uint32_t layers,
+				  layers_t layers,
 				  const image_view_swizzle &swizzle = image_view_swizzle(),
 				  std::enable_if_t<sfinae>* = nullptr)
 		: vk_image_view(parent,
@@ -229,9 +226,9 @@ public:
 				  const image_view_swizzle &swizzle = image_view_swizzle())
 		: vk_image_view(parent,
 						parent.get_format(),
-						0,
+						0_mip,
 						parent.get_mips(),
-						0,
+						0_layer,
 						parent.get_layers(),
 						swizzle,
 						ctor()) {}

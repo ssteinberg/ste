@@ -30,25 +30,25 @@ private:
 private:
     void attach_handles(const ste_context &ctx) {
         auto& downsampled = gbuffer->get_downsampled_depth_target().get_image();
-        int levels = downsampled.get_mips();
+        auto levels = downsampled.get_mips();
 
         // Create view of individual levels
         lib::vector<gl::image_view<gl::image_type::image_2d>> level_views;
-        level_views.reserve(levels);
-        for (int l = 0; l < levels; ++l)
+        level_views.reserve(static_cast<std::size_t>(levels));
+        for (auto l = 0_mip; l < levels; ++l)
             level_views.emplace_back(downsampled,
                                      downsampled.get_format(),
-                                     0, l, 1);
+                                     0_layer, l, 1_mip);
         downsampled_depth_levels = std::move(level_views);
 
         // Attach to pipeline
         lib::vector<gl::pipeline::image> output_images;
-        output_images.reserve(levels);
-        for (int l = 0; l < levels; ++l)
-            output_images.emplace_back(downsampled_depth_levels[l],
+        output_images.reserve(static_cast<std::size_t>(levels));
+        for (auto l = 0_mip; l < levels; ++l)
+            output_images.emplace_back(downsampled_depth_levels[static_cast<std::size_t>(l)],
                                        gl::image_layout::general);
 
-        pipeline()["levels"] = levels;
+        pipeline()["levels"] = static_cast<std::size_t>(levels);
         pipeline()["output_images"] = gl::bind(0, output_images);
     }
 
@@ -74,9 +74,9 @@ public:
 
     void record(gl::command_recorder &recorder) override final {
         constexpr int jobs = 32;
-        int levels = gbuffer->get_downsampled_depth_target().get_image().get_mips() + 1;
+        auto levels = gbuffer->get_downsampled_depth_target().get_image().get_mips() + 1_mip;
 
-        auto extent = static_cast<glm::ivec2>(gbuffer->get_depth_target().get_image().get_extent()) >> levels;
+        auto extent = static_cast<glm::ivec2>(gbuffer->get_depth_target().get_image().get_extent()) >> static_cast<std::int32_t>(levels);
         auto workgroup = (extent + glm::ivec2(jobs - 1)) / jobs;
 
         recorder << dispatch_task(workgroup.x, workgroup.y, 1);

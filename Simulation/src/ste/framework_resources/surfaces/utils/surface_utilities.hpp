@@ -18,7 +18,7 @@ struct surface_utilities {
 	*	@brief	Computes maximal amount of mipmap levels, i.e. the count of levels to create a complete mipmap-chain.
 	*/
 	template <typename extent_type>
-	static constexpr std::size_t max_levels(const extent_type &extent) {
+	static constexpr levels_t max_levels(const extent_type &extent) {
 		static constexpr auto dimensions = type_elements_count_v<extent_type>;
 		static_assert(dimensions >= 1 && dimensions <= 3);
 
@@ -26,7 +26,7 @@ struct surface_utilities {
 		if constexpr (dimensions > 1) max_comp = glm::max(max_comp, extent.y);
 		if constexpr (dimensions > 2) max_comp = glm::max(max_comp, extent.z);
 
-		return static_cast<std::size_t>(glm::log2<float>(static_cast<float>(max_comp)) + 1);
+		return levels_t(static_cast<std::size_t>(glm::log2<float>(static_cast<float>(max_comp)) + 1));
 	}
 
 	/**
@@ -37,7 +37,7 @@ struct surface_utilities {
 	*/
 	template <typename extent_type>
 	static constexpr auto extent(const extent_type &surface_extent,
-								 std::size_t level = 0) {
+								 levels_t level = 0_mips) {
 		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
 						surface_extent >> static_cast<typename extent_type::value_type>(level));
 	}
@@ -58,7 +58,7 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr auto extent_in_blocks(const extent_type &surface_extent,
-										   std::size_t level = 0) {
+										   levels_t level = 0_mips) {
 		static constexpr auto dimensions = type_elements_count_v<extent_type>;
 		static_assert(dimensions >= 1 && dimensions <= 3);
 
@@ -81,7 +81,7 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr auto blocks(const extent_type &surface_extent,
-								 std::size_t level) {
+								 levels_t level) {
 		static constexpr auto dimensions = type_elements_count_v<extent_type>;
 		static_assert(dimensions >= 1 && dimensions <= 3);
 
@@ -104,9 +104,9 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr auto blocks_layer(const extent_type &surface_extent,
-									   std::size_t levels) {
+									   levels_t levels) {
 		std::size_t b = 0;
-		for (std::size_t l = 0; l < levels; ++l)
+		for (auto l = 0_mips; l < levels; ++l)
 			b += blocks<format>(surface_extent, l);
 
 		return b;
@@ -122,14 +122,14 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr std::size_t offset_blocks(const extent_type &surface_extent,
-											   std::size_t levels,
-											   std::size_t layer,
-											   std::size_t level) {
+											   levels_t levels,
+											   layers_t layer,
+											   levels_t level) {
 		std::size_t level_offset = 0;
-		for (std::size_t l = 0; l < level; ++l)
+		for (auto l = 0_mips; l < level; ++l)
 			level_offset += blocks<format>(surface_extent, l);
 
-		return blocks_layer<format>(surface_extent, levels) * layer + level_offset;
+		return blocks_layer<format>(surface_extent, levels) * static_cast<std::size_t>(layer) + level_offset;
 	}
 
 	/**
@@ -148,9 +148,9 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr auto bytes(const extent_type &surface_extent,
-								std::size_t levels,
-								std::size_t layers) {
-		return block_bytes<format>() * blocks_layer<format>(surface_extent, levels) * layers;
+								levels_t levels,
+								layers_t layers) {
+		return block_bytes<format>() * blocks_layer<format>(surface_extent, levels) * static_cast<std::size_t>(layers);
 	}
 
 	/**
@@ -160,7 +160,7 @@ struct surface_utilities {
 	*/
 	template <gl::format format, typename extent_type>
 	static constexpr auto bytes(const extent_type &surface_extent,
-								std::size_t level) {
+								levels_t level) {
 		return block_bytes<format>() * blocks<format>(surface_extent, level);
 	}
 };

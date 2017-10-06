@@ -24,11 +24,11 @@ namespace gl {
 
 template <
 	typename T,
-	std::uint64_t max_sparse_size = 1024 * 1024
+	std::uint64_t max_sparse_size_bytes = 1024 * 1024
 >
 class vector :
 	ste_resource_deferred_create_trait,
-	public allow_type_decay<vector<T, max_sparse_size>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
+	public allow_type_decay<vector<T, max_sparse_size_bytes>, device_buffer_sparse<T, device_resource_allocation_policy_device>> {
 	//static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
@@ -40,11 +40,11 @@ public:
 	using value_type = T;
 
 	static constexpr bool sparse_container = true;
-	static constexpr auto sparse_size = max_sparse_size;
+	static constexpr auto sparse_size = byte_t(max_sparse_size_bytes);
 
-	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, max_sparse_size>>;
-	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, max_sparse_size>>;
-	using update_cmd_t = _internal::vector_cmd_update_buffer<vector<T, max_sparse_size>>;
+	using insert_cmd_t = _internal::vector_cmd_insert<vector<T, max_sparse_size_bytes>>;
+	using resize_cmd_t = _internal::vector_cmd_resize<vector<T, max_sparse_size_bytes>>;
+	using update_cmd_t = _internal::vector_cmd_update_buffer<vector<T, max_sparse_size_bytes>>;
 
 private:
 	buffer_t buffer;
@@ -64,7 +64,7 @@ public:
 		   const buffer_usage &usage,
 		   const char *name)
 		: buffer(ctx,
-				 max_sparse_size,
+				 max_sparse_size_bytes,
 				 usage | buffer_usage_additional_flags,
 				 name) {}
 

@@ -18,7 +18,7 @@ enum class memory_dedicated_allocation_flag {
 };
 
 struct memory_requirements {
-	std::size_t		size;
+	byte_t			bytes;
 	std::size_t		alignment;
 	std::uint32_t	type_bits;
 
@@ -27,7 +27,7 @@ struct memory_requirements {
 	memory_requirements() = default;
 	explicit memory_requirements(VkMemoryRequirements2KHR req,
 								 optional<VkMemoryDedicatedRequirementsKHR> dedicated) {
-		size = req.memoryRequirements.size;
+		bytes = byte_t(req.memoryRequirements.size);
 		alignment = req.memoryRequirements.alignment;
 		type_bits = req.memoryRequirements.memoryTypeBits;
 

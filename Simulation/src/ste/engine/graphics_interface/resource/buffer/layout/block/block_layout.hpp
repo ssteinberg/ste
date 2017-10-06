@@ -36,24 +36,25 @@ struct block_layout {
 	/*
 	*	@brief	Requested block base alignment
 	*/
-	static constexpr std::size_t block_base_alignment = base_alignment;
+	static constexpr byte_t block_base_alignment = byte_t(base_alignment);
 
-	static constexpr std::size_t _round_up(std::size_t s, std::size_t alignment) {
-		return ((s + alignment - 1) / alignment) * alignment;
+	static constexpr auto _round_up(byte_t s, byte_t alignment) {
+		return ((s + byte_t(alignment) - 1_B) / static_cast<std::size_t>(alignment)) * static_cast<std::size_t>(alignment);
 	}
 
 	/*
 	*	@brief	Block alignment of this struct
 	*/
-	static constexpr std::size_t struct_base_alignment = _round_up(block_layout_struct_base_alignment<Ts...>::value, base_alignment);
+	static constexpr byte_t struct_base_alignment = _round_up(block_layout_struct_base_alignment<Ts...>::value,
+															  block_base_alignment);
 
 	/*
 	*	@brief	Sizeof this block layout
 	*/
-	static constexpr std::size_t sizeof_block_element = _round_up(sizeof(_element_t), struct_base_alignment);
-	static constexpr std::size_t block_element_padding_bytes = sizeof_block_element - sizeof(_element_t);
+	static constexpr byte_t sizeof_block_element = _round_up(byte_t(sizeof(_element_t)), struct_base_alignment);
+	static constexpr byte_t block_element_padding_bytes = sizeof_block_element - byte_t(sizeof(_element_t));
 
-	_detail::block_layout_front<_element_t, block_element_padding_bytes> _front;
+	_detail::block_layout_front<_element_t, static_cast<std::size_t>(block_element_padding_bytes)> _front;
 
 	template <int N>
 	auto& get() {
@@ -95,9 +96,9 @@ template <int N, typename Block>
 auto block_offset_of() {
 	static_assert(is_block_layout_v<Block>, "Block is not a block_layout");
 	// Use this opportunity to assert the generated block layout size
-	static_assert(sizeof(Block) == Block::sizeof_block_element);
+	static_assert(byte_t(sizeof(Block)) == Block::sizeof_block_element);
 
-	return offsetof(Block, _front.block) + _detail::block_layout_member_offset<N>::template offset<decltype(Block::_front.block)>();
+	return byte_t(offsetof(Block, _front.block)) + _detail::block_layout_member_offset<N>::template offset<decltype(Block::_front.block)>();
 }
 
 }

@@ -13,8 +13,8 @@ namespace gl {
 class cmd_fill_buffer : public command {
 private:
 	VkBuffer buffer;
-	std::size_t offset;
-	std::size_t range;
+	byte_t offset;
+	byte_t range;
 	std::uint32_t data;
 
 public:
@@ -43,8 +43,8 @@ private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
 		vkCmdFillBuffer(command_buffer,
 						buffer,
-						offset,
-						range,
+						static_cast<std::size_t>(offset),
+						static_cast<std::size_t>(range),
 						data);
 	}
 };

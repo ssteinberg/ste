@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,6 +7,8 @@
 #include <command.hpp>
 #include <device_image_base.hpp>
 #include <image_layout.hpp>
+
+#include <image_copy_region.hpp>
 
 #include <lib/vector.hpp>
 
@@ -32,10 +34,12 @@ public:
 				   const image_layout &src_image_layout,
 				   const device_image_base &dst_image,
 				   const image_layout &dst_image_layout,
-				   const lib::vector<VkImageCopy> &ranges = {})
+				   const lib::vector<image_copy_region_t> &ranges = {})
 		: src_image(src_image.get_image_handle()), src_image_layout(src_image_layout),
-		  dst_image(dst_image.get_image_handle()), dst_image_layout(dst_image_layout),
-		  ranges(ranges) {
+		  dst_image(dst_image.get_image_handle()), dst_image_layout(dst_image_layout) {
+		for (auto &c : ranges)
+			this->ranges.push_back(c.vk_descriptor());
+
 		if (this->ranges.size() == 0) {
 			assert(false);
 		}

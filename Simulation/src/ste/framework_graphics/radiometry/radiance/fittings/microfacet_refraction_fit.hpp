@@ -50,11 +50,11 @@ public:
 		if (fit_data->header.size == 0)
 			throw microfacet_fit_error("LUT size zero");
 
-		std::size_t lut_row_size = fit_data->header.size;
+		const std::size_t lut_row_size = fit_data->header.size;
 		fit_data->alloc_with_size(lut_row_size);
 
-		auto lut_size = lut_row_size * lut_row_size * sizeof(refraction_fit_data::refraction_fit_exp2);
-		auto bytes_read = is.read(reinterpret_cast<char*>(fit_data->data.get()), lut_size / sizeof(char)).gcount();
+		const auto lut_size = lut_row_size * lut_row_size * sizeof(refraction_fit_data::refraction_fit_exp2);
+		const auto bytes_read = is.read(reinterpret_cast<char*>(fit_data->data.get()), lut_size / sizeof(char)).gcount();
 		if (bytes_read != lut_size)
 			throw microfacet_fit_error("Premature EOF");
 
@@ -75,7 +75,7 @@ public:
 		const auto size = static_cast<std::uint32_t>(fit_data->header.size);
 
 		auto lut_texture = resource::surface_2d<gl::format::r32g32b32a32_sfloat>({ size, size });
-		auto lut0 = lut_texture[0];
+		auto lut0 = lut_texture[0_mip];
 
 		for (std::uint32_t y = 0; y < size; ++y) {
 			for (std::uint32_t x = 0; x < size; ++x) {

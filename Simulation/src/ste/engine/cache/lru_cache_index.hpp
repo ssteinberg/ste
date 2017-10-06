@@ -78,8 +78,8 @@ private:
 		oa << *this;
 	}
 
-	std::uint64_t populate_map(const std::experimental::filesystem::path &path) {
-		std::uint64_t size = 0;
+	auto populate_map(const std::experimental::filesystem::path &path) {
+		auto size = 0_B;
 		for (lru_list_iterator_type it = lru_list.begin(); it != lru_list.end(); ++it) {
 			auto &k = it->k;
 			val_type v(k, path, it->name);
@@ -97,7 +97,7 @@ private:
 				std::ifstream ifs(index_path.string(), std::ios::binary);
 				boost::archive::binary_iarchive ia(ifs);
 				ia >> *this;
-				total_size = populate_map(path);
+				total_size = static_cast<std::uint64_t>(populate_map(path));
 			} catch (const std::exception &e) {
 				using namespace text::attributes;
 				ste_log_warn() << b("LRU Cache: ") + "Failed reading index (Reason: " + e.what() + "). Clearing " + i(lib::to_string(path.string())) + "." << std::endl;
@@ -139,10 +139,10 @@ private:
 		val_guard->replace(std::move(v));
 	}
 
-	std::uint64_t erase(const key_type &k) {
+	byte_t erase(const key_type &k) {
 		auto val_guard = map[k];
 		if (!val_guard.is_valid())
-			return 0;
+			return 0_B;
 
 		map.remove(k);
 		lru_list.erase(val_guard->get_lru_it());
@@ -150,8 +150,8 @@ private:
 		return val_guard->get_size();
 	}
 
-	std::uint64_t erase_back() {
-		if (!lru_list.size()) return 0;
+	byte_t erase_back() {
+		if (!lru_list.size()) return 0_B;
 		auto k = lru_list.back().k;
 
 		return erase(k);

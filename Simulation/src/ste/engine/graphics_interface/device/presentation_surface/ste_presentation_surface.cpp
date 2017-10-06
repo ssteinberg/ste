@@ -242,7 +242,7 @@ void ste_presentation_surface::create_swap_chain() {
 
 	// Swap chain properties
 	auto size = get_surface_extent();
-	const std::uint32_t layers = 1;
+	const auto layers = 1_layers;
 	const std::uint32_t min_image_count = surface_presentation_caps.minImageCount;
 	const std::uint32_t max_image_count = surface_presentation_caps.maxImageCount > 0 ?
 		surface_presentation_caps.maxImageCount :

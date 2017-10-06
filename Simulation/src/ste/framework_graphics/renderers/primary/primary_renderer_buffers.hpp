@@ -30,8 +30,11 @@ class primary_renderer_buffers {
 	using camera_t = camera<float, camera_projection_reversed_infinite_perspective>;
 
 private:
-	static int gbuffer_depth_target_levels() {
-		return static_cast<int>(glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier))) + 1;
+	static levels_t gbuffer_depth_target_levels() {
+		auto limit = static_cast<int>(glm::ceil(glm::log(linked_light_lists::lll_image_res_multiplier))) + 1;
+		assert(limit > 0);
+
+		return std::max(1_mip, static_cast<levels_t>(limit));
 	}
 
 	static gl::pipeline_external_binding_set create_common_binding_set_collection(const ste_context &ctx);

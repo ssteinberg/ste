@@ -11,8 +11,8 @@ namespace gl {
 
 struct device_sparse_memory_bind {
 	ste_gl_device_memory_allocator::allocation_t *allocation{ nullptr };
-	std::uint64_t resource_offset_bytes;
-	std::uint64_t size_bytes;
+	byte_t resource_offset_bytes;
+	byte_t size_bytes;
 };
 
 }

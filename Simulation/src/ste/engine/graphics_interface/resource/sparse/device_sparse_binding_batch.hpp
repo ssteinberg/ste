@@ -101,14 +101,14 @@ public:
 		for (auto &bind : binds) {
 			VkSparseMemoryBind b = {};
 
-			b.resourceOffset = bind.resource_offset_bytes;
-			b.size = bind.size_bytes;
+			b.resourceOffset = static_cast<std::size_t>(bind.resource_offset_bytes);
+			b.size = static_cast<std::size_t>(bind.size_bytes);
 
 			if (bind.allocation != nullptr) {
 				// Bind
 				assert(*bind.allocation);
 				b.memory = *bind.allocation->get_memory();
-				b.memoryOffset = (**bind.allocation).get_offset();
+				b.memoryOffset = static_cast<std::size_t>((**bind.allocation).get_offset());
 			}
 			else {
 				// Unbind

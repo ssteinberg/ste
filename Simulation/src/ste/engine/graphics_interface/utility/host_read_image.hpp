@@ -35,10 +35,10 @@ namespace _internal {
 template <gl::format format, gl::image_type image_type, class allocation_policy>
 auto host_read_image(const ste_context &ctx,
 					 const device_image<image_dimensions_v<image_type>, allocation_policy> &image,
-					 std::uint32_t initial_layer,
-					 std::uint32_t initial_level,
-					 std::uint32_t max_layer,
-					 std::uint32_t max_level,
+					 layers_t initial_layer,
+					 levels_t initial_level,
+					 layers_t max_layer,
+					 levels_t max_level,
 					 lib::vector<wait_semaphore> &&wait_semaphores = {},
 					 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	using block_type = typename gl::format_traits<format>::block_type;
@@ -46,18 +46,19 @@ auto host_read_image(const ste_context &ctx,
 	using extent_type = glm::u32vec3;
 	static constexpr int dimensions = image_dimensions_v<image_type>;
 
-	const auto aspect = static_cast<VkImageAspectFlags>(format_aspect(format));
-
 	// Validate format
 	if (image.get_format() != format) {
 		throw device_image_format_exception("Surface and image format mismatch");
 	}
 
 	// Calculate layers and levels to copy
-	auto layers = std::min(max_layer + 1,
-						   image.get_layers());
-	auto mips = std::min(max_level + 1,
-						 image.get_mips());
+	const auto last_layer = std::min(image.get_layers() - 1_layer,
+									 max_layer);
+	const auto last_mip = std::min(image.get_mips() - 1_mip,
+								   max_level);
+	const auto layers = last_layer - initial_layer + 1_layer;
+	const auto mips = last_mip - initial_level + 1_mip;
+
 	if (layers <= initial_layer) {
 		throw device_image_format_exception("initial_layer out of bounds");
 	}
@@ -66,35 +67,33 @@ auto host_read_image(const ste_context &ctx,
 	}
 
 	// Surface properties
+	const auto block_bytes = resource::surface_utilities::block_bytes<format>();
 	const auto surface_extent = resource::surface_utilities::extent(image.get_extent(), initial_level);
-	const auto surface_levels = mips - initial_level;
-	const auto surface_layers = layers - initial_layer;
 	const auto surface_bytes = resource::surface_utilities::bytes<format>(surface_extent,
-																		  surface_levels,
-																		  surface_layers);
-	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent, surface_levels) * surface_layers;
-	assert(surface_bytes == surface_blocks * sizeof(block_type));
+																		  mips,
+																		  layers);
+	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent) * static_cast<std::uint64_t>(layers);
 
 	// Create regions to copy
-	lib::vector<VkBufferImageCopy> regions;
-	regions.reserve(surface_layers * surface_levels);
-	for (std::uint32_t l = initial_layer; l < layers; ++l) {
-		for (std::uint32_t m = initial_level; m < mips; ++m) {
+	lib::vector<buffer_image_copy_region_t> regions;
+	regions.reserve(static_cast<std::size_t>(layers) * static_cast<std::size_t>(mips));
+	for (auto l = initial_layer; l <= last_layer; ++l) {
+		for (auto m = initial_level; m <= last_mip; ++m) {
 			auto extent = resource::surface_utilities::extent(image.get_extent(), m);
 			auto buffer_offset_blocks = resource::surface_utilities::offset_blocks<format>(surface_extent,
-																						   surface_levels,
+																						   mips,
 																						   l - initial_layer,
 																						   m - initial_level);
 
-			VkBufferImageCopy copy_region = {
-				buffer_offset_blocks, 0, 0,
-				{ aspect, m, l, 1 },
-				{ 0, 0, 0 },
-				{ 1, 1, 1 }
-			};
-			if constexpr (dimensions > 0) copy_region.imageExtent.width = static_cast<std::uint32_t>(extent[0]);
-			if constexpr (dimensions > 1) copy_region.imageExtent.height = static_cast<std::uint32_t>(extent[1]);
-			if constexpr (dimensions > 2) copy_region.imageExtent.depth = static_cast<std::uint32_t>(extent[2]);
+			buffer_image_copy_region_t copy_region;
+			copy_region.buffer_offset = buffer_offset_blocks;
+			copy_region.image_format = format;
+			copy_region.mip = m;
+			copy_region.base_layer = l;
+			copy_region.layers = 1_layer;
+			if constexpr (dimensions > 0) copy_region.extent.x = static_cast<std::uint32_t>(extent[0]);
+			if constexpr (dimensions > 1) copy_region.extent.y = static_cast<std::uint32_t>(extent[1]);
+			if constexpr (dimensions > 2) copy_region.extent.z = static_cast<std::uint32_t>(extent[2]);
 
 			regions.push_back(copy_region);
 		}
@@ -150,8 +149,8 @@ auto host_read_image(const ste_context &ctx,
 	return ctx.engine().task_scheduler().schedule_now([=, staging_ptr = std::move(staging_ptr), fence = std::move(fence)]() {
 		// Create surface
 		auto surface = lib::allocate_unique<resource::surface<format, image_type>>(surface_extent,
-																				   surface_layers,
-																				   surface_levels);
+																				   layers,
+																				   mips);
 
 		// Wait for device completion 
 		(*fence)->get_wait();
@@ -162,7 +161,7 @@ auto host_read_image(const ste_context &ctx,
 		// Copy from staging
 		std::memcpy(surface->data(),
 					staging_ptr->get_mapped_ptr(),
-					surface_bytes);
+					surface_blocks * static_cast<std::size_t>(block_bytes));
 
 		return surface;
 	});
@@ -185,9 +184,9 @@ auto host_read_image(const ste_context &ctx,
 template <gl::format format, class allocation_policy>
 auto host_read_image_1d(const ste_context &ctx,
 						const device_image<1, allocation_policy> &image,
-						std::uint32_t initial_level = 0,
-						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						std::uint32_t layer = 0,
+						levels_t initial_level = 0_mip,
+						levels_t max_level = all_mips,
+						layers_t layer = 0_layer,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
 						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d>(ctx,
@@ -215,9 +214,9 @@ auto host_read_image_1d(const ste_context &ctx,
 template <gl::format format, class allocation_policy>
 auto host_read_image_2d(const ste_context &ctx,
 						const device_image<2, allocation_policy> &image,
-						std::uint32_t initial_level = 0,
-						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						std::uint32_t layer = 0,
+						levels_t initial_level = 0_mip,
+						levels_t max_level = all_mips,
+						layers_t layer = 0_layer,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
 						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d>(ctx,
@@ -245,9 +244,9 @@ auto host_read_image_2d(const ste_context &ctx,
 template <gl::format format, class allocation_policy>
 auto host_read_image_3d(const ste_context &ctx,
 						const device_image<3, allocation_policy> &image,
-						std::uint32_t initial_level = 0,
-						std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-						std::uint32_t layer = 0,
+						levels_t initial_level = 0_mip,
+						levels_t max_level = all_mips,
+						layers_t layer = 0_layer,
 						lib::vector<wait_semaphore> &&wait_semaphores = {},
 						lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_3d>(ctx,
@@ -266,20 +265,20 @@ auto host_read_image_3d(const ste_context &ctx,
 *
 *	@param	ctx					Context
 *	@param	image				Device image to copy from
-*	@param	initial_level		Initial level to start copying from
-*	@param	max_level			Last level to copy
 *	@param	initial_layer		Initial layer to start copying from
+*	@param	initial_level		Initial level to start copying from
 *	@param	max_layer			Last layer to copy
+*	@param	max_level			Last level to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <gl::format format, class allocation_policy>
 auto host_read_image_1d_array(const ste_context &ctx,
 							  const device_image<1, allocation_policy> &image,
-							  std::uint32_t initial_level = 0,
-							  std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-							  std::uint32_t initial_layer = 0,
-							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
+							  layers_t initial_layer = 0_layer,
+							  levels_t initial_level = 0_mip,
+							  layers_t max_layer = all_layers,
+							  levels_t max_level = all_mips,
 							  lib::vector<wait_semaphore> &&wait_semaphores = {},
 							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_1d_array>(ctx,
@@ -298,20 +297,20 @@ auto host_read_image_1d_array(const ste_context &ctx,
 *
 *	@param	ctx					Context
 *	@param	image				Device image to copy from
-*	@param	initial_level		Initial level to start copying from
-*	@param	max_level			Last level to copy
 *	@param	initial_layer		Initial layer to start copying from
+*	@param	initial_level		Initial level to start copying from
 *	@param	max_layer			Last layer to copy
+*	@param	max_level			Last level to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <gl::format format, class allocation_policy>
 auto host_read_image_2d_array(const ste_context &ctx,
 							  const device_image<2, allocation_policy> &image,
-							  std::uint32_t initial_level = 0,
-							  std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-							  std::uint32_t initial_layer = 0,
-							  std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
+							  layers_t initial_layer = 0_layer,
+							  levels_t initial_level = 0_mip,
+							  layers_t max_layer = all_layers,
+							  levels_t max_level = all_mips,
 							  lib::vector<wait_semaphore> &&wait_semaphores = {},
 							  lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_2d_array>(ctx,
@@ -330,20 +329,20 @@ auto host_read_image_2d_array(const ste_context &ctx,
 *
 *	@param	ctx					Context
 *	@param	image				Device image to copy from
-*	@param	initial_level		Initial level to start copying from
-*	@param	max_level			Last level to copy
 *	@param	initial_layer		Initial layer to start copying from
+*	@param	initial_level		Initial level to start copying from
 *	@param	max_layer			Last layer to copy
+*	@param	max_level			Last level to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <gl::format format, class allocation_policy>
 auto host_read_image_cubemap(const ste_context &ctx,
 							 const device_image<2, allocation_policy> &image,
-							 std::uint32_t initial_level = 0,
-							 std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-							 std::uint32_t initial_layer = 0,
-							 std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
+							 layers_t initial_layer = 0_layer,
+							 levels_t initial_level = 0_mip,
+							 layers_t max_layer = all_layers,
+							 levels_t max_level = all_mips,
 							 lib::vector<wait_semaphore> &&wait_semaphores = {},
 							 lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap>(ctx,
@@ -362,20 +361,20 @@ auto host_read_image_cubemap(const ste_context &ctx,
 *
 *	@param	ctx					Context
 *	@param	image				Device image to copy from
-*	@param	initial_level		Initial level to start copying from
-*	@param	max_level			Last level to copy
 *	@param	initial_layer		Initial layer to start copying from
+*	@param	initial_level		Initial level to start copying from
 *	@param	max_layer			Last layer to copy
+*	@param	max_level			Last level to copy
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
 template <gl::format format, class allocation_policy>
 auto host_read_image_cubemap_array(const ste_context &ctx,
 								   const device_image<2, allocation_policy> &image,
-								   std::uint32_t initial_level = 0,
-								   std::uint32_t max_level = std::numeric_limits<std::uint32_t>::max() - 1,
-								   std::uint32_t initial_layer = 0,
-								   std::uint32_t max_layer = std::numeric_limits<std::uint32_t>::max() - 1,
+								   layers_t initial_layer = 0_layer,
+								   levels_t initial_level = 0_mip,
+								   layers_t max_layer = all_layers,
+								   levels_t max_level = all_mips,
 								   lib::vector<wait_semaphore> &&wait_semaphores = {},
 								   lib::vector<semaphore*> &&signal_semaphores = {}) {
 	return _internal::host_read_image<format, image_type::image_cubemap_array>(ctx,

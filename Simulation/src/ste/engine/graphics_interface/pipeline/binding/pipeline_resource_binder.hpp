@@ -119,7 +119,7 @@ auto bind(const array<T> &array) {
 template <typename T, std::uint64_t b>
 auto bind(const vector<T, b> &vec) {
 	return bind(vec.get(),
-				0, vec.sparse_size);
+				0, static_cast<std::size_t>(vec.sparse_size) / sizeof(T));
 }
 /**
 *	@brief	Buffer binder helper. Binds a Ring buffer.
@@ -138,7 +138,7 @@ auto bind(const ring_buffer<T, C> &ring) {
 template <typename T, std::uint64_t b>
 auto bind(const stable_vector<T, b> &vec) {
 	return bind(vec.get(),
-				0, vec.sparse_size);
+				0, static_cast<std::size_t>(vec.sparse_size) / sizeof(T));
 }
 
 /**

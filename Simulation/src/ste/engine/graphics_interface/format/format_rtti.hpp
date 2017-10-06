@@ -21,7 +21,7 @@ namespace gl {
 
 struct format_rtti {
 	std::uint8_t elements;
-	std::uint8_t block_bytes;
+	byte_t block_bytes;
 	glm::u8vec2 block_extent;
 
 	unsigned is_depth : 1;

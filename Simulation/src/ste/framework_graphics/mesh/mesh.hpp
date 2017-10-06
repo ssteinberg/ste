@@ -48,11 +48,11 @@ private:
 		const float d = 1.f / static_cast<float>(vertices.size());
 		glm::vec3 c{ 0 };
 		for (auto &v : vertices)
-			c += v.p() * d;
+			c += v.p().v() * d;
 
 		float r = .0f;
 		for (auto &v : vertices) {
-			const glm::vec3 u = v.p() - c;
+			const glm::vec3 u = v.p().v() - c;
 			r = glm::max(r, dot(u,u));
 		}
 

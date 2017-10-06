@@ -40,8 +40,8 @@ protected:
 
 	VkFormat image_format;
 	extent_type extent;
-	std::uint32_t mips;
-	std::uint32_t layers;
+	levels_t mips;
+	layers_t layers;
 
 	VkImageUsageFlags usage;
 	bool sparse;
@@ -61,8 +61,11 @@ private:
 	}
 
 protected:
-	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, std::uint64_t offset) override {
-		const vk_result res = vkBindImageMemory(this->device.get(), *this, memory, offset);
+	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) override {
+		const vk_result res = vkBindImageMemory(this->device.get(), 
+												*this, 
+												memory, 
+												static_cast<std::size_t>(offset));
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -74,8 +77,8 @@ protected:
 			 const VkFormat &image_format,
 			 const extent_type &extent,
 			 const VkImageUsageFlags &usage,
-			 std::uint32_t mips = 1,
-			 std::uint32_t layers = 1,
+			 levels_t mips = 1_mips,
+			 layers_t layers = 1_layers,
 			 bool sparse = false)
 		: device(device), image(image),
 		image_format(image_format), extent(extent), mips(mips), layers(layers),
@@ -96,16 +99,16 @@ public:
 			 int dimensions,
 			 const extent_type &extent,
 			 const VkImageUsageFlags &usage,
-			 std::uint32_t mips = 1,
-			 std::uint32_t layers = 1,
+			 levels_t mips = 1_mips,
+			 layers_t layers = 1_layer,
 			 bool supports_cube_views = false,
 			 bool optimal_tiling = true,
 			 bool sparse = false)
 		: device(device), image_format(image_format), extent(extent), mips(mips), layers(layers), 
 		usage(usage), sparse(sparse)
 	{
-		assert(mips > 0 && "Non-positive mipmap level count");
-		assert(layers > 0 && "Non-positive array layers count");
+		assert(mips > 0_mips && "Non-positive mipmap level count");
+		assert(layers > 0_layers && "Non-positive array layers count");
 
 		VkImage image;
 
@@ -123,8 +126,8 @@ public:
 		create_info.imageType = vk_type(dimensions);
 		create_info.format = image_format;
 		create_info.extent = { extent.x, extent.y, extent.z };
-		create_info.mipLevels = mips;
-		create_info.arrayLayers = layers;
+		create_info.mipLevels = static_cast<std::uint32_t>(mips);
+		create_info.arrayLayers = static_cast<std::uint32_t>(layers);
 		create_info.samples = VK_SAMPLE_COUNT_1_BIT;
 		create_info.tiling = optimal_tiling ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR;
 		create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -177,12 +180,12 @@ public:
 		}
 	}
 
-	auto get_image_subresource_layout(std::uint32_t mip,
-									  std::uint32_t layer = 0) const {
+	auto get_image_subresource_layout(layers_t mip,
+									  layers_t layer = 0_layer) const {
 		VkImageSubresource subresource = {};
 		subresource.aspectMask = static_cast<VkImageAspectFlags>(format_aspect(static_cast<format>(get_format())));
-		subresource.mipLevel = mip;
-		subresource.arrayLayer = layer;
+		subresource.mipLevel = static_cast<std::uint32_t>(mip);
+		subresource.arrayLayer = static_cast<std::uint32_t>(layer);
 
 		VkSubresourceLayout layout;
 		vkGetImageSubresourceLayout(device.get(), *this, &subresource, &layout);

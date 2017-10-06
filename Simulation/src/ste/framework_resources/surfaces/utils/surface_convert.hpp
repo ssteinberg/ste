@@ -23,22 +23,22 @@ class surface_convert {
 private:
 	struct _impl {
 		template <typename Target>
-		static auto create_target_surface(const typename Target::extent_type &extent, std::size_t levels, std::size_t layers) {
+		static auto create_target_surface(const typename Target::extent_type &extent, levels_t levels, layers_t layers) {
 			if constexpr (gl::image_has_arrays_v<Target::surface_image_type()>)
 				return Target(extent, layers, levels);
 			else {
-				assert(layers == 1);
+				assert(layers == 1_layer);
 				return Target(extent, levels);
 			}
 		}
 
 		template <typename Target>
-		static auto create_target_surface(const typename Target::extent_type &extent, std::size_t levels, std::size_t layers,
+		static auto create_target_surface(const typename Target::extent_type &extent, levels_t levels, layers_t layers,
 										  _detail::surface_storage<typename gl::format_traits<surface_format_v<Target>>::block_type> &&storage) {
 			if constexpr (gl::image_has_arrays_v<Target::surface_image_type()>)
 				return Target(extent, layers, levels, storage);
 			else {
-				assert(layers == 1);
+				assert(layers == 1_layer);
 				return Target(extent, levels, storage);
 			}
 		}
@@ -72,11 +72,11 @@ private:
 			auto levels = surface.levels();
 			auto layers = surface.layers();
 			auto elements = glm::max(src_traits.elements, gl::format_traits<target_format>::elements);
-			Target target = create_target_surface<Target>(extent, layers, levels);
+			Target target = create_target_surface<Target>(extent, levels, layers);
 
 			// Convert blocks
-			for (std::size_t a = 0; a < layers; ++a) {
-				for (std::size_t l = 0; l < levels; ++l) {
+			for (auto a = 0_layers; a < layers; ++a) {
+				for (auto l = 0_mips; l < levels; ++l) {
 					auto src_blocks_count = surface.blocks(l);
 					auto dst_blocks_count = surface.blocks(l);
 					assert(src_blocks_count == dst_blocks_count);
@@ -86,7 +86,7 @@ private:
 
 					for (std::size_t b = 0; b < src_blocks_count; b += 8) {
 						// Set source and destination
-						auto src = src_layer_data + b * src_traits.block_bytes;
+						auto src = src_layer_data + b * static_cast<std::size_t>(src_traits.block_bytes);
 						auto dst = dst_layer_data + b;
 
 						// Maximal count of blocks to decode (limited to 8)
@@ -153,7 +153,7 @@ private:
 				_detail::surface_storage<block_type> storage(std::move(src_ptr_block));
 
 				// Create target surface with populated storage
-				Target target = create_target_surface<Target>(extent, layers, levels, std::move(storage));
+				Target target = create_target_surface<Target>(extent, levels, layers, std::move(storage));
 				return target;
 			}
 

@@ -34,7 +34,7 @@ void profiler::end_segment() {
 	if (!next_segment.query_pool.read_results<timestamp_query_with_indicator>(&last_query_results,
 																			  static_cast<std::uint32_t>(next_segment.atoms.size() * 2) - 1,
 																			  1,
-																			  sizeof(timestamp_query_with_indicator),
+																			  byte_t(sizeof(timestamp_query_with_indicator)),
 																			  VK_QUERY_RESULT_WITH_AVAILABILITY_BIT) ||
 		last_query_results.indicator == 0) {
 		// If results unavailable, create new segment and set it as current
@@ -50,7 +50,7 @@ void profiler::end_segment() {
 	if (!next_segment.query_pool.read_results<timestamp_query_results_t>(timestamps.data(),
 																		 0,
 																		 static_cast<std::uint32_t>(next_segment.atoms.size() * 2),
-																		 sizeof(timestamp_query_results_t))) {
+																		 byte_t(sizeof(timestamp_query_results_t)))) {
 		// Previous read was successful and indicator was positive, but this one fails???
 		assert(false);
 

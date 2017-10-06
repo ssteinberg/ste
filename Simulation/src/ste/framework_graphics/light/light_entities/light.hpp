@@ -29,15 +29,17 @@ private:
 	float sqrt_surface_area;
 
 protected:
-	light(const rgb &color, float intensity, float radius) {
-		auto lum = color.luminance();
+	light(const rgb &color, 
+		  cd_t intensity, 
+		  metre radius) {
+		const  auto lum = color.luminance();
 		auto c = static_cast<decltype(descriptor.emittance)>(color);
 		c = lum > 0 ? c / lum : c;
 
-		sqrt_surface_area = radius;
-
 		descriptor.radius = radius;
-		descriptor.emittance = c * intensity;
+		descriptor.emittance = c * static_cast<float>(intensity);
+
+		sqrt_surface_area = static_cast<float>(radius) * glm::sqrt(glm::pi<float>());
 		update_effective_range();
 	}
 
@@ -45,10 +47,10 @@ protected:
 		sqrt_surface_area = sqrtA;
 
 		rgb emittance = descriptor.emittance;
-		float I0 = emittance.luminance();
-		float I = light_minimal_luminance_multiplier * I0;
+		const float I0 = emittance.luminance();
+		const float I = light_minimal_luminance_multiplier * I0;
 
-		descriptor.effective_range_or_directional_distance = sqrtA * glm::sqrt(I0 / I);
+		descriptor.effective_range_or_directional_distance = metre(sqrtA * glm::sqrt(I0 / I));
 	}
 	void update_effective_range() {
 		update_effective_range(sqrt_surface_area);
@@ -57,18 +59,19 @@ protected:
 public:
 	virtual ~light() noexcept {};
 
-	void set_luminance(const rgb &color, float intensity = 1.f) {
-		auto lum = color.luminance();
+	void set_luminance(const rgb &color, 
+					   cd_t intensity) {
+		const auto lum = color.luminance();
 		auto c = static_cast<decltype(descriptor.emittance)>(color);
 		c = lum > 0 ? c / lum : c;
 
-		descriptor.emittance = c * intensity;
+		descriptor.emittance = c * static_cast<float>(intensity);
 		update_effective_range();
 		Base::notify();
 	}
 
 	auto &get_luminance() const { return descriptor.emittance; }
-	float get_radius() const { return descriptor.radius; }
+	metre get_radius() const { return descriptor.radius; }
 
 	light_descriptor::buffer_data get_descriptor() const override final { return descriptor.get(); }
 };

@@ -9,10 +9,10 @@
 namespace ste {
 namespace gl {
 
-static constexpr int std140_block_layout_base_alignment = 16;
+static constexpr auto std140_block_layout_base_alignment = 16_B;
 
 template <typename... Ts>
-using std140 = block_layout<std140_block_layout_base_alignment, Ts...>;
+using std140 = block_layout<static_cast<std::size_t>(std140_block_layout_base_alignment), Ts...>;
 
 namespace _detail {
 

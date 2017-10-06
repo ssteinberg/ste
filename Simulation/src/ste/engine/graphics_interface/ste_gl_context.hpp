@@ -97,15 +97,15 @@ public:
 	}
 
 	auto enumerate_physical_devices(const VkPhysicalDeviceFeatures &requested_features,
-									std::uint64_t min_device_memory) {
+									byte_t min_device_memory) {
 		lib::vector<vk::vk_physical_device_descriptor> conforming_devices;
 
 		for (auto &d : enumerate_physical_devices()) {
 			// Check device memory
-			std::uint64_t total_device_local_heap_size = 0;
+			auto total_device_local_heap_size = 0_B;
 			for (std::uint32_t i = 0; i < d.memory_properties.memoryHeapCount; ++i)
 				if ((d.memory_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)
-					total_device_local_heap_size += d.memory_properties.memoryHeaps[i].size;
+					total_device_local_heap_size += byte_t(d.memory_properties.memoryHeaps[i].size);
 			if (total_device_local_heap_size < min_device_memory)
 				continue;
 

@@ -48,8 +48,8 @@ struct vk_descriptor_set_write_image {
 
 struct vk_descriptor_set_write_buffer {
 	VkBuffer buffer{ vk_null_handle };
-	std::uint64_t buffer_offset{ 0 };
-	std::uint64_t buffer_range{ 0 };
+	byte_t buffer_offset{ 0_B };
+	byte_t buffer_range{ 0_B };
 
 	vk_descriptor_set_write_buffer(const buffer_view &buffer)
 		: buffer(buffer->get_buffer_handle()),
@@ -57,7 +57,7 @@ struct vk_descriptor_set_write_buffer {
 		buffer_range(buffer.range_bytes()) {}
 
 	operator VkDescriptorBufferInfo() const {
-		return { buffer, buffer_offset, buffer_range };
+		return { buffer, static_cast<std::size_t>(buffer_offset), static_cast<std::size_t>(buffer_range) };
 	}
 };
 

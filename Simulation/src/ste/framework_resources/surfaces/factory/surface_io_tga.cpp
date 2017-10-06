@@ -102,10 +102,10 @@ opaque_surface<2> surface_io::load_tga_2d(const std::experimental::filesystem::p
 	// Create surface
 	opaque_surface<2> tex(format, 
 						  gl::image_type::image_2d, 
-						  { w, h }, 
-						  1, 1, 
+						  { w, h },
+						  1_mips, 1_layers,
 						  std::move(image_data), 
-						  level0_size);
+						  byte_t(level0_size));
 	return tex;
 }
 

@@ -34,7 +34,7 @@ public:
 	using Base::block_type;
 	using Base::traits;
 
-	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
+	static_assert(byte_t(sizeof(block_type)) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
@@ -44,8 +44,8 @@ private:
 
 public:
 	surface_array(const extent_type& extent,
-	              std::size_t layers,
-	              std::size_t levels = 1)
+	              layers_t layers,
+	              levels_t levels = 1_mips)
 		: Base(extent, levels, layers),
 		  storage(Base::blocks_layer() * Base::layers()) {}
 
@@ -71,11 +71,11 @@ public:
 	*
 	*	@param	layer_index		Layer index
 	*/
-	auto operator[](std::size_t layer_index) {
+	auto operator[](layers_t layer_index) {
 		assert(layer_index < Base::layers());
 		return surface_layer_type(Base::extent(),
 		                          Base::levels(),
-		                          storage.view(Base::offset_blocks(layer_index, 0)));
+		                          storage.view(Base::offset_blocks(layer_index, 0_mip)));
 	}
 
 	/**
@@ -83,11 +83,11 @@ public:
 	*
 	*	@param	layer_index		Layer index
 	*/
-	auto operator[](std::size_t layer_index) const {
+	auto operator[](layers_t layer_index) const {
 		assert(layer_index < Base::layers());
 		return surface_layer_type(Base::extent(),
 		                          Base::levels(),
-		                          storage.view(Base::offset_blocks(layer_index, 0)));
+		                          storage.view(Base::offset_blocks(layer_index, 0_mip)));
 	}
 };
 

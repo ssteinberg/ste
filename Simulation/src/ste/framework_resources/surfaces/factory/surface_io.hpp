@@ -40,7 +40,8 @@ private:
 	static void write_png_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
 	static void write_tga_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
 	static void write_jpeg_2d(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, int components, int width, int height);
-	static void write_dds(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, std::size_t bytes, gl::format format, gl::image_type image_type, const glm::u32vec3 &extent, std::uint32_t levels, std::uint32_t layers);
+	static void write_dds(const std::experimental::filesystem::path &file_name, const std::uint8_t *image_data, byte_t bytes, 
+						  gl::format format, gl::image_type image_type, const glm::u32vec3 &extent, levels_t levels, layers_t layers);
 
 	~surface_io() noexcept {}
 
@@ -131,7 +132,7 @@ public:
 		static constexpr auto dimensions = gl::image_dimensions_v<image_type>;
 
 		// Select writer
-		void(*writer)(const std::experimental::filesystem::path &, const std::uint8_t*, std::size_t, gl::format, gl::image_type, const glm::u32vec3&, std::uint32_t, std::uint32_t);
+		void(*writer)(const std::experimental::filesystem::path &, const std::uint8_t*, byte_t, gl::format, gl::image_type, const glm::u32vec3&, levels_t, layers_t);
 		switch (file_format) {
 		case surface_write_file_format::dds:
 			writer = write_dds;

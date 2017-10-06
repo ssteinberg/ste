@@ -28,8 +28,8 @@ public:
 
 private:
 	extent_type surface_extent;
-	std::size_t surface_levels;
-	std::size_t surface_layers;
+	levels_t surface_levels;
+	layers_t surface_layers;
 
 	gl::format format;
 	gl::image_type image_type;
@@ -43,8 +43,8 @@ private:
 				   const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
-				   std::size_t levels,
-				   std::size_t layers)
+				   levels_t levels,
+				   layers_t layers)
 		: surface_extent(extent),
 		surface_levels(levels),
 		surface_layers(layers),
@@ -55,7 +55,7 @@ private:
 		// Sanity checks
 		if (gl::image_dimensions_for_type(image_type) != dimensions)
 			throw surface_opaque_storage_mismatch_error("Unexpected image_type");
-		if (gl::image_is_cubemap_for_type(image_type) && (layers % 6) != 0)
+		if (gl::image_is_cubemap_for_type(image_type) && static_cast<std::size_t>(layers % 6u) != 0)
 			throw surface_opaque_storage_mismatch_error("Expected a cubemap or cubemap array but layers count doesn't match");
 	}
 
@@ -63,25 +63,25 @@ public:
 	opaque_surface(const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
-				   std::size_t levels,
-				   std::size_t layers,
+				   levels_t levels,
+				   layers_t layers,
 				   const std::uint8_t *data,
-				   std::size_t data_size)
+				   byte_t data_size)
 		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
 		if (bytes() != data_size)
 			throw surface_opaque_storage_mismatch_error("Provided storage size does not match surface extent size, levels count, layers count and format");
 
-		storage = lib::allocate_unique<std::uint8_t[]>(data_size);
-		std::memcpy(storage.get(), data, data_size);
+		storage = lib::allocate_unique<std::uint8_t[]>(static_cast<std::size_t>(data_size));
+		std::memcpy(storage.get(), data, static_cast<std::size_t>(data_size));
 	}
 	opaque_surface(const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
-				   std::size_t levels,
-				   std::size_t layers,
+				   levels_t levels,
+				   layers_t layers,
 				   lib::unique_ptr<std::uint8_t[]> &&data,
-				   std::size_t data_size)
+				   byte_t data_size)
 		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
 		if (bytes() != data_size)
@@ -92,11 +92,11 @@ public:
 	opaque_surface(const gl::format &format,
 				   const gl::image_type &image_type,
 				   const extent_type &extent,
-				   std::size_t levels,
-				   std::size_t layers)
+				   levels_t levels,
+				   layers_t layers)
 		: opaque_surface(ctor(), format, image_type, extent, levels, layers)
 	{
-		storage = lib::allocate_unique<std::uint8_t[]>(bytes());
+		storage = lib::allocate_unique<std::uint8_t[]>(static_cast<std::size_t>(bytes()));
 	}
 	~opaque_surface() noexcept {}
 
@@ -117,13 +117,13 @@ public:
 	/**
 	*	@brief	Returns a pointer to the surface layer's level data
 	*/
-	auto* data_at(std::size_t layer, std::size_t level = 0) {
+	auto* data_at(layers_t layer, levels_t level = 0_mips) {
 		return data() + offset_blocks(layer, level);
 	}
 	/**
 	*	@brief	Returns a pointer to the surface layer's level data
 	*/
-	const auto* data_at(std::size_t layer, std::size_t level = 0) const {
+	const auto* data_at(layers_t layer, levels_t level = 0_mips) const {
 		return data() + offset_blocks(layer, level);
 	}
 
@@ -132,7 +132,7 @@ public:
 	*
 	*	@param	level	Surface level
 	*/
-	auto extent(std::size_t level = 0) const {
+	auto extent(levels_t level = 0_mips) const {
 		return glm::max(extent_type(static_cast<typename extent_type::value_type>(1)),
 						surface_extent >> static_cast<typename extent_type::value_type>(level));
 	}
@@ -141,7 +141,7 @@ public:
 	*
 	*	@param	level	Surface level
 	*/
-	auto extent_in_blocks(std::size_t level = 0) const {
+	auto extent_in_blocks(levels_t level = 0_mips) const {
 		auto extent = surface_extent;
 		extent.x /= block_extent().x;
 		if constexpr (dimensions > 1) extent.y /= block_extent().y;
@@ -184,7 +184,7 @@ public:
 	/**
 	*	@brief	Returns the block count in a single surface level
 	*/
-	auto blocks(std::size_t level) const {
+	auto blocks(levels_t level) const {
 		assert(level < levels());
 
 		std::size_t b = 1;
@@ -199,7 +199,7 @@ public:
 	*/
 	auto blocks_layer() const {
 		std::size_t b = 0;
-		for (std::size_t l = 0; l < levels(); ++l)
+		for (auto l = 0_mip; l < levels(); ++l)
 			b += blocks(l);
 
 		return b;
@@ -208,12 +208,12 @@ public:
 	/**
 	*	@brief	Computes the offset, in blocks, to a specified level of a specified layer of the surface
 	*/
-	auto offset_blocks(std::size_t layer, std::size_t level) const {
+	auto offset_blocks(layers_t layer, levels_t level) const {
 		std::size_t level_offset = 0;
-		for (std::size_t l = 0; l < level; ++l)
+		for (auto l = 0_mip; l < level; ++l)
 			level_offset += blocks(l);
 
-		return blocks_layer() * layer + level_offset;
+		return blocks_layer() * static_cast<std::size_t>(layer) + level_offset;
 	}
 
 	/**
@@ -227,13 +227,13 @@ public:
 	*	@brief	Returns the size, in bytes, of the surface data
 	*/
 	auto bytes() const {
-		return block_bytes() * blocks_layer() * layers();
+		return block_bytes() * blocks_layer() * static_cast<std::size_t>(layers());
 	}
 
 	/**
 	*	@brief	Returns the size, in bytes, of the surface layer's level
 	*/
-	auto bytes(std::size_t level) const {
+	auto bytes(levels_t level) const {
 		return block_bytes() * blocks(level);
 	}
 

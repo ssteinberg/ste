@@ -231,7 +231,7 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 		{
 			ImGui::SameLine(0, 75);
 			std::stringstream camera_pos_str;
-			print_vec(camera_pos_str, camera_position);
+			print_vec(camera_pos_str, camera_position.v());
 			ImGui::Text(camera_pos_str.str().data());
 		}
 

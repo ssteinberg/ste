@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -11,6 +11,9 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/dual_quaternion.hpp>
 
+#include <ste_types_length_unit.hpp>
+#include <ste_types_luminance_units.hpp>
+
 namespace ste {
 
 // Vector elements count
@@ -21,8 +24,32 @@ struct _type_elements_count_impl {
 	static constexpr std::size_t elements = std::is_arithmetic_v<T> ? 1 : 0;
 };
 template<>				struct _type_elements_count_impl<half_float::half> {
-	static constexpr std::size_t rows = 1; 
+	static constexpr std::size_t rows = 1;
 	static constexpr std::size_t elements = 1;
+};
+template<>				struct _type_elements_count_impl<metre> {
+	static constexpr std::size_t rows = 1;
+	static constexpr std::size_t elements = 1;
+};
+template<>				struct _type_elements_count_impl<cd_t> {
+	static constexpr std::size_t rows = 1;
+	static constexpr std::size_t elements = 1;
+};
+template<>				struct _type_elements_count_impl<nit_t> {
+	static constexpr std::size_t rows = 1;
+	static constexpr std::size_t elements = 1;
+};
+template<>				struct _type_elements_count_impl<metre_vec2> {
+	static constexpr std::size_t rows = 2;
+	static constexpr std::size_t elements = 2;
+};
+template<>				struct _type_elements_count_impl<metre_vec3> {
+	static constexpr std::size_t rows = 3;
+	static constexpr std::size_t elements = 3;
+};
+template<>				struct _type_elements_count_impl<metre_vec4> {
+	static constexpr std::size_t rows = 4;
+	static constexpr std::size_t elements = 4;
 };
 template<typename vecT> struct _type_elements_count_impl<glm::tvec1<vecT>> {
 	static constexpr std::size_t rows = 1; 
@@ -102,6 +129,9 @@ static constexpr auto type_elements_count_v = type_elements_count<T>::value;
 namespace _detail {
 template<typename T> struct _is_vector_impl : std::false_type {};
 template<typename vecT> struct _is_vector_impl<glm::tvec2<vecT>> : std::true_type {};
+template<>				struct _is_vector_impl<metre_vec2> : std::true_type {};
+template<>				struct _is_vector_impl<metre_vec3> : std::true_type {};
+template<>				struct _is_vector_impl<metre_vec4> : std::true_type {};
 template<typename vecT> struct _is_vector_impl<glm::tvec3<vecT>> : std::true_type {};
 template<typename vecT> struct _is_vector_impl<glm::tvec4<vecT>> : std::true_type {};
 template<typename quatT> struct _is_vector_impl<glm::tquat<quatT>> : std::true_type {};
@@ -181,6 +211,9 @@ template<typename vecT> struct _type_remove_extents<glm::tvec1<vecT>> { using ty
 template<typename vecT> struct _type_remove_extents<glm::tvec2<vecT>> { using type = vecT; };
 template<typename vecT> struct _type_remove_extents<glm::tvec3<vecT>> { using type = vecT; };
 template<typename vecT> struct _type_remove_extents<glm::tvec4<vecT>> { using type = vecT; };
+template<>				struct _type_remove_extents<metre_vec2> { using type = metre_vec2::value_type; };
+template<>				struct _type_remove_extents<metre_vec3> { using type = metre_vec3::value_type; };
+template<>				struct _type_remove_extents<metre_vec4> { using type = metre_vec4::value_type; };
 template<typename quatT> struct _type_remove_extents<glm::tquat<quatT>> { using type = quatT; };
 template<typename quatT> struct _type_remove_extents<glm::tdualquat<quatT>> { using type = quatT; };
 template<typename matT> struct _type_remove_extents<glm::tmat2x2<matT>> { using type = matT; };
@@ -218,8 +251,20 @@ template<>
 struct is_signed<half_float::half> {
 	static constexpr auto value = true;
 };
+template<>
+struct is_signed<metre> {
+	static constexpr auto value = true;
+};
+template<>
+struct is_signed<cd_t> {
+	static constexpr auto value = true;
+};
+template<>
+struct is_signed<nit_t> {
+	static constexpr auto value = true;
+};
 template<typename T>
-static constexpr auto is_signed_v = is_signed<T>::value;
+static constexpr auto is_signed_v = is_signed<std::remove_cv_t<std::remove_reference_t<T>>>::value;
 
 /**
 *	@brief	Is a floating-point type trait.
@@ -233,8 +278,20 @@ template<>
 struct is_floating_point<half_float::half> {
 	static constexpr auto value = true;
 };
+template<>
+struct is_floating_point<metre> {
+	static constexpr auto value = true;
+};
+template<>
+struct is_floating_point<cd_t> {
+	static constexpr auto value = true;
+};
+template<>
+struct is_floating_point<nit_t> {
+	static constexpr auto value = true;
+};
 template<typename T>
-static constexpr auto is_floating_point_v = is_floating_point<T>::value;
+static constexpr auto is_floating_point_v = is_floating_point<std::remove_cv_t<std::remove_reference_t<T>>>::value;
 
 
 }

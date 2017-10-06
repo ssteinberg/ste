@@ -32,7 +32,7 @@ public:
 	using Base::block_type;
 	using Base::traits;
 
-	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
+	static_assert(byte_t(sizeof(block_type)) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 
 	using layer_type = surface_image<format, extent_type, block_type*>;
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
@@ -42,12 +42,12 @@ private:
 
 public:
 	surface_cubemap(const extent_type& extent,
-	                std::size_t levels = 1)
+	                levels_t levels = 1_mips)
 		: Base(extent, levels, 6),
 		  storage(Base::blocks_layer() * Base::layers()) {}
 
 	surface_cubemap(const extent_type& extent,
-	                std::size_t levels,
+					levels_t levels,
 	                const surface_storage<block_type>& storage)
 		: Base(extent, levels, 6),
 		  storage(storage) {}
@@ -94,11 +94,11 @@ public:
 	*
 	*	@param	face_index	Cubemap face
 	*/
-	auto operator[](std::uint32_t face_index) {
+	auto operator[](layers_t face_index) {
 		assert(face_index < Base::layers());
 		return surface<format, image_type>(Base::extent(),
 		                                   Base::levels(),
-		                                   storage.view(Base::offset_blocks(face_index, 0)));
+		                                   storage.view(Base::offset_blocks(face_index, 0_mip)));
 	}
 
 	/**
@@ -106,11 +106,11 @@ public:
 	*
 	*	@param	face_index	Cubemap face
 	*/
-	auto operator[](std::uint32_t face_index) const {
+	auto operator[](layers_t face_index) const {
 		assert(face_index < Base::layers());
 		return surface<format, image_type>(Base::extent(),
 		                                   Base::levels(),
-		                                   storage.view(Base::offset_blocks(face_index, 0)));
+		                                   storage.view(Base::offset_blocks(face_index, 0_mip)));
 	}
 };
 

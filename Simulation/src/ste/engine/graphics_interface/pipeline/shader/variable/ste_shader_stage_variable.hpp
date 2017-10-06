@@ -82,7 +82,7 @@ class ste_shader_stage_variable_struct;
 class ste_shader_stage_variable {
 private:
 	lib::string var_name;
-	std::uint16_t offset_bytes{ 0 };
+	byte_t offset_bytes{ 0_B };
 	lib::string default_specialized_value;
 	optional<lib::string> specialized_value;
 
@@ -98,7 +98,7 @@ private:
 
 protected:
 	ste_shader_stage_variable(lib::string name,
-							  std::uint16_t offset_bytes = 0)
+							  byte_t offset_bytes = 0_B)
 		: var_name(name), offset_bytes(offset_bytes)
 	{}
 
@@ -132,7 +132,7 @@ public:
 	/**
 	*	@brief	Returns variable size in bytes
 	*/
-	virtual std::uint32_t size_bytes() const = 0;
+	virtual byte_t size_bytes() const = 0;
 
 	/**
 	*	@brief	Checks if the binding variable is compatible with type T.
@@ -244,7 +244,7 @@ private:
 public:
 	ste_shader_stage_variable_opaque(const ste_shader_stage_variable_type &type,
 									 lib::string name,
-									 std::uint16_t offset_bytes)
+									 byte_t offset_bytes)
 		: Base(name, offset_bytes),
 		var_type(type)
 	{}
@@ -257,7 +257,7 @@ public:
 	virtual ~ste_shader_stage_variable_opaque() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var_type; }
-	std::uint32_t size_bytes() const override final { return 0; }
+	byte_t size_bytes() const override final { return 0_B; }
 
 	/**
 	*	@brief	Checks if the binding variable is compatible with type T.
@@ -290,13 +290,13 @@ class ste_shader_stage_variable_scalar : public ste_shader_stage_variable {
 
 private:
 	ste_shader_stage_variable_type var_type;
-	std::uint16_t var_width;
+	byte_t var_width;
 
 public:
 	ste_shader_stage_variable_scalar(const ste_shader_stage_variable_type &type,
 									 lib::string name,
-									 std::uint16_t offset_bytes,
-									 std::uint16_t width)
+									 byte_t offset_bytes,
+									 byte_t width)
 		: Base(name, offset_bytes),
 		var_type(type),
 		var_width(width)
@@ -310,7 +310,7 @@ public:
 	virtual ~ste_shader_stage_variable_scalar() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var_type; }
-	std::uint32_t size_bytes() const override final { return var_width >> 3; }
+	byte_t size_bytes() const override final { return var_width >> 3u; }
 
 	/**
 	*	@brief	Scalar width, in bits.
@@ -336,7 +336,7 @@ public:
 		static constexpr bool type_is_float = ::ste::is_floating_point<Type>::value;
 		static constexpr bool type_is_scalar = ::ste::is_scalar<Type>::value;
 
-		if (sizeof(Type) != this->size_bytes())
+		if (byte_t(sizeof(Type)) != this->size_bytes())
 			throw ste_shader_variable_layout_verification_type_mismatch("Size mismatch");
 		if (!type_is_scalar)
 			throw ste_shader_variable_layout_verification_type_mismatch("Expected a scalar type");
@@ -355,7 +355,7 @@ class ste_shader_stage_variable_matrix : public ste_shader_stage_variable {
 	using Base = ste_shader_stage_variable;
 
 private:
-	std::uint16_t var_matrix_stride;
+	byte_t var_matrix_stride;
 	std::uint32_t var_rows;
 	std::uint32_t var_columns;
 	lib::unique_ptr<ste_shader_stage_variable_scalar> scalar_var;
@@ -363,10 +363,10 @@ private:
 public:
 	ste_shader_stage_variable_matrix(lib::unique_ptr<ste_shader_stage_variable_scalar> &&scalar,
 									 lib::string name,
-									 std::uint16_t offset_bytes,
+									 byte_t offset_bytes,
 									 std::uint32_t rows,
 									 std::uint32_t columns = 1,
-									 std::uint16_t matrix_stride = 0)
+									 byte_t matrix_stride = 0_B)
 		: Base(name, offset_bytes),
 		var_matrix_stride(matrix_stride),
 		var_rows(rows),
@@ -385,9 +385,9 @@ public:
 	virtual ~ste_shader_stage_variable_matrix() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return scalar_var->type(); }
-	std::uint32_t size_bytes() const override final {
-		auto var_size = scalar_var->size_bytes();
-		auto stride = var_matrix_stride > 0 ? var_matrix_stride : var_rows * var_size;
+	byte_t size_bytes() const override final {
+		const auto var_size = scalar_var->size_bytes();
+		const auto stride = var_matrix_stride > 0_B ? var_matrix_stride : var_rows * var_size;
 		return stride * var_columns;
 	}
 
@@ -448,7 +448,7 @@ class ste_shader_stage_variable_array : public ste_shader_stage_variable {
 
 private:
 	std::uint32_t array_elements{ 1 };
-	std::uint16_t array_stride{ 0 };
+	byte_t array_stride{ 0_B };
 	lib::unique_ptr<ste_shader_stage_variable> var;
 
 	optional<const ste_shader_stage_variable_scalar*> length_specialization_constant;
@@ -456,9 +456,9 @@ private:
 public:
 	ste_shader_stage_variable_array(lib::unique_ptr<ste_shader_stage_variable> &&var,
 									lib::string name,
-									std::uint16_t offset_bytes,
+									byte_t offset_bytes,
 									std::uint32_t array_elements,
-									std::uint16_t array_stride,
+									byte_t array_stride,
 									optional<const ste_shader_stage_variable_scalar*> length_specialization_constant = none)
 		: Base(name, offset_bytes),
 		array_elements(array_elements),
@@ -475,8 +475,8 @@ public:
 	virtual ~ste_shader_stage_variable_array() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return var->type(); }
-	std::uint32_t size_bytes() const override final {
-		if (array_stride > 0)
+	byte_t size_bytes() const override final {
+		if (array_stride > 0_B)
 			return array_elements * array_stride;
 		return array_elements * var->size_bytes();
 	}
@@ -501,7 +501,7 @@ public:
 	/*
 	 *	@brief	Array stride between elements. 0 for tightly packed.
 	 */
-	auto stride() const { return array_stride > 0 ? array_stride : var->size_bytes(); }
+	auto stride() const { return array_stride > 0_B ? array_stride : var->size_bytes(); }
 
 	/*
 	*	@brief	Get the underlying variable
@@ -521,7 +521,7 @@ public:
 
 			if (std::extent_v<T> != array_elements)
 				throw ste_shader_variable_layout_verification_array_length_mismatch("Array length mismatch");
-			if (sizeof(ElementT) != stride())
+			if (byte_t(sizeof(ElementT)) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
 			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
@@ -533,7 +533,7 @@ public:
 
 			if (std::extent_v<T2> != array_elements)
 				throw ste_shader_variable_layout_verification_array_length_mismatch("Array length mismatch");
-			if (sizeof(ElementT) != stride())
+			if (byte_t(sizeof(ElementT)) != stride())
 				throw ste_shader_variable_layout_verification_array_stride_mismatch("Array stride mismatch");
 
 			using Type = std::remove_reference_t<_internal::ste_shader_stage_variable_remove_blocks_t<ElementT>>;
@@ -544,7 +544,7 @@ public:
 			throw ste_shader_variable_layout_verification_type_mismatch("Expected an array");
 		}
 
-		if (sizeof(T) != size_bytes())
+		if (byte_t(sizeof(T)) != size_bytes())
 			throw ste_shader_variable_layout_verification_type_mismatch("Array size doesn't match expected size");
 	}
 
@@ -566,7 +566,7 @@ public:
 namespace _internal {
 
 template <typename T>
-void ste_shader_stage_variable_type_validator(std::uint32_t offset,
+void ste_shader_stage_variable_type_validator(byte_t offset,
 											  const ste_shader_stage_variable *var) {
 	if (var->offset() != offset)
 		throw ste_shader_variable_layout_verification_offset_mismatch("Struct member offset mismatch");
@@ -580,7 +580,7 @@ struct ste_shader_stage_variable_struct_validator {
 		auto offset = block_offset_of<N, B>();
 
 		try {
-			ste_shader_stage_variable_type_validator<T>(static_cast<std::uint32_t>(offset), (*var)[N].get());
+			ste_shader_stage_variable_type_validator<T>(offset, (*var)[N].get());
 		}
 		catch (gl::ste_shader_variable_layout_verification_exception &e) {
 			// Prepend a error location message and rethrow
@@ -631,7 +631,7 @@ private:
 public:
 	ste_shader_stage_variable_struct(lib::vector<lib::unique_ptr<ste_shader_stage_variable>> &&elements,
 									 lib::string name,
-									 std::uint16_t offset_bytes)
+									 byte_t offset_bytes)
 		: Base(name, offset_bytes),
 		elements(std::move(elements))
 	{}
@@ -644,10 +644,10 @@ public:
 	virtual ~ste_shader_stage_variable_struct() noexcept {}
 
 	ste_shader_stage_variable_type type() const override final { return ste_shader_stage_variable_type::struct_t; }
-	std::uint32_t size_bytes() const override final {
+	byte_t size_bytes() const override final {
 		if (elements.size())
 			return elements.back()->offset() + elements.back()->size_bytes();
-		return static_cast<std::uint32_t>(0);
+		return 0_B;
 	}
 
 	/*

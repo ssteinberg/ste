@@ -15,7 +15,7 @@ class entity {
 public:
 	virtual ~entity() noexcept {}
 
-	virtual glm::vec3 get_position() const = 0;
+	virtual metre_vec3 get_position() const = 0;
 };
 
 /**
@@ -36,7 +36,7 @@ public:
 	*/
 	virtual void set_model_transform(const glm::mat4x3 &m) { model_transform_matrix = m; }
 
-	glm::vec3 get_position() const override {
+	metre_vec3 get_position() const override {
 		glm::vec3 scale, translation, skew;
 		glm::vec4 perspective;
 		glm::quat orientation;
@@ -48,7 +48,7 @@ public:
 					   skew,
 					   perspective);
 
-		return -translation;
+		return metre_vec3(-translation);
 	}
 
 	glm::quat get_orientation() const {

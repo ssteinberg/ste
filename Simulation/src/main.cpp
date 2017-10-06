@@ -1,4 +1,4 @@
-
+﻿
 #include <stdafx.hpp>
 #include <ste_engine.hpp>
 #include <presentation_engine.hpp>
@@ -31,8 +31,7 @@
 
 #include <random>
 
-//#include <imgui/imgui.h>
-//#include <debug_gui.hpp>
+#include <numerical_type.hpp>
 
 //#define STATIC_SCENE
 
@@ -131,9 +130,9 @@ public:
 														orange(regular(L"By Shlomi Steinberg")));
 			auto surface_extent = device().get_surface().extent();
 
-			auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
-			auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
-			auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+			auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory();
+			auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory();
+			auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory();
 
 			auto workers_active = get_creating_context().engine().task_scheduler().get_thread_pool()->get_active_workers_count();
 			auto workers_sleep = get_creating_context().engine().task_scheduler().get_thread_pool()->get_sleeping_workers_count();
@@ -144,9 +143,9 @@ public:
 			footer_text_frag.update_text(get_creating_context(), 
 										 recorder, { 10, 50 },
 										 line_height(32)(vsmall(b(L"VRAM ") +
-																b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
-																  purple(lib::to_wstring(commited_vram)) + L" / " +
-																  stroke(blue, 1)(sky_blue(lib::to_wstring(total_vram))) + L" MB")) + L"\n" +
+																b(medium_violet_red(lib::to_wstring(static_cast<std::size_t>(allocated_vram) / 1024 / 1024)) + L" / " +
+																  purple(lib::to_wstring(static_cast<std::size_t>(commited_vram) / 1024 / 1024)) + L" / " +
+																  stroke(blue, 1)(sky_blue(lib::to_wstring(static_cast<std::size_t>(total_vram) / 1024 / 1024))) + L" MB")) + L"\n" +
 														 vsmall(b(L"Thread pool workers: ") +
 																olive(lib::to_wstring(workers_active)) + L" busy, " +
 																olive(lib::to_wstring(workers_sleep)) + L" sleeping | " +
@@ -245,15 +244,15 @@ public:
 	void render(gl::command_recorder &recorder) override final {
 		using namespace text::attributes;
 
-		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory() / 1024 / 1024;
-		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory() / 1024 / 1024;
-		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory() / 1024 / 1024;
+		auto total_vram = get_creating_context().device_memory_allocator().get_total_device_memory();
+		auto commited_vram = get_creating_context().device_memory_allocator().get_total_commited_memory();
+		auto allocated_vram = get_creating_context().device_memory_allocator().get_total_allocated_memory();
 		footer_text_frag.update_text(get_creating_context(),
 									 recorder, { 10, 10 },
 									 line_height(32)(vsmall(b(L"VRAM ") +
-															b(medium_violet_red(lib::to_wstring(allocated_vram)) + L" / " +
-															  purple(lib::to_wstring(commited_vram)) + L" / " +
-															  stroke(blue, 1)(sky_blue(lib::to_wstring(total_vram))) + L" MB"))));
+															b(medium_violet_red(lib::to_wstring(static_cast<std::size_t>(allocated_vram) / 1024 / 1024)) + L" / " +
+															  purple(lib::to_wstring(static_cast<std::size_t>(commited_vram) / 1024 / 1024)) + L" / " +
+															  stroke(blue, 1)(sky_blue(lib::to_wstring(static_cast<std::size_t>(total_vram) / 1024 / 1024))) + L" MB"))));
 
 		r.render(recorder);
 		recorder << footer_text_frag;
@@ -339,20 +338,20 @@ void display_loading_screen_until(ste_context &ctx,
 auto create_light_mesh(const ste_context &ctx,
 					   graphics::scene *scene,
 					   const graphics::rgb &color,
-					   float intensity,
-					   const glm::vec3 &light_pos,
+					   cd_t intensity,
+					   const metre_vec3 &light_pos,
 					   lib::unique_ptr<graphics::mesh_generic> &&mesh,
 					   lib::vector<lib::unique_ptr<graphics::material>> &materials,
 					   lib::vector<lib::unique_ptr<graphics::material_layer>> &layers) {
 	auto light_obj = lib::allocate_shared<graphics::object>(std::move(mesh));
 
-	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), light_pos)));
+	light_obj->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), light_pos.v())));
 
 	resource::surface_2d<gl::format::r8g8b8a8_unorm> light_color_tex{ { 1, 1 } };
 	auto c = glm::clamp(static_cast<glm::vec3>(color) / color.luminance(), glm::vec3(.0f), glm::vec3(1.f));
-	light_color_tex[0][0].r() = static_cast<std::uint8_t>(c.r * 255.5f);
-	light_color_tex[0][0].g() = static_cast<std::uint8_t>(c.g * 255.5f);
-	light_color_tex[0][0].b() = static_cast<std::uint8_t>(c.b * 255.5f);
+	light_color_tex[0_mip][0].r() = static_cast<std::uint8_t>(c.r * 255.5f);
+	light_color_tex[0_mip][0].g() = static_cast<std::uint8_t>(c.g * 255.5f);
+	light_color_tex[0_mip][0].b() = static_cast<std::uint8_t>(c.b * 255.5f);
 
 	auto layer = scene->properties().material_layers_storage().allocate_layer();
 	auto mat = scene->properties().materials_storage().allocate_material(ctx,
@@ -364,7 +363,7 @@ auto create_light_mesh(const ste_context &ctx,
 																																					   "light mesh color texture"));
 
 	mat->set_texture(tex);
-	mat->set_emission(static_cast<glm::vec3>(color) * intensity);
+	mat->set_emission(static_cast<glm::vec3>(color) * static_cast<float>(intensity));
 
 	light_obj->set_material(mat.get());
 
@@ -383,15 +382,15 @@ auto create_light_mesh(const ste_context &ctx,
 auto create_sphere_light_object(const ste_context &ctx,
 								graphics::scene *scene,
 								const graphics::rgb &color,
-								float intensity,
-								float radius,
-								const glm::vec3 &light_pos,
+								cd_t intensity,
+								metre radius,
+								const metre_vec3 &light_pos,
 								lib::vector<lib::unique_ptr<graphics::material>> &materials,
 								lib::vector<lib::unique_ptr<graphics::material_layer>> &layers) {
 	auto light = scene->properties().lights_storage().allocate_sphere_light(color, intensity, light_pos, radius);
 
 	lib::unique_ptr<graphics::sphere> sphere = lib::allocate_unique<graphics::sphere>(10, 10);
-	(*sphere) *= light->get_radius();
+	(*sphere) *= static_cast<float>(light->get_radius());
 
 	auto light_obj = create_light_mesh(ctx, scene, color, intensity, light_pos, std::move(sphere), materials, layers);
 
@@ -401,10 +400,10 @@ auto create_sphere_light_object(const ste_context &ctx,
 auto create_quad_light_object(const ste_context &ctx,
 							  graphics::scene *scene,
 							  const graphics::rgb &color,
-							  float intensity,
-							  const glm::vec3 &light_pos,
+							  cd_t intensity,
+							  const metre_vec3 &light_pos,
 							  const glm::vec3 &n, const glm::vec3 &t,
-							  const glm::vec3 points[4],
+							  const metre_vec3 points[4],
 							  lib::vector<lib::unique_ptr<graphics::material>> &materials,
 							  lib::vector<lib::unique_ptr<graphics::material_layer>> &layers) {
 	auto light = scene->properties().lights_storage().allocate_shaped_light<graphics::quad_light_onesided>(color, intensity, light_pos);
@@ -438,25 +437,25 @@ void add_scene_lights(const ste_context &ctx,
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	for (auto &v : { glm::vec3{ 491.2,226.1,-616.67 },
-					 glm::vec3{ 483.376,143,-222.51 },
-					 glm::vec3{ 483.376,143,144.1 },
-					 glm::vec3{ -242, 153,  552},
-					 glm::vec3{  885, 153,  552} }) {
+	for (auto &v : { metre_vec3{ 491.2_m,226.1_m,-616.67_m },
+					 metre_vec3{ 483.376_m,143_m,-222.51_m },
+					 metre_vec3{ 483.376_m,143_m,144.1_m },
+					 metre_vec3{ -242_m, 153_m, 552_m },
+					 metre_vec3{  885_m, 153_m, 552_m } }) {
 #ifdef STATIC_SCENE
 		const graphics::rgb color = graphics::kelvin(1800);
-		const float lums = 4500.f;
+		const auto lums = 4500_cd;
 #else
 		const graphics::rgb color = graphics::kelvin(std::uniform_real_distribution<float>(1300, 4500)(gen));
-		const float lums = std::uniform_real_distribution<float>(3000, 4000)(gen) / color.luminance();
+		const auto lums = cd_t(std::uniform_real_distribution<float>(3000, 4000)(gen) / color.luminance());
 #endif
-		auto wall_lamp = create_sphere_light_object(ctx, &scene, color, lums, 1.f, v, materials, layers);
+		auto wall_lamp = create_sphere_light_object(ctx, &scene, color, lums, 1_m, v, materials, layers);
 
 		lights.push_back(std::move(wall_lamp.first));
 	}
 
-	glm::vec3 points[4] = { { -18,18,0 },{ 18,18,0 },{ 18,-18,0 },{ -18,-18,0 } };
-	auto lamp = create_quad_light_object(ctx, &scene, graphics::kelvin(12000), 3000, glm::vec3{ 120, 153, 565 },
+	metre_vec3 points[4] = { { -18_m,18_m,0_m },{ 18_m,18_m,0_m },{ 18_m,-18_m,0_m },{ -18_m,-18_m,0_m } };
+	auto lamp = create_quad_light_object(ctx, &scene, 12000_K, 3000_cd, { 120_m, 153_m, 565_m },
 										 glm::vec3{ 0,0,-1 }, glm::vec3{ 1,0,0 }, points, materials, layers);
 
 	lights.push_back(std::move(lamp.first));
@@ -548,7 +547,7 @@ int main()
 	gl::ste_gl_context gl_ctx(gl_params);
 
 	auto features = requested_device_features();
-	auto available_devices = gl_ctx.enumerate_physical_devices(features, 4000ul * 1024 * 1024);
+	auto available_devices = gl_ctx.enumerate_physical_devices(features, 4000_MB);
 	auto physical_device = available_devices[0];
 
 
@@ -602,14 +601,14 @@ int main()
 	/*
 	*	Create camera
 	*/
-	constexpr float clip_near = .1f;
+	constexpr auto clip_near = .1_m;
 	const float fovy = glm::pi<float>() * .225f;
 	const float aspect = static_cast<float>(ctx.device().get_surface().extent().x) / static_cast<float>(ctx.device().get_surface().extent().y);
 	graphics::camera<float, graphics::camera_projection_reversed_infinite_perspective> camera(graphics::camera_projection_reversed_infinite_perspective<float>(fovy, aspect, clip_near));
 
 	// Set initial camera position
-	camera.set_position({ 901.4, 566.93, 112.43 });
-	camera.lookat({ 771.5, 530.9, 65.6 });
+	camera.set_position({ 901.4_m, 566.93_m, 112.43_m });
+	camera.lookat({ 771.5_m, 530.9_m, 65.6_m });
 
 	// Attach a connection to swapchain's surface resize signal
 	auto resize_signal_connection = make_connection(ctx.device().get_queues_and_surface_recreate_signal(), [&](auto) {
@@ -683,14 +682,14 @@ int main()
 	presenter->renderer().set_aperture_parameters(8e-3f, 25e-3f);
 	presenter->renderer().set_gamma(hdr_gamma);
 
-	const glm::vec3 light0_pos{ -700.6, 138, -70 };
-	const glm::vec3 light1_pos{ 200, 550, 170 };
-	auto light0 = create_sphere_light_object(ctx, &scene, graphics::kelvin(2000), 2000.f, 2.f, light0_pos, materials, material_layers);
-	auto light1 = create_sphere_light_object(ctx, &scene, graphics::kelvin(7000), 8000.f, 4.f, light1_pos, materials, material_layers);
+	const metre_vec3 light0_pos{ -700.6_m, 138_m, -70_m };
+	const metre_vec3 light1_pos{ 200_m, 550_m, 170_m };
+	auto light0 = create_sphere_light_object(ctx, &scene, 2000_K, 2000_cd, 2_m, light0_pos, materials, material_layers);
+	auto light1 = create_sphere_light_object(ctx, &scene, 7000_K, 8000_cd, 4_m, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.properties().lights_storage().allocate_directional_light(graphics::kelvin(5770),
-																					1.88e+9f, 1496e+8f, 695e+6f, sun_direction);
+	auto sun_light = scene.properties().lights_storage().allocate_directional_light(5770_K,
+																					1.88e+9_cd, 1496e+5_km, 695e+3_km, sun_direction);
 
 
 	/*
@@ -842,7 +841,7 @@ int main()
 
 		// Calculate predicted next frame time
 		frame_time_predictor.update(presentation.get_frame_time());
-		float frame_time_ms = frame_time_predictor.predicted_value();
+		const float frame_time_ms = frame_time_predictor.predicted_value();
 
 		if (window.is_window_focused()) {
 			// Handle movement input
@@ -878,23 +877,20 @@ int main()
 #endif
 
 		// Update scene objects
-#ifdef STATIC_SCENE
-		glm::vec3 lp = light0_pos;
-		glm::vec3 sun_dir = sun_direction;
-#else
+#ifndef STATIC_SCENE
 		const float angle = time_elapsed * glm::pi<float>() *.00025f;
-		const glm::vec3 lp = light0_pos + glm::vec3(glm::sin(angle) * 3, 0, glm::cos(angle)) * 115.f;
+		const metre_vec3 lp = light0_pos + metre_vec3(metre(glm::sin(angle)) * 3.f, 0_m, metre(glm::cos(angle))) * 115.f;
 
-		const glm::vec3 sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()),
-															-glm::cos(sun_zenith + glm::pi<float>()),
-															.15f });
+		const auto sun_dir = glm::normalize(glm::vec3{ glm::sin(sun_zenith + glm::pi<float>()),
+													  -glm::cos(sun_zenith + glm::pi<float>()),
+													   .15f });
 
 		light0.first->set_position(lp);
-		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp)));
+		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp.v())));
 		sun_light->set_direction(sun_dir);
+#endif
 
 		time_elapsed += frame_time_ms;
-#endif
 
 		// Present
 		presenter->present();

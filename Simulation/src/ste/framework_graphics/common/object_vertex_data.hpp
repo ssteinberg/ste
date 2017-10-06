@@ -1,15 +1,16 @@
-// StE
-// © Shlomi Steinberg, 2015-2017
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
+#include <stdafx.hpp>
 #include <vertex_input_layout.hpp>
 #include <quaternion_tangent_frame.hpp>
 
 namespace ste {
 namespace graphics {
 
-struct object_vertex_data : gl::vertex_input_layout<glm::quat, glm::vec3, glm::vec2> {
+struct object_vertex_data : gl::vertex_input_layout<glm::quat, metre_vec3, glm::vec2> {
 	auto& tangent_frame_quat() { return get<0>(); }
 	auto& p() { return get<1>(); }
 	auto& uv() { return get<2>(); }

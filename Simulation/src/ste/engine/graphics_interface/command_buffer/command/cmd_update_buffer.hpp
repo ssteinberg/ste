@@ -14,11 +14,11 @@ namespace gl {
 
 class cmd_update_buffer : public command {
 public:
-	static constexpr std::size_t maximal_update_bytes = 65536;
+	static constexpr auto maximal_update_bytes = 64_kB;
 
 private:
 	VkBuffer buffer;
-	std::size_t offset;
+	byte_t offset;
 	lib::blob data;
 
 public:
@@ -33,7 +33,7 @@ public:
 		: buffer(buffer->get_buffer_handle()),
 		  offset(buffer.offset_bytes()),
 		  data(std::forward<Blob>(data)) {
-		assert(this->data.size() <= buffer.range_bytes());
+		assert(byte_t(this->data.size()) <= buffer.range_bytes());
 	}
 
 	virtual ~cmd_update_buffer() noexcept {}
@@ -43,7 +43,7 @@ private:
 
 		vkCmdUpdateBuffer(command_buffer,
 						  buffer,
-						  offset,
+						  static_cast<std::size_t>(offset),
 						  data.size(),
 						  data.data());
 	}

@@ -83,12 +83,13 @@ public:
 	bool read_results(T *output,
 					  std::uint32_t first_query,
 					  std::uint32_t queries_count,
-					  std::uint64_t stride,
+					  byte_t stride,
 					  VkQueryResultFlags flags = 0) const {
 		const vk_result res = vkGetQueryPoolResults(device.get(), *this,
 													first_query, queries_count,
 													sizeof(T) * queries_count, output,
-													stride, flags);
+													static_cast<std::size_t>(stride), 
+													flags);
 		if (res == VK_NOT_READY)
 			return false;
 

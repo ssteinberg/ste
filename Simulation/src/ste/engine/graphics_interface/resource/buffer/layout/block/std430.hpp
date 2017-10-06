@@ -9,7 +9,7 @@
 namespace ste {
 namespace gl {
 
-static constexpr int std430_block_layout_base_alignment = 1;
+static constexpr auto std430_block_layout_base_alignment = 1_B;
 
 template <typename... Ts>
 using std430 = block_layout<1, Ts...>;

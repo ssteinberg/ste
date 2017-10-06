@@ -98,7 +98,7 @@ public:
 
 	auto& get_mapped_ptr() { return ptr; }
 	auto& get_mapped_ptr() const { return ptr; }
-	auto get_size_bytes() const { return count * sizeof(T); }
+	auto get_size_bytes() const { return count * byte_t(sizeof(T)); }
 	auto get_offset() const { return offset; }
 
 	auto* operator->() { return ptr; }

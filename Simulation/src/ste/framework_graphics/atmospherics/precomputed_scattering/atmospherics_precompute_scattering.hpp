@@ -165,14 +165,14 @@ public:
 	~atmospherics_precompute_scattering() noexcept {}
 
 	auto create_optical_length_lut() const {
-		resource::surface_2d_array<gl::format::r32_sfloat> lut_texture_array(glm::u32vec2{ lut_data_t::optical_length_size, lut_data_t::optical_length_size }, 2);
+		resource::surface_2d_array<gl::format::r32_sfloat> lut_texture_array(glm::u32vec2{ lut_data_t::optical_length_size, lut_data_t::optical_length_size }, 2_layers);
 
 		auto* lut = reinterpret_cast<float*>(lut_texture_array.data());
 
 		create_optical_length_lut(optical_length_air_lut_idx, 
 								  lut);
 		create_optical_length_lut(optical_length_aerosols_lut_idx, 
-								  lut + lut_texture_array.offset_blocks(1, 0));
+								  lut + lut_texture_array.offset_blocks(1_layer, 0_mip));
 
 		return lut_texture_array;
 	}

@@ -18,7 +18,7 @@ namespace vk {
 template <typename host_allocator = vk_host_allocator<>>
 class vk_swapchain_image : public vk_image<host_allocator> {
 	using Base = vk_image<host_allocator>;
-	static constexpr int swapchain_image_mips = 1;
+	static constexpr auto swapchain_image_mips = 1_mips;
 
 public:
 	using extent_type = glm::uvec2;
@@ -33,14 +33,14 @@ public:
 					   const VkImage &image,
 					   const VkFormat &image_format,
 					   const extent_type &size,
-					   std::uint32_t layers,
+					   layers_t layers,
 					   const char *name)
 		: Base(device,
 			   name,
 			   image,
 			   image_format,
 			   Base::extent_type{ size.x, size.y, 1 },
-			   0,
+			   VkImageUsageFlags(0),
 			   swapchain_image_mips, 
 			   layers)
 	{}

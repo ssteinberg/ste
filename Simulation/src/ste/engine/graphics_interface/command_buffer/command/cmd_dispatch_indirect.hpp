@@ -13,7 +13,7 @@ namespace gl {
 class cmd_dispatch_indirect : public command {
 private:
 	VkBuffer buffer;
-	std::uint32_t offset;
+	byte_t offset;
 
 public:
 	cmd_dispatch_indirect(cmd_dispatch_indirect &&) = default;
@@ -23,13 +23,17 @@ public:
 
 	cmd_dispatch_indirect(const device_buffer_base &buffer,
 						  std::uint32_t offset = 0)
-		: buffer(buffer.get_buffer_handle()), offset(offset * buffer.get_element_size_bytes()) {}
+		: buffer(buffer.get_buffer_handle()), 
+		  offset(offset * buffer.get_element_size_bytes()) 
+	{}
 
 	virtual ~cmd_dispatch_indirect() noexcept {}
 
 private:
 	void operator()(const command_buffer &command_buffer, command_recorder &) && override final {
-		vkCmdDispatchIndirect(command_buffer, buffer, offset);
+		vkCmdDispatchIndirect(command_buffer, 
+							  buffer, 
+							  static_cast<std::size_t>(offset));
 	}
 };
 

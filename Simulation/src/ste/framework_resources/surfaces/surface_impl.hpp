@@ -121,22 +121,22 @@ public:
 	using Base::block_type;
 	using Base::traits;
 
-	static_assert(sizeof(block_type) == traits::block_bytes, "sizeof(block_type) != block_bytes");
+	static_assert(byte_t(sizeof(block_type)) == traits::block_bytes, "sizeof(block_type) != block_bytes");
 	using const_layer_type = surface_image<format, extent_type, const block_type*>;
 
 protected:
 	surface_storage<block_type> storage;
 
 	const_surface(const extent_type& extent,
-	              std::size_t levels)
-		: Base(extent, levels, 1),
+				  levels_t levels)
+		: Base(extent, levels, 1_layer),
 		  storage(Base::blocks_layer() * Base::layers()) {}
 
 public:
 	const_surface(const extent_type& extent,
-	              std::size_t levels,
+				  levels_t levels,
 	              const surface_storage<block_type>& storage)
-		: Base(extent, levels, 1),
+		: Base(extent, levels, 1_layer),
 		  storage(storage) {}
 
 	~const_surface() noexcept {}
@@ -156,8 +156,8 @@ public:
 	*
 	*	@param	level_index		Level index
 	*/
-	const_layer_type operator[](std::size_t level_index) const {
-		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
+	const_layer_type operator[](levels_t level_index) const {
+		auto ptr = &data()[Base::offset_blocks(0_layer, level_index)];
 		return const_layer_type(Base::extent(),
 		                        Base::block_extent(),
 		                        ptr,
@@ -181,19 +181,19 @@ public:
 
 public:
 	surface(const extent_type& extent,
-	        std::size_t levels = 1)
+			levels_t levels = 1_mips)
 		: Base(extent, levels) {}
 
 	// For signature compatability with surface_array
 	surface(const extent_type& extent,
-			std::size_t layers,
-			std::size_t levels)
+			layers_t layers,
+			levels_t levels)
 		: Base(extent, levels) {
-		assert(layers == 1);
+		assert(layers == 1_layers);
 	}
 
 	surface(const extent_type& extent,
-	        std::size_t levels,
+			levels_t levels,
 	        const surface_storage<block_type>& storage)
 		: Base(extent, levels, storage) {}
 
@@ -213,8 +213,9 @@ public:
 	*	
 	*	@param	level_index		Level index
 	*/
-	layer_type operator[](std::size_t level_index) {
-		auto ptr = &data()[Base::offset_blocks(level_index, 0)];
+	layer_type operator[](levels_t level_index) {
+		auto ptr = &data()[Base::offset_blocks(0_layer, 
+											   level_index)];
 		return layer_type(Base::extent(),
 		                  Base::block_extent(),
 		                  ptr,

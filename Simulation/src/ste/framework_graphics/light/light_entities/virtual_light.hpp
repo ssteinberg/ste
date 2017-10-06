@@ -14,25 +14,27 @@ class virtual_light : public light {
 
 public:
 	virtual_light(const rgb &color,
-				float intensity, 
-				const glm::vec3 &position, 
-				float radius) : light(color, intensity, radius) {
+				  cd_t intensity,
+				  const metre_vec3 &position,
+				  metre radius) : light(color, intensity, radius) {
 		descriptor.type = light_type::Point;
-		descriptor.position = decltype(descriptor.position){ position.x, position.y, position.z };
+		descriptor.position = position;
 	}
+
 	virtual ~virtual_light() noexcept {}
 
-	void set_position(const glm::vec3 &p) {
-		descriptor.position = decltype(descriptor.position){ p.x, p.y, p.z };
+	void set_position(const metre_vec3 &p) {
+		descriptor.position = p;
 		Base::notify();
 	}
-	void set_radius(float r) {
+
+	void set_radius(metre r) {
 		descriptor.radius = r;
 		update_effective_range();
 		Base::notify();
 	}
 
-	glm::vec3 get_position() const override { return { descriptor.position.x, descriptor.position.y, descriptor.position.z }; }
+	metre_vec3 get_position() const override { return descriptor.position; }
 };
 
 }

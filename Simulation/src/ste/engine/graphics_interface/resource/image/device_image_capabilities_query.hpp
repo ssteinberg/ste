@@ -30,17 +30,17 @@ struct device_image_capabilities_query_results {
 	*	@brief	Maximum number of mipmap levels.
 	*			Must either be equal to 1 (valid only if tiling is linear) or be equal to ⌈log2(max(width, height, depth))⌉ + 1. width, height, and depth are taken from the corresponding members of max_extent.
 	*/
-	std::uint32_t max_levels;
+	levels_t max_levels;
 	/**
 	*	@brief	Maximum number of array layers.
 	*			Must either be equal to 1 or be greater than or equal to the maxImageArrayLayers member of VkPhysicalDeviceLimits. A value of 1 is valid only if tiling is linear or if type is image_3d.
 	*/
-	std::uint32_t max_layers;
+	layers_t max_layers;
 
 	/**
 	*	@brief	Maximum total resource size, in bytes, allowed.
 	*/
-	std::size_t max_resource_size_bytes;
+	byte_t max_resource_size_bytes;
 };
 
 template <int dimensions>
@@ -75,10 +75,10 @@ static auto device_image_capabilities_query(const vk::vk_physical_device_descrip
 
 	// Write output
 	device_image_capabilities_query_results<dimensions> result;
-	result.max_layers = caps.maxArrayLayers;
-	result.max_levels = caps.maxMipLevels;
-	result.max_resource_size_bytes = caps.maxResourceSize;
-	result.supported = result.max_layers > 0 && result.max_levels > 0 && result.max_resource_size_bytes > 0;
+	result.max_layers = layers_t(caps.maxArrayLayers);
+	result.max_levels = levels_t(caps.maxMipLevels);
+	result.max_resource_size_bytes = byte_t(caps.maxResourceSize);
+	result.supported = result.max_layers > 0_layers && result.max_levels > 0_mips && result.max_resource_size_bytes > 0_B;
 
 	if constexpr (dimensions > 0) {
 		result.max_extent.x = caps.maxExtent.width;

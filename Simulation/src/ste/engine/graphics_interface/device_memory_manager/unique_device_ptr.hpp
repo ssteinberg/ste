@@ -30,7 +30,7 @@ public:
 private:
 	device_memory_ptr_t memory;
 	optional<const allocator_type*> allocator;
-	device_memory_block<std::uint64_t> block;
+	device_memory_block block;
 	bool private_allocation;
 	std::uint32_t memory_type;
 	std::uint64_t tag;
@@ -39,7 +39,7 @@ public:
 	unique_device_ptr() = default;
 	unique_device_ptr(device_memory_ptr_t memory,
 					  const allocator_type *allocator,
-					  const device_memory_block<std::uint64_t> &block,
+					  const device_memory_block &block,
 					  bool private_allocation,
 					  std::uint32_t memory_type,
 					  std::uint64_t tag)

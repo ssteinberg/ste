@@ -29,7 +29,7 @@ public:
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
 							const device_buffer_base &buffer,
 							std::uint64_t offset = 0)
-		: first(first_binding_index), buffers({ buffer.get_buffer_handle() }), offsets({ offset * buffer.get_element_size_bytes() }) {}
+		: first(first_binding_index), buffers({ buffer.get_buffer_handle() }), offsets({ offset * static_cast<std::size_t>(buffer.get_element_size_bytes()) }) {}
 
 	cmd_bind_vertex_buffers(std::uint32_t first_binding_index,
 							const lib::vector<std::reference_wrapper<const device_buffer_base>> &buffers,
@@ -41,7 +41,7 @@ public:
 		this->offsets.reserve(offsets.size());
 		for (std::size_t i = 0; i < buffers.size(); ++i) {
 			this->buffers.push_back(buffers[i].get().get_buffer_handle());
-			this->offsets.push_back(offsets[i] * buffers[i].get().get_element_size_bytes());
+			this->offsets.push_back(offsets[i] * static_cast<std::size_t>(buffers[i].get().get_element_size_bytes()));
 		}
 	}
 

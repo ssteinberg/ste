@@ -51,12 +51,12 @@ class vk_device_memory : public allow_type_decay<vk_device_memory<host_allocator
 private:
 	optional<VkDeviceMemory> memory;
 	alias<const vk_logical_device<host_allocator>> device;
-	std::uint64_t size;
+	byte_t size;
 
 	lib::unique_ptr<vk_mmap_type_eraser> mapped_memory{ nullptr };
 
 public:
-	vk_device_memory(const vk_logical_device<host_allocator> &device, std::uint64_t size, int memory_type_index)
+	vk_device_memory(const vk_logical_device<host_allocator> &device, byte_t size, int memory_type_index)
 		: device(device), size(size)
 	{
 		VkDeviceMemory memory;
@@ -64,9 +64,9 @@ public:
 		VkMemoryAllocateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		info.pNext = nullptr;
-		info.allocationSize = size;
+		info.allocationSize = static_cast<std::size_t>(size);
 		info.memoryTypeIndex = memory_type_index;
-		vk_result res = vkAllocateMemory(device, &info, &host_allocator::allocation_callbacks(), &memory);
+		const vk_result res = vkAllocateMemory(device, &info, &host_allocator::allocation_callbacks(), &memory);
 		if (!res) {
 			throw vk_memory_allocation_failed_exception(res);
 		}
@@ -99,7 +99,7 @@ public:
 	auto get_allocation_memory_commitment() const {
 		std::uint64_t committed_bytes;
 		vkGetDeviceMemoryCommitment(device.get(), *this, &committed_bytes);
-		return committed_bytes;
+		return byte_t(committed_bytes);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public:
 		munmap();
 
 		void *pdata = nullptr;
-		vk_result res = vkMapMemory(device.get(), *this, offset * sizeof(T), count * sizeof(T), 0, &pdata);
+		const  vk_result res = vkMapMemory(device.get(), *this, offset * sizeof(T), count * sizeof(T), 0, &pdata);
 		if (!res) {
 			throw vk_exception(res);
 		}

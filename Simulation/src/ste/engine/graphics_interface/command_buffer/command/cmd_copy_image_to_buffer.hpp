@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -7,9 +7,9 @@
 #include <command.hpp>
 #include <device_buffer_base.hpp>
 #include <device_image_base.hpp>
-
 #include <image_layout.hpp>
-#include <format_rtti.hpp>
+
+#include <buffer_image_copy_region.hpp>
 
 #include <lib/vector.hpp>
 
@@ -33,22 +33,17 @@ public:
 	cmd_copy_image_to_buffer(const device_image_base &src_image,
 							 const image_layout &layout,
 							 const device_buffer_base &dst_buffer,
-							 const lib::vector<VkBufferImageCopy> &ranges = {})
-		: src_image(src_image.get_image_handle()), dst_buffer(dst_buffer.get_buffer_handle()), layout(layout), ranges(ranges) {
-		for (auto &c : this->ranges) {
-			c.bufferImageHeight *= dst_buffer.get_element_size_bytes();
-			c.bufferOffset *= dst_buffer.get_element_size_bytes();
-			c.bufferRowLength *= dst_buffer.get_element_size_bytes();
-		}
+							 const lib::vector<buffer_image_copy_region_t> &ranges = {})
+		: src_image(src_image.get_image_handle()), dst_buffer(dst_buffer.get_buffer_handle()), layout(layout) {
+		for (auto &c : ranges)
+			this->ranges.push_back(c.vk_descriptor(dst_buffer.get_element_size_bytes()));
 
 		if (this->ranges.size() == 0) {
-			VkBufferImageCopy c = {
-				0, 0, 0,
-				{ static_cast<VkImageAspectFlags>(format_aspect(src_image.get_format())), 0, 0, VK_REMAINING_ARRAY_LAYERS },
-				{ 0, 0, 0 },
-				{ src_image.get_extent().x, src_image.get_extent().y, src_image.get_extent().z }
-			};
-			this->ranges.push_back(c);
+			buffer_image_copy_region_t r;
+			r.extent = src_image.get_extent();
+			r.image_format = src_image.get_format();
+
+			this->ranges.push_back(r.vk_descriptor(dst_buffer.get_element_size_bytes()));
 		}
 	}
 
