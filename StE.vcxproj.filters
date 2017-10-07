@@ -2051,6 +2051,9 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_copy_region.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\utility\type_name.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

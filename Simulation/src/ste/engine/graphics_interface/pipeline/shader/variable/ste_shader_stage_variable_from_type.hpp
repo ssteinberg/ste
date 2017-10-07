@@ -12,6 +12,7 @@
 #include <lib/string.hpp>
 #include <lib/unique_ptr.hpp>
 #include <lib/vector.hpp>
+#include <type_name.hpp>
 
 namespace ste {
 namespace gl {
@@ -97,24 +98,24 @@ struct ste_shader_stage_variable_from_type_impl {
 						 std::enable_if_t<std::is_array_v<T>>* = nullptr) {
 		// Create underlying array variable
 		using Underlying = std::remove_extent_t<T>;
-		auto var = variable<Underlying>(lib::string(typeid(T).name()),
+		auto var = variable<Underlying>(type_name<T>(),
 										0);
 
 		static constexpr auto elements = std::extent_v<T>;
 		return lib::allocate_unique<ste_shader_stage_variable_array>(std::move(var),
-																		 name,
-																		 offset,
-																		 elements,
-																		 sizeof(T));
+																	 name,
+																	 offset,
+																	 elements,
+																	 sizeof(T));
 	}
 	template <typename T>
 	static auto variable(const lib::string &name,
 						 byte_t offset,
 						 std::enable_if_t<is_scalar_v<T>>* = nullptr) {
 		return lib::allocate_unique<ste_shader_stage_variable_scalar>(var_type,
-																		  name,
-																		  offset,
-																		  sizeof(T) << 3);
+																	  name,
+																	  offset,
+																	  sizeof(T) << 3);
 	}
 	template <typename T>
 	static auto variable(const lib::string &name,
@@ -122,22 +123,22 @@ struct ste_shader_stage_variable_from_type_impl {
 						 std::enable_if_t<std::conjunction_v<std::negation<is_scalar<T>>, is_arithmetic<T>>>* = nullptr) {
 		// Create underlying array variable
 		using Underlying = remove_extents_t<T>;
-		auto var = variable<Underlying>(lib::string(typeid(T).name()), 
+		auto var = variable<Underlying>(type_name<T>(),
 										0);
 
 		return lib::allocate_unique<ste_shader_stage_variable_matrix>(std::move(var),
-																		  name,
-																		  offset,
-																		  matrix_rows_count_v<T>,
-																		  matrix_columns_count_v<T>);
+																	  name,
+																	  offset,
+																	  matrix_rows_count_v<T>,
+																	  matrix_columns_count_v<T>);
 	}
 	template <typename T, ste_shader_stage_variable_type vt = var_type>
 	static auto variable(const lib::string &name,
 						 byte_t offset,
 						 std::enable_if_t<ste_shader_stage_variable_type_is_opaque_v<vt>>* = nullptr) {
 		return lib::allocate_unique<ste_shader_stage_variable_opaque>(vt,
-																		  name,
-																		  offset);
+																	  name,
+																	  offset);
 	}
 	template <typename T>
 	static auto variable(const lib::string &name,
@@ -159,7 +160,7 @@ struct ste_shader_stage_variable_populate_block_elements<Block, N, T, Ts...> {
 		// Create current element
 		static constexpr auto var_type = ste_shader_stage_variable_type_from_type_v<T>;
 		static byte_t offset = static_cast<std::uint16_t>(block_offset_of<N, Block>());
-		auto element = ste_shader_stage_variable_from_type_impl<var_type>::template variable<T>(lib::string(typeid(T).name()),
+		auto element = ste_shader_stage_variable_from_type_impl<var_type>::template variable<T>(type_name<T>(),
 																								offset);
 		elements.push_back(std::move(element));
 
@@ -173,7 +174,7 @@ struct ste_shader_stage_variable_populate_block_elements<Block, N, T> {
 		// Create last element
 		static constexpr auto var_type = ste_shader_stage_variable_type_from_type_v<T>;
 		static byte_t offset = static_cast<std::uint16_t>(block_offset_of<N, Block>());
-		auto element = ste_shader_stage_variable_from_type_impl<var_type>::template variable<T>(lib::string(typeid(T).name()),
+		auto element = ste_shader_stage_variable_from_type_impl<var_type>::template variable<T>(type_name<T>(),
 																								offset);
 		elements.push_back(std::move(element));
 	}
@@ -191,8 +192,8 @@ auto ste_shader_stage_variable_for_blocks(const block_layout<a, Ts...> &,
 
 	// And create the struct variable
 	return lib::allocate_unique<ste_shader_stage_variable_struct>(std::move(elements),
-																	  name,
-																	  offset);
+																  name,
+																  offset);
 }
 
 }
