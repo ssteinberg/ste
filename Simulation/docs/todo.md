@@ -54,4 +54,5 @@
 37. Polygonal lights: Beam focusing
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
 39. Geometry culling: Better bounding volume or low-poly geometry
-40. 
+40. <strike>std::hardware_destructive_interference_size</strike>
+41. 

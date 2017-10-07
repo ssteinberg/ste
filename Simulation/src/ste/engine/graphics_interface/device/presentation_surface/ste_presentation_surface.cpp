@@ -42,7 +42,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 
 	// Furthermore raise flag to recreate swap-chain
 	if (res != VK_SUCCESS)
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 
 	return ret;
 }
@@ -290,7 +290,7 @@ void ste_presentation_surface::connect_signals() {
 
 	resize_signal_connection = make_connection(resize_signal, [this](const glm::i32vec2 &size) {
 		// Raise flag to recreate swap-chain
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 	});
 }
 
@@ -315,13 +315,13 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 
 	vk::vk_result res;
 	{
-		//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
+		//		std::unique_lock<std::mutex> l(shared_data.swap_chain_guard);
 		res = vkQueuePresentKHR(presentation_queue, &info);
 	}
 
 	// Raise flag to recreate swap-chain
 	if (res != VK_SUCCESS)
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 	if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR && res != VK_ERROR_OUT_OF_DATE_KHR) {
 		throw vk::vk_exception(res);
 	}

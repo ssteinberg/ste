@@ -27,7 +27,6 @@
 #include <optional.hpp>
 #include <atomic>
 #include <array>
-#include <lib/aligned_padded_ptr.hpp>
 #include <mutex>
 
 namespace ste {
@@ -52,9 +51,13 @@ private:
 
 	using index_t = ImDrawIdx;
 
+	struct shared_data_t {
+		alignas(std::hardware_destructive_interference_size) mutable std::mutex m;
+	};
+
 private:
 	alias<const ste_window> window;
-	lib::aligned_padded_ptr<std::mutex> mutex;
+	shared_data_t shared_data;
 
 	std::function<void(const glm::ivec2 &)> user_gui_lambda;
 

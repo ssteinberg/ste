@@ -21,7 +21,6 @@
 #include <mutex>
 #include <atomic>
 #include <lib/unique_ptr.hpp>
-#include <lib/aligned_padded_ptr.hpp>
 #include <optional.hpp>
 #include <chrono>
 
@@ -38,7 +37,7 @@ private:
 	};
 
 	struct shared_data_t {
-		std::atomic<std::uint32_t> acquired_images{ 0 };
+		alignas(std::hardware_destructive_interference_size) std::atomic<std::uint32_t> acquired_images{ 0 };
 		std::mutex acquire_mutex;
 		std::condition_variable acquire_cv;
 
@@ -51,7 +50,7 @@ private:
 	std::uint32_t max_frame_lag;
 
 	// Data shared between presentation threads
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 	// Presentation synchronization primitives
 	lib::vector<image_presentation_sync_t> presentation_sync_primitives;
 
@@ -80,10 +79,10 @@ private:
 	void tick() {
 		const auto now = std::chrono::high_resolution_clock::now();
 		const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
-		const auto prev_ns = shared_data->last_acquire_time_ns.load(std::memory_order_acquire);
+		const auto prev_ns = shared_data.last_acquire_time_ns.load(std::memory_order_acquire);
 
-		shared_data->frame_time_ns.store(ns - prev_ns, std::memory_order_release);
-		shared_data->last_acquire_time_ns.store(ns, std::memory_order_release);
+		shared_data.frame_time_ns.store(ns - prev_ns, std::memory_order_release);
+		shared_data.last_acquire_time_ns.store(ns, std::memory_order_release);
 	}
 
 	template <typename selector_policy = ste_queue_selector_default_policy>
@@ -99,11 +98,11 @@ private:
 		// Wait for outstanding presentations
 		auto max_outstanding = std::min<std::uint32_t>(max_frame_lag,
 													   device->get_surface().get_max_allowed_acquired_swap_chain_images());
-		if (shared_data->acquired_images.load(std::memory_order_acquire) >= max_outstanding) {
+		if (shared_data.acquired_images.load(std::memory_order_acquire) >= max_outstanding) {
 			// Must present before we can acquire another image. Wait.
-			std::unique_lock<std::mutex> lk(shared_data->acquire_mutex);
-			shared_data->acquire_cv.wait(lk, [this, max_outstanding] {
-				return shared_data->acquired_images.load(std::memory_order_acquire) < max_outstanding;
+			std::unique_lock<std::mutex> lk(shared_data.acquire_mutex);
+			shared_data.acquire_cv.wait(lk, [this, max_outstanding] {
+				return shared_data.acquired_images.load(std::memory_order_acquire) < max_outstanding;
 			});
 		}
 
@@ -113,7 +112,7 @@ private:
 		// Acquire next presentation image
 		auto next_image_descriptor =
 			device->get_surface().acquire_next_swapchain_image(*semaphores.swapchain_image_ready_semaphore);
-		shared_data->acquired_images.fetch_add(1, std::memory_order_relaxed);
+		shared_data.acquired_images.fetch_add(1, std::memory_order_relaxed);
 
 		// Wait for previous presentation to this image index to end
 		auto& sync = presentation_sync_primitives[next_image_descriptor.image_index];
@@ -157,8 +156,8 @@ private:
 										  presentation_semaphores->rendering_finished_semaphore);
 
 			// Notify any waiting for present
-			shared_data->acquired_images.fetch_add(-1, std::memory_order_release);
-			shared_data->acquire_cv.notify_one();
+			shared_data.acquired_images.fetch_add(-1, std::memory_order_release);
+			shared_data.acquire_cv.notify_one();
 		}
 	}
 
@@ -251,7 +250,7 @@ public:
 	 *	@brief	Returns the last measured frame time, in nanoseconds.
 	 */
 	auto get_frame_time() const {
-		return shared_data->frame_time_ns.load(std::memory_order_acquire);
+		return shared_data.frame_time_ns.load(std::memory_order_acquire);
 	}
 };
 
