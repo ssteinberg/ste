@@ -675,6 +675,15 @@ int main()
 		if (window.should_close()) {
 			return 0;
 		}
+
+		// Scale mat editor objects
+		auto mat_editor_model_transform = glm::scale(glm::mat4(1.f), glm::vec3{ 3.5f });
+		mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+		//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+		//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+		//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
+		for (auto &o : mat_editor_objects)
+			o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	}
 
 	// Configure
@@ -760,7 +769,7 @@ int main()
 
 		ImGui::End();
 		
-		for (int i = 0; i < layers_count; ++i) {/*
+		for (int i = 0; i < layers_count; ++i) {
 			if (layers[i]->get_albedo() != base_color[i])
 				layers[i]->set_albedo(base_color[i]);
 			layers[i]->set_roughness(roughness[i]);
@@ -772,7 +781,7 @@ int main()
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
 				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
 			if (layers[i]->get_scattering_phase_parameter() != phase[i])
-				layers[i]->set_scattering_phase_parameter(phase[i]);*/
+				layers[i]->set_scattering_phase_parameter(phase[i]);
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;

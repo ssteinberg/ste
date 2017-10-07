@@ -61,6 +61,10 @@ private:
 	lib::aligned_padded_ptr<update_data_t> thickness_map_update_data;
 //	lib::aligned_padded_ptr<update_data_t> anisotropy_map_update_data;
 
+	std::mutex ior_phase_mutex;
+	std::mutex attenuation_mutex;
+	std::mutex next_layer_mutex;
+
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
 	float phase_g{ .0f };
@@ -326,8 +330,13 @@ public:
 	* 	@param ior	Index-of-refraction - range: [1,infinity) (Usually in range [1,2] for non-metals)
 	*/
 	void set_index_of_refraction(float ior) {
-		index_of_refraction = ior;
-		descriptor.set_ior_phase(index_of_refraction, phase_g);
+		{
+			std::unique_lock<std::mutex> l(ior_phase_mutex);
+
+			index_of_refraction = ior;
+			descriptor.set_ior_phase(index_of_refraction, phase_g);
+		}
+
 		Base::notify();
 	}
 
@@ -343,8 +352,13 @@ public:
 	* 	@param a	Per-channel total attenuation coefficient  - range: [0,infinity)
 	*/
 	void set_attenuation_coefficient(const glm::vec3 a) {
-		attenuation_coefficient = a;
-		descriptor.set_attenuation_coefficient(attenuation_coefficient);
+		{
+			std::unique_lock<std::mutex> l(attenuation_mutex);
+
+			attenuation_coefficient = a;
+			descriptor.set_attenuation_coefficient(attenuation_coefficient);
+		}
+
 		Base::notify();
 	}
 
@@ -361,8 +375,13 @@ public:
 	* 	@param g	Henyey-Greenstein phase function parameter  - range: (-1,+1)
 	*/
 	void set_scattering_phase_parameter(float g) {
-		phase_g = g;
-		descriptor.set_ior_phase(index_of_refraction, phase_g);
+		{
+			std::unique_lock<std::mutex> l(ior_phase_mutex);
+
+			phase_g = g;
+			descriptor.set_ior_phase(index_of_refraction, phase_g);
+		}
+
 		Base::notify();
 	}
 
@@ -429,8 +448,12 @@ public:
 				layerid = id;
 		}
 
-		descriptor.set_next_layer_id(layerid);
-		next_layer = layerid == material_layer_none ? nullptr : layer;
+		{
+			std::unique_lock<std::mutex> l(next_layer_mutex);
+
+			descriptor.set_next_layer_id(layerid);
+			next_layer = layerid == material_layer_none ? nullptr : layer;
+		}
 		
 		Base::notify();
 	}
