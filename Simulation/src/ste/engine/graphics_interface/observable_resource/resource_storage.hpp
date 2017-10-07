@@ -150,8 +150,13 @@ public:
 			std::unique_lock<std::mutex> l(Base::objects_mutex);
 
 			for (auto &res : Base::signalled_objects) {
+				// Get index of descriptor in buffer
 				auto idx = index_of(res);
+				// Overwrite descriptor
 				recorder << store.overwrite_cmd(idx, res->get_descriptor());
+
+				// Perform custom resource updates
+				res.update_resource(recorder);
 			}
 
 			Base::signalled_objects.clear();
