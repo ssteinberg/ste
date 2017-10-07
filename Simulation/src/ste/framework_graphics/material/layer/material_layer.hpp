@@ -11,23 +11,37 @@
 #include <material_textures_storage.hpp>
 #include <material_texture.hpp>
 
-#include <texture.hpp>
-#include <sampler.hpp>
-#include <surface.hpp>
-#include <surface_factory.hpp>
+#include <command_recorder.hpp>
+#include <cmd_clear_color_image.hpp>
 
 #include <rgb.hpp>
 #include <alias.hpp>
 #include <limits>
+#include <optional.hpp>
+#include <mutex>
+#include <atomic>
+#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
 
 /**
  *	@brief	Defines rendering material layer
+ *			Thread-safe
  */
 class material_layer : public gl::observable_resource<material_layer_descriptor> {
 	using Base = gl::observable_resource<material_layer_descriptor>;
+
+private:
+	static constexpr auto layer_maps_shader_stage_access = gl::pipeline_stage::fragment_shader;
+
+	struct update_data_t {
+		mutable std::mutex m;
+		mutable std::atomic<bool> update_flag{ false };
+
+		bool has_mutable_map;
+		float new_value;
+	};
 
 private:
 	alias<const ste_context> ctx;
@@ -35,10 +49,17 @@ private:
 
 	rgb albedo;
 	
+	// Maps
 	material_texture roughness_map;
 	material_texture metallicity_map;
 	material_texture thickness_map;
 	//material_texture anisotropy_map;
+
+	// Maps' update data
+	lib::aligned_padded_ptr<update_data_t> roughness_map_update_data;
+	lib::aligned_padded_ptr<update_data_t> metallicity_map_update_data;
+	lib::aligned_padded_ptr<update_data_t> thickness_map_update_data;
+//	lib::aligned_padded_ptr<update_data_t> anisotropy_map_update_data;
 
 	float index_of_refraction{ 1.5f };
 	glm::vec3 attenuation_coefficient{ std::numeric_limits<float>::infinity() };
@@ -56,23 +77,34 @@ private:
 	material_layer &operator=(const material_layer &m) = delete;
 
 private:
-	auto create_scalar_map(float scalar) {
-		auto surface = resource::surface_2d<gl::format::r32_sfloat>({ 1, 1 });
-		surface[0_mip][0].r() = scalar;
-	
-		auto image = resource::surface_factory::image_from_surface_2d<gl::format::r32_sfloat>(ctx,
-																							  std::move(surface),
-																							  gl::image_usage::sampled,
-																							  gl::image_layout::shader_read_only_optimal,
-																							  "material_layer scalar_map",
-																							  false);
-		return gl::texture<gl::image_type::image_2d>(std::move(image).get());
-	}
-
 	/**
 	 *	@brief	Assigns default values to roughness, metallicity, anisotropy and thickness maps.
 	 */
 	void set_default_maps();
+
+	static void update_resource_map(gl::command_recorder &recorder,
+									const update_data_t &data,
+									const gl::texture<gl::image_type::image_2d> &texture) {
+		// Record map update
+		recorder
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(layer_maps_shader_stage_access,
+															 gl::pipeline_stage::transfer,
+															 gl::image_memory_barrier(texture.get_image(),
+																					  gl::image_layout::undefined,
+																					  gl::image_layout::transfer_dst_optimal,
+																					  gl::access_flags::shader_read,
+																					  gl::access_flags::transfer_write)))
+			<< gl::cmd_clear_color_image(texture.get_image(),
+										 gl::image_layout::transfer_dst_optimal,
+										 glm::vec4{ data.new_value })
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+															 layer_maps_shader_stage_access,
+															 gl::image_memory_barrier(texture.get_image(),
+																					  gl::image_layout::transfer_dst_optimal,
+																					  gl::image_layout::shader_read_only_optimal,
+																					  gl::access_flags::transfer_write,
+																					  gl::access_flags::shader_read)));
+	}
 
 public:
 	/**
@@ -83,6 +115,49 @@ public:
 		if (ansio < .0f)
 			ratio = 1.f / ratio;
 		return ratio;
+	}
+
+protected:
+	void update_resource(gl::command_recorder &recorder) const override final {
+		// Check if there is anything to do
+		const bool has_roughness_updates = roughness_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_metallicity_updates = metallicity_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_thickness_updates = thickness_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
+//		const bool has_anisotropy_updates = anisotropy_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_updates =
+			has_roughness_updates ||
+			has_metallicity_updates ||
+			has_thickness_updates;
+//			has_anisotropy_updates;
+
+		if (!has_updates)
+			return;
+
+		// Update resources' maps
+		if (has_roughness_updates) {
+			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+			update_resource_map(recorder,
+								*roughness_map_update_data,
+								roughness_map.texture());
+		}
+		if (has_metallicity_updates) {
+			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+			update_resource_map(recorder,
+								*metallicity_map_update_data,
+								metallicity_map.texture());
+		}
+		if (has_thickness_updates) {
+			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+			update_resource_map(recorder,
+								*thickness_map_update_data,
+								thickness_map.texture());
+		}
+//		if (has_anisotropy_updates) {
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//			update_resource_map(recorder,
+//								*anisotropy_map_update_data,
+//								anisotropy_map.texture());
+//		}
 	}
 
 public:
@@ -113,8 +188,21 @@ public:
 	* 	@param r	Roughness - range: [0,1]
 	*/
 	void set_roughness(float r) {
-		roughness_map = textures_storage->allocate_texture(create_scalar_map(r));
-		descriptor.set_roughness_map_handle(roughness_map.texture_index());
+		// If needed, replace the default blank map with a custom uninitialized one.
+		{
+			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+
+			if (roughness_map_update_data->has_mutable_map) {
+				// If still using the default map, create a new one.
+				roughness_map = textures_storage->allocate_uninitialized_texture(ctx);
+				descriptor.set_roughness_map_handle(roughness_map.texture_index());
+
+				roughness_map_update_data->has_mutable_map = false;
+			}
+
+			roughness_map_update_data->new_value = r;
+			roughness_map_update_data->update_flag.store(true, std::memory_order_release);
+		}
 
 		Base::notify();
 	}
@@ -126,8 +214,14 @@ public:
 	* 	@param map	Roughness map
 	*/
 	void set_roughness(const material_texture &map) {
-		roughness_map = map;
-		descriptor.set_roughness_map_handle(roughness_map.texture_index());
+		{
+			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+
+			roughness_map = map;
+			descriptor.set_roughness_map_handle(roughness_map.texture_index());
+
+			roughness_map_update_data->has_mutable_map = false;
+		}
 
 		Base::notify();
 	}
@@ -140,8 +234,21 @@ public:
 	* 	@param a	Anisotropy - range: [0,1] (May take negative values which invert X, Y anisotropy)
 	*/
 //	void set_anisotropy(float a) {
-//		anisotropy_map = textures_storage->allocate_texture(create_scalar_map(a));
-//		descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
+//		// If needed, replace the default blank map with a custom uninitialized one.
+//		{
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//
+//			if (anisotropy_map_update_data->has_mutable_map) {
+//				// If still using the default map, create a new one.
+//				anisotropy_map = textures_storage->allocate_uninitialized_texture(ctx);
+//				descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
+//
+//				anisotropy_map_update_data->has_mutable_map = false;
+//			}
+//
+//			anisotropy_map_update_data->new_value = a;
+//			anisotropy_map_update_data->update_flag.store(true, std::memory_order_release);
+//		}
 //
 //		Base::notify();
 //	}
@@ -153,8 +260,14 @@ public:
 	* 	@param map	Anisotropy map
 	*/
 //	void set_anisotropy(const material_texture &map) {
-//		anisotropy_map = map;
-//		descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
+//		{
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//
+//			anisotropy_map = map;
+//			descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
+//
+//			anisotropy_map_update_data->has_mutable_map = false;
+//		}
 //
 //		Base::notify();
 //	}
@@ -167,8 +280,21 @@ public:
 * 	@param m	Metallicity - range: [0,1]
 */
 	void set_metallicity(float m) {
-		metallicity_map = textures_storage->allocate_texture(create_scalar_map(m));
-		descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
+		// If needed, replace the default blank map with a custom uninitialized one.
+		{
+			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+
+			if (metallicity_map_update_data->has_mutable_map) {
+				// If still using the default map, create a new one.
+				metallicity_map = textures_storage->allocate_uninitialized_texture(ctx);
+				descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
+
+				metallicity_map_update_data->has_mutable_map = false;
+			}
+
+			metallicity_map_update_data->new_value = m;
+			metallicity_map_update_data->update_flag.store(true, std::memory_order_release);
+		}
 
 		Base::notify();
 	}
@@ -180,8 +306,15 @@ public:
 	* 	@param map	Metallicity map
 	*/
 	void set_metallicity(const material_texture &map) {
-		metallicity_map = map;
-		descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
+		{
+			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+
+			metallicity_map = map;
+			descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
+
+			metallicity_map_update_data->has_mutable_map = false;
+		}
+
 		Base::notify();
 	}
 
@@ -241,8 +374,21 @@ public:
 	* 	@param t	Thickness in standard units	- range: (0,material_layer_max_thickness)
 	*/
 	void set_layer_thickness(float t) {
-		thickness_map = textures_storage->allocate_texture(create_scalar_map(t));
-		descriptor.set_thickness_map_handle(thickness_map.texture_index());
+		// If needed, replace the default blank map with a custom uninitialized one.
+		{
+			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+
+			if (thickness_map_update_data->has_mutable_map) {
+				// If still using the default map, create a new one.
+				thickness_map = textures_storage->allocate_uninitialized_texture(ctx);
+				descriptor.set_thickness_map_handle(thickness_map.texture_index());
+
+				thickness_map_update_data->has_mutable_map = false;
+			}
+
+			thickness_map_update_data->new_value = t;
+			thickness_map_update_data->update_flag.store(true, std::memory_order_release);
+		}
 
 		Base::notify();
 	}
@@ -254,8 +400,15 @@ public:
 	* 	@param map	Thickness map in standard units	- range: (0,material_layer_max_thickness)
 	*/
 	void set_layer_thickness(const material_texture &map) {
-		thickness_map = map;
-		descriptor.set_thickness_map_handle(thickness_map.texture_index());
+		{
+			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+
+			thickness_map = map;
+			descriptor.set_thickness_map_handle(thickness_map.texture_index());
+
+			thickness_map_update_data->has_mutable_map = false;
+		}
+
 		Base::notify();
 	}
 	
@@ -290,6 +443,7 @@ public:
 	auto& get_roughness_map() const { return roughness_map; }
 	auto& get_metallicity_map() const { return metallicity_map; }
 	auto& get_thickness_map() const { return thickness_map; }
+//	auto& get_anisotropy_map() const { return anisotropy_map; }
 
 	auto *get_next_layer() const { return next_layer; }
 
