@@ -27,7 +27,6 @@
 #include <optional.hpp>
 #include <atomic>
 #include <array>
-#include <lib/aligned_padded_ptr.hpp>
 #include <mutex>
 
 namespace ste {
@@ -52,9 +51,13 @@ private:
 
 	using index_t = ImDrawIdx;
 
+	struct shared_data_t {
+		alignas(std::hardware_destructive_interference_size) mutable std::mutex m;
+	};
+
 private:
 	alias<const ste_window> window;
-	lib::aligned_padded_ptr<std::mutex> mutex;
+	shared_data_t shared_data;
 
 	std::function<void(const glm::ivec2 &)> user_gui_lambda;
 
@@ -67,8 +70,8 @@ private:
 	glm::u32vec2 fb_extent{ 0 };
 	gl::vk::vk_descriptor_pool<> imgui_descriptor_pool;
 	lib::unique_ptr<gl::texture<gl::image_type::image_2d>> imgui_fonts_texture;
-	gl::stable_vector<imgui_vertex_data> vertex_buffer;
-	gl::stable_vector<index_t> index_buffer;
+	gl::vector<imgui_vertex_data> vertex_buffer;
+	gl::vector<index_t> index_buffer;
 
 private:
 	hid_pointer_movement_connection_type hid_pointer_movement_connection;

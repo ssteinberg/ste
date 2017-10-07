@@ -20,8 +20,6 @@
 #include <mutex>
 #include <anchored.hpp>
 
-#include <lib/aligned_padded_ptr.hpp>
-
 namespace ste {
 
 /**
@@ -45,7 +43,7 @@ private:
 
 private:
 	struct shared_data_t {
-		std::atomic<std::uint64_t> ops{ 0 };
+		alignas(std::hardware_destructive_interference_size) std::atomic<std::uint64_t> ops{ 0 };
 
 		mutable std::mutex m;
 		mutable std::condition_variable cv;
@@ -58,7 +56,7 @@ private:
 private:
 	const std::experimental::filesystem::path path;
 	const byte_t quota;
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 
 	index_type index;
 
@@ -67,15 +65,15 @@ private:
 private:
 	void shutdown() {
 		t.interrupt();
-		do { shared_data->cv.notify_one(); } while (!shared_data->m.try_lock());
-		shared_data->m.unlock();
+		do { shared_data.cv.notify_one(); } while (!shared_data.m.try_lock());
+		shared_data.m.unlock();
 		if (t.joinable())
 			t.join();
 	}
 
 	void item_accessed(typename index_type::val_data_guard &&val_guard) const {
-		shared_data->accessed_queue.push(std::move(val_guard));
-		shared_data->cv.notify_one();
+		shared_data.accessed_queue.push(std::move(val_guard));
+		shared_data.cv.notify_one();
 	}
 
 public:
@@ -93,35 +91,35 @@ public:
 	lru_cache(const std::experimental::filesystem::path &path, byte_t quota = 0_B)
 		: path(path),
 		quota(quota),
-		index(path, shared_data->total_size),
+		index(path, shared_data.total_size),
 		t([this] ()
 	{
 		for (;;) {
 			if (interruptible_thread::is_interruption_flag_set()) return;
 
 			{
-				std::unique_lock<std::mutex> l(shared_data->m);
-				shared_data->cv.wait(l);
+				std::unique_lock<std::mutex> l(shared_data.m);
+				shared_data.cv.wait(l);
 			}
 
-			auto accessed_item = shared_data->accessed_queue.pop();
+			auto accessed_item = shared_data.accessed_queue.pop();
 			while (accessed_item != nullptr) {
 				index.move_to_lru_front(**accessed_item);
-				accessed_item = shared_data->accessed_queue.pop();
+				accessed_item = shared_data.accessed_queue.pop();
 			}
 
-			auto ts = byte_t(shared_data->total_size.load(std::memory_order_relaxed));
+			auto ts = byte_t(shared_data.total_size.load(std::memory_order_relaxed));
 			while (ts > this->quota && this->quota) {
 				auto size = this->index.erase_back();
 				assert(size);
 				if (!size)
 					break;
 
-				ts = byte_t(shared_data->total_size.fetch_sub(static_cast<std::size_t>(size), std::memory_order_relaxed));
+				ts = byte_t(shared_data.total_size.fetch_sub(static_cast<std::size_t>(size), std::memory_order_relaxed));
 			}
 
-			if (shared_data->ops.load(std::memory_order_relaxed) > write_index_every_ops) {
-				shared_data->ops.store(0, std::memory_order_release);
+			if (shared_data.ops.load(std::memory_order_relaxed) > write_index_every_ops) {
+				shared_data.ops.store(0, std::memory_order_release);
 
 				this->index.write_index();
 			}
@@ -161,10 +159,10 @@ public:
 
 		auto item_size = val_guard->get_size();
 		assert(item_size);
-		shared_data->total_size.fetch_add(static_cast<std::size_t>(item_size), std::memory_order_relaxed);
+		shared_data.total_size.fetch_add(static_cast<std::size_t>(item_size), std::memory_order_relaxed);
 		item_accessed(std::move(val_guard));
 
-		++shared_data->ops;
+		++shared_data.ops;
 	}
 
 	/**

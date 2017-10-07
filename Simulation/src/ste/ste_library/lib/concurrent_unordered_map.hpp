@@ -8,10 +8,12 @@
 
 #include <concurrency/concurrent_unordered_map.hpp>
 
+#include <new>
+
 namespace ste {
 namespace lib {
 
-template <typename K, typename V, int cache_line = 64>
+template <typename K, typename V, int cache_line = std::hardware_destructive_interference_size>
 using concurrent_unordered_map = 
 ::ste::concurrent_unordered_map<
 	K, 

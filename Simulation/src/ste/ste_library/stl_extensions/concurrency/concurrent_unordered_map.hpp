@@ -1,10 +1,11 @@
-// StE
-// © Shlomi Steinberg, 2015-2016
+//	StE
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <atomic>
 #include <memory>
+#include <new>
 
 #include <functional>
 #include <type_traits>
@@ -29,7 +30,7 @@ namespace ste {
 template <
 	typename K, 
 	typename V,
-	int cache_line = 64,
+	int cache_line = std::hardware_destructive_interference_size,
 	typename AlignedAllocator = aligned_allocator<V, cache_line>,
 	typename Allocator = std::allocator<V>
 >

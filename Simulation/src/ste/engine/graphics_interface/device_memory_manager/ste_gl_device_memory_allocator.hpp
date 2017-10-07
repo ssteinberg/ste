@@ -18,7 +18,6 @@
 #include <array>
 #include <lib/unordered_map.hpp>
 #include <lib/unordered_set.hpp>
-#include <lib/aligned_padded_ptr.hpp>
 #include <alias.hpp>
 
 namespace ste {
@@ -33,7 +32,7 @@ private:
 	struct heap_t {
 		chunks_t chunks;
 		chunks_t private_chunks;
-		lib::aligned_padded_ptr<std::mutex> m;
+		alignas(std::hardware_destructive_interference_size) std::mutex m;
 	};
 
 	static constexpr memory_type_t memory_types = 32;
@@ -94,7 +93,7 @@ private:
 		auto &heap = heaps[memory_type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			chunks_t &chunks = ptr.is_private_allocation() ?
 				heap.private_chunks :
@@ -157,7 +156,7 @@ private:
 		auto &heap = heaps[memory_type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			// Prune private chunks
 			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it) {
@@ -381,7 +380,7 @@ public:
 		auto &heap = heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_commited_memory += it->second.get_heap_size();
@@ -424,7 +423,7 @@ public:
 		auto &heap = heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_allocated_memory += it->second.get_allocated_bytes();

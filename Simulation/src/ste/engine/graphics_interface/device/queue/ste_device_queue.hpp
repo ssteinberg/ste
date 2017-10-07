@@ -27,7 +27,6 @@
 #include <lib/vector.hpp>
 #include <lib/list.hpp>
 #include <atomic>
-#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/concurrent_queue.hpp>
 #include <interruptible_thread.hpp>
@@ -55,7 +54,7 @@ private:
 	using task_queue_t = lib::concurrent_queue<task_t>;
 
 	struct shared_data_t {
-		mutable std::mutex m;
+		alignas(std::hardware_destructive_interference_size) mutable std::mutex m;
 		mutable std::condition_variable notifier;
 
 		task_queue_t task_queue;
@@ -70,7 +69,7 @@ private:
 
 	lib::list<lib::unique_ptr<ste_device_queue_batch_base>> submitted_batches;
 
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 	ste_resource_pool<ste_device_queue_command_pool> pool;
 	lib::unique_ptr<interruptible_thread> thread;
 
@@ -219,8 +218,8 @@ public:
 	~ste_device_queue() noexcept {
 		thread->interrupt();
 
-		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
-		shared_data->m.unlock();
+		do { shared_data.notifier.notify_all(); } while (!shared_data.m.try_lock());
+		shared_data.m.unlock();
 
 		thread->join();
 		prune_submitted_batches();
@@ -307,8 +306,8 @@ public:
 			f();
 		}
 		else {
-			shared_data->task_queue.push(std::move(f));
-			shared_data->notifier.notify_one();
+			shared_data.task_queue.push(std::move(f));
+			shared_data.notifier.notify_one();
 		}
 
 		return future;
@@ -325,8 +324,8 @@ public:
 		}
 
 		std::atomic_thread_fence(std::memory_order_acquire);
-		while (!shared_data->task_queue.is_empty_hint()) {
-			shared_data->notifier.notify_all();
+		while (!shared_data.task_queue.is_empty_hint()) {
+			shared_data.notifier.notify_all();
 			std::this_thread::sleep_for(std::chrono::milliseconds(0));
 		}
 
@@ -344,7 +343,7 @@ public:
 			throw ste_device_exception("Deadlock");
 		}
 
-		do { shared_data->notifier.notify_all(); } while (!shared_data->m.try_lock());
+		do { shared_data.notifier.notify_all(); } while (!shared_data.m.try_lock());
 		queue.wait_idle();
 	}
 
@@ -352,7 +351,7 @@ public:
 	 *	@brief	Unlocks the queue after locking it, resuming queue processing.
 	 */
 	void unlock() const {
-		shared_data->m.unlock();
+		shared_data.m.unlock();
 	}
 
 	auto &queue_descriptor() const { return descriptor; }

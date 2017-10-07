@@ -24,10 +24,10 @@ void ste_device_queue::create_worker() {
 				if (interruptible_thread::is_interruption_flag_set()) return;
 
 				{
-					std::unique_lock<std::mutex> l(shared_data->m);
-					shared_data->notifier.wait(l, [&]() {
+					std::unique_lock<std::mutex> l(shared_data.m);
+					shared_data.notifier.wait(l, [&]() {
 						return interruptible_thread::is_interruption_flag_set() ||
-							(task = shared_data->task_queue.pop()) != nullptr;
+							(task = shared_data.task_queue.pop()) != nullptr;
 					});
 				}
 
@@ -39,7 +39,7 @@ void ste_device_queue::create_worker() {
 						break;
 
 					// Acquire next task
-					task = shared_data->task_queue.pop();
+					task = shared_data.task_queue.pop();
 				}
 			}
 		}
