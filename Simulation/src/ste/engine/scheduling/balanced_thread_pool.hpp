@@ -20,7 +20,6 @@
 #include <mutex>
 #include <future>
 #include <condition_variable>
-#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/vector.hpp>
 #include <lib/shared_ptr.hpp>
@@ -37,7 +36,7 @@ public:
 
 private:
 	struct shared_data_t {
-		std::condition_variable notifier;
+		alignas(std::hardware_destructive_interference_size) std::condition_variable notifier;
 		std::mutex m;
 
 		std::atomic<std::uint32_t> requests_pending{ 0 };
@@ -51,7 +50,7 @@ public:
 	static bool is_thread_pool_worker_thread() { return balanced_thread_pool_worker_thread_flag; }
 
 private:
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 	lib::vector<interruptible_thread> workers;
 
 	task_queue_t task_queue;
@@ -75,15 +74,15 @@ private:
 				task_queue_t::stored_ptr task;
 				{
 					// Wait for tasks
-					std::unique_lock<std::mutex> l(shared_data->m);
-					shared_data->notifier.wait(l,
+					std::unique_lock<std::mutex> l(shared_data.m);
+					shared_data.notifier.wait(l,
 											   [&]() {
 												   return interruptible_thread::is_interruption_flag_set() ||
 													   (task = task_queue.pop()) != nullptr;
 											   });
 				}
 
-				shared_data->active_workers.fetch_add(1);
+				shared_data.active_workers.fetch_add(1);
 
 				// Process tasks
 				while (task != nullptr) {
@@ -93,7 +92,7 @@ private:
 					task = task_queue.pop();
 				}
 
-				shared_data->active_workers.fetch_add(-1);
+				shared_data.active_workers.fetch_add(-1);
 			}
 		});
 
@@ -120,15 +119,15 @@ private:
 	}
 
 	void notify_workers_on_enqueue() {
-		const int pending = shared_data->requests_pending.fetch_add(1);
+		const int pending = shared_data.requests_pending.fetch_add(1);
 		if (pending == 0)
-			shared_data->notifier.notify_one();
+			shared_data.notifier.notify_one();
 		else
-			shared_data->notifier.notify_all();
+			shared_data.notifier.notify_all();
 	}
 
 	void run_task(task_t &&task) {
-		shared_data->requests_pending.fetch_add(-1, std::memory_order_release);
+		shared_data.requests_pending.fetch_add(-1, std::memory_order_release);
 		(*task)();
 	}
 
@@ -145,9 +144,9 @@ private:
 	void notify_and_join_thread(interruptible_thread &w) {
 		w.interrupt();
 		do {
-			shared_data->notifier.notify_all();
-		} while (!shared_data->m.try_lock());
-		shared_data->m.unlock();
+			shared_data.notifier.notify_all();
+		} while (!shared_data.m.try_lock());
+		shared_data.m.unlock();
 		w.join();
 	}
 
@@ -206,8 +205,8 @@ public:
 	}
 
 	auto get_workers_count() const { return workers.size(); }
-	auto get_pending_requests_count() const { return shared_data->requests_pending.load(std::memory_order_acquire); }
-	auto get_active_workers_count() const { return shared_data->active_workers.load(std::memory_order_acquire); }
+	auto get_pending_requests_count() const { return shared_data.requests_pending.load(std::memory_order_acquire); }
+	auto get_active_workers_count() const { return shared_data.active_workers.load(std::memory_order_acquire); }
 
 	auto get_sleeping_workers_count() const {
 		auto count = static_cast<std::int32_t>(workers.size() - get_active_workers_count());

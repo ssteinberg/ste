@@ -31,7 +31,6 @@
 #include <signal.hpp>
 #include <optional.hpp>
 #include <mutex>
-#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -42,7 +41,7 @@ class primary_renderer : public gl::rendering_system {
 private:
 	class atmospherics_properties_update_t {
 	private:
-		std::mutex m;
+		alignas(std::hardware_destructive_interference_size) std::mutex m;
 		optional<atmospherics_properties<double>> update;
 
 	public:
@@ -88,7 +87,7 @@ private:
 	ste_resource<light_preprocessor_fragment> light_preprocess;
 
 private:
-	lib::aligned_padded_ptr<atmospherics_properties_update_t> atmospherics_properties_update;
+	atmospherics_properties_update_t atmospherics_properties_update;
 
 private:
 	void reattach_framebuffers();
@@ -127,7 +126,7 @@ public:
 	 *	@brief		Updates atmospheric properties.
 	 */
 	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) {
-		*atmospherics_properties_update = atmospherics_prop;
+		atmospherics_properties_update = atmospherics_prop;
 	}
 
 	/**

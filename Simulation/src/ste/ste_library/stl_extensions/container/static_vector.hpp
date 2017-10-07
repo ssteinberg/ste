@@ -5,7 +5,10 @@
 
 #include <type_traits>
 #include <memory>
+#include <new>
+
 #include <cassert>
+
 #include <algorithm>
 #include <utility>
 #include <cstring>
@@ -126,7 +129,7 @@ private:
 	using storage_allocator_type = typename Allocator::template rebind<std::uint8_t>::other;
 
 protected:
-	static constexpr std::size_t pad_data_to_alignment = 64;
+	static constexpr std::size_t pad_data_to_alignment = std::hardware_destructive_interference_size;
 	static constexpr std::size_t pad_bitvector_to_alignment = sizeof(std::size_t);
 
 	constexpr auto storage_bitvector_offset(size_type size) {

@@ -20,7 +20,6 @@
 #include <optional.hpp>
 #include <mutex>
 #include <atomic>
-#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -36,7 +35,7 @@ private:
 	static constexpr auto layer_maps_shader_stage_access = gl::pipeline_stage::fragment_shader;
 
 	struct update_data_t {
-		mutable std::mutex m;
+		alignas(std::hardware_destructive_interference_size) mutable std::mutex m;
 		mutable std::atomic<bool> update_flag{ false };
 
 		bool has_mutable_map;
@@ -56,10 +55,10 @@ private:
 	//material_texture anisotropy_map;
 
 	// Maps' update data
-	lib::aligned_padded_ptr<update_data_t> roughness_map_update_data;
-	lib::aligned_padded_ptr<update_data_t> metallicity_map_update_data;
-	lib::aligned_padded_ptr<update_data_t> thickness_map_update_data;
-//	lib::aligned_padded_ptr<update_data_t> anisotropy_map_update_data;
+	update_data_t roughness_map_update_data;
+	update_data_t metallicity_map_update_data;
+	update_data_t thickness_map_update_data;
+//	update_data_t anisotropy_map_update_data;
 
 	std::mutex ior_phase_mutex;
 	std::mutex attenuation_mutex;
@@ -124,10 +123,10 @@ public:
 protected:
 	void update_resource(gl::command_recorder &recorder) const override final {
 		// Check if there is anything to do
-		const bool has_roughness_updates = roughness_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
-		const bool has_metallicity_updates = metallicity_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
-		const bool has_thickness_updates = thickness_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
-//		const bool has_anisotropy_updates = anisotropy_map_update_data->update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_roughness_updates = roughness_map_update_data.update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_metallicity_updates = metallicity_map_update_data.update_flag.exchange(false, std::memory_order_acq_rel);
+		const bool has_thickness_updates = thickness_map_update_data.update_flag.exchange(false, std::memory_order_acq_rel);
+//		const bool has_anisotropy_updates = anisotropy_map_update_data.update_flag.exchange(false, std::memory_order_acq_rel);
 		const bool has_updates =
 			has_roughness_updates ||
 			has_metallicity_updates ||
@@ -139,27 +138,27 @@ protected:
 
 		// Update resources' maps
 		if (has_roughness_updates) {
-			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+			std::unique_lock<std::mutex> l(roughness_map_update_data.m);
 			update_resource_map(recorder,
-								*roughness_map_update_data,
+								roughness_map_update_data,
 								roughness_map.texture());
 		}
 		if (has_metallicity_updates) {
-			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+			std::unique_lock<std::mutex> l(metallicity_map_update_data.m);
 			update_resource_map(recorder,
-								*metallicity_map_update_data,
+								metallicity_map_update_data,
 								metallicity_map.texture());
 		}
 		if (has_thickness_updates) {
-			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+			std::unique_lock<std::mutex> l(thickness_map_update_data.m);
 			update_resource_map(recorder,
-								*thickness_map_update_data,
+								thickness_map_update_data,
 								thickness_map.texture());
 		}
 //		if (has_anisotropy_updates) {
-//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data.m);
 //			update_resource_map(recorder,
-//								*anisotropy_map_update_data,
+//								anisotropy_map_update_data,
 //								anisotropy_map.texture());
 //		}
 	}
@@ -194,18 +193,18 @@ public:
 	void set_roughness(float r) {
 		// If needed, replace the default blank map with a custom uninitialized one.
 		{
-			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+			std::unique_lock<std::mutex> l(roughness_map_update_data.m);
 
-			if (roughness_map_update_data->has_mutable_map) {
+			if (roughness_map_update_data.has_mutable_map) {
 				// If still using the default map, create a new one.
 				roughness_map = textures_storage->allocate_uninitialized_texture(ctx);
 				descriptor.set_roughness_map_handle(roughness_map.texture_index());
 
-				roughness_map_update_data->has_mutable_map = false;
+				roughness_map_update_data.has_mutable_map = false;
 			}
 
-			roughness_map_update_data->new_value = r;
-			roughness_map_update_data->update_flag.store(true, std::memory_order_release);
+			roughness_map_update_data.new_value = r;
+			roughness_map_update_data.update_flag.store(true, std::memory_order_release);
 		}
 
 		Base::notify();
@@ -219,12 +218,12 @@ public:
 	*/
 	void set_roughness(const material_texture &map) {
 		{
-			std::unique_lock<std::mutex> l(roughness_map_update_data->m);
+			std::unique_lock<std::mutex> l(roughness_map_update_data.m);
 
 			roughness_map = map;
 			descriptor.set_roughness_map_handle(roughness_map.texture_index());
 
-			roughness_map_update_data->has_mutable_map = false;
+			roughness_map_update_data.has_mutable_map = false;
 		}
 
 		Base::notify();
@@ -240,18 +239,18 @@ public:
 //	void set_anisotropy(float a) {
 //		// If needed, replace the default blank map with a custom uninitialized one.
 //		{
-//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data.m);
 //
-//			if (anisotropy_map_update_data->has_mutable_map) {
+//			if (anisotropy_map_update_data.has_mutable_map) {
 //				// If still using the default map, create a new one.
 //				anisotropy_map = textures_storage->allocate_uninitialized_texture(ctx);
 //				descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
 //
-//				anisotropy_map_update_data->has_mutable_map = false;
+//				anisotropy_map_update_data.has_mutable_map = false;
 //			}
 //
-//			anisotropy_map_update_data->new_value = a;
-//			anisotropy_map_update_data->update_flag.store(true, std::memory_order_release);
+//			anisotropy_map_update_data.new_value = a;
+//			anisotropy_map_update_data.update_flag.store(true, std::memory_order_release);
 //		}
 //
 //		Base::notify();
@@ -265,12 +264,12 @@ public:
 	*/
 //	void set_anisotropy(const material_texture &map) {
 //		{
-//			std::unique_lock<std::mutex> l(anisotropy_map_update_data->m);
+//			std::unique_lock<std::mutex> l(anisotropy_map_update_data.m);
 //
 //			anisotropy_map = map;
 //			descriptor.set_anisotropy_map_handle(anisotropy_map.texture_index());
 //
-//			anisotropy_map_update_data->has_mutable_map = false;
+//			anisotropy_map_update_data.has_mutable_map = false;
 //		}
 //
 //		Base::notify();
@@ -286,18 +285,18 @@ public:
 	void set_metallicity(float m) {
 		// If needed, replace the default blank map with a custom uninitialized one.
 		{
-			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+			std::unique_lock<std::mutex> l(metallicity_map_update_data.m);
 
-			if (metallicity_map_update_data->has_mutable_map) {
+			if (metallicity_map_update_data.has_mutable_map) {
 				// If still using the default map, create a new one.
 				metallicity_map = textures_storage->allocate_uninitialized_texture(ctx);
 				descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
 
-				metallicity_map_update_data->has_mutable_map = false;
+				metallicity_map_update_data.has_mutable_map = false;
 			}
 
-			metallicity_map_update_data->new_value = m;
-			metallicity_map_update_data->update_flag.store(true, std::memory_order_release);
+			metallicity_map_update_data.new_value = m;
+			metallicity_map_update_data.update_flag.store(true, std::memory_order_release);
 		}
 
 		Base::notify();
@@ -311,12 +310,12 @@ public:
 	*/
 	void set_metallicity(const material_texture &map) {
 		{
-			std::unique_lock<std::mutex> l(metallicity_map_update_data->m);
+			std::unique_lock<std::mutex> l(metallicity_map_update_data.m);
 
 			metallicity_map = map;
 			descriptor.set_metallicity_map_handle(metallicity_map.texture_index());
 
-			metallicity_map_update_data->has_mutable_map = false;
+			metallicity_map_update_data.has_mutable_map = false;
 		}
 
 		Base::notify();
@@ -395,18 +394,18 @@ public:
 	void set_layer_thickness(float t) {
 		// If needed, replace the default blank map with a custom uninitialized one.
 		{
-			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+			std::unique_lock<std::mutex> l(thickness_map_update_data.m);
 
-			if (thickness_map_update_data->has_mutable_map) {
+			if (thickness_map_update_data.has_mutable_map) {
 				// If still using the default map, create a new one.
 				thickness_map = textures_storage->allocate_uninitialized_texture(ctx);
 				descriptor.set_thickness_map_handle(thickness_map.texture_index());
 
-				thickness_map_update_data->has_mutable_map = false;
+				thickness_map_update_data.has_mutable_map = false;
 			}
 
-			thickness_map_update_data->new_value = t;
-			thickness_map_update_data->update_flag.store(true, std::memory_order_release);
+			thickness_map_update_data.new_value = t;
+			thickness_map_update_data.update_flag.store(true, std::memory_order_release);
 		}
 
 		Base::notify();
@@ -420,12 +419,12 @@ public:
 	*/
 	void set_layer_thickness(const material_texture &map) {
 		{
-			std::unique_lock<std::mutex> l(thickness_map_update_data->m);
+			std::unique_lock<std::mutex> l(thickness_map_update_data.m);
 
 			thickness_map = map;
 			descriptor.set_thickness_map_handle(thickness_map.texture_index());
 
-			thickness_map_update_data->has_mutable_map = false;
+			thickness_map_update_data.has_mutable_map = false;
 		}
 
 		Base::notify();

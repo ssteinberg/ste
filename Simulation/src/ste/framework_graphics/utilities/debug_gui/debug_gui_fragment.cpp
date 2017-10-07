@@ -186,7 +186,7 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 	}
 
 	// Prepare new ImGUI frame
-	std::unique_lock<std::mutex> l(*mutex);
+	std::unique_lock<std::mutex> l(shared_data.m);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(fb_extent.x), 
@@ -280,7 +280,7 @@ void debug_gui_fragment::record(gl::command_recorder &recorder) {
 
 	lib::vector<draw_list_t> draw_lists;
 	{
-		std::unique_lock<std::mutex> l(*mutex);
+		std::unique_lock<std::mutex> l(shared_data.m);
 
 		// Update draw data
 		const auto draw_data = ImGui::GetDrawData();

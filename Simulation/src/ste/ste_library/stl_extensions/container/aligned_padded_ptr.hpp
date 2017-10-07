@@ -9,11 +9,13 @@
 
 #include <aligned_allocator.hpp>
 
+#include <new>
+
 namespace ste {
 
 template <
 	typename T, 
-	std::size_t alignment = 64,
+	std::size_t alignment = std::hardware_destructive_interference_size,
 	typename AlignedAllocator = aligned_allocator<std::uint8_t, alignment>
 >
 class aligned_padded_ptr {

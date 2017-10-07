@@ -160,7 +160,7 @@ void primary_renderer::update(gl::command_recorder &recorder) {
 																						gl::access_flags::shader_read)));
 
 	// Update atmospheric properties (if needed)
-	auto atmoshperics_update = atmospherics_properties_update->get();
+	auto atmoshperics_update = atmospherics_properties_update.get();
 	if (atmoshperics_update) {
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
 																  gl::pipeline_stage::transfer,
