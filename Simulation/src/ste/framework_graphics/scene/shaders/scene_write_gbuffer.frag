@@ -12,11 +12,11 @@ layout(location = 0) in scene_transform {
 	vec3 frag_normal;
 	vec3 frag_tangent;
 	vec2 frag_texcoords;
-	flat int matIdx;
+	flat int material_id;
 } vin;
 
 void main() {
-	int material = vin.matIdx;
+	int material = vin.material_id;
 
 	vec2 uv = vin.frag_texcoords;
 	material_descriptor md = mat_descriptor[material];

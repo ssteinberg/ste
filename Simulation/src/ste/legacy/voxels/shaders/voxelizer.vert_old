@@ -13,7 +13,7 @@ layout(location = 2) in vec2 tex_coords;
 out vs_out {
 	vec3 N;
 	vec2 st;
-	flat int matIdx;
+	flat int material_id;
 } vout;
 
 uniform vec3 translation;
@@ -34,7 +34,7 @@ void main() {
 
 	// vout.N = (trans_inverse_model * vec4(normal, 1)).xyz;
 	vout.st = tex_coords;
-	vout.matIdx = md.matIdx;
+	vout.material_id = md.material_id;
 
     gl_Position = P;
 }

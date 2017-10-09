@@ -15,7 +15,7 @@ layout(std430, binding = 0) restrict readonly buffer material_data {
 in geo_out {
 	vec3 P, N;
 	vec2 st;
-	flat int matIdx;
+	flat int material_id;
 	flat vec2 max_aabb;
 	flat vec3 ortho_projection_mask;
 } fragment;
@@ -26,11 +26,11 @@ void main() {
 		return;
 	}
 
-	int matIdx = fragment.matIdx;
+	int material_id = fragment.material_id;
 	vec2 uv = fragment.st;
 	vec3 P = fragment.P;
 	vec3 N = fragment.N;
-	material_descriptor md = mat_descriptor[matIdx];
+	material_descriptor md = mat_descriptor[material_id];
 
 	vec2 dUVdx = dFdx(uv) * 4;
 	vec2 dUVdy = dFdy(uv) * 4;

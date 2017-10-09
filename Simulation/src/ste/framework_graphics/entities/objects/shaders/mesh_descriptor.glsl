@@ -5,7 +5,7 @@ struct mesh_descriptor {
 
 	vec4 bounding_sphere;
 
-	int matIdx;
+	int material_id;
 	int light_caster;
 	
 	float _unused0;

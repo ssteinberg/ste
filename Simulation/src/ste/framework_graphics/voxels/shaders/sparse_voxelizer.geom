@@ -1,35 +1,36 @@
 
 #type geometry
 #version 450
-#extension GL_ARB_bindless_texture : require
-#extension GL_NV_shader_atomic_fp16_vector : require
-#extension GL_NV_gpu_shader5 : require
 
 #include <common.glsl>
 #include <material.glsl>
 #include <voxels.glsl>
 
-layout(std430, binding = 0) restrict readonly buffer material_data {
-	material_descriptor mat_descriptor[];
-};
+const float voxelizer_fb_extent = 16384.f;
 
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 in vs_out {
 	vec3 N;
+	vec3 T;
 	vec2 st;
 	flat int material_id;
 } vin[];
 
 out geo_out {
 	vec3 P, N;
+	float transformed_triangle_z;
 	vec2 st;
 	flat int material_id;
 	flat vec2 max_aabb;
 	flat vec3 ortho_projection_mask;
 } vout;
 
+/**
+*	@brief	Offsets triangle's vertices for conservative rasterization
+*			Expects front-facing CCW triangles.
+*/
 vec2 bounding_triangle_vertex(vec2 prev, vec2 v, vec2 next) {
 	vec3 U = vec3(prev, 1);
 	vec3 V = vec3(v, 1);
@@ -49,56 +50,15 @@ vec2 bounding_triangle_vertex(vec2 prev, vec2 v, vec2 next) {
 }
 
 void main() {
-	int material_id = vin[0].material_id;
-
+	// Read vertices and compute normal
 	vec3 U = gl_in[0].gl_Position.xyz;
 	vec3 V = gl_in[1].gl_Position.xyz;
 	vec3 W = gl_in[2].gl_Position.xyz;
 
-	vec3 unnormedN = cross(V - U, W - U);
-	float len_N = length(unnormedN);
-	vec3 N = unnormedN / len_N;
+	vec3 N = normalize(cross(V - U, W - U));
 
-	float voxel = voxel_size(N * dot(-U, N));
-
-	vec3 min_world_aabb = min3(U, V, W);
-	vec3 max_world_aabb = max3(U, V, W);
-	vec3 aabb_signs = sign(min_world_aabb) * sign(max_world_aabb);
-	if (dot(aabb_signs, vec3(1)) > -2.5f) {
-		vec3 aabb_distances = min(abs(min_world_aabb), abs(max_world_aabb));
-		float d_aabb = voxels_world_size;
-		if (aabb_signs.x > 0) d_aabb = min(d_aabb, aabb_distances.x);
-		if (aabb_signs.z > 0) d_aabb = min(d_aabb, aabb_distances.y);
-		if (aabb_signs.y > 0) d_aabb = min(d_aabb, aabb_distances.z);
-
-		voxel = max(voxel, voxel_size(voxel_level(d_aabb)));
-	}
-
-
-	vec3 pos0 = U / voxel;
-	vec3 pos1 = V / voxel;
-	vec3 pos2 = W / voxel;
-
-	vec3 rp0 = round(pos0);
-	if (rp0 == round(pos1) && rp0 == round(pos2)) {
-		// Voxelize in geometry shader. Fast path.
-		float area = .5f * len_N / (voxel * voxel);
-
-		material_descriptor md = mat_descriptor[material_id];
-		vec2 uv = vec2(.5f);
-		voxelize(md,
-				 U,
-				 uv,
-				 (vin[0].N + vin[1].N + vin[2].N) / 3.f,
-				 area,
-				 vec2(1),
-				 vec2(1));
-
-		return;
-	}
-
-	float voxels_texture_size = float(textureSize(voxel_space_radiance, 0).x);
-
+	// Create transform matrix T
+	// invT rotates the triangle s.t. it "faces the screen".
 	mat3 T;
 	vec3 absN = abs(N);
 	vec3 signN = sign(N);
@@ -122,16 +82,22 @@ void main() {
 	}
 	mat3 invT = transpose(T);
 
-	vec3 p0 = invT * pos0;
-	vec3 p1 = invT * pos1;
-	vec3 p2 = invT * pos2;
+	// Compute scale factor with which to scale the vertices by voxel grid resolution
+	float s = voxel_grid_resolution;
 
+	// Compute scaled, transformed vertices
+	vec3 p0 = 1.f / s * (invT * U);
+	vec3 p1 = 1.f / s * (invT * V);
+	vec3 p2 = 1.f / s * (invT * W);
+
+	// Compute AABB
 	vec2 minv = min3(p0.xy, p1.xy, p2.xy);
 	vout.max_aabb = max3(p0.xy, p1.xy, p2.xy) - minv + vec2(1);
 
 	N = invT * N;
 	float d = dot(p0, N);
 
+	// Offset triangle for conservative rasterization
 	p0.xy = bounding_triangle_vertex(p2.xy, p0.xy, p1.xy);
 	p1.xy = bounding_triangle_vertex(p0.xy, p1.xy, p2.xy);
 	p2.xy = bounding_triangle_vertex(p1.xy, p2.xy, p0.xy);
@@ -139,31 +105,36 @@ void main() {
 	p1.z = (d - dot(p1.xy, N.xy)) / N.z;
 	p2.z = (d - dot(p2.xy, N.xy)) / N.z;
 
-	U = T * (p0 * voxel);
-	V = T * (p1 * voxel);
-	W = T * (p2 * voxel);
+	// Compute actual world coordinates of offseted, unscaled, untransformed triangle
+	U = s * (T * p0);
+	V = s * (T * p1);
+	W = s * (T * p2);
 
-	vec2 v0 = (p0.xy - minv) / voxels_texture_size - vec2(1, 1);
-	vec2 v1 = (p1.xy - minv) / voxels_texture_size - vec2(1, 1);
-	vec2 v2 = (p2.xy - minv) / voxels_texture_size - vec2(1, 1);
+	// Normalize to framebuffer extent
+	vec2 v0 = (p0.xy - minv) / voxelizer_fb_extent - vec2(1, 1);
+	vec2 v1 = (p1.xy - minv) / voxelizer_fb_extent - vec2(1, 1);
+	vec2 v2 = (p2.xy - minv) / voxelizer_fb_extent - vec2(1, 1);
 
-	vout.material_id = material_id;
-
+	// Emit vertices
+	vout.material_id = vin[0].material_id;
 	vout.st = vin[0].st;
 	vout.P = U;
 	vout.N = vin[0].N;
+	vout.transformed_triangle_z = p0.z;
 	gl_Position = vec4(v0, 0, 1);
 	EmitVertex();
 
 	vout.st = vin[1].st;
 	vout.P = V;
 	vout.N = vin[1].N;
+	vout.transformed_triangle_z = p1.z;
 	gl_Position = vec4(v1, 0, 1);
 	EmitVertex();
 
 	vout.st = vin[2].st;
 	vout.P = W;
 	vout.N = vin[2].N;
+	vout.transformed_triangle_z = p2.z;
 	gl_Position = vec4(v2, 0, 1);
 	EmitVertex();
 
