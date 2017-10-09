@@ -10,7 +10,7 @@
 
 #include <vk_descriptor_pool.hpp>
 #include <texture.hpp>
-#include <vector.hpp>
+#include <stable_vector.hpp>
 
 #include <imgui/imgui.h>
 #include <imgui_vertex_data.hpp>
@@ -70,8 +70,8 @@ private:
 	glm::u32vec2 fb_extent{ 0 };
 	gl::vk::vk_descriptor_pool<> imgui_descriptor_pool;
 	lib::unique_ptr<gl::texture<gl::image_type::image_2d>> imgui_fonts_texture;
-	gl::vector<imgui_vertex_data> vertex_buffer;
-	gl::vector<index_t> index_buffer;
+	gl::stable_vector<imgui_vertex_data> vertex_buffer;
+	gl::stable_vector<index_t> index_buffer;
 
 private:
 	hid_pointer_movement_connection_type hid_pointer_movement_connection;

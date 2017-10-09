@@ -201,9 +201,9 @@ auto host_read_buffer(const ste_context &ctx,
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
-template <typename T, std::uint64_t max_sparse_size_bytes>
+template <typename T, std::uint64_t max_sparse_size>
 auto host_read_buffer(const ste_context &ctx,
-					  const vector<T, max_sparse_size_bytes> &buffer,
+					  const vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},
@@ -230,9 +230,9 @@ auto host_read_buffer(const ste_context &ctx,
 *	@param	wait_semaphores		Array of pairs of semaphores upon which to wait before execution
 *	@param	signal_semaphores	Sempahores to signal once the command has completed execution
 */
-template <typename T, std::uint64_t max_sparse_size_bytes>
+template <typename T, std::uint64_t max_sparse_size>
 auto host_read_buffer(const ste_context &ctx,
-					  const stable_vector<T, max_sparse_size_bytes> &buffer,
+					  const stable_vector<T, max_sparse_size> &buffer,
 					  std::size_t elements = std::numeric_limits<std::size_t>::max(),
 					  std::size_t offset = 0,
 					  lib::vector<wait_semaphore> &&wait_semaphores = {},

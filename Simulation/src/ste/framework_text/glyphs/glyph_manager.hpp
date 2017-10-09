@@ -14,7 +14,7 @@
 #include <surface_factory.hpp>
 #include <device_buffer.hpp>
 #include <device_image.hpp>
-#include <vector.hpp>
+#include <stable_vector.hpp>
 #include <sampler.hpp>
 #include <std430.hpp>
 #include <format.hpp>
@@ -86,7 +86,7 @@ private:
 	alias<const ste_context> context;
 	glyph_factory factory;
 
-	gl::vector<buffer_glyph_descriptor> buffer;
+	gl::stable_vector<buffer_glyph_descriptor> buffer;
 	gl::sampler text_glyph_sampler;
 
 	mutable std::mutex mutex;

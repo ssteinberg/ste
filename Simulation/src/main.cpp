@@ -226,10 +226,11 @@ public:
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
 				const graphics::atmospherics_properties<double> &atmospherics_prop,
+				graphics::voxels_configuration voxel_config,
 				text::text_manager &tm)
 		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof),
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, voxel_config, prof),
 		footer_text_frag(tm.create_fragment())
 	{
 		swap_chain_resized();
@@ -503,6 +504,197 @@ void load_scene(ste_context &ctx,
 	});
 }
 
+struct voxels {
+	// (2^P)^3 voxels per block
+	const glm::uint voxel_P = 2;
+	// (2^Pi)^3 voxels per initial block
+	const glm::uint voxel_Pi = 4;
+	// Voxel structure end level index
+	const glm::uint voxel_leaf_level = 5;
+
+	// Voxel world extent
+	const float voxel_world = 1000;
+
+	// Size of voxel block
+	const glm::vec3 voxel_tree_block_extent = glm::vec3(1 << voxel_P);
+	const glm::vec3 voxel_tree_initial_block_extent = glm::vec3(1 << voxel_Pi);
+
+	// Resolution of maximal voxel level
+	const float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
+
+	const glm::uint voxel_tree_node_data_size = 8;
+	const glm::uint voxel_tree_leaf_data_size = 16;
+	const glm::uint voxel_tree_root_size = (1 << (3 * (voxel_Pi - 1))) * 33 + 4 + voxel_tree_node_data_size;
+	const glm::uint voxel_tree_node_size = (1 << (3 * (voxel_P - 1))) * 33 + 4 + voxel_tree_node_data_size;
+	const glm::uint voxel_tree_leaf_size = voxel_tree_leaf_data_size;
+
+	const glm::uint voxel_lock_pattern = 0xFFFFFFFF;
+
+
+	std::vector<glm::uint> voxel_buffer;
+	std::atomic<std::uint32_t> voxel_buffer_size;
+
+
+	/**
+	*	@brief	Returns block extent for given voxel level
+	*/
+	glm::vec3 voxel_block_extent(glm::uint level) {
+		return glm::mix(voxel_tree_block_extent,
+			voxel_tree_initial_block_extent,
+			level == 0);
+	}
+
+	/**
+	*	@brief	Returns block power (log2 of extent) for given voxel level
+	*/
+	glm::uint voxel_block_power(glm::uint level) {
+		return glm::mix(voxel_P,
+			voxel_Pi,
+			level == 0);
+	}
+
+	/**
+	*	@brief	Calculates index of a brick in a block
+	*/
+	glm::uint voxel_brick_index(glm::uvec3 brick, glm::uint P) {
+		return brick.x + (((brick.z << P) + brick.y) << P);
+	}
+
+	/**
+	*	@brief	Calculates the address of a brick in the binary map.
+	*			Returns (word, bit) vector, where word is the 32-bit word index, and bit is the bit index in that word.
+	*/
+	glm::uvec2 voxel_binary_map_address(glm::uint brick_index) {
+		glm::uint word = brick_index / 32;
+		glm::uint bit = brick_index % 32;
+
+		return glm::uvec2(word, bit);
+	}
+
+	/**
+	*	@brief	Returns the offset of the parent data in a voxel node.
+	*			Meaningless for leaf nodes.
+	*/
+	glm::uint voxel_node_parent_offset(glm::uint P) {
+		return (1 << (3 * (P - 1))) + 4;
+	}
+
+	/**
+	*	@brief	Returns the offset of the children data in a voxel node.
+	*			Meaningless for leaf nodes.
+	*/
+	glm::uint voxel_node_children_offset(glm::uint P) {
+		return (1 << (3 * (P - 1))) + 8;
+	}
+
+	/**
+	*	@brief	Returns the offset of the custom data in a voxel node.
+	*			Meaningless for leaf nodes.
+	*/
+	glm::uint voxel_node_data_offset(glm::uint P) {
+		return 1 << (3 * (P - 1));
+	}
+
+	/**
+	*	@brief	Returns the node size.
+	level must be > 0.
+	*/
+	glm::uint voxel_node_size(glm::uint level) {
+		return glm::mix(voxel_tree_node_size,
+			voxel_tree_leaf_size,
+			level == voxel_leaf_level);
+	}
+
+
+	glm::uint voxel_traverse_tree_node(glm::uint offset,
+								  glm::uint level,
+								  glm::uint P,
+								  glm::uint brick_idx) {
+		glm::uint child_level = level + 1;
+
+		// Compute binary map and pointer addresses
+		glm::uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
+		glm::uint binary_map_word_ptr = offset + binary_map_address.x;
+		glm::uint child_ptr = offset + voxel_node_children_offset(P) + brick_idx;
+		glm::uint data_ptr = offset + voxel_node_data_offset(P);
+
+		// Check if the brick is already populated
+		bool populated = (voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1;
+		// If populated, read child offset.
+		if (populated) {
+			// Return child pointer
+			return voxel_buffer[child_ptr];
+		}
+
+		// Attempt to create child
+		// Lock
+		//child_offset = atomicCompSwap(voxel_buffer[child_ptr], 0, voxel_lock_pattern);
+		glm::uint expected = 0;
+		reinterpret_cast<std::atomic<glm::uint>&>(voxel_buffer[child_ptr]).compare_exchange_strong(expected, voxel_lock_pattern);
+		glm::uint child_offset = expected;
+		if (child_offset == 0) {
+			// We got lock, allocate memory for child
+			glm::uint child_size = voxel_node_size(child_level);
+			child_offset = voxel_buffer_size.fetch_add(child_size);
+
+			// TODO: Append user data
+
+			// Set occupancy bit
+			voxel_buffer[data_ptr] |= 0x80000000;
+
+			// Set binary map bit
+			glm::uint binary_map_word = voxel_buffer[binary_map_word_ptr];
+			while (reinterpret_cast<std::atomic<glm::uint>&>(voxel_buffer[binary_map_word_ptr]).compare_exchange_strong(binary_map_word, binary_map_word | (1 << binary_map_address.y))) {}
+
+			// Set child parent (for non-leaves)
+			if (child_level != voxel_leaf_level) {
+				glm::uint child_parent_ptr = child_offset + voxel_node_parent_offset(P);
+				voxel_buffer[child_parent_ptr] = offset;
+			}
+
+			// Done. Write child address, and set a memory barrier.
+			reinterpret_cast<std::atomic<glm::uint>&>(voxel_buffer[child_ptr]).store(child_offset);
+
+			return child_offset;
+		}
+
+		// Failed to lock. Wait for child creation.
+		while (child_offset == voxel_lock_pattern)
+			child_offset = voxel_buffer[child_ptr];
+
+
+		// TODO: Append user data
+
+		return child_offset;
+	}
+
+	void voxelize(glm::vec3 V) {
+		// Compute voxel world coordinate (assumes V is inside voxel world)
+		glm::vec3 v = clamp(V / voxel_world + .5f, glm::vec3(.0f), glm::vec3(1.f));
+
+		// Traverse tree till leaf, creating nodes on the way, if necessary.
+		glm::uint pointer = 0;
+		for (glm::uint level = 0; level<voxel_leaf_level; ++level) {
+			glm::vec3 block = voxel_block_extent(level);
+			glm::uint P = voxel_block_power(level);
+
+			// Calculate brick coordinates and index in block
+			glm::vec3 brick = v * block;
+			glm::uint brick_idx = voxel_brick_index(glm::uvec3(brick), P);
+
+			// Calculate coordinates in brick
+			v = fract(brick);
+
+			// Traverse tree (will generate a node, if needed)
+			pointer = voxel_traverse_tree_node(pointer,
+											   level,
+											   P,
+											   brick_idx);
+			++level;
+		}
+	}
+};
+
 #ifdef _MSC_VER
 int CALLBACK WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -512,6 +704,18 @@ int CALLBACK WinMain(HINSTANCE hInstance,
 int main()
 #endif
 {
+//	{
+//		voxels vx;
+//		vx.voxel_buffer.resize(512 * 1024 * 1024);
+//		vx.voxel_buffer_size.store(vx.voxel_tree_root_size);
+//
+//		while (true) {
+//			vx.voxelize({ 1,2,3 });
+//		}
+//	}
+
+
+
 	/*
 	*	Create logger
 	*/
@@ -625,6 +829,15 @@ int main()
 
 
 	/*
+	 *	Voxel configuration
+	 */
+	graphics::voxels_configuration voxel_config;
+	voxel_config.P = 2;
+	voxel_config.Pi = 5;
+	voxel_config.world = 4000;
+
+
+	/*
 	*	Create scene and primary render
 	*/
 	graphics::scene scene(ctx);
@@ -641,6 +854,7 @@ int main()
 													  &camera,
 													  &scene,
 													  atmosphere,
+													  voxel_config,
 													  text_manager);
 	});
 

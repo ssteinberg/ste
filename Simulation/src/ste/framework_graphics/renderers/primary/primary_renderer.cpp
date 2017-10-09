@@ -39,6 +39,7 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 								   const camera_t *cam,
 								   scene *s,
 								   const atmospherics_properties<double> &atmospherics_prop,
+								   voxels_configuration voxel_config,
 								   gl::profiler::profiler *profiler)
 	: Base(ctx),
 	profiler(profiler),
@@ -50,7 +51,8 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 			ctx.device().get_surface().extent(),
 			s,
 			this->acquire_storage<atmospherics_lut_storage>(),
-			atmospherics_prop),
+			atmospherics_prop,
+			voxel_config),
 	framebuffers(ctx,
 				 ctx.device().get_surface().extent()),
 
@@ -63,6 +65,11 @@ primary_renderer::primary_renderer(const ste_context &ctx,
 	fxaa(ctx,
 		 *this,
 		 std::move(fb_layout)),
+
+	voxelizer(ctx,
+			  *this,
+			  &buffers.voxels.get(),
+			  this->s),
 
 	downsample_depth(ctx,
 					 *this,
@@ -224,7 +231,7 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 	// Scene geometry cull
 	record_scene_geometry_cull_fragment(recorder);
 
-	_detail::primary_renderer_atom(profiler, recorder, "-> light_preprocess",
+	_detail::primary_renderer_atom(profiler, recorder, "-> scene",
 								   [this, &recorder]() {
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 																  gl::pipeline_stage::draw_indirect,
@@ -235,6 +242,9 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 
 	// Draw scene to gbuffer
 	record_scene_fragment(recorder);
+
+	// Voxelize scene
+	record_voxelizer_fragment(recorder);
 
 	_detail::primary_renderer_atom(profiler, recorder, "-> downsample_depth",
 								   [this, &recorder]() {
@@ -348,6 +358,36 @@ void primary_renderer::record_scene_geometry_cull_fragment(gl::command_recorder 
 	_detail::primary_renderer_atom(profiler, recorder, "geo_cull",
 								   [this, &recorder]() {
 		recorder << scene_geo_cull.get();
+	});
+}
+
+void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder) {
+	_detail::primary_renderer_atom(profiler, recorder, "clear voxels",
+								   [this, &recorder]() {
+		// Clear voxel buffer
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
+																  gl::pipeline_stage::transfer,
+																  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
+																							gl::access_flags::shader_read,
+																							gl::access_flags::transfer_write),
+																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
+																							gl::access_flags::shader_read,
+																							gl::access_flags::transfer_write)));
+		buffers.voxels.get().clear(recorder);
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																  gl::pipeline_stage::fragment_shader,
+																  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read | gl::access_flags::shader_write),
+																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
+	});
+
+	// Voxelize
+	_detail::primary_renderer_atom(profiler, recorder, "voxelizer",
+								   [this, &recorder]() {
+		recorder << voxelizer.get();
 	});
 }
 

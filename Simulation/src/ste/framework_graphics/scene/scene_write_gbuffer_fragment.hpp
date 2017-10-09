@@ -37,7 +37,7 @@ public:
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_idb());
+		draw_task.attach_indirect_buffer(s->get_idb().get());
 	}
 	~scene_write_gbuffer_fragment() noexcept {}
 

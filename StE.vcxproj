@@ -796,6 +796,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\camera\camera_projection_reversed_infinite_perspective.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_vertex_data.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_utils.glsl" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxels_configuration.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxel_sparse_voxelizer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxel_storage.hpp" />

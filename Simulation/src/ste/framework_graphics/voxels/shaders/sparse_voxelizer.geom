@@ -11,14 +11,14 @@ const float voxelizer_fb_extent = 16384.f;
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-in vs_out {
+layout(location = 0) in vs_out {
 	vec3 N;
 	vec3 T;
 	vec2 st;
 	flat int material_id;
 } vin[];
 
-out geo_out {
+layout(location = 0) out geo_out {
 	vec3 P, N;
 	float transformed_triangle_z;
 	vec2 st;
@@ -91,8 +91,8 @@ void main() {
 	vec3 p2 = 1.f / s * (invT * W);
 
 	// Compute AABB
-	vec2 minv = min3(p0.xy, p1.xy, p2.xy);
-	vout.max_aabb = max3(p0.xy, p1.xy, p2.xy) - minv + vec2(1);
+	vec2 minv = min(p0.xy, p1.xy, p2.xy);
+	vout.max_aabb = max(p0.xy, p1.xy, p2.xy) - minv + vec2(1);
 
 	N = invT * N;
 	float d = dot(p0, N);

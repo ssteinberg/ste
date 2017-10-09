@@ -26,34 +26,40 @@ private:
 	gl::task<gl::cmd_draw_indexed_indirect> draw_task;
 
 	const scene *s;
-	const voxel_storage *voxels;
+	voxel_storage *voxels;
+
+	lib::unique_ptr<gl::framebuffer> empty_fb;
 
 public:
 	voxel_sparse_voxelizer(const gl::rendering_system &rs,
-						   const scene *s,
-						   const voxel_storage *voxels)
+						   voxel_storage *voxels,
+						   const scene *s)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
-			   "scene_transform.vert", "sparse_voxelizer.geom", "sparse_voxelizer.frag"),
+			   "scene_transform.vert",
+			   "sparse_voxelizer.geom",
+			   "sparse_voxelizer.frag"),
 		  s(s),
-		  voxels(voxels)
+		  voxels(voxels),
+		  empty_fb(lib::allocate_unique<gl::framebuffer>(rs.get_creating_context(),
+														 "voxelizer framebuffer",
+														 gl::framebuffer_layout(),
+														 glm::u32vec2{ voxelizer_fb_extent, voxelizer_fb_extent })) 
 	{
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_idb());
+		draw_task.attach_indirect_buffer(s->get_idb().get());
 
 		// Attach emtpy framebuffer
-		pipeline().attach_framebuffer(gl::framebuffer(rs.get_creating_context(), 
-													  "voxelizer framebuffer",
-													  gl::framebuffer_layout(),
-													  { voxelizer_fb_extent }));
+		pipeline().attach_framebuffer(*empty_fb);
 		// Configure voxelization pipeline
 		voxels->configure_voxel_pipeline(pipeline());
 	}
+
 	~voxel_sparse_voxelizer() noexcept {}
 
-	voxel_sparse_voxelizer(voxel_sparse_voxelizer&&) = default;
+	voxel_sparse_voxelizer(voxel_sparse_voxelizer &&) = default;
 
 	static lib::string name() { return "voxelizer_sparse"; }
 
@@ -71,6 +77,7 @@ public:
 	void record(gl::command_recorder &recorder) override final {
 		const auto draw_count = s->get_object_group().draw_count();
 
+		// Voxelize
 		recorder << draw_task(static_cast<std::uint32_t>(draw_count));
 	}
 };

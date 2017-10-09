@@ -55,4 +55,5 @@
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
 39. Geometry culling: Better bounding volume or low-poly geometry
 40. <strike>std::hardware_destructive_interference_size</strike>
-41. 
+41. Make sense out of gl\::vector/gl\::stable_vector
+42. VK_KHR_bind_memory2

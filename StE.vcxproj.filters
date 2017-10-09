@@ -2063,6 +2063,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxels_configuration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_utils.glsl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

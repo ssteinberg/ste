@@ -5,7 +5,7 @@
 #include <material.glsl>
 #include <voxels.glsl>
 
-in geo_out {
+layout(location = 0) in geo_out {
 	vec3 P, N;
 	vec2 st;
 	float transformed_triangle_z;
@@ -34,7 +34,7 @@ void main() {
 	}
 
 	// Voxelize
-	voxelize(...);
+	voxelize(P);
 
 	// Compute positions at fragment edges
 	/*vec3 dPdx = dFdx(P) * .5f;
