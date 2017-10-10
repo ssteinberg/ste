@@ -66,7 +66,7 @@ void host_write_buffer(const ste_context &ctx,
 		auto batch = ste_device_queue::thread_allocate_batch<staging_buffer_t>(std::move(staging));
 		auto& command_buffer = batch->acquire_command_buffer();
 
-		VkBufferCopy range = { 0, offset * sizeof(T), copy_count * sizeof(T) };
+		buffer_copy_region_t range = { 0, offset, copy_count * byte_t(sizeof(T)) };
 
 		// Record and submit a one-time batch
 		{

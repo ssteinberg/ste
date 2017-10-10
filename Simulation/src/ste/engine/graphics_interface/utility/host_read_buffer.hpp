@@ -44,24 +44,23 @@ auto host_read_buffer(const ste_context &ctx,
 	auto &q = ctx.device().select_queue(queue_selector);
 
 	// Staging buffer
-	staging_buffer_t staging_buffer(ctx,
-									copy_count,
-									buffer_usage::transfer_dst,
-									"host_read_buffer staging buffer");
-	auto staging_ptr = staging_buffer.get_underlying_memory().template mmap<T>(0, copy_count);
+	auto staging_buffer = lib::allocate_unique<staging_buffer_t>(ctx,
+																 copy_count,
+																 buffer_usage::transfer_dst,
+																 "host_read_buffer staging buffer");
 
 	// Create copy command
-	const VkBufferCopy range = { offset * sizeof(T), 0, copy_count * sizeof(T) };
+	const buffer_copy_region_t range = { offset, 0, copy_count * byte_t(sizeof(T)) };
 	auto cpy_cmd = cmd_copy_buffer(buffer,
-								   staging_buffer,
+								   *staging_buffer,
 								   { range });
 
 	// Create a batch
-	auto batch = q.allocate_batch<staging_buffer_t>(std::move(staging_buffer));
+	auto batch = q.allocate_batch();
 	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
-	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
+	q.enqueue([batch = std::move(batch), staging_buffer = staging_buffer.get(), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto &command_buffer = batch->acquire_command_buffer();
 
 		// Record and submit a one-time batch
@@ -73,7 +72,7 @@ auto host_read_buffer(const ste_context &ctx,
 				<< std::move(cpy_cmd)
 				<< cmd_pipeline_barrier(pipeline_barrier(pipeline_stage::transfer,
 														 pipeline_stage::host,
-														 buffer_memory_barrier(batch->user_data(),
+														 buffer_memory_barrier(*staging_buffer,
 																			   access_flags::transfer_write,
 																			   access_flags::host_read)));
 		}
@@ -85,7 +84,7 @@ auto host_read_buffer(const ste_context &ctx,
 	});
 
 	// Return future that reads from the device buffer
-	return ctx.engine().task_scheduler().schedule_now([copy_count, staging_ptr = std::move(staging_ptr), fence = std::move(fence)]() {
+	return ctx.engine().task_scheduler().schedule_now([copy_count, staging_buffer = std::move(staging_buffer), fence = std::move(fence)]() {
 		// Create return buffer
 		lib::vector<T> dst;
 		dst.resize(copy_count);
@@ -93,8 +92,11 @@ auto host_read_buffer(const ste_context &ctx,
 		// Wait for device completion 
 		(*fence)->get_wait();
 
+		// mmap
+		auto staging_ptr = staging_buffer->get_underlying_memory().template mmap<T>(0, copy_count);
 		// Invalidate caches
 		staging_ptr->invalidate_ranges({ vk::vk_mapped_memory_range{ 0, copy_count } });
+
 		// Copy from staging
 		std::memcpy(dst.data(),
 					staging_ptr->get_mapped_ptr(),
