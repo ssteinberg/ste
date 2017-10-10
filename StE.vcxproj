@@ -753,6 +753,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\observable_resource\resource_storage_stable.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\command\pipeline_external_binding_set_cmd_bind.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_copy_region.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_copy_region.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sparse\device_sparse_binding_batch.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_capabilities_query.hpp" />
@@ -1516,6 +1517,7 @@
     <None Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\shaders\imgui_vulkan.vert" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.frag" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.vert" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
     <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />

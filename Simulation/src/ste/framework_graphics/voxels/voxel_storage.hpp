@@ -23,11 +23,13 @@ class voxel_storage {
 private:
 	static constexpr auto max_voxel_tree_size = 512 * 1024 * 1024;
 
+	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
+
 private:
 	alias<const ste_context> ctx;
 	const voxels_configuration config;
 
-	gl::stable_vector<gl::std430<std::uint32_t>, max_voxel_tree_size> voxels;
+	gl::stable_vector<voxel_buffer_word_t, max_voxel_tree_size> voxels;
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 
 public:
@@ -36,11 +38,11 @@ public:
 		: ctx(ctx),
 		  config(config),
 		  voxels(ctx,
-				 gl::buffer_usage::storage_buffer,
-				 "Voxels buffer"),
+				 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
+				 "voxels buffer"),
 		  voxels_counter(ctx,
 						 1,
-						 gl::buffer_usage::storage_buffer,
+						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 						 "voxels counter buffer") {}
 
 	~voxel_storage() noexcept {}
@@ -57,7 +59,7 @@ public:
 		// Configure parameters
 		pipeline["voxel_P"] = config.P;
 		pipeline["voxel_Pi"] = config.Pi;
-		pipeline["voxel_leaf_level"] = config.leaf_level;
+//		pipeline["voxel_leaf_level"] = config.leaf_level;
 		pipeline["voxel_world"] = config.world;
 	}
 
@@ -74,7 +76,7 @@ public:
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels, 0, voxels.size()),
 										static_cast<std::uint32_t>(0));
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels_counter),
-										static_cast<std::uint32_t>(config.voxel_tree_root_size()));
+										static_cast<std::uint32_t>(config.voxel_tree_root_size()) >> 2);
 	}
 
 	/**

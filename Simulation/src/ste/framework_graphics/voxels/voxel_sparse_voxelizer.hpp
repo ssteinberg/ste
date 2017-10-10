@@ -36,7 +36,7 @@ public:
 						   const scene *s)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
-			   "scene_transform.vert",
+			   "sparse_voxelizer.vert",
 			   "sparse_voxelizer.geom",
 			   "sparse_voxelizer.frag"),
 		  s(s),

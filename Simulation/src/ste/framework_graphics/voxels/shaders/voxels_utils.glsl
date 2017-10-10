@@ -1,4 +1,13 @@
 
+// Size of voxel block
+vec3 voxel_tree_block_extent = vec3(1 << voxel_P);
+vec3 voxel_tree_initial_block_extent = vec3(1 << voxel_Pi);
+// Resolution of maximal voxel level
+float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << voxel_P * (voxel_leaf_level - 1)));
+
+const uint voxel_tree_node_data_size = 0;
+const uint voxel_tree_leaf_data_size = 0;
+
 /**
 *	@brief	Returns block extent for given voxel level
 */
@@ -40,7 +49,7 @@ uvec2 voxel_binary_map_address(uint brick_index) {
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_parent_offset(uint P) {
-	return (1 << (3 * (P-1))) + 4;
+	return (1 << (3 * P - 5));
 }
 
 /**
@@ -48,7 +57,7 @@ uint voxel_node_parent_offset(uint P) {
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_children_offset(uint P) {
-	return (1 << (3 * (P-1))) + 8;
+	return (1 << (3 * P - 5)) + voxel_tree_node_data_size / 4 + 1;
 }
 
 /**
@@ -56,7 +65,7 @@ uint voxel_node_children_offset(uint P) {
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_data_offset(uint P) {
-	return 1 << (3 * (P-1));
+	return 1 << (3 * P - 5) + voxel_tree_node_data_size / 4;
 }
 
 /**
@@ -64,7 +73,7 @@ uint voxel_node_data_offset(uint P) {
 			level must be > 0.
 */
 uint voxel_node_size(uint level) {
-	return mix(voxel_tree_node_size,
-			   voxel_tree_leaf_size,
+	return mix((1 << (3 * voxel_P - 5)) * 33 + voxel_tree_node_data_size / 4 + 1,
+			   voxel_tree_leaf_data_size >> 2,
 			   level == voxel_leaf_level);
 }

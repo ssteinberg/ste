@@ -2066,6 +2066,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_utils.glsl">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_copy_region.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -2170,5 +2173,6 @@
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.geom" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.frag" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.vert" />
   </ItemGroup>
 </Project>

@@ -13,7 +13,6 @@ layout (triangle_strip, max_vertices = 3) out;
 
 layout(location = 0) in vs_out {
 	vec3 N;
-	vec3 T;
 	vec2 st;
 	flat int material_id;
 } vin[];
@@ -84,11 +83,12 @@ void main() {
 
 	// Compute scale factor with which to scale the vertices by voxel grid resolution
 	float s = voxel_grid_resolution;
+	float recp_s = 1.f / s;
 
 	// Compute scaled, transformed vertices
-	vec3 p0 = 1.f / s * (invT * U);
-	vec3 p1 = 1.f / s * (invT * V);
-	vec3 p2 = 1.f / s * (invT * W);
+	vec3 p0 = recp_s * (invT * U);
+	vec3 p1 = recp_s * (invT * V);
+	vec3 p2 = recp_s * (invT * W);
 
 	// Compute AABB
 	vec2 minv = min(p0.xy, p1.xy, p2.xy);

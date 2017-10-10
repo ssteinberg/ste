@@ -1,7 +1,7 @@
 ﻿
 #include <stdafx.hpp>
 #include <primary_renderer.hpp>
-#include "host_read_buffer.hpp"
+#include <host_read_buffer.hpp>
 
 using namespace ste;
 using namespace ste::graphics;
@@ -389,6 +389,25 @@ void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder)
 								   [this, &recorder]() {
 		recorder << voxelizer.get();
 	});
+
+	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+															  gl::pipeline_stage::transfer,
+															  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
+																						gl::access_flags::shader_write,
+																						gl::access_flags::transfer_read),
+															  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
+																						gl::access_flags::shader_write,
+																						gl::access_flags::transfer_read)));
+}
+
+void primary_renderer::d() {
+	auto count = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxels_counter_buffer()).get();
+	auto voxels = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxels_buffer(), count[0].get<0>()).get();
+
+	auto root = *reinterpret_cast<const voxels_configuration::tree_root_t<3>*>(voxels.data());
+	auto get_child = [&](int c) {return *reinterpret_cast<const voxels_configuration::tree_node_t<2>*>(&voxels[root.children[c]]); };
+
+	bool bbbbb = false;
 }
 
 void primary_renderer::record_downsample_depth_fragment(gl::command_recorder &recorder) {
