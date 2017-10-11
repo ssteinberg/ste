@@ -238,7 +238,7 @@ void debug_gui_fragment::append_frame(float frame_time_ms,
 		// Write device name
 		{
 			ImGui::SameLine(0, 75);
-			ImGui::Text(get_creating_context().device().physical_device().properties.deviceName);
+			ImGui::Text(get_creating_context().device().physical_device().get_properties().deviceName);
 		}
 
 		// Plot profiler timeline

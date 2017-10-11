@@ -69,7 +69,7 @@ public:
 		}
 
 		// Enumerate devices
-		devices.resize(count);
+		devices.reserve(count);
 		{
 			auto t_devices_arr = lib::allocate_unique<VkPhysicalDevice[]>(count);
 			res = vkEnumeratePhysicalDevices(vk, &count, t_devices_arr.get());
@@ -78,19 +78,7 @@ public:
 			}
 
 			for (unsigned i = 0; i < count; ++i)
-				devices[i].device = t_devices_arr[i];
-		}
-
-		// Read devices' properties
-		for (auto &d : devices) {
-			vkGetPhysicalDeviceProperties(d.device, &d.properties);
-			vkGetPhysicalDeviceFeatures(d.device, &d.features);
-			vkGetPhysicalDeviceMemoryProperties(d.device, &d.memory_properties);
-
-			std::uint32_t qcount;
-			vkGetPhysicalDeviceQueueFamilyProperties(d.device, &qcount, nullptr);
-			d.queue_family_properties.resize(qcount);
-			vkGetPhysicalDeviceQueueFamilyProperties(d.device, &qcount, &d.queue_family_properties[0]);
+				devices.emplace_back(std::move(t_devices_arr[i]));
 		}
 
 		return devices;
@@ -103,17 +91,17 @@ public:
 		for (auto &d : enumerate_physical_devices()) {
 			// Check device memory
 			auto total_device_local_heap_size = 0_B;
-			for (std::uint32_t i = 0; i < d.memory_properties.memoryHeapCount; ++i)
-				if ((d.memory_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)
-					total_device_local_heap_size += byte_t(d.memory_properties.memoryHeaps[i].size);
+			for (std::uint32_t i = 0; i < d.get_memory_properties().memoryHeapCount; ++i)
+				if ((d.get_memory_properties().memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)
+					total_device_local_heap_size += byte_t(d.get_memory_properties().memoryHeaps[i].size);
 			if (total_device_local_heap_size < min_device_memory)
 				continue;
 
 			// Check features
 			bool satisfied_all_features = true;
-			for (unsigned field_offset = 0; field_offset < sizeof(d.features) / sizeof(VkBool32); ++field_offset) {
+			for (unsigned field_offset = 0; field_offset < sizeof(d.get_features()) / sizeof(VkBool32); ++field_offset) {
 				const auto *requested_field = reinterpret_cast<const VkBool32*>(&requested_features) + field_offset;
-				const auto *device_field = reinterpret_cast<const VkBool32*>(&d.features) + field_offset;
+				const auto *device_field = reinterpret_cast<const VkBool32*>(&d.get_features()) + field_offset;
 				if (*requested_field && !*device_field) {
 					satisfied_all_features = false;
 					break;

@@ -760,6 +760,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_format_properties.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_buffer.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\utility\host_read_image.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\device\vk_device_extension.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_extensions_proc_addr.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\extensions\vk_ext_debug_marker.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_image_copy_region.hpp" />

@@ -84,14 +84,24 @@ private:
 	common_samplers samplers_collection;
 
 private:
-	static lib::vector<const char*> device_extensions(const ste_gl_device_creation_parameters &parameters) {
+	/**
+	 *	@brief	Creates list of supported core engine extensions
+	 */
+	static lib::vector<const char*> device_extensions(const ste_gl_device_creation_parameters &parameters,
+													  const vk::vk_device_extensions &available_extensions) {
 		auto extensions = parameters.additional_device_extensions;
 
-		// Add required extensions
-		extensions.push_back("VK_KHR_swapchain");
-		extensions.push_back("VK_KHR_get_memory_requirements2");
-		if (parameters.allow_markers)
-			extensions.push_back("VK_EXT_debug_marker");
+		// VK_KHR_swapchain
+		if (available_extensions.is_supported(VK_KHR_SWAPCHAIN_EXTENSION_NAME))
+			extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+		// VK_KHR_get_memory_requirements2
+		if (available_extensions.is_supported(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME))
+			extensions.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+
+		// "K_EXT_debug_marker
+		if (parameters.allow_markers && available_extensions.is_supported(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
+			extensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
 
 		return extensions;
 	}
@@ -107,7 +117,7 @@ public:
 	*	@brief	Creates the device with presentation surface and capabilities
 	*
 	*	@throws ste_device_creation_exception	If creation parameters are erroneous or incompatible or creation failed for any reason
-	*	@throws vk_exception	On Vulkan error
+	*	@throws vk_exception		On Vulkan error
 	*
 	*	@param parameters			Device creation parameters
 	*	@param queue_descriptors	Queues descriptors. Influences amount and families of created device queues.
@@ -151,7 +161,8 @@ public:
 		device(parameters.physical_device,
 			   parameters.requested_device_features,
 			   queue_descriptors.create_device_queue_create_info()->create_info,
-			   device_extensions(parameters)),
+			   device_extensions(parameters,
+								 parameters.physical_device.get_extensions())),
 		sync_primitives_pools(device),
 		device_queues(create_queues(device,
 									queue_descriptors,
@@ -306,7 +317,7 @@ public:
 	/**
 	*	@brief	Human readable device name
 	*/
-	lib::string name() const { return lib::string(physical_device().properties.deviceName); }
+	lib::string name() const { return lib::string(physical_device().get_properties().deviceName); }
 
 	auto& get_queues_and_surface_recreate_signal() const { return queues_and_surface_recreate_signal; }
 
