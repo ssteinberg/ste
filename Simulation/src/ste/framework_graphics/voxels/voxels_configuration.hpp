@@ -50,18 +50,16 @@ struct voxels_configuration {
 		static constexpr auto bricks_count = 1 << 3 * Pi;
 
 		std::uint8_t binary_map[bricks_count / 8];
-		std::uint32_t _unused;
 //		std::uint8_t data[voxel_tree_node_data_size];
-		std::uint32_t children[bricks_count];
+		std::uint32_t children;
 	};
 	template <int P>
 	struct tree_node_t {
 		static constexpr auto bricks_count = 1 << 3 * P;
 
 		std::uint8_t binary_map[bricks_count / 8];
-		std::uint32_t parent;
 //		std::uint8_t data[voxel_tree_node_data_size];
-		std::uint32_t children[bricks_count];
+		std::uint32_t children;
 	};
 };
 

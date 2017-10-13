@@ -95,13 +95,15 @@ private:
 		if (available_extensions.is_supported(VK_KHR_SWAPCHAIN_EXTENSION_NAME))
 			extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
+#ifndef RENDER_DOC
 		// VK_KHR_get_memory_requirements2
 		if (available_extensions.is_supported(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME))
 			extensions.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
 
-		// "K_EXT_debug_marker
+		// VK_EXT_debug_marker
 		if (parameters.allow_markers && available_extensions.is_supported(VK_EXT_DEBUG_MARKER_EXTENSION_NAME))
 			extensions.push_back(VK_EXT_DEBUG_MARKER_EXTENSION_NAME);
+#endif
 
 		return extensions;
 	}

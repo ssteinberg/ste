@@ -10,112 +10,110 @@ layout(constant_id=7) const uint voxel_leaf_level = 5;
 layout(constant_id=8) const float voxel_world = 1000;
 
 
-const uint voxel_lock_pattern = 0xFFFFFFFF;
-
-
-layout(std430, set=0, binding=0) restrict buffer voxel_buffer_binding {
+layout(std430, set=1, binding=0) restrict coherent buffer voxel_buffer_binding {
 	uint voxel_buffer[];
 };
-layout(std430, set=0, binding=1) restrict buffer voxel_counter_binding {
+layout(std430, set=1, binding=1) restrict buffer voxel_counter_binding {
 	uint voxel_buffer_size;
 };
 
 
-#include <voxels_utils.glsl>
+const uint voxel_lock_pattern = 0xFFFFFFFF;
+const uint voxel_root_node = 0;
 
 
-uint voxel_traverse_tree_node(uint offset,
-							  uint level,
-							  uint P,
-							  uint brick_idx) {
-	uint child_level = level + 1;
+// Size of voxel block
+float voxel_tree_block_extent = 1 << voxel_P;
+float voxel_tree_initial_block_extent = 1 << voxel_Pi;
+// Resolution of maximal voxel level
+float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << voxel_P * (voxel_leaf_level - 1)));
 
-	// Compute binary map and pointer addresses
-	const uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
-	const uint binary_map_word_ptr = offset + binary_map_address.x;
-	const uint child_ptr = offset + voxel_node_children_offset(P) + brick_idx;
+const uint voxel_tree_node_data_size = 0;
+const uint voxel_tree_leaf_data_size = 0;
 
-	// Check if the brick is already populated
-	bool populated = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
-	// If populated, read child offset.
-	uint child_offset;
-	if (populated) {
-		// Atomically load child pointer
-		child_offset = atomicCompSwap(voxel_buffer[child_ptr], 0, 0);
-	}
-	else {
-		// Atomically create/read child pointer
-		bool done = false;
-		while (!done) {
-			// Lock
-			child_offset = atomicCompSwap(voxel_buffer[child_ptr], 0, voxel_lock_pattern);
-			if (child_offset == 0) {
-				// We got lock
-				// We would like to release the lock as soon as possible. Setting the binary map bit will allow subsequent 
-				// threads to avoid the expensive atomicCompSwap, but it can be done after writing the child pointer. 
-				// The rest of the metadata isn't used during the voxelization process.
-
-				// Allocate memory for child.
-				uint child_size = voxel_node_size(child_level);
-				child_offset = atomicAdd(voxel_buffer_size, child_size);
-		
-				// Write child address, releasing lock.
-				atomicExchange(voxel_buffer[child_ptr], child_offset);
-				memoryBarrierBuffer();
-
-				// Set binary map bit
-				uint binary_map_word = voxel_buffer[binary_map_word_ptr];
-				uint binary_map_word_new_value;
-				while ((binary_map_word_new_value = atomicCompSwap(voxel_buffer[binary_map_word_ptr], 
-																   binary_map_word, 
-																   binary_map_word | (1 << binary_map_address.y))) != binary_map_word) {
-					binary_map_word = binary_map_word_new_value;
-				}
-
-				// Set occupancy bit
-				uint parent_ptr = offset + voxel_node_parent_offset(P);
-				voxel_buffer[parent_ptr] |= 0x80000000;
-
-				// Set child parent (for non-leaves)
-				if (child_level != voxel_leaf_level) {
-					uint child_parent_ptr = child_offset + voxel_node_parent_offset(voxel_block_power(child_level));
-					voxel_buffer[child_parent_ptr] = offset;
-				}
-
-				memoryBarrierBuffer();
-			}
-
-			if (child_offset != voxel_lock_pattern)
-				done = true;
-		}
-	}
-
-	// TODO: Append user data
-
-	return child_offset;
+/**
+*	@brief	Returns block extent for given voxel level
+*/
+float voxel_block_extent(uint level) {
+	return mix(voxel_tree_block_extent, 
+			   voxel_tree_initial_block_extent,
+			   level == 0);
 }
 
-void voxelize(vec3 V) {
-	// Compute voxel world coordinate (assumes V is inside voxel world)
-	vec3 v = clamp(V / voxel_world + .5f, vec3(.0f), vec3(1.f) - .1f / voxel_grid_resolution);
+/**
+*	@brief	Returns block power (log2 of extent) for given voxel level
+*/
+uint voxel_block_power(uint level) {
+	return mix(voxel_P, 
+			   voxel_Pi, 
+			   level == 0);
+}
 
-	// Traverse tree till leaf, creating nodes on the way, if necessary.
-	uint pointer = 0;
-	for (uint level=0; level<voxel_leaf_level; ++level) {
-		vec3 block = voxel_block_extent(level);
-		uint P = voxel_block_power(level);
-		
-		// Calculate brick coordinates and index in block
-		vec3 brick = v * block;
-		uint brick_idx = voxel_brick_index(uvec3(brick), P);
+/**
+*	@brief	Calculates index of a brick in a block
+*/
+uint voxel_brick_index(uvec3 brick, uint P) {
+	return brick.x + (((brick.z << P) + brick.y) << P);
+}
 
-		// Traverse tree (will generate a node, if needed)
-		pointer = voxel_traverse_tree_node(pointer, 
-										   level, 
-										   P,
-										   brick_idx);
+/**
+*	@brief	Calculates the address of a brick in the binary map.
+*			Returns (word, bit) vector, where word is the 32-bit word index, and bit is the bit index in that word.
+*/
+uvec2 voxel_binary_map_address(uint brick_index) {
+	uint word = brick_index / 32;
+	uint bit = brick_index % 32;
 
-		// Calculate coordinates in brick
-		v = fract(brick);
-	}
+	return uvec2(word, bit);
+}
+
+/**
+*	@brief	Returns the count of children in a node
+*/
+uint voxel_node_children_count(uint P) {
+	return 1 << (3 * P);
+}
+
+/**
+*	@brief	Returns the binary map size of a node
+*/
+uint voxel_binary_map_size(uint P) {
+	uint map_bits = voxel_node_children_count(P);
+	uint map_bytes = map_bits >> 3;
+	return map_bytes >> 2;
+}
+
+/**
+*	@brief	Returns the offset of the semaphore in a voxel node.
+*			Meaningless for leaf nodes.
+*/
+uint voxel_node_semaphore_offset(uint P) {
+	return voxel_binary_map_size(P);
+}
+
+/**
+*	@brief	Returns the offset of the children data in a voxel node.
+*			Meaningless for leaf nodes.
+*/
+uint voxel_node_children_offset(uint P) {
+	return voxel_binary_map_size(P) + 1;
+}
+
+/**
+*	@brief	Returns the offset of the custom data in a voxel node.
+*			Meaningless for leaf nodes.
+*/
+uint voxel_node_data_offset(uint P) {
+	return voxel_binary_map_size(P) + 1 + voxel_node_children_count(P);
+}
+
+/**
+*	@brief	Returns a single child size in a voxel node.
+*			level must be > 0.
+*/
+uint voxel_node_size(uint level) {
+	uint P = voxel_block_power(level);
+	return mix(voxel_node_data_offset(P) + voxel_tree_node_data_size / 4,
+			   voxel_tree_leaf_data_size >> 2,
+			   level == voxel_leaf_level);
 }

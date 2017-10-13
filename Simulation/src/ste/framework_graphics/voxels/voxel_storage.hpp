@@ -32,18 +32,26 @@ private:
 	gl::stable_vector<voxel_buffer_word_t, max_voxel_tree_size> voxels;
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 
+	gl::array<gl::std430<std::uint32_t>> voxel_list_counter;
+
 public:
 	voxel_storage(const ste_context &ctx,
 				  voxels_configuration config)
 		: ctx(ctx),
 		  config(config),
 		  voxels(ctx,
+				 // TODO: Remove transfer_src
 				 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 				 "voxels buffer"),
 		  voxels_counter(ctx,
 						 1,
 						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
-						 "voxels counter buffer") {}
+						 "voxels counter buffer"),
+		  voxel_list_counter(ctx,
+							 1,
+							 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
+							 "voxel list counter buffer") 
+	{}
 
 	~voxel_storage() noexcept {}
 

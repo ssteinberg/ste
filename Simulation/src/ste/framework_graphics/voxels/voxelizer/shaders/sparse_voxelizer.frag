@@ -1,9 +1,10 @@
 
 #type frag
 #version 450
+#extension GL_ARB_shader_ballot : require
 
 #include <material.glsl>
-#include <voxels.glsl>
+#include <voxels_voxelize.glsl>
 
 layout(location = 0) in geo_out {
 	vec3 P, N;
@@ -23,12 +24,12 @@ void main() {
 	material_descriptor md = mat_descriptor[material_id];
 
 	// Partial derivative for material texture look-ups
-	vec2 dUVdx = dFdx(uv) * 4;
-	vec2 dUVdy = dFdy(uv) * 4;
+	//vec2 dUVdx = dFdx(uv) * 4;
+	//vec2 dUVdy = dFdy(uv) * 4;
 	
 	// Discard voxels outside the AABB or masked by material
 	if (any(greaterThan(gl_FragCoord.xy, fragment.max_aabb.xy)) ||
-		material_is_masked(md, uv, dUVdx, dUVdy)) {
+		material_is_masked(md, uv, vec2(1), vec2(1))) {
 		discard;
 		return;
 	}

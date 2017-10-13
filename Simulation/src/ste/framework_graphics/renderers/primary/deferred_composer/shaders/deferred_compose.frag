@@ -23,6 +23,8 @@ layout(set=0, binding=4) uniform sampler2D ltc_ggx_amplitude;
 
 #include <deferred_shading.glsl>
 
+#include <voxels_traverse.glsl>
+
 layout(location = 0) in vec2 uv;
 
 layout(location = 0) out vec4 frag_color;
@@ -41,6 +43,15 @@ void main() {
 
 	g_buffer_element g_frag = read_gbuffer(coord);
 	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord);
+	
+	vec3 position = unproject_screen_position(.5f, vec2(coord) / vec2(backbuffer_size()));
+	vec3 w_pos = transform_view_to_world_space(position);
+	vec3 P = eye_position();
+	vec3 V = w_pos - P;
+	V = V == vec3(0) ? vec3(1,0,0) : normalize(V);
+
+	//voxel_traversal_result_t ret = voxel_traverse(P, V);
+	//shaded_fragment.r = isinf(ret.distance) ? 10000.f : ret.distance * 10.f;
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
 	frag_color = vec4(xyY, 1);

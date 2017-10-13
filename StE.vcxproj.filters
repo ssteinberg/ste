@@ -2057,19 +2057,25 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxel_storage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxel_sparse_voxelizer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxels_configuration.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_utils.glsl">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_copy_region.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\vk\device\vk_device_extension.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_traverse.glsl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxel_sparse_voxelizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_subdivide.comp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2173,9 +2179,10 @@
     <None Include="Simulation\src\ste\framework_graphics\renderers\primary\hdr_dof\shaders\hdr_create_histogram.comp" />
     <None Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\shaders\imgui_vulkan.vert" />
     <None Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\shaders\imgui_vulkan.frag" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.geom" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.frag" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
-    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\sparse_voxelizer.vert" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_voxelize.glsl" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer.frag" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer.geom" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer.vert" />
   </ItemGroup>
 </Project>

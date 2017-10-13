@@ -16,8 +16,8 @@
 namespace ste {
 namespace graphics {
 
-class voxel_sparse_voxelizer : public gl::fragment_graphics<voxel_sparse_voxelizer> {
-	using Base = gl::fragment_graphics<voxel_sparse_voxelizer>;
+class voxelizer_generate_voxel_list : public gl::fragment_graphics<voxelizer_generate_voxel_list> {
+	using Base = gl::fragment_graphics<voxelizer_generate_voxel_list>;
 
 private:
 	static constexpr std::uint32_t voxelizer_fb_extent = 16384;
@@ -31,9 +31,9 @@ private:
 	lib::unique_ptr<gl::framebuffer> empty_fb;
 
 public:
-	voxel_sparse_voxelizer(const gl::rendering_system &rs,
-						   voxel_storage *voxels,
-						   const scene *s)
+	voxelizer_generate_voxel_list(const gl::rendering_system &rs,
+								  voxel_storage *voxels,
+								  const scene *s)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
 			   "sparse_voxelizer.vert",
@@ -44,8 +44,7 @@ public:
 		  empty_fb(lib::allocate_unique<gl::framebuffer>(rs.get_creating_context(),
 														 "voxelizer framebuffer",
 														 gl::framebuffer_layout(),
-														 glm::u32vec2{ voxelizer_fb_extent, voxelizer_fb_extent })) 
-	{
+														 glm::u32vec2{ voxelizer_fb_extent, voxelizer_fb_extent })) {
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
@@ -56,12 +55,11 @@ public:
 		// Configure voxelization pipeline
 		voxels->configure_voxel_pipeline(pipeline());
 	}
+	~voxelizer_generate_voxel_list() noexcept {}
 
-	~voxel_sparse_voxelizer() noexcept {}
+	voxelizer_generate_voxel_list(voxelizer_generate_voxel_list &&) = default;
 
-	voxel_sparse_voxelizer(voxel_sparse_voxelizer &&) = default;
-
-	static lib::string name() { return "voxelizer_sparse"; }
+	static lib::string name() { return "voxelizer_generate_voxel_list"; }
 
 	static void setup_graphics_pipeline(const gl::rendering_system &rs,
 										gl::pipeline_auditor_graphics &auditor) {
