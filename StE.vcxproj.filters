@@ -2048,9 +2048,6 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_image_copy_region.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_copy_region.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\utility\type_name.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2072,10 +2069,16 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxel_sparse_voxelizer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list.hpp">
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_subdivide.comp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_subdivide.comp">
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_subdivide_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_copy_region.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

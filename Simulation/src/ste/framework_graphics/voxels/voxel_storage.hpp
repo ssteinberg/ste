@@ -6,14 +6,11 @@
 #include <stdafx.hpp>
 #include <ste_context.hpp>
 #include <device_pipeline.hpp>
-
 #include <voxels_configuration.hpp>
 
 #include <cmd_fill_buffer.hpp>
 
-#include <stable_vector.hpp>
 #include <array.hpp>
-
 #include <alias.hpp>
 
 namespace ste {
@@ -21,17 +18,20 @@ namespace graphics {
 
 class voxel_storage {
 private:
-	static constexpr auto max_voxel_tree_size = 512 * 1024 * 1024;
+	static constexpr auto max_voxel_tree_size = 128 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
+
+	using voxel_list_element_t = gl::std430<float, float, float, std::uint32_t, std::uint32_t>;
 
 private:
 	alias<const ste_context> ctx;
 	const voxels_configuration config;
 
-	gl::stable_vector<voxel_buffer_word_t, max_voxel_tree_size> voxels;
+	gl::array<voxel_buffer_word_t> voxels;
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 
+	gl::array<voxel_list_element_t> voxel_list;
 	gl::array<gl::std430<std::uint32_t>> voxel_list_counter;
 
 public:
@@ -40,19 +40,21 @@ public:
 		: ctx(ctx),
 		  config(config),
 		  voxels(ctx,
-				 // TODO: Remove transfer_src
+				 max_voxel_tree_size,
 				 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 				 "voxels buffer"),
 		  voxels_counter(ctx,
 						 1,
 						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 						 "voxels counter buffer"),
+		  voxel_list(ctx, 64 * 1024 * 1024,
+					 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
+					 "voxel list buffer"),
 		  voxel_list_counter(ctx,
 							 1,
 							 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
-							 "voxel list counter buffer") 
+							 "voxel list counter buffer")
 	{}
-
 	~voxel_storage() noexcept {}
 
 	voxel_storage(voxel_storage &&) = default;
@@ -62,7 +64,6 @@ public:
 	 */
 	void configure_voxel_pipeline(gl::device_pipeline &pipeline) const {
 		pipeline["voxel_buffer_binding"] = gl::bind(voxels);
-		pipeline["voxel_counter_binding"] = gl::bind(voxels_counter);
 
 		// Configure parameters
 		pipeline["voxel_P"] = config.P;
@@ -75,27 +76,20 @@ public:
 	 *	@brief	Resets the voxel buffers to initial state
 	 */
 	void clear(gl::command_recorder &recorder) {
-		const auto temp_size = 512 * 1024 * 1024;
-
-		// Sparse resize
-		recorder << voxels.resize_cmd(ctx, temp_size);
-
 		// Reset
-		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels, 0, voxels.size()),
+		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels, 0, static_cast<std::size_t>(config.voxel_tree_root_binary_map_size()) >> 2),
 										static_cast<std::uint32_t>(0));
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels_counter),
 										static_cast<std::uint32_t>(config.voxel_tree_root_size()) >> 2);
-	}
-
-	/**
-	 *	@brief	Sparse resizes the voxel buffer
-	 */
-	auto resize_cmd(std::size_t size) {
-		return voxels.resize_cmd(ctx.get(), size);
+		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxel_list_counter),
+										static_cast<std::uint32_t>(0));
 	}
 
 	auto &voxels_buffer() const { return voxels; }
 	auto &voxels_counter_buffer() const { return voxels_counter; }
+
+	auto &voxel_list_buffer() const { return voxel_list; }
+	auto &voxel_list_counter_buffer() const { return voxel_list_counter; }
 };
 
 }

@@ -4,10 +4,10 @@
 #pragma once
 
 #include <stdafx.hpp>
+#include <fragment_graphics.hpp>
 
 #include <cmd_draw_indexed_indirect.hpp>
 
-#include <fragment_graphics.hpp>
 #include <scene.hpp>
 #include <object_vertex_data.hpp>
 
@@ -16,8 +16,8 @@
 namespace ste {
 namespace graphics {
 
-class voxelizer_generate_voxel_list : public gl::fragment_graphics<voxelizer_generate_voxel_list> {
-	using Base = gl::fragment_graphics<voxelizer_generate_voxel_list>;
+class voxelizer_generate_voxel_list_fragment : public gl::fragment_graphics<voxelizer_generate_voxel_list_fragment> {
+	using Base = gl::fragment_graphics<voxelizer_generate_voxel_list_fragment>;
 
 private:
 	static constexpr std::uint32_t voxelizer_fb_extent = 16384;
@@ -31,9 +31,9 @@ private:
 	lib::unique_ptr<gl::framebuffer> empty_fb;
 
 public:
-	voxelizer_generate_voxel_list(const gl::rendering_system &rs,
-								  voxel_storage *voxels,
-								  const scene *s)
+	voxelizer_generate_voxel_list_fragment(const gl::rendering_system &rs,
+										   voxel_storage *voxels,
+										   const scene *s)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
 			   "sparse_voxelizer.vert",
@@ -50,14 +50,17 @@ public:
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
 		draw_task.attach_indirect_buffer(s->get_idb().get());
 
-		// Attach emtpy framebuffer
+		// Attach empty framebuffer
 		pipeline().attach_framebuffer(*empty_fb);
 		// Configure voxelization pipeline
+		pipeline()["voxel_list_counter_binding"] = gl::bind(voxels->voxel_list_counter_buffer());
+		pipeline()["voxel_list_binding"] = gl::bind(voxels->voxel_list_buffer());
 		voxels->configure_voxel_pipeline(pipeline());
 	}
-	~voxelizer_generate_voxel_list() noexcept {}
 
-	voxelizer_generate_voxel_list(voxelizer_generate_voxel_list &&) = default;
+	~voxelizer_generate_voxel_list_fragment() noexcept {}
+
+	voxelizer_generate_voxel_list_fragment(voxelizer_generate_voxel_list_fragment &&) = default;
 
 	static lib::string name() { return "voxelizer_generate_voxel_list"; }
 

@@ -2,6 +2,7 @@
 #include <stdafx.hpp>
 #include <primary_renderer.hpp>
 #include <host_read_buffer.hpp>
+#include <random>
 
 using namespace ste;
 using namespace ste::graphics;
@@ -314,7 +315,7 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 																						   gl::access_flags::shader_read)));
 
 		// TODO: Event
-		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 																  gl::pipeline_stage::fragment_shader,
 																  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
 																							gl::access_flags::shader_write,
@@ -371,7 +372,7 @@ void primary_renderer::record_scene_geometry_cull_fragment(gl::command_recorder 
 
 void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder) {
 	_detail::primary_renderer_atom(profiler, recorder, "clear voxels",
-									[this, &recorder]() {
+								   [this, &recorder]() {
 		// Clear voxel buffer
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
 																  gl::pipeline_stage::transfer,
@@ -380,16 +381,29 @@ void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder)
 																							gl::access_flags::transfer_write),
 																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
 																							gl::access_flags::shader_read,
+																							gl::access_flags::transfer_write),
+																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_counter_buffer(),
+																							gl::access_flags::shader_read,
 																							gl::access_flags::transfer_write)));
 		buffers.voxels.get().clear(recorder);
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																  gl::pipeline_stage::fragment_shader,
+																  gl::pipeline_stage::compute_shader,
 																  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write),
 																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																  gl::pipeline_stage::fragment_shader,
+																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_counter_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
+		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
+																  gl::pipeline_stage::fragment_shader,
+																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_buffer(),
+																							gl::access_flags::shader_read,
+																							gl::access_flags::shader_write)));
 	});
 
 	// Voxelize
@@ -398,12 +412,18 @@ void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder)
 		recorder << voxelizer.get();
 	});
 
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader | gl::pipeline_stage::compute_shader,
 															  gl::pipeline_stage::transfer,
 															  gl::buffer_memory_barrier(buffers.voxels->voxels_buffer(),
 																						gl::access_flags::shader_write,
 																						gl::access_flags::transfer_read),
 															  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
+																						gl::access_flags::shader_write,
+																						gl::access_flags::transfer_read),
+															  gl::buffer_memory_barrier(buffers.voxels->voxel_list_buffer(),
+																						gl::access_flags::shader_write,
+																						gl::access_flags::transfer_read),
+															  gl::buffer_memory_barrier(buffers.voxels->voxel_list_counter_buffer(),
 																						gl::access_flags::shader_write,
 																						gl::access_flags::transfer_read)));
 }
@@ -413,17 +433,18 @@ namespace voxels {
 using namespace glm;
 
 // (2^P)^3 voxels per block
-const uint voxel_P = 2;
+static constexpr uint voxel_P = 2;
 // (2^Pi)^3 voxels per initial block
-const uint voxel_Pi = 3;
+static constexpr uint voxel_Pi = 5;
 // Voxel structure end level index
-const uint voxel_leaf_level = 5;
+static constexpr uint voxel_leaf_level = 2;
 
 // Voxel world extent
-const float voxel_world = 4000;
+static constexpr float voxel_world = 3000;
 
 
-const uint *voxel_buffer;
+uint *voxel_buffer;
+uint voxel_buffer_size;
 
 
 const uint voxel_lock_pattern = 0xFFFFFFFF;
@@ -437,7 +458,7 @@ float voxel_tree_initial_block_extent = 1 << voxel_Pi;
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << voxel_P * (voxel_leaf_level - 1)));
 
 const uint voxel_tree_node_data_size = 0;
-const uint voxel_tree_leaf_data_size = 0;
+const uint voxel_tree_leaf_data_size = 8;
 
 /**
 *	@brief	Returns block extent for given voxel level
@@ -490,6 +511,13 @@ uint voxel_binary_map_size(uint P) {
 	uint map_bytes = map_bits >> 3;
 	return map_bytes >> 2;
 }
+/**
+*	@brief	Returns the offset of the binary map in a voxel node.
+*			Meaningless for leaf nodes.
+*/
+uint voxel_node_binary_map_offset(uint P) {
+	return 0;
+}
 
 /**
 *	@brief	Returns the offset of the children data in a voxel node.
@@ -504,7 +532,7 @@ uint voxel_node_children_offset(uint P) {
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_data_offset(uint P) {
-	return voxel_binary_map_size(P) + voxel_node_children_count(P) * 4;
+	return voxel_binary_map_size(P) + voxel_node_children_count(P);
 }
 
 /**
@@ -526,18 +554,17 @@ struct voxel_traversal_result_t {
 	float distance;
 	uint hit_voxel;
 };
-
 voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	// Traversal limits
 	const vec3 scene_min = vec3(.0f);
 	const vec3 scene_max = vec3(1.f);
 	const float delta = .25f * voxel_grid_resolution / voxel_world;
 
-	vec3 edge = mix(vec3(.0f), vec3(1.f), greaterThanEqual(dir, vec3(.0f)));
+	vec3 edge = mix(vec3(.0f), vec3(1.f), greaterThan(dir, vec3(.0f)));
 	vec3 recp_dir = 1.f / dir;
 
 	// Compute voxel world positions
-	vec3 v = clamp(V / voxel_world + .5f, vec3(.0f), vec3(1.f) - .25f * voxel_grid_resolution / voxel_world);
+	vec3 v = clamp(V / voxel_world + .5f, scene_min, scene_max);
 
 	while (all(lessThan(v, scene_max)) && all(greaterThanEqual(v, scene_min))) {
 		uint node = voxel_root_node;
@@ -549,19 +576,27 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		float step_size = 1.f / block;
 		vec3 u = v * block;
 
-		while (level<voxel_leaf_level) {
+		uint brick_idx = 0xFFFFFFFF;
+
+		while (level < voxel_leaf_level) {
 			// Calculate brick coordinates
 			vec3 brick_coord = fract(u);
-			uint brick_idx = voxel_brick_index(uvec3(u), P);
+			uint nnn = voxel_brick_index(uvec3(u), P);
+			assert(brick_idx != nnn);
+			brick_idx = nnn;
 
 			// Compute binary map and pointer addresses
 			const uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
+			const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
 
 			// Check if we have child here
-			bool has_child = ((voxel_buffer[node + binary_map_address.x] >> binary_map_address.y) & 0x1) == 1;
+			bool has_child = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
 			if (has_child) {
 				// Step in
 				++level;
+
+				uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
+				node = voxel_buffer[child_ptr];
 
 				block = voxel_block_extent(level);
 				P = voxel_block_power(level);
@@ -569,16 +604,22 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 				step_size /= block;
 				u = brick_coord * block;
 
-				uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
-				node = voxel_buffer[child_ptr];
-
 				continue;
 			}
 
 			// No child, traverse.
-			vec3 step = (min_element((edge - brick_coord) * recp_dir) + delta) * dir;
+			vec3 t = (edge - brick_coord) * recp_dir;
+			float xi = max(t.x, max(t.y, t.z));
+			float t0 = mix(t.x, t.y, .5f);
+			float t1 = mix(t.x, t.z, .5f);
+			float t2 = mix(t.z, t.y, .5f);
+			float t_bar = mix(t0, mix(t1, t2, xi == t.x), xi != t.z);
+			t_bar = t_bar * (1.f + 1e-6f) + 1e-5f;
+
+			vec3 step = t_bar * dir;
 			u += step;
 			v += step * step_size;
+
 			if (any(lessThan(u, vec3(.0f))) || any(greaterThanEqual(u, vec3(block)))) {
 				// Restart
 				break;
@@ -604,27 +645,65 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	return ret;
 }
 
+template <typename T>
+void check(const T &node, unsigned level = 0) {
+	using node_t = voxels_configuration::tree_node_t<voxel_P>;
+
+	if (level == 3)
+		return;
+
+	auto root_size = ((1 << 3 * (voxel_Pi - 1)) * 33 + voxel_tree_node_data_size) / 4;
+
+	for (int i=0;i<T::bricks_count;++i) {
+		auto map_bit = 1ull << (i % 32);
+		if ((node.binary_map[i / 32] & map_bit) != 0) {
+			assert(node.children[i] >= root_size);
+			assert(node.children[i] < voxel_buffer_size);
+			check(*reinterpret_cast<const node_t*>(&voxel_buffer[node.children[i]]), level + 1);
+		}
+	}
+}
+
 }
 
 void primary_renderer::d() {
+	auto list_count = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxel_list_counter_buffer()).get();
 	auto count = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxels_counter_buffer()).get();
+	auto voxel_list = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxel_list_buffer(), list_count[0].get<0>()).get();
 	auto voxels = gl::host_read_buffer(get_creating_context(), buffers.voxels.get().voxels_buffer(), count[0].get<0>()).get();
 
-	{
-		std::ofstream f("D:\voxels.tmp", std::ios::out | std::ios::binary);
-		auto s = voxels.size();
-		f.write(reinterpret_cast<const char*>(&s), sizeof(std::size_t));
-		f.write(reinterpret_cast<const char*>(voxels.data()), voxels.size() * sizeof(glm::uint));
+	voxels::voxel_buffer = reinterpret_cast<glm::uint*>(voxels.data());
+	voxels::voxel_buffer_size = count[0].get<0>();
+
+	const auto *root = reinterpret_cast<const voxels_configuration::tree_root_t<voxels::voxel_Pi>*>(voxels.data());
+	auto get_child = [&](int c) {return *reinterpret_cast<const voxels_configuration::tree_node_t<2>*>(&voxels[root->children[c]]); };
+
+	voxels::check(*root);
+
+	for (auto i = 0u; i < list_count[0].get<0>();++i) {
+		auto &l = voxel_list[i];
+		auto node = l.get<4>();
+		assert(voxels[node].get<0>() != 0);
+		assert(glm::abs(l.get<0>()) < 1.f);
+		assert(glm::abs(l.get<1>()) < 1.f);
+		assert(glm::abs(l.get<2>()) < 1.f);
 	}
 
-	auto root = *reinterpret_cast<const voxels_configuration::tree_root_t<3>*>(voxels.data());
-	auto get_child = [&](int c) {return *reinterpret_cast<const voxels_configuration::tree_node_t<2>*>(&voxels[root.children + 3 * c]); };
+	{
+		auto ret_pos = voxels::voxel_traverse({ -228.835, 216.852, -264.149 }, { -0.712374449 ,-0.344352514 ,-0.611509681 });
+		auto ret_neg = voxels::voxel_traverse({ 662.046, 266.869, -195.255 }, { -0.712374449 ,-0.344352514 ,-0.611509681 });
 
-	voxels::voxel_buffer = reinterpret_cast<glm::uint*>(voxels.data());
-	for (int i = 0; i < 100; ++i) {
-		glm::vec3 v = glm::vec3(0);;
-		v.x = static_cast<float>(i) / 50.f - 1.f;
-		v.z = -(static_cast<float>(i) / 50.f - 1.f) + .1f;
+		float dummy = 69;
+	}
+	for (int i = 0; i < 100000; ++i) {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+
+		glm::vec3 v = glm::vec3(0);
+		v.x = std::uniform_real_distribution<float>(-1.f, 1.f)(gen);
+		v.y = std::uniform_real_distribution<float>(-1.f, 1.f)(gen);
+		v.z = std::uniform_real_distribution<float>(-1.f, 1.f)(gen);
+		if (v == glm::vec3(0)) continue;
 		v = glm::normalize(v);
 
 		auto ret = voxels::voxel_traverse({ 901.4f, 566.93f, 112.43f }, v);

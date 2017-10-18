@@ -35,11 +35,14 @@ struct voxels_configuration {
 		return world / static_cast<float>((1 << Pi) * (1 << P * (leaf_level - 1)));
 	}
 
+	auto voxel_tree_root_binary_map_size() const {
+		return byte_t(1 << 3 * (Pi - 1));
+	}
 	auto voxel_tree_root_size() const {
-		return byte_t((1 << 3 * (Pi - 1)) * 33 + 4 + voxel_tree_node_data_size);
+		return byte_t((1 << 3 * (Pi - 1)) * 33 + voxel_tree_node_data_size);
 	}
 	auto voxel_tree_node_size() const {
-		return byte_t((1 << 3 * (P - 1)) * 33 + 4 + voxel_tree_node_data_size);
+		return byte_t((1 << 3 * (P - 1)) * 33 + voxel_tree_node_data_size);
 	}
 	auto voxel_tree_leaf_size() const {
 		return byte_t(voxel_tree_leaf_data_size);
@@ -49,17 +52,17 @@ struct voxels_configuration {
 	struct tree_root_t {
 		static constexpr auto bricks_count = 1 << 3 * Pi;
 
-		std::uint8_t binary_map[bricks_count / 8];
+		std::uint32_t binary_map[bricks_count / 32];
 //		std::uint8_t data[voxel_tree_node_data_size];
-		std::uint32_t children;
+		std::uint32_t children[bricks_count];
 	};
 	template <int P>
 	struct tree_node_t {
 		static constexpr auto bricks_count = 1 << 3 * P;
 
-		std::uint8_t binary_map[bricks_count / 8];
+		std::uint32_t binary_map[bricks_count / 32];
 //		std::uint8_t data[voxel_tree_node_data_size];
-		std::uint32_t children;
+		std::uint32_t children[bricks_count];
 	};
 };
 

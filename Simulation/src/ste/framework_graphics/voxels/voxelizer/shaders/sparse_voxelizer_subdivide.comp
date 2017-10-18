@@ -1,1 +1,56 @@
-#pragma once
+
+#type compute
+#version 450
+
+#include <voxels.glsl>
+#include <voxels_voxelize.glsl>
+
+layout(local_size_x = voxelizer_work_group_size) in;
+
+void main() {
+	// Divide voxel lise into even sized chunks
+	uint invocation_id = gl_LocalInvocationID.x;
+	uint voxel_list_chunk_size = (voxel_list_buffer_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
+	
+	uint chunk_start = invocation_id * voxel_list_chunk_size;
+	uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, voxel_list_buffer_size);
+	
+	// Root node
+	// Loop over invocation's chunk, traversing and subdividing nodes, and save child pointer.
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		uint node = voxel_root_node;
+		voxel_voxelize(voxel_list_buffer[i].x, voxel_list_buffer[i].y, voxel_list_buffer[i].z, 
+					   node,
+					   0);
+		voxel_list_buffer[i].voxel_node = node;
+	}
+	
+	memoryBarrierBuffer();
+	barrier();
+	
+	// Middle level nodes
+	for (uint l=1; l<voxel_leaf_level - 1; ++l) {
+		// Loop over invocation's chunk
+		for (uint i = chunk_start; i < chunk_end; ++i) {
+			uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
+			voxel_voxelize(voxel_list_buffer[i].x, voxel_list_buffer[i].y, voxel_list_buffer[i].z, 
+						   node, 
+						   l);
+			voxel_list_buffer[i].voxel_node = node;
+		}
+		
+		memoryBarrierBuffer();
+		barrier();
+	}
+	
+	// Leaf node
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
+		float x = voxel_list_buffer[i].x;
+		float y = voxel_list_buffer[i].y;
+		float z = voxel_list_buffer[i].z;
+		voxel_voxelize(x, y, z, 
+					   node, 
+					   voxel_leaf_level - 1);
+	}
+}

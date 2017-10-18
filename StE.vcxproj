@@ -800,7 +800,8 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\utilities\debug_gui\imgui_vertex_data.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_subdivide.comp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_traverse.glsl" />
-    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list_fragment.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_subdivide_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxels_configuration.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxel_sparse_voxelizer.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxel_storage.hpp" />
