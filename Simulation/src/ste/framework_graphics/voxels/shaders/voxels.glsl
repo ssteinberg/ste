@@ -2,15 +2,15 @@
 #include <common.glsl>
 #include <pack.glsl>
 
+// (2^Pi)^3 voxels per initial block
+layout(constant_id=2) const uint voxel_Pi = 4;
 // (2^P)^3 voxels per block
 layout(constant_id=1) const uint voxel_P = 2;
-// (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 5;
 // Voxel structure end level index
-layout(constant_id=3) const uint voxel_leaf_level = 3;
+layout(constant_id=3) const uint voxel_leaf_level = 4;
 
 // Voxel world extent
-layout(constant_id=4) const float voxel_world = 1000;
+layout(constant_id=4) const float voxel_world = 3000;
 
 const uint voxelizer_work_group_size = 1024;
 
@@ -68,6 +68,23 @@ void decode_voxel_list_element(voxel_list_element_t e, out vec3 N, out uint matr
 
 	uvec2 n = uvec2(e.normal_and_material & 0xFF, (e.normal_and_material >> 8) & 0xFF);
 	N = snorm2x32_to_norm3x32(vec2(n) * 2.f / 255.f - 1.f);
+}
+
+/**
+*	@brief	Computes resolution of a given voxel level
+*/
+uint voxel_resolution(uint level) {
+	uint p = voxel_Pi + voxel_P * level;
+	return 1 << p;
+}
+
+/**
+*	@brief	Computes resolution difference between given voxel levels.
+*			Expects: level1 >= level0
+*/
+uint voxel_resolution_difference(uint level0, uint level1) {
+	uint p = voxel_P * (level1 - level0);
+	return 1 << p;
 }
 
 /**

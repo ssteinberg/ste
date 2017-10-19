@@ -246,7 +246,13 @@ void primary_renderer::render(gl::command_recorder &recorder) {
 	record_scene_fragment(recorder);
 
 	// Voxelize scene
-	record_voxelizer_fragment(recorder);
+	{
+		// TODO: Dynamic voxelization for dynamic parts of the scene
+		static bool voxelized = false;
+		if (!voxelized)
+			record_voxelizer_fragment(recorder);
+		voxelized = true;
+	}
 
 	_detail::primary_renderer_atom(profiler, recorder, "-> downsample_depth",
 								   [this, &recorder]() {
@@ -437,7 +443,7 @@ static constexpr uint voxel_P = 2;
 // (2^Pi)^3 voxels per initial block
 static constexpr uint voxel_Pi = 5;
 // Voxel structure end level index
-static constexpr uint voxel_leaf_level = 2;
+static constexpr uint voxel_leaf_level = 3;
 
 // Voxel world extent
 static constexpr float voxel_world = 3000;
@@ -459,6 +465,23 @@ float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << voxel_P * (
 
 const uint voxel_tree_node_data_size = 0;
 const uint voxel_tree_leaf_data_size = 8;
+
+/**
+*	@brief	Computes resolution of a given voxel level
+*/
+uint voxel_resolution(uint level) {
+	uint p = voxel_Pi + voxel_P * level;
+	return 1 << p;
+}
+
+/**
+*	@brief	Computes resolution difference between given voxel levels.
+*			Expects: level1 >= level0
+*/
+uint voxel_resolution_difference(uint level0, uint level1) {
+	uint p = voxel_P * (level1 - level0);
+	return 1 << p;
+}
 
 /**
 *	@brief	Returns block extent for given voxel level
@@ -554,95 +577,108 @@ struct voxel_traversal_result_t {
 	float distance;
 	uint hit_voxel;
 };
+
 voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	// Traversal limits
 	const vec3 scene_min = vec3(.0f);
 	const vec3 scene_max = vec3(1.f);
-	const float delta = .25f * voxel_grid_resolution / voxel_world;
+	const float delta = .3f * voxel_grid_resolution / voxel_world;
 
+	vec3 sign_dir = sign(dir);
 	vec3 edge = mix(vec3(.0f), vec3(1.f), greaterThan(dir, vec3(.0f)));
 	vec3 recp_dir = 1.f / dir;
 
 	// Compute voxel world positions
-	vec3 v = clamp(V / voxel_world + .5f, scene_min, scene_max);
+	vec3 v = V / voxel_world + .5f;
 
-	while (all(lessThan(v, scene_max)) && all(greaterThanEqual(v, scene_min))) {
-		uint node = voxel_root_node;
-		int level = 0;
+	// Init stack
+	uint stack[voxel_leaf_level];
+	stack[0] = voxel_root_node;
 
-		float block = voxel_block_extent(level);
-		uint P = voxel_block_power(level);
+	// Traverse
+	uint node = stack[0];
+	vec3 u = v * float(1 << voxel_Pi);
+	uint P = voxel_Pi;
 
-		float step_size = 1.f / block;
-		vec3 u = v * block;
+	int level = 0;
+	for (int i = 0; i<500000; ++i) {
+		assert(i != 2000);
 
-		uint brick_idx = 0xFFFFFFFF;
+		// Calculate brick coordinates
+		vec3 brick_coord = fract(u);
+		uint brick_idx = voxel_brick_index(uvec3(u), P);
 
-		while (level < voxel_leaf_level) {
-			// Calculate brick coordinates
-			vec3 brick_coord = fract(u);
-			uint nnn = voxel_brick_index(uvec3(u), P);
-			assert(brick_idx != nnn);
-			brick_idx = nnn;
+		// Compute binary map and pointer addresses
+		const uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
+		const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
 
-			// Compute binary map and pointer addresses
-			const uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
-			const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
+		// Check if we have child here
+		bool has_child = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
+		if (has_child) {
+			// Step in
+			++level;
+			if (level == voxel_leaf_level) {
+				// Hit
+				vec3 pos = (v - .5f) * voxel_world;
 
-			// Check if we have child here
-			bool has_child = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
-			if (has_child) {
-				// Step in
-				++level;
+				voxel_traversal_result_t ret;
+				ret.hit_voxel = node;
+				ret.distance = i;//length(pos - V);
 
-				uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
-				node = voxel_buffer[child_ptr];
-
-				block = voxel_block_extent(level);
-				P = voxel_block_power(level);
-
-				step_size /= block;
-				u = brick_coord * block;
-
-				continue;
+				return ret;
 			}
 
-			// No child, traverse.
-			vec3 t = (edge - brick_coord) * recp_dir;
-			float xi = max(t.x, max(t.y, t.z));
-			float t0 = mix(t.x, t.y, .5f);
-			float t1 = mix(t.x, t.z, .5f);
-			float t2 = mix(t.z, t.y, .5f);
-			float t_bar = mix(t0, mix(t1, t2, xi == t.x), xi != t.z);
-			t_bar = t_bar * (1.f + 1e-6f) + 1e-5f;
+			// Read child node address
+			uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
 
-			vec3 step = t_bar * dir;
-			u += step;
-			v += step * step_size;
+			// Read new level parameters
+			P = voxel_P;
+			node = voxel_buffer[child_ptr];
+			u = brick_coord * float(1 << P);
 
-			if (any(lessThan(u, vec3(.0f))) || any(greaterThanEqual(u, vec3(block)))) {
-				// Restart
-				break;
-			}
+			// Update stack
+			stack[level] = node;
+
+			continue;
 		}
 
-		// Hit a voxel?
-		if (level == voxel_leaf_level) {
-			vec3 P = (v - .5f) * voxel_world;
+		// No child, traverse.
+		vec3 t = recp_dir * sign_dir * max(sign_dir * (edge - brick_coord), vec3(1e-4f)); 		// Avoid nan created by division of 0 by inf
+		float t_bar = min_element(t) + delta;
 
+		if (isnan(t_bar)) {
 			voxel_traversal_result_t ret;
-			ret.hit_voxel = node;
-			ret.distance = length(P - V);
-
+			ret.distance = -1.f;
 			return ret;
 		}
+
+		uint prev_level = level;
+		float level_resolution = float(voxel_resolution(level));
+		vec3 step = t_bar * dir;
+		u += step;
+
+		while (any(lessThan(u, vec3(.0f))) || any(greaterThanEqual(u, vec3(1 << P)))) {
+			// Step out
+			--level;
+			if (level < 0) {
+				// No voxel was hit
+				voxel_traversal_result_t ret;
+				ret.distance = i;//+inf;
+				return ret;
+			}
+
+			// Pop stack
+			node = stack[level];
+			P = voxel_block_power(level);
+
+			// Coordinates at level's block
+			u = v * float(voxel_resolution(level));
+			u = mod(u, float(1 << P));
+			u += step / float(voxel_resolution_difference(level, prev_level));
+		}
+
+		v += step / level_resolution;
 	}
-
-	// No voxel was hit
-	voxel_traversal_result_t ret;
-	ret.distance = std::numeric_limits<float>::infinity();
-
-	return ret;
 }
 
 template <typename T>
@@ -695,7 +731,7 @@ void primary_renderer::d() {
 
 		float dummy = 69;
 	}
-	for (int i = 0; i < 100000; ++i) {
+	for (std::uint64_t i = 0; i < 10000000; ++i) {
 		std::random_device rd;
 		std::mt19937 gen(rd());
 

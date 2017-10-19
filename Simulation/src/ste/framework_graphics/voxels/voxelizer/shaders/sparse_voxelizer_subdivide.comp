@@ -8,7 +8,7 @@
 layout(local_size_x = voxelizer_work_group_size) in;
 
 void main() {
-	// Divide voxel lise into even sized chunks
+	// Divide voxel list into even sized chunks
 	uint invocation_id = gl_LocalInvocationID.x;
 	uint voxel_list_chunk_size = (voxel_list_buffer_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
 	

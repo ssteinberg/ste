@@ -50,7 +50,10 @@
 34. Profiler capture and output
 35. Types: Normalized types.
 36. Voxel GI:
-	- Sparse voxelize
+	- <strike>Sparse voxelizer</strike>
+    - Voxel ray traversal
+    - Voxel cone traversal
+    - Voxel metadata
 37. Polygonal lights: Beam focusing
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
 39. Geometry culling: Better bounding volume or low-poly geometry

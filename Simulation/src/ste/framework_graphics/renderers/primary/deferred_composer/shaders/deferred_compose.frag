@@ -42,7 +42,7 @@ void main() {
 	ivec2 coord = ivec2(gl_FragCoord.xy);
 
 	g_buffer_element g_frag = read_gbuffer(coord);
-	vec3 shaded_fragment = deferred_shade_fragment(g_frag, coord);
+	vec3 shaded_fragment;// = deferred_shade_fragment(g_frag, coord);
 	
 	vec3 position = unproject_screen_position(.5f, vec2(coord) / vec2(backbuffer_size()));
 	vec3 w_pos = transform_view_to_world_space(position);
@@ -51,7 +51,7 @@ void main() {
 	V = V == vec3(0) ? vec3(1,0,0) : normalize(V);
 
 	voxel_traversal_result_t ret = voxel_traverse(P, V);
-	shaded_fragment.g = isinf(ret.distance) ? 0.f : ret.distance / 20.f;
+	shaded_fragment = isinf(ret.distance) ? vec3(10000,0,0) : vec3(ret.distance);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
 	frag_color = vec4(xyY, 1);
