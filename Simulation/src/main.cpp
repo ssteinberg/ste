@@ -296,9 +296,9 @@ public:
 			presentation.get().submit_and_present(std::move(batch));
 		});
 
-//		(*f)->get_wait();
-//		device().wait_idle();
-//		r.d();
+		(*f)->get_wait();
+		device().wait_idle();
+		r.d();
 	}
 };
 
@@ -634,10 +634,10 @@ int main()
 	 *	Voxel configuration
 	 */
 	graphics::voxels_configuration voxel_config;
+	voxel_config.Pi = 4;
 	voxel_config.P = 2;
-	voxel_config.Pi = 5;
-	voxel_config.leaf_level = 3;
-	voxel_config.world = 3000;
+	voxel_config.leaf_level = 4;
+	voxel_config.world = 3500;
 
 
 	/*

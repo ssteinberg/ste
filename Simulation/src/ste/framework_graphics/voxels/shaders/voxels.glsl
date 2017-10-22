@@ -10,7 +10,7 @@ layout(constant_id=1) const uint voxel_P = 2;
 layout(constant_id=3) const uint voxel_leaf_level = 4;
 
 // Voxel world extent
-layout(constant_id=4) const float voxel_world = 3000;
+layout(constant_id=4) const float voxel_world = 1000;
 
 const uint voxelizer_work_group_size = 1024;
 
@@ -19,19 +19,6 @@ struct voxel_list_element_t {
 	float x,y,z;
 	uint normal_and_material;
 	uint voxel_node;
-};
-
-layout(std430, set=1, binding=0) restrict buffer voxel_buffer_binding {
-	uint voxel_buffer[];
-};
-layout(std430, set=1, binding=1) restrict buffer voxel_counter_binding {
-	uint voxel_buffer_size;
-};
-layout(std430, set=1, binding=2) restrict buffer voxel_list_binding {
-	voxel_list_element_t voxel_list_buffer[];
-};
-layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
-	uint voxel_list_buffer_size;
 };
 
 
@@ -108,7 +95,7 @@ uint voxel_block_power(uint level) {
 /**
 *	@brief	Calculates index of a brick in a block
 */
-uint voxel_brick_index(uvec3 brick, uint P) {
+uint voxel_brick_index(ivec3 brick, uint P) {
 	return brick.x + (((brick.z << P) + brick.y) << P);
 }
 

@@ -1,6 +1,21 @@
 
 #include <voxels.glsl>
 
+
+layout(std430, set=1, binding=0) restrict buffer voxel_buffer_binding {
+	uint voxel_buffer[];
+};
+layout(std430, set=1, binding=1) restrict buffer voxel_counter_binding {
+	uint voxel_buffer_size;
+};
+layout(std430, set=1, binding=2) restrict buffer voxel_list_binding {
+	voxel_list_element_t voxel_list_buffer[];
+};
+layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
+	uint voxel_list_buffer_size;
+};
+
+
 /**
 *	@brief	Traverses a node, atomically creating a child at supplied position.
 */
@@ -15,7 +30,7 @@ void voxel_voxelize(inout float x,
 	// Calculate brick coordinates and index in block
 	vec3 v = vec3(x,y,z);
 	vec3 brick = v * block;
-	uint child_idx = voxel_brick_index(uvec3(brick), P);
+	uint child_idx = voxel_brick_index(ivec3(brick), P);
 	uint child_offset = node + voxel_node_children_offset(P) + child_idx;
 
 	const uvec2 binary_map_address = voxel_binary_map_address(child_idx);

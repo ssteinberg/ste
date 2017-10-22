@@ -18,7 +18,7 @@ namespace graphics {
 
 class voxel_storage {
 private:
-	static constexpr auto max_voxel_tree_size = 256 * 1024 * 1024;
+	static constexpr auto max_voxel_tree_size = 128 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
@@ -47,7 +47,7 @@ public:
 						 1,
 						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 						 "voxels counter buffer"),
-		  voxel_list(ctx, 48 * 1024 * 1024,
+		  voxel_list(ctx, 16 * 1024 * 1024,
 					 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 					 "voxel list buffer"),
 		  voxel_list_counter(ctx,
@@ -66,10 +66,10 @@ public:
 		pipeline["voxel_buffer_binding"] = gl::bind(voxels);
 
 		// Configure parameters
-//		pipeline["voxel_P"] = config.P;
-//		pipeline["voxel_Pi"] = config.Pi;
-//		pipeline["voxel_leaf_level"] = config.leaf_level;
-//		pipeline["voxel_world"] = config.world;
+		pipeline["voxel_P"] = config.P;
+		pipeline["voxel_Pi"] = config.Pi;
+		pipeline["voxel_leaf_level"] = config.leaf_level;
+		pipeline["voxel_world"] = config.world;
 	}
 
 	/**
