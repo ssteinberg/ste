@@ -34,6 +34,8 @@ float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * 
 const uint voxel_tree_node_data_size = 0;
 const uint voxel_tree_leaf_data_size = 8;
 
+const uint voxel_ropes_count = 8;
+
 /**
 *	@brief	Encodes a voxel into voxel list
 */
@@ -135,11 +137,19 @@ uint voxel_node_binary_map_offset(uint P) {
 }
 
 /**
+*	@brief	Returns the offset of the ropes data in a voxel node.
+*			Meaningless for leaf nodes.
+*/
+uint voxel_node_ropes_offset(uint P) {
+	return voxel_binary_map_size(P);
+}
+
+/**
 *	@brief	Returns the offset of the children data in a voxel node.
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_children_offset(uint P) {
-	return voxel_binary_map_size(P);
+	return voxel_binary_map_size(P) + voxel_ropes_count;
 }
 
 /**
@@ -147,7 +157,7 @@ uint voxel_node_children_offset(uint P) {
 *			Meaningless for leaf nodes.
 */
 uint voxel_node_data_offset(uint P) {
-	return voxel_binary_map_size(P) + voxel_node_children_count(P);
+	return voxel_binary_map_size(P) + voxel_ropes_count + voxel_node_children_count(P);
 }
 
 /**

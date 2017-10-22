@@ -577,6 +577,10 @@ float max_element(vec3 v) {
 	return max(v.x, max(v.y, v.z));
 }
 
+int max_element(ivec3 v) {
+	return max(v.x, max(v.y, v.z));
+}
+
 struct voxel_traversal_result_t {
 	float distance;
 	uint hit_voxel;
@@ -594,6 +598,8 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	const vec2 res_step = vec2(float(1 << voxel_P), 1.f / float(1 << voxel_P));
 
 	const int full_mask = 0xFFFFFFFF;
+	const int intermediate_levels_msb = voxel_P * int(n) - 1;
+	const ivec2 Pi_P_vec = ivec2(voxel_Pi, voxel_P);
 
 	// Compute voxel world positions
 	vec3 v = V / voxel_world + .5f;
@@ -618,9 +624,13 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	ivec3 b = (u >> level_resolution) % int(1 << voxel_Pi);
 
 	int level = 0;
+	int i = 0;
 	while (true) {
+		assert(i++ < 1000);
+
 		// Calculate brick coordinates
-		const vec3 f = fma(v, res.xxx, -vec3(u >> level_resolution));
+		const vec3 f = fma(v, vec3(res.x), -vec3(u >> level_resolution));
+		assert(all(greaterThanEqual(f, vec3(0))) && all(lessThanEqual(f, vec3(1))));
 		const uint brick_idx = voxel_brick_index(b, P);
 
 		// Compute binary map and pointer addresses
@@ -667,27 +677,24 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		ivec3 b_offset = (u_bar >> level_resolution) - (u >> level_resolution);
 		ivec3 b_bar = b + b_offset;
 
-		// Calculate levels to pop (loop should be unrolled)
-		int levels_to_pop = 0;
-		for (int l=1;l<voxel_leaf_level;++l) {
-			const int shift = int(voxel_P * (l + 1));
-			const ivec3 mk = ivec3((1 << voxel_P) - 1);
-			const ivec3 u_star = (u >> shift) & mk;
-			const ivec3 u_bar_star = (u_bar >> shift) & mk;
+		// Calculate levels to pop
+		const ivec3 u_star = u ^ u_bar;
+		const int msb = findMSB(max_element(mix(u_star, ivec3(0x7FFFFFFF), lessThan(u_star, ivec3(0)))));
+		const int msb_top_levels = msb - intermediate_levels_msb - 1;
+		const ivec2 pop_levels = ivec2(1, int(voxel_leaf_level)) - (ivec2(msb_top_levels, msb) + Pi_P_vec) / Pi_P_vec;
+		const int pop_level = mix(pop_levels.y, pop_levels.x, msb > intermediate_levels_msb);
+		const int levels_to_pop = max(0, level - pop_level);
 
-			const bool should_pop = !all(equal(u_star, u_bar_star)) && (int(n) - l < level);
-			levels_to_pop = int(should_pop) * (l + 1 - level);
-		}
-
+		int levels_popped = 0;
+		int ll = level;
+		auto tt = level_resolution;
 		while (any(lessThan(b_bar, ivec3(0))) ||
 			   any(greaterThanEqual(b_bar, ivec3(1 << P)))) {
 			// Step out
 			--level;
+			++levels_popped;
 			if (level < 0) {
-				// No voxel was hit
-				voxel_traversal_result_t ret;
-				ret.distance = +1e+35f;
-				return ret;
+				break;
 			}
 
 			// Pop stack
@@ -699,6 +706,34 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 			const ivec3 u_shift = u >> level_resolution;
 			b_offset = (u_bar >> level_resolution) - u_shift;
 			b_bar = u_shift % int(1 << P) + b_offset;
+		}
+		level_resolution = tt;
+
+		// Step out
+		level = ll - levels_to_pop;
+		if (level < 0) {
+			// No voxel was hit
+			break;
+		}
+
+		// Pop stack
+		node = stack[level];
+		P = voxel_block_power(level);
+		level_resolution += levels_to_pop * int(voxel_P);
+
+		b_offset = (u_bar >> level_resolution) - (u >> level_resolution);
+		const float level_res = float(voxel_resolution(level));
+
+		u = u_bar;
+		b = (u >> level_resolution) % int(1 << P) + b_offset;
+		res = vec2(level_res, 1.f / level_res);
+
+		assert(levels_popped == levels_to_pop || (level < 0 && levels_to_pop > levels_popped));
+		if (level < 0) {
+			// No voxel was hit
+			voxel_traversal_result_t ret;
+			ret.distance = +1e+35f;
+			return ret;
 		}
 
 		u = u_bar;
