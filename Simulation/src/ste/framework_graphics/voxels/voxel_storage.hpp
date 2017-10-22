@@ -22,7 +22,7 @@ private:
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
-	using voxel_list_element_t = gl::std430<float, float, float, std::uint32_t, std::uint32_t>;
+	using voxel_list_element_t = gl::std430<glm::vec3, std::uint32_t, glm::vec3, std::uint32_t>;
 
 private:
 	alias<const ste_context> ctx;

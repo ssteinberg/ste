@@ -19,23 +19,27 @@ void main() {
 	// Loop over invocation's chunk, traversing and subdividing nodes, and save child pointer.
 	for (uint i = chunk_start; i < chunk_end; ++i) {
 		uint node = voxel_root_node;
-		voxel_voxelize(voxel_list_buffer[i].x, voxel_list_buffer[i].y, voxel_list_buffer[i].z, 
+		vec3 v = voxel_list_buffer[i].p;
+		voxel_voxelize(v, 
 					   node,
 					   0);
+
+		voxel_list_buffer[i].voxel_coord = v;
 		voxel_list_buffer[i].voxel_node = node;
 	}
 	
 	memoryBarrierBuffer();
 	barrier();
 	
-	// Middle level nodes
+	// Intermediate level nodes
 	for (uint l=1; l<voxel_leaf_level - 1; ++l) {
 		// Loop over invocation's chunk
 		for (uint i = chunk_start; i < chunk_end; ++i) {
 			uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
-			voxel_voxelize(voxel_list_buffer[i].x, voxel_list_buffer[i].y, voxel_list_buffer[i].z, 
+			voxel_voxelize(voxel_list_buffer[i].voxel_coord, 
 						   node, 
 						   l);
+
 			voxel_list_buffer[i].voxel_node = node;
 		}
 		
@@ -46,11 +50,18 @@ void main() {
 	// Leaf node
 	for (uint i = chunk_start; i < chunk_end; ++i) {
 		uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
-		float x = voxel_list_buffer[i].x;
-		float y = voxel_list_buffer[i].y;
-		float z = voxel_list_buffer[i].z;
-		voxel_voxelize(x, y, z, 
+		vec3 v = voxel_list_buffer[i].voxel_coord;
+		voxel_voxelize(v, 
 					   node, 
 					   voxel_leaf_level - 1);
+	}
+		
+	memoryBarrierBuffer();
+	barrier();
+
+	// Build ropes
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		vec3 v = voxel_list_buffer[i].p;
+		voxel_voxelize_traverse_generating_ropes(v);
 	}
 }

@@ -33,18 +33,25 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 
 	// Compute voxel world positions
 	vec3 v = V / voxel_world + .5f;
-//	if (any(lessThan(v, vec3(0))) || any(greaterThanEqual(v, vec3(1)))) {
-//		// Outside voxel volume
-//		const vec3 t = recp_dir * sign_dir * max(sign_dir * (edge - v), vec3(1e-6f));
-//		const float t_bar = min_element(t) + 1e-5f;
-//		v += dir * t_bar;
-//	}
+	if (any(lessThan(v, vec3(0))) || any(greaterThanEqual(v, vec3(1)))) {
+		// Outside voxel volume
+		const vec3 world_edge = mix(vec3(1.f), vec3(.0f), b_dir_gt_z);
+		const vec3 t = recp_dir * sign_dir * max((world_edge - v) * sign_dir, vec3(1e-30f)); 		// Avoid nan created by division of 0 by inf
+		const float t_bar = min_element(t);
+		v += dir * t_bar;
+
+		if (any(lessThan(v, vec3(0))) || any(greaterThanEqual(v, vec3(1)))) {
+			// No voxel can be hit 
+			voxel_traversal_result_t ret;
+			ret.distance = +inf;
+			return ret;
+		}
+	}
 
 	// Init stack
 	uint stack[voxel_leaf_level];
 	stack[0] = voxel_root_node;
 
-	// Traverse
 	uint node = stack[0];
 	uint P = voxel_Pi;
 	int level_resolution = int(voxel_P * n);
@@ -53,6 +60,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	ivec3 u = ivec3(v * grid_res);
 	ivec3 b = (u >> level_resolution) % int(1 << voxel_Pi);
 
+	// Traverse
 	int level = 0;
 	while (true) {
 		// Calculate brick coordinates
@@ -104,10 +112,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
         ivec3 b_bar = b + b_offset; 
  
 		// Check if need to level out
-		ivec3 b_test = b_bar * ivec3(sign_dir);
-		ivec3 b_test_val = mix(ivec3(0), ivec3(1 + (1 << P)), b_dir_gt_z);
-		bool level_out = any(greaterThan(b_test, b_test_val));
-        while (level_out) { 
+        while (any(lessThan(b_bar, ivec3(0))) || any(greaterThanEqual(b_bar, ivec3(1 << P)))) { 
             --level; 
             if (level < 0) { 
                 // No voxel was hit 
@@ -125,46 +130,11 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
             const ivec3 u_shift = u >> level_resolution; 
             b_offset = (u_bar >> level_resolution) - u_shift; 
             b_bar = u_shift % int(1 << P) + b_offset;
-			
-			b_test = b_bar * ivec3(sign_dir);
-			b_test_val = mix(ivec3(0), ivec3(1 + (1 << P)), b_dir_gt_z);
-			level_out = any(greaterThan(b_test, b_test_val));
 		}
 
 		// Update final step values
         u = u_bar; 
-        b = b_bar; 
-		
-		// Calculate levels to pop
-		/*const ivec3 u_star = u ^ u_bar;
-		const int msb = findMSB(max_element(mix(u_star, ivec3(0x7FFFFFFF), lessThan(u_star, ivec3(0)))));
-		if (msb >= (n - level + 1) * voxel_P) {
-			const int msb_top_levels = msb - intermediate_levels_msb - 1;
-			const ivec2 pop_levels = ivec2(1, int(voxel_leaf_level)) - (ivec2(msb_top_levels, msb) + Pi_P_vec) / Pi_P_vec;
-			const int pop_level = mix(pop_levels.y, pop_levels.x, msb > intermediate_levels_msb);
-			const int levels_to_pop = max(0, level - pop_level);
-
-			// Level out, as needed
-			level -= levels_to_pop;
-			if (level < 0) {
-				// No voxel was hit
-				break;
-			}
-			
-			const float level_res = float(voxel_resolution(level));
-
-			// Pop stack
-			node = stack[level];
-			P = voxel_block_power(level);
-			level_resolution += levels_to_pop * int(voxel_P);
-			res = vec2(level_res, 1.f / level_res);
-		}
-
-		const ivec3 u_shifted = (u >> level_resolution);
-		const ivec3 b_offset = (u_bar >> level_resolution) - u_shifted;
-
-		b = u_shifted % int(1 << P) + b_offset;
-		u = u_bar;*/
+        b = b_bar;
 	}
 
 	// Hit

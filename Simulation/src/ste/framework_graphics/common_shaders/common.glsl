@@ -221,26 +221,26 @@ uvec4 sqr(uvec4 x) {
  *	@brief	Returns 1 if x>=0, -1 otherwise.
  */
 float sign_ge_z(float x) {
-	return step(0, x)*2.f - 1.f;
+	return step(.0f, x)*2.f - 1.f;
 }
 
 /*
  *	@brief	Returns 1 if x>=0, -1 otherwise.
  */
 vec2 sign_ge_z(vec2 x) {
-	return step(0, x)*2.f - 1.f;
+	return step(.0f, x)*2.f - 1.f;
 }
 
 /*
  *	@brief	Returns 1 if x>=0, -1 otherwise.
  */
 vec3 sign_ge_z(vec3 x) {
-	return step(0, x)*2.f - 1.f;
+	return step(.0f, x)*2.f - 1.f;
 }
 
 /*
  *	@brief	Returns 1 if x>=0, -1 otherwise.
  */
 vec4 sign_ge_z(vec4 x) {
-	return step(0, x)*2.f - 1.f;
+	return step(.0f, x)*2.f - 1.f;
 }

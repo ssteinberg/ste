@@ -19,16 +19,13 @@ layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
 /**
 *	@brief	Traverses a node, atomically creating a child at supplied position.
 */
-void voxel_voxelize(inout float x, 
-					inout float y, 
-					inout float z, 
+void voxel_voxelize(inout vec3 v,
 					inout uint node, 
 					uint level) {
 	float block = voxel_block_extent(level);
 	uint P = voxel_block_power(level);
 		
 	// Calculate brick coordinates and index in block
-	vec3 v = vec3(x,y,z);
 	vec3 brick = v * block;
 	uint child_idx = voxel_brick_index(ivec3(brick), P);
 	uint child_offset = node + voxel_node_children_offset(P) + child_idx;
@@ -61,7 +58,7 @@ void voxel_voxelize(inout float x,
 			// Clear child
 			if (child_level != voxel_leaf_level) {
 				uint child_binary_map_size = voxel_binary_map_size(voxel_block_power(child_level));
-				for (int u=0; u<child_binary_map_size; ++u)
+				for (int u=0; u < child_binary_map_size + voxel_ropes_count; ++u)
 					voxel_buffer[child_ptr + u] = 0;
 			}
 		}
@@ -69,9 +66,47 @@ void voxel_voxelize(inout float x,
 
 	// Calculate coordinates in brick
 	v = fract(brick);
-	x = v.x;
-	y = v.y;
-	z = v.z;
 	// And index of pointer to child node
 	node = child_offset;
+}
+
+bool voxel_voxelize_step() {
+	return false;
+}
+
+/**
+*	@brief	Traverses a node, attaching ropes.
+*/
+void voxel_voxelize_traverse_generating_ropes(vec3 v) {
+	uint node = voxel_root_node;
+	uint neighbours[voxel_ropes_count];
+	for (int i=0; i<voxel_ropes_count; ++i)
+		neighbours[i] = voxel_root_node;
+
+	// Handle root node
+	int level = 0;
+	{
+		float block = voxel_block_extent(level);
+		uint P = voxel_block_power(level);
+		
+		// Calculate brick coordinates and index in block
+		vec3 brick = v * block;
+		uint child_idx = voxel_brick_index(ivec3(brick), P);
+
+		const uvec2 binary_map_address = voxel_binary_map_address(child_idx);
+		const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
+	}
+
+	++level;
+	float block = voxel_block_extent(level);
+	uint P = voxel_block_power(level);
+
+	while (level < voxel_leaf_level) {
+		// Calculate brick coordinates and index in block
+		vec3 brick = v * block;
+		uint child_idx = voxel_brick_index(ivec3(brick), P);
+
+		const uvec2 binary_map_address = voxel_binary_map_address(child_idx);
+		const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
+	}
 }
