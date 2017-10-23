@@ -112,9 +112,9 @@ public:
 
 		// Check surface support
 		bool has_present_support = false;
-		for (unsigned i = 0; i < physical_device.queue_family_properties.size(); ++i) {
+		for (unsigned i = 0; i < physical_device.get_queue_family_properties().size(); ++i) {
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(physical_device.device, 0, presentation_surface, &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, 0, presentation_surface, &supported);
 
 			if ((has_present_support |= supported != 0))
 				break;

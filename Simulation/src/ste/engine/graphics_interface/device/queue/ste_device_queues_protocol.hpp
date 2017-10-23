@@ -35,7 +35,7 @@ private:
 
 		// Furthermore, create a low-priority data transfer queue
 		params[ste_queue_type::data_transfer_queue] = { 1, .0f };
-		if (physical_device.features.sparseBinding) {
+		if (physical_device.get_features().sparseBinding) {
 			// If sparse binding is supported, make a sparse bind and data trasfer queue
 			params[ste_queue_type::data_transfer_sparse_queue] = { 1, .0f };
 		}
@@ -77,8 +77,8 @@ private:
 								  ste_queue_descriptors::queues_t::const_iterator &queues_insertion_hint) {
 		const VkQueueFamilyProperties *q = nullptr;
 		std::uint32_t family_idx = 0;
-		for (; family_idx < physical_device.queue_family_properties.size(); ++family_idx) {
-			auto& queue_properties = physical_device.queue_family_properties[family_idx];
+		for (; family_idx < physical_device.get_queue_family_properties().size(); ++family_idx) {
+			auto& queue_properties = physical_device.get_queue_family_properties()[family_idx];
 			auto queue_type = ste_queue_type_for_flags(queue_properties.queueFlags);
 
 			if (queue_type == type) {

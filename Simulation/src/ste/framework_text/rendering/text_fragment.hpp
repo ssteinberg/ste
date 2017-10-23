@@ -26,7 +26,7 @@ namespace text {
 *	@brief	Text glyph renderer fragment
 */
 class text_fragment : public gl::fragment {
-	using vector_type = gl::vector<glyph_point>;
+	using vector_type = gl::stable_vector<glyph_point>;
 
 private:
 	alias<text_manager> tm;

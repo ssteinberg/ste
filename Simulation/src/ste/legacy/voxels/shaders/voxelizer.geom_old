@@ -19,13 +19,13 @@ layout (triangle_strip, max_vertices = 3) out;
 in vs_out {
 	vec3 N;
 	vec2 st;
-	flat int matIdx;
+	flat int material_id;
 } vin[];
 
 out geo_out {
 	vec3 P, N;
 	vec2 st;
-	flat int matIdx;
+	flat int material_id;
 	flat vec2 max_aabb;
 	flat vec3 ortho_projection_mask;
 } vout;
@@ -49,7 +49,7 @@ vec2 bounding_triangle_vertex(vec2 prev, vec2 v, vec2 next) {
 }
 
 void main() {
-	int matIdx = vin[0].matIdx;
+	int material_id = vin[0].material_id;
 
 	vec3 U = gl_in[0].gl_Position.xyz;
 	vec3 V = gl_in[1].gl_Position.xyz;
@@ -84,7 +84,7 @@ void main() {
 		// Voxelize in geometry shader. Fast path.
 		float area = .5f * len_N / (voxel * voxel);
 
-		material_descriptor md = mat_descriptor[matIdx];
+		material_descriptor md = mat_descriptor[material_id];
 		vec2 uv = vec2(.5f);
 		voxelize(md,
 				 U,
@@ -147,7 +147,7 @@ void main() {
 	vec2 v1 = (p1.xy - minv) / voxels_texture_size - vec2(1, 1);
 	vec2 v2 = (p2.xy - minv) / voxels_texture_size - vec2(1, 1);
 
-	vout.matIdx = matIdx;
+	vout.material_id = material_id;
 
 	vout.st = vin[0].st;
 	vout.P = U;

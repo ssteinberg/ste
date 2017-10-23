@@ -226,10 +226,11 @@ public:
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
 				const graphics::atmospherics_properties<double> &atmospherics_prop,
+				graphics::voxels_configuration voxel_config,
 				text::text_manager &tm)
 		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof),
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, voxel_config, prof),
 		footer_text_frag(tm.create_fragment())
 	{
 		swap_chain_resized();
@@ -267,6 +268,7 @@ public:
 
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+		auto f = batch->get_fence_ptr();
 
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
@@ -293,6 +295,10 @@ public:
 			// Submit command buffer and present
 			presentation.get().submit_and_present(std::move(batch));
 		});
+
+//		(*f)->get_wait();
+//		device().wait_idle();
+//		r.d();
 	}
 };
 
@@ -625,6 +631,16 @@ int main()
 
 
 	/*
+	 *	Voxel configuration
+	 */
+	graphics::voxels_configuration voxel_config;
+	voxel_config.Pi = 4;
+	voxel_config.P = 2;
+	voxel_config.leaf_level = 4;
+	voxel_config.world = 3500;
+
+
+	/*
 	*	Create scene and primary render
 	*/
 	graphics::scene scene(ctx);
@@ -641,6 +657,7 @@ int main()
 													  &camera,
 													  &scene,
 													  atmosphere,
+													  voxel_config,
 													  text_manager);
 	});
 

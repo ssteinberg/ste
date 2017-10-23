@@ -105,11 +105,10 @@ auto host_read_image(const ste_context &ctx,
 	auto &q = ctx.device().select_queue(queue_selector);
 
 	// Staging buffer
-	staging_buffer_t staging_buffer(ctx,
-									surface_blocks,
-									buffer_usage::transfer_dst,
-									"host_read_buffer staging buffer");
-	auto staging_ptr = staging_buffer.get_underlying_memory().template mmap<block_type>(0, surface_blocks);
+	auto staging_buffer = lib::allocate_unique<staging_buffer_t>(ctx,
+																 surface_blocks,
+																 buffer_usage::transfer_dst,
+																 "host_read_buffer staging buffer");
 
 	// Create copy command
 	cmd_copy_image_to_buffer cpy_cmd(image,
@@ -118,11 +117,11 @@ auto host_read_image(const ste_context &ctx,
 									 regions);
 
 	// Create a batch
-	auto batch = q.allocate_batch<staging_buffer_t>(std::move(staging_buffer));
+	auto batch = q.allocate_batch();
 	auto fence = batch->get_fence_ptr();
 
 	// Enqueue on a transfer queue
-	q.enqueue([batch = std::move(batch), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
+	q.enqueue([batch = std::move(batch), staging_buffer = staging_buffer.get(), cpy_cmd = std::move(cpy_cmd), wait_semaphores = std::move(wait_semaphores), signal_semaphores = std::move(signal_semaphores)]() mutable {
 		auto &command_buffer = batch->acquire_command_buffer();
 
 		// Record and submit a one-time batch
@@ -134,7 +133,7 @@ auto host_read_image(const ste_context &ctx,
 				<< std::move(cpy_cmd)
 				<< cmd_pipeline_barrier(pipeline_barrier(pipeline_stage::transfer,
 														 pipeline_stage::host,
-														 buffer_memory_barrier(batch->user_data(),
+														 buffer_memory_barrier(*staging_buffer,
 																			   access_flags::transfer_write,
 																			   access_flags::host_read)));
 		}
@@ -146,7 +145,7 @@ auto host_read_image(const ste_context &ctx,
 	});
 
 	// Return future that reads from the device buffer
-	return ctx.engine().task_scheduler().schedule_now([=, staging_ptr = std::move(staging_ptr), fence = std::move(fence)]() {
+	return ctx.engine().task_scheduler().schedule_now([=, staging_buffer = std::move(staging_buffer), fence = std::move(fence)]() {
 		// Create surface
 		auto surface = lib::allocate_unique<resource::surface<format, image_type>>(surface_extent,
 																				   layers,
@@ -155,6 +154,8 @@ auto host_read_image(const ste_context &ctx,
 		// Wait for device completion 
 		(*fence)->get_wait();
 
+		// mmap
+		auto staging_ptr = staging_buffer.get_underlying_memory().template mmap<block_type>(0, surface_blocks);
 		// Invalidate caches
 		staging_ptr->invalidate_ranges({ vk::vk_mapped_memory_range{ 0, surface_blocks } });
 

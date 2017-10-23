@@ -31,10 +31,10 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) override {
-		const vk_result res = vkBindBufferMemory(Base::device.get(), 
-												 *this, 
-												 memory, 
-												 static_cast<std::size_t>(offset));
+		const vk_result res = vkBindBufferMemory(Base::device.get(),
+													*this,
+													memory,
+													static_cast<std::size_t>(offset));
 		if (!res) {
 			throw vk_exception(res);
 		}
@@ -63,23 +63,35 @@ public:
 	vk_buffer_impl &operator=(const vk_buffer_impl &) = delete;
 
 	memory_requirements get_memory_requirements() const override {
-		VkBufferMemoryRequirementsInfo2KHR info = {};
-		VkMemoryDedicatedRequirementsKHR dedicated_info = {};
-		info.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR;
-		info.buffer = *this;
-		info.pNext = &dedicated_info;
-		dedicated_info.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
-		dedicated_info.pNext = nullptr;
+		if (Base::device.get().get_extensions_func_pointers().get_memory_requirements2().enabled) {
+			// If available, use VK_KHR_get_memory_requirements2 extension to get additional information about the memory requirements
 
-		VkMemoryRequirements2KHR req;
-		req.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
-		req.pNext = nullptr;
-		this->device.get().get_extensions_func_pointers().get_memory_requirements2().vkGetBufferMemoryRequirements2KHR(this->device.get(),
-																													   &info,
-																													   &req);
+			VkBufferMemoryRequirementsInfo2KHR info = {};
+			VkMemoryDedicatedRequirementsKHR dedicated_info = {};
+			info.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR;
+			info.buffer = *this;
+			info.pNext = &dedicated_info;
+			dedicated_info.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+			dedicated_info.pNext = nullptr;
 
-		return memory_requirements(req, 
-								   dedicated_info);
+			VkMemoryRequirements2KHR req;
+			req.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+			req.pNext = nullptr;
+			Base::device.get().get_extensions_func_pointers().get_memory_requirements2().vkGetBufferMemoryRequirements2KHR(Base::device.get(),
+																														   &info,
+																														   &req);
+
+			return memory_requirements(req,
+									   dedicated_info);
+		}
+
+		// VK_KHR_get_memory_requirements2 unavailable
+		VkMemoryRequirements req = {};
+		vkGetBufferMemoryRequirements(Base::device.get(),
+									  *this,
+									  &req);
+
+		return memory_requirements(req);
 	}
 
 	std::uint64_t get_elements_count() const override final { return count; }

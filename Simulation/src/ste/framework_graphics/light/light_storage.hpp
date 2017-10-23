@@ -18,7 +18,6 @@
 
 #include <resource_storage_dynamic.hpp>
 #include <array.hpp>
-#include <vector.hpp>
 #include <stable_vector.hpp>
 #include <std430.hpp>
 #include <std140.hpp>
@@ -44,7 +43,7 @@ public:
 	static constexpr std::size_t max_ll_buffer_size = 64 * 1024 * 1024;
 
 private:
-	using lights_ll_type = gl::vector<gl::std430<std::uint32_t>, max_ll_buffer_size>;
+	using lights_ll_type = gl::stable_vector<gl::std430<std::uint32_t>, max_ll_buffer_size>;
 	using shaped_lights_points_storage_type = gl::stable_vector<shaped_light_point>;
 
 private:

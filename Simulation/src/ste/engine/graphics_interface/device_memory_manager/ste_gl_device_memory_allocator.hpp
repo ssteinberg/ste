@@ -71,7 +71,7 @@ private:
 			if (!memory_type_matches_requirements(type, memory_requirements))
 				continue;
 
-			auto &heap = physical_device.memory_properties.memoryTypes[type];
+			auto &heap = physical_device.get_memory_properties().memoryTypes[type];
 			if ((static_cast<memory_properties_flags>(heap.propertyFlags) & preferred_flags) == preferred_flags)
 				return type;
 			if (fallback_memory_type == -1 &&
@@ -351,7 +351,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_device_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 
 		lib::unordered_set<std::uint32_t> conforming_heaps;
 		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
@@ -398,7 +398,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_commited_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 		auto total_commited_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
@@ -441,7 +441,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_allocated_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 		auto total_allocated_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {

@@ -1,11 +1,13 @@
 //	StE
-// © Shlomi Steinberg 2015-2016
+// © Shlomi Steinberg 2015-2017
 
 #pragma once
 
 #include <vulkan/vulkan.h>
 #include <command.hpp>
 #include <device_buffer_base.hpp>
+
+#include <buffer_copy_region.hpp>
 
 #include <lib/vector.hpp>
 #include <functional>
@@ -28,15 +30,17 @@ public:
 
 	cmd_copy_buffer(const device_buffer_base &src_buffer,
 					const device_buffer_base &dst_buffer,
-					const lib::vector<VkBufferCopy> &ranges = {})
-		: src_buffer(src_buffer.get_buffer_handle()), dst_buffer(dst_buffer.get_buffer_handle()), ranges(ranges) {
+					const lib::vector<buffer_copy_region_t> &ranges = {})
+		: src_buffer(src_buffer.get_buffer_handle()), dst_buffer(dst_buffer.get_buffer_handle()) {
+		for (auto &c : ranges)
+			this->ranges.push_back(c.vk_descriptor(src_buffer.get_element_size_bytes(), dst_buffer.get_element_size_bytes()));
+
 		if (this->ranges.size() == 0) {
-			const VkBufferCopy c = {
-				0, 0,
-				static_cast<std::size_t>(std::min(src_buffer.get_elements_count() * src_buffer.get_element_size_bytes(),
-												  dst_buffer.get_elements_count() * dst_buffer.get_element_size_bytes()))
-			};
-			this->ranges.push_back(c);
+			buffer_copy_region_t c;
+			c.bytes = std::min(src_buffer.get_elements_count() * src_buffer.get_element_size_bytes(),
+							   dst_buffer.get_elements_count() * dst_buffer.get_element_size_bytes());
+
+			this->ranges.push_back(c.vk_descriptor(src_buffer.get_element_size_bytes(), dst_buffer.get_element_size_bytes()));
 		}
 	}
 
