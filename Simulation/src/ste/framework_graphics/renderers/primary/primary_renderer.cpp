@@ -569,22 +569,6 @@ uint voxel_node_size(uint level) {
 			   level == voxel_leaf_level);
 }
 
-float min_element(vec3 v) {
-	return min(v.x, min(v.y, v.z));
-}
-
-float max_element(vec3 v) {
-	return max(v.x, max(v.y, v.z));
-}
-
-int max_element(ivec3 v) {
-	return max(v.x, max(v.y, v.z));
-}
-
-vec3 sign_ge_z(vec3 x) {
-	return step(.0f, x)*2.f - 1.f;
-}
-
 template <typename T>
 void check(const T &node, unsigned level = 0) {
 	using node_t = voxels_configuration::tree_node_t<voxel_P>;

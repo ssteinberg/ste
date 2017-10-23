@@ -68,11 +68,17 @@ const float material_layer_min_ansio_ratio = sqrt(1.f - 1.f * material_layer_ans
 const float material_layer_min_ior = 1.f;
 const float material_layer_max_ior = 5.f;
 
+/**
+*	@brief	Returns material's emission value
+*/
 vec3 material_emission(material_descriptor md) {
 	vec3 emission_color = unpackUnorm4x8(md.packed_emission_color).rgb;
 	return emission_color * md.emission;
 }
 
+/**
+*	@brief	Returns material's albedo
+*/
 vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_texture_bit) != 0)
 		return textureGrad(sampler2D(material_textures[md.texture.sampler_idx], material_sampler), 
@@ -81,12 +87,18 @@ vec4 material_base_texture(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duv
 						   duvdy);
 	return vec4(1.f);
 }
+/**
+*	@brief	Returns material's albedo
+*/
 vec4 material_base_texture(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_texture_bit) != 0)
 		return texture(sampler2D(material_textures[md.texture.sampler_idx], material_sampler), uv);
 	return vec4(1.f);
 }
 
+/**
+*	@brief	Returns material's cavity value
+*/
 float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_cavity_map_bit) != 0) {
 		float t = textureGrad(sampler2D(material_textures[md.cavity_map.sampler_idx], material_sampler), uv, duvdx, duvdx).x;
@@ -94,6 +106,9 @@ float material_cavity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	}
 	return 1.f;
 }
+/**
+*	@brief	Returns material's cavity value
+*/
 float material_cavity(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_cavity_map_bit) != 0) {
 		float t = texture(sampler2D(material_textures[md.cavity_map.sampler_idx], material_sampler), uv).x;
@@ -102,29 +117,61 @@ float material_cavity(material_descriptor md, vec2 uv) {
 	return 1.f;
 }
 
-bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+/**
+*	@brief	Returns material's opacity
+*/
+float material_opacity(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
 	if ((md.material_flags & material_has_mask_map_bit) != 0)
 		return textureGrad(sampler2D(material_textures[md.mask_map.sampler_idx], material_sampler), 
 						   uv, 
 						   duvdx, 
-						   duvdy).x < material_alpha_discard_threshold;
-	return false;
+						   duvdy).x;
+	return 1.f;
 }
-bool material_is_masked(material_descriptor md, vec2 uv) {
+/**
+*	@brief	Returns material's opacity
+*/
+float material_opacity(material_descriptor md, vec2 uv) {
 	if ((md.material_flags & material_has_mask_map_bit) != 0)
-		return texture(sampler2D(material_textures[md.mask_map.sampler_idx], material_sampler), uv).x < material_alpha_discard_threshold;
-	return false;
+		return texture(sampler2D(material_textures[md.mask_map.sampler_idx], material_sampler), uv).x;
+	return 1.f;
 }
 
+/**
+*	@brief	Check if the material is masked, i.e. opacity is below a threshold.
+*/
+bool material_is_masked(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy) {
+	return material_opacity(md, 
+							uv, 
+							duvdx, 
+							duvdy).x < material_alpha_discard_threshold;
+}
+/**
+*	@brief	Check if the material is masked, i.e. opacity is below a threshold.
+*/
+bool material_is_masked(material_descriptor md, vec2 uv) {
+	return material_opacity(md, 
+							uv).x < material_alpha_discard_threshold;
+}
+
+/**
+*	@brief	Check if the material has subsurface-scattering enabled
+*/
 bool material_has_subsurface_scattering(material_descriptor md) {
 	return (md.material_flags & material_has_subsurface_scattering_bit) != 0;
 }
 
+/**
+*	@brief	Check if the material is "simple", i.e. has only a single layer and no subsurface-scattering.
+*/
 bool material_is_simple(material_descriptor md, material_layer_descriptor head_layer) {
 	return !material_has_subsurface_scattering(md) && 
 			head_layer.next_layer_id == material_none;
 }
 
+/**
+*	@brief	Given an orthonormal frame, transforms it based on the material's normal map.
+*/
 void normal_map(material_descriptor md, vec2 uv, vec2 duvdx, vec2 duvdy, inout vec3 n, inout vec3 t, inout vec3 b) {
 	if ((md.material_flags & material_has_normal_map_bit) != 0) {
 		mat3 transform = mat3(t, b, n);

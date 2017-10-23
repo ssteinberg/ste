@@ -3,6 +3,7 @@
 #version 450
 
 #include <material.glsl>
+#include <material_layer_unpack.glsl>
 #include <voxels_voxelize.glsl>
 
 layout(location = 0) in geo_out {
@@ -20,10 +21,6 @@ void main() {
 	vec3 N = fragment.N;
 	material_descriptor md = mat_descriptor[material_id];
 
-	// Partial derivative for material texture look-ups and position
-	vec2 dUVdx = dFdx(uv);
-	vec2 dUVdy = dFdy(uv);
-
 	// Discard voxel fragments outside the AABB or voxel grid
 	vec3 v = P / voxel_world + .5f;
 	if (any(greaterThan(gl_FragCoord.xy, fragment.max_aabb.xy)) ||
@@ -31,14 +28,28 @@ void main() {
 		any(lessThan(v, vec3(0))))
 		return;
 	
+	// Read material data (ignoring multi-layered materials)
+	material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
+	material_layer_unpacked_descriptor descriptor = material_layer_unpack(head_layer, uv);
+	vec4 rgba = material_base_texture(md, uv);
+	float opacity = material_opacity(md, uv);
+	float roughness = descriptor.roughness;
+
+	rgba.a *= opacity;
+	
 	// Discard voxels that are masked by material
-	if (material_is_masked(md, uv, dUVdx, dUVdy))
+	if (rgba.a == .0f)
 		return;
 
+	voxel_list_element_t element;
+
+	// Encode voxel data and element position
+	element.data = encode_voxel_data(N, roughness, rgba);
+	element.node_x = v.x;
+	element.node_y = v.y;
+	element.node_z = v.z;
+	
 	// Add to voxel list
 	uint voxel_list_idx = atomicAdd(voxel_list_buffer_size, 1);
-	voxel_list_element_t element;
-	encode_voxel_list_element(element, v, N, material_id);
-
 	voxel_list_buffer[voxel_list_idx] = element;
 }

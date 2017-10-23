@@ -296,9 +296,9 @@ public:
 			presentation.get().submit_and_present(std::move(batch));
 		});
 
-		(*f)->get_wait();
-		device().wait_idle();
-		r.d();
+//		(*f)->get_wait();
+//		device().wait_idle();
+//		r.d();
 	}
 };
 

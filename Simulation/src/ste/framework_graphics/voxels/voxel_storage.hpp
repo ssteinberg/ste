@@ -18,11 +18,12 @@ namespace graphics {
 
 class voxel_storage {
 private:
-	static constexpr auto max_voxel_tree_size = 128 * 1024 * 1024;
+	static constexpr auto max_voxel_tree_size = 64 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
-	using voxel_list_element_t = gl::std430<glm::vec3, std::uint32_t, glm::vec3, std::uint32_t>;
+	using voxel_data_t = gl::std430<std::uint32_t, std::uint32_t>;
+	using voxel_list_element_t = gl::std430<voxel_data_t, float, float, float, std::uint32_t>;
 
 private:
 	alias<const ste_context> ctx;

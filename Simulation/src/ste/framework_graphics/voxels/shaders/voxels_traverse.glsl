@@ -25,6 +25,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	const uint n = voxel_leaf_level - 1;
 	const float grid_res = float(voxel_resolution(n));
 	const float grid_res_0 = float(voxel_resolution(0));
+	const vec2 res_initial = vec2(grid_res_0, 1.f / grid_res_0);
 	const vec2 res_step = vec2(float(1 << voxel_P), 1.f / float(1 << voxel_P));
 
 	const int full_mask = 0xFFFFFFFF;
@@ -48,14 +49,11 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		}
 	}
 
-	// Init stack
-	uint stack[voxel_leaf_level];
-	stack[0] = voxel_root_node;
-
-	uint node = stack[0];
+	// Init
+	uint node = voxel_root_node;
 	uint P = voxel_Pi;
 	int level_resolution = int(voxel_P * n);
-	vec2 res = vec2(grid_res_0, 1.f / grid_res_0);
+	vec2 res = res_initial;
 
 	ivec3 u = ivec3(v * grid_res);
 	ivec3 b = (u >> level_resolution) % int(1 << voxel_Pi);
@@ -90,9 +88,6 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 
 			b = (u >> level_resolution) % int(1 << voxel_P);
 
-			// Update stack
-			stack[level] = node;
-
 			continue;
 		}
 
@@ -110,39 +105,42 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		
 		ivec3 b_offset = (u_bar >> level_resolution) - (u >> level_resolution); 
         ivec3 b_bar = b + b_offset; 
- 
-		// Check if need to level out
-        while (any(lessThan(b_bar, ivec3(0))) || any(greaterThanEqual(b_bar, ivec3(1 << P)))) { 
-            --level; 
-            if (level < 0) { 
-                // No voxel was hit 
-				voxel_traversal_result_t ret;
-				ret.distance = +inf;
-				return ret;
-            } 
- 
-            // Pop stack 
-            node = stack[level]; 
-            P = voxel_block_power(level); 
-            level_resolution += int(voxel_P); 
-            res *= res_step.yx; 
- 
-            const ivec3 u_shift = u >> level_resolution; 
-            b_offset = (u_bar >> level_resolution) - u_shift; 
-            b_bar = u_shift % int(1 << P) + b_offset;
+
+		// Have we moved past the block edge?
+		const bool past_edge = any(lessThan(b_bar, ivec3(0))) || any(greaterThanEqual(b_bar, ivec3(1 << P)));
+		if (past_edge) {
+			if (level == 0)
+				break;
+
+			// Restart
+			level = 0;
+			node = voxel_root_node;
+			P = voxel_block_power(level); 
+			level_resolution = int(voxel_P * n);
+			res = res_initial; 
+
+			const ivec3 u_shift = u >> level_resolution; 
+			b_offset = (u_bar >> level_resolution) - u_shift; 
+			b_bar = u_shift % int(1 << P) + b_offset;
 		}
 
 		// Update final step values
         u = u_bar; 
         b = b_bar;
 	}
-
-	// Hit
-	const vec3 pos = (v - .5f) * voxel_world;
-
+	
 	voxel_traversal_result_t ret;
-	ret.hit_voxel = node;
-	ret.distance = length(pos - V);
+    if (level == voxel_leaf_level) { 
+		// Hit
+		const vec3 pos = (v - .5f) * voxel_world;
+
+		ret.hit_voxel = node;
+		ret.distance = length(pos - V);
+	}
+	else {
+		// No voxel was hit 
+		ret.distance = +inf;
+	}
 
 	return ret;
 }
