@@ -51,7 +51,7 @@ void main() {
 	V = V == vec3(0) ? vec3(1,0,0) : normalize(V);
 
 	voxel_traversal_result_t ret = voxel_traverse(P, V);
-	shaded_fragment = isinf(ret.distance) ? vec3(10000,0,0) : vec3(ret.distance);
+	shaded_fragment = ret.rgba.rgb*100;//isinf(ret.distance) ? vec3(10000,0,0) : vec3(ret.distance);
 
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
 	frag_color = vec4(xyY, 1);

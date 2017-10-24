@@ -37,12 +37,16 @@ float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 // Resolution of maximal voxel level
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
 
-const uint voxel_tree_node_data_size = 8;
-const uint voxel_tree_leaf_data_size = 8;
+const uint voxel_tree_node_data_size = 12;
+const uint voxel_tree_leaf_data_size = 12;
 
 
 /**
-*	@brief	Encodes a voxel into voxel list
+*	@brief	Encodes a voxel into voxel list.
+*
+*	@param	N			World-space normal
+*	@param	roughness	Material roughness value
+*	@param	rgba_unorm	RGBA (albedo + opacity) value. Must be in [0, 1] range.
 */
 voxel_data_t encode_voxel_data(vec3 N, float roughness, vec4 rgba_unorm) {
 	uvec2 n = uvec2(round((clamp(norm3x32_to_snorm2x32(N), vec2(-1), vec2(1)) + 1.f) * 4095.f / 2.f));
@@ -122,14 +126,16 @@ uvec2 voxel_binary_map_address(uint brick_index) {
 }
 
 /**
-*	@brief	Returns the count of children in a node
+*	@brief	Returns the count of children in a node.
+*			Meaningless for leaf nodes.
 */
 uint voxel_node_children_count(uint P) {
 	return 1 << (3 * P);
 }
 
 /**
-*	@brief	Returns the binary map size of a node
+*	@brief	Returns the binary map size of a node.
+*			Meaningless for leaf nodes.
 */
 uint voxel_binary_map_size(uint P) {
 	uint map_bits = voxel_node_children_count(P);
@@ -138,43 +144,47 @@ uint voxel_binary_map_size(uint P) {
 }
 
 /**
+*	@brief	Returns the size of the user data in a voxel node.
+*/
+uint voxel_node_user_data_size(uint level) {
+	return mix(voxel_tree_node_data_size, voxel_tree_leaf_data_size, level == voxel_leaf_level) >> 2;
+}
+
+/**
+*	@brief	Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization.
+*/
+uint voxel_node_volatile_data_size(uint level, uint P) {
+	return mix(voxel_binary_map_size(P), 
+			   0, 
+			   level == voxel_leaf_level);
+}
+
+/**
 *	@brief	Returns the offset of the binary map in a voxel node.
-*			Meaningless for leaf nodes.
 */
 uint voxel_node_binary_map_offset(uint P) {
 	return uint(0);
 }
 
 /**
-*	@brief	Returns the offset of the children data in a voxel node.
-*			Meaningless for leaf nodes.
-*/
-uint voxel_node_children_offset(uint P) {
-	return  voxel_binary_map_size(P);
-}
-
-/**
 *	@brief	Returns the offset of the custom data in a voxel node.
-*			Meaningless for leaf nodes.
 */
-uint voxel_node_data_offset(uint P) {
-	return voxel_binary_map_size(P) + voxel_node_children_count(P);
+uint voxel_node_data_offset(uint level, uint P) {
+	return mix(voxel_binary_map_size(P), uint(0), level == voxel_leaf_level);
 }
 
 /**
-*	@brief	Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization.
+*	@brief	Returns the offset of the children data in a voxel node.
 */
-uint voxel_node_volatile_data_size(uint level) {
-	return mix(uint(0), voxel_binary_map_size(voxel_P), level != voxel_leaf_level);
+uint voxel_node_children_offset(uint level, uint P) {
+	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
 }
 
 /**
 *	@brief	Returns a single child size in a voxel node.
 *			level must be > 0.
 */
-uint voxel_node_size(uint level) {
-	uint P = voxel_block_power(level);
-	return mix(voxel_node_data_offset(P) + (voxel_tree_node_data_size >> 2),
-			   (voxel_tree_leaf_data_size >> 2),
-			   level == voxel_leaf_level);
+uint voxel_node_size(uint level, uint P) {
+	uint children_count = voxel_node_children_count(P) * uint(level != voxel_leaf_level);
+	return voxel_node_children_offset(level, P) + children_count;
 }

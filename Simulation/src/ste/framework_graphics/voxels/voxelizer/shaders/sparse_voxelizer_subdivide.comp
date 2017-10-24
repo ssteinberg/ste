@@ -22,7 +22,8 @@ void main() {
 		vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
 		voxel_voxelize(v, 
 					   node,
-					   0);
+					   0,
+					   voxel_list_buffer[i].data);
 		
 		voxel_list_buffer[i].node_x = v.x;
 		voxel_list_buffer[i].node_y = v.y;
@@ -41,7 +42,8 @@ void main() {
 			vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
 			voxel_voxelize(v, 
 						   node, 
-						   l);
+						   l,
+						   voxel_list_buffer[i].data);
 			
 			voxel_list_buffer[i].node_x = v.x;
 			voxel_list_buffer[i].node_y = v.y;
@@ -59,6 +61,7 @@ void main() {
 		vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
 		voxel_voxelize(v, 
 					   node, 
-					   voxel_leaf_level - 1);
+					   voxel_leaf_level - 1,
+					   voxel_list_buffer[i].data);
 	}
 }

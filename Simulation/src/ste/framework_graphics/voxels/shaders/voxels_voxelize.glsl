@@ -21,14 +21,15 @@ layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
 */
 void voxel_voxelize(inout vec3 v,
 					inout uint node, 
-					uint level) {
+					uint level,
+					voxel_data_t data) {
 	const float block = voxel_block_extent(level);
 	const uint P = voxel_block_power(level);
 		
 	// Calculate brick coordinates and index in block
 	const vec3 brick = v * block;
 	const uint child_idx = voxel_brick_index(ivec3(brick), P);
-	const uint child_offset = node + voxel_node_children_offset(P) + child_idx;
+	const uint child_offset = node + voxel_node_children_offset(level, P) + child_idx;
 
 	const uvec2 binary_map_address = voxel_binary_map_address(child_idx);
 	const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
@@ -49,16 +50,22 @@ void voxel_voxelize(inout vec3 v,
 		// Subdivide the node and create the child if, and only if, we are the first ones here.
 		if ((binary_map_word_old_value & bit) == 0) {
 			const uint child_level = level + 1;
-			const uint child_size = voxel_node_size(child_level);
+			const uint child_size = voxel_node_size(child_level, voxel_P);
 
 			// Allocate memory for child
 			const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
 			voxel_buffer[child_offset] = child_ptr;
 
 			// Clear child
-			const uint child_volatile_size = voxel_node_volatile_data_size(child_level);
+			const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
 			for (int u=0; u < child_volatile_size; ++u)
 				voxel_buffer[child_ptr + u] = 0;
+
+			// Write data
+			uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
+			voxel_buffer[data_ptr + 0] = data.normal_roughness_packed;
+			voxel_buffer[data_ptr + 1] = data.rgba;
+			voxel_buffer[data_ptr + 2] = 1;
 		}
 	}
 

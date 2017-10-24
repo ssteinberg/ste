@@ -19,8 +19,8 @@ struct voxels_configuration {
 	// Voxel world extent
 	float world = 1000;
 
-	static constexpr std::uint32_t voxel_tree_node_data_size = 8;
-	static constexpr std::uint32_t voxel_tree_leaf_data_size = 8;
+	static constexpr std::uint32_t voxel_tree_node_data_size = 12;
+	static constexpr std::uint32_t voxel_tree_leaf_data_size = 12;
 
 	// Size of voxel block
 	auto voxel_tree_block_extent() const {

@@ -10,7 +10,10 @@ layout(std430, set=1, binding=0) restrict readonly buffer voxel_buffer_binding {
 
 struct voxel_traversal_result_t {
 	float distance;
-	uint hit_voxel;
+
+	vec3 N;
+	float roughness;
+	vec4 rgba;
 };
 
 /**
@@ -72,17 +75,17 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		// Check if we have child here
 		const bool has_child = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
 		if (has_child) {
+			// Read child node address
+			const uint child_ptr = node + voxel_node_children_offset(level, P) + brick_idx;
+			node = voxel_buffer[child_ptr];
+
 			// Step in
 			++level;
-			if (level == voxel_leaf_level)
+			if (level == voxel_leaf_level) 
 				break;
-
-			// Read child node address
-			const uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
 
 			// Read new level parameters
 			P = voxel_P;
-			node = voxel_buffer[child_ptr];
 			level_resolution -= int(voxel_P);
 			res *= res_step;
 
@@ -132,10 +135,17 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	voxel_traversal_result_t ret;
     if (level == voxel_leaf_level) { 
 		// Hit
-		const vec3 pos = (v - .5f) * voxel_world;
 
-		ret.hit_voxel = node;
+		// Compute distance
+		const vec3 pos = (v - .5f) * voxel_world;
 		ret.distance = length(pos - V);
+		
+		// Decode voxel data
+		uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
+		voxel_data_t data;
+		data.normal_roughness_packed = voxel_buffer[data_ptr];
+		data.rgba = voxel_buffer[data_ptr + 1];
+		decode_voxel_data(data, ret.N, ret.roughness, ret.rgba);
 	}
 	else {
 		// No voxel was hit 
