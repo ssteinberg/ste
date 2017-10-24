@@ -3,18 +3,25 @@
 #include <voxels.glsl>
 
 
-layout(std430, set=1, binding=0) restrict readonly buffer voxel_buffer_binding {
-	uint voxel_buffer[];
-};
+layout(set=1, binding = 0) uniform usampler2D voxels;
 
 
-struct voxel_traversal_result_t {
-	float distance;
-
+struct voxel_unpacked_data_t {
 	vec3 N;
 	float roughness;
 	vec4 rgba;
 };
+
+struct voxel_traversal_result_t {
+	float distance;
+	voxel_unpacked_data_t data;
+};
+
+uint voxels_read(uint ptr) {
+	uint x = ptr % voxel_buffer_line;
+	uint y = ptr / voxel_buffer_line;
+	return texelFetch(voxels, ivec2(x,y), 0).x;
+}
 
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
@@ -23,7 +30,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	const bvec3 b_dir_gt_z = greaterThan(dir, vec3(.0f));
 	const vec3 edge = mix(vec3(.0f), vec3(1.f), b_dir_gt_z);
 	const vec3 recp_dir = 1.f / dir;
-	const vec3 sign_dir = sign(dir);
+	const vec3 sign_dir = sign_ge_z(dir);
 
 	const uint n = voxel_leaf_level - 1;
 	const float grid_res = float(voxel_resolution(n));
@@ -65,7 +72,6 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 	int level = 0;
 	while (true) {
 		// Calculate brick coordinates
-		const vec3 f = fma(v, res.xxx, -vec3(u >> level_resolution));
 		const uint brick_idx = voxel_brick_index(b, P);
 
 		// Compute binary map and pointer addresses
@@ -73,21 +79,24 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
 
 		// Check if we have child here
-		const bool has_child = ((voxel_buffer[binary_map_word_ptr] >> binary_map_address.y) & 0x1) == 1;
+		const bool has_child = ((voxels_read(binary_map_word_ptr) >> binary_map_address.y) & 0x1) == 1;
 		if (has_child) {
+			// Step in			
+			
 			// Read child node address
 			const uint child_ptr = node + voxel_node_children_offset(level, P) + brick_idx;
-			node = voxel_buffer[child_ptr];
-
-			// Step in
+			node = voxels_read(child_ptr);
+			
 			++level;
-			if (level == voxel_leaf_level) 
+			if (level == voxel_leaf_level) {
+				// Hit leaf
 				break;
+			}
 
 			// Read new level parameters
-			P = voxel_P;
 			level_resolution -= int(voxel_P);
 			res *= res_step;
+			P = voxel_P;
 
 			b = (u >> level_resolution) % int(1 << voxel_P);
 
@@ -95,6 +104,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		}
 
 		// No child, traverse.
+		const vec3 f = fma(v, res.xxx, -vec3(u >> level_resolution));
 		const vec3 t = recp_dir * sign_dir * max((edge - f) * sign_dir, vec3(1e-30f)); 		// Avoid nan created by division of 0 by inf
 		const float t_bar = min_element(t);
 		const bvec3 mixer = equal(vec3(t_bar), t);
@@ -106,14 +116,16 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 		const ivec3 u_hat = bitfieldInsert(u, full_mask.xxx, 0, level_resolution) + mix(-ivec3(1 << level_resolution), ivec3(1), b_dir_gt_z);
 		const ivec3 u_bar = mix(ivec3(v * grid_res), u_hat, mixer);
 		
-		ivec3 b_offset = (u_bar >> level_resolution) - (u >> level_resolution); 
+		const ivec3 b_offset = (u_bar >> level_resolution) - (u >> level_resolution); 
         ivec3 b_bar = b + b_offset; 
 
 		// Have we moved past the block edge?
 		const bool past_edge = any(lessThan(b_bar, ivec3(0))) || any(greaterThanEqual(b_bar, ivec3(1 << P)));
 		if (past_edge) {
-			if (level == 0)
+			if (level == 0) {
+				// No voxel was hit 
 				break;
+			}
 
 			// Restart
 			level = 0;
@@ -123,34 +135,33 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 			res = res_initial; 
 
 			const ivec3 u_shift = u >> level_resolution; 
-			b_offset = (u_bar >> level_resolution) - u_shift; 
-			b_bar = u_shift % int(1 << P) + b_offset;
+			const ivec3 b_offset2 = (u_bar >> level_resolution) - u_shift; 
+			b_bar = u_shift % int(1 << P) + b_offset2;
 		}
-
-		// Update final step values
-        u = u_bar; 
-        b = b_bar;
+		
+		b = b_bar;
+		u = u_bar; 
 	}
+
 	
 	voxel_traversal_result_t ret;
-    if (level == voxel_leaf_level) { 
-		// Hit
 
+	if (level == voxel_leaf_level) {
 		// Compute distance
 		const vec3 pos = (v - .5f) * voxel_world;
 		ret.distance = length(pos - V);
 		
-		// Decode voxel data
+		// Read data
 		uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
 		voxel_data_t data;
-		data.normal_roughness_packed = voxel_buffer[data_ptr];
-		data.rgba = voxel_buffer[data_ptr + 1];
-		decode_voxel_data(data, ret.N, ret.roughness, ret.rgba);
+		data.normal_roughness_packed = voxels_read(data_ptr);
+		data.rgba = voxels_read(data_ptr + 1);
+		decode_voxel_data(data, ret.data.N, ret.data.roughness, ret.data.rgba);
 	}
 	else {
-		// No voxel was hit 
+		// No hit
 		ret.distance = +inf;
 	}
-
+				
 	return ret;
 }

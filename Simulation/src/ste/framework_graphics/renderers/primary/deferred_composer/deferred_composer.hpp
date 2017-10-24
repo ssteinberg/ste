@@ -47,6 +47,8 @@ public:
 																						rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
 
 		// Configure voxelization pipeline
+		pipeline()["voxels"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->voxels_buffer_image(), 
+																			 rs.get_creating_context().device().common_samplers_collection().nearest_clamp_sampler()));
 		voxels->configure_voxel_pipeline(pipeline());
 	}
 	~deferred_composer() noexcept {}

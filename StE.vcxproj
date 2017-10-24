@@ -755,6 +755,7 @@
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\pipeline\binding_set\external_binding_set_collection_from_shader_stages.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\buffer_copy_region.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_copy_region.hpp" />
+    <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image_subresource_range.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\sparse\device_sparse_binding_batch.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_capabilities_query.hpp" />
     <ClInclude Include="Simulation\src\ste\engine\graphics_interface\resource\image\device_image_format_properties.hpp" />

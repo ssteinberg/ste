@@ -161,8 +161,6 @@ public:
 	 *	@brief		Performs rendering and presentation.
 	 */
 	void render(gl::command_recorder &) override final;
-
-	void d();
 };
 
 }

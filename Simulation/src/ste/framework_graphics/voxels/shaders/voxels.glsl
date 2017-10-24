@@ -37,8 +37,11 @@ float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 // Resolution of maximal voxel level
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
 
-const uint voxel_tree_node_data_size = 12;
-const uint voxel_tree_leaf_data_size = 12;
+const uint voxel_tree_node_data_size = 8;
+const uint voxel_tree_leaf_data_size = 8;
+
+
+const uint voxel_buffer_line = 32768;
 
 
 /**
@@ -63,13 +66,27 @@ voxel_data_t encode_voxel_data(vec3 N, float roughness, vec4 rgba_unorm) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 N, out float roughness, out vec4 rgba) {
-	uvec2 n = uvec2(e.normal_roughness_packed & 0xFFF, (e.normal_roughness_packed >> 12) & 0xFFF);
-	uint roughness_norm = e.normal_roughness_packed >> 24;
+void decode_voxel_data_normal_roughness(uint data, out vec3 N, out float roughness) {
+	uvec2 n = uvec2(data & 0xFFF, (data >> 12) & 0xFFF);
+	uint roughness_norm = data >> 24;
 
 	N = snorm2x32_to_norm3x32(vec2(n) * 2.f / 4095.f - 1.f);
 	roughness = float(roughness_norm) / 255.f / 2.f;
-	rgba = unpackUnorm4x8(e.rgba);
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+void decode_voxel_data_rgba(uint data, out vec4 rgba) {
+	rgba = unpackUnorm4x8(data);
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+void decode_voxel_data(voxel_data_t e, out vec3 N, out float roughness, out vec4 rgba) {
+	decode_voxel_data_normal_roughness(e.normal_roughness_packed, N, roughness);
+	decode_voxel_data_rgba(e.rgba, rgba);
 }
 
 /**
@@ -155,7 +172,7 @@ uint voxel_node_user_data_size(uint level) {
 */
 uint voxel_node_volatile_data_size(uint level, uint P) {
 	return mix(voxel_binary_map_size(P), 
-			   0, 
+			   uint(0), 
 			   level == voxel_leaf_level);
 }
 

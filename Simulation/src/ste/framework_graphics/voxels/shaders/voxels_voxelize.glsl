@@ -2,19 +2,51 @@
 #include <voxels.glsl>
 
 
-layout(std430, set=1, binding=0) restrict buffer voxel_buffer_binding {
-	uint voxel_buffer[];
-};
+layout(r32ui, set=1, binding = 0) restrict uniform uimage2D voxels;
 layout(std430, set=1, binding=1) restrict buffer voxel_counter_binding {
 	uint voxel_buffer_size;
 };
-layout(std430, set=1, binding=2) restrict buffer voxel_list_binding {
-	voxel_list_element_t voxel_list_buffer[];
-};
-layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
-	uint voxel_list_buffer_size;
-};
 
+
+ivec2 voxels_image_coords(uint ptr) {
+	uint x = ptr % voxel_buffer_line;
+	uint y = ptr / voxel_buffer_line;
+	return ivec2(x,y);
+}
+
+
+void voxel_voxelize_blend_user_data(uint node,
+									uint level,
+									voxel_data_t data) {
+	uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
+
+	/*if (level == voxel_leaf_level) {
+		// For leaf nodes there 
+		voxel_buffer[data_ptr + 0] = data.normal_roughness_packed;
+		voxel_buffer[data_ptr + 1] = data.rgba;
+		return;
+	}*/
+
+	// Unpack input user data
+	vec3 N;
+	float roughness;
+	vec4 rgba;
+	decode_voxel_data(data, N, roughness, rgba);
+
+	// Atomically blend with other data
+	uint old_normal_roughness_packed = 0;
+	uint new_normal_roughness_packed = data.normal_roughness_packed;
+	while ((new_normal_roughness_packed = imageAtomicCompSwap(voxels, 
+															  voxels_image_coords(data_ptr), 
+															  old_normal_roughness_packed,
+															  new_normal_roughness_packed)) != old_normal_roughness_packed) {
+		vec3 dest_N;
+		float dest_roughness;
+		decode_voxel_data_normal_roughness(new_normal_roughness_packed, dest_N, dest_roughness);
+
+
+	}
+}
 
 /**
 *	@brief	Traverses a node, atomically creating a child at supplied position.
@@ -35,14 +67,15 @@ void voxel_voxelize(inout vec3 v,
 	const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
 	
 	const uint bit = 1 << binary_map_address.y;
-	uint binary_map_word = voxel_buffer[binary_map_word_ptr]; 
+	uint binary_map_word = imageLoad(voxels, voxels_image_coords(binary_map_word_ptr)).x;
 	
 	// Atomically try to set occupancy bit
 	if ((binary_map_word & bit) == 0) {
 		uint binary_map_word_old_value;
-		while ((binary_map_word_old_value = atomicCompSwap(voxel_buffer[binary_map_word_ptr],  
-														   binary_map_word,  
-														   binary_map_word | bit)) != binary_map_word &&
+		while ((binary_map_word_old_value = imageAtomicCompSwap(voxels, 
+																voxels_image_coords(binary_map_word_ptr),  
+																binary_map_word,  
+																binary_map_word | bit)) != binary_map_word &&
 				(binary_map_word_old_value & bit) == 0) { 
 			binary_map_word = binary_map_word_old_value;
 		}
@@ -54,18 +87,19 @@ void voxel_voxelize(inout vec3 v,
 
 			// Allocate memory for child
 			const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
-			voxel_buffer[child_offset] = child_ptr;
+			imageStore(voxels, voxels_image_coords(child_offset), child_ptr.xxxx);
 
 			// Clear child
 			const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
 			for (int u=0; u < child_volatile_size; ++u)
-				voxel_buffer[child_ptr + u] = 0;
-
-			// Write data
-			uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
-			voxel_buffer[data_ptr + 0] = data.normal_roughness_packed;
-			voxel_buffer[data_ptr + 1] = data.rgba;
-			voxel_buffer[data_ptr + 2] = 1;
+				imageStore(voxels, voxels_image_coords(child_ptr + u), uvec4(0));
+			
+			// Write user data to leafs
+			if (child_level == voxel_leaf_level) {
+				uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
+				imageStore(voxels, voxels_image_coords(data_ptr + 0), data.normal_roughness_packed.xxxx);
+				imageStore(voxels, voxels_image_coords(data_ptr + 1), data.rgba.xxxx);
+			}
 		}
 	}
 
