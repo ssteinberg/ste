@@ -74,20 +74,17 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit) {
 		// Calculate brick coordinates
 		const uint brick_idx = voxel_brick_index(b, P);
 
-		// Compute binary map and pointer addresses
-		const uvec2 binary_map_address = voxel_binary_map_address(brick_idx);
-		const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
+		// Read child node address
+		const uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
+		const uint child = voxels_read(child_ptr);
 
 		// Check if we have child here
-		const bool has_child = ((voxels_read(binary_map_word_ptr) >> binary_map_address.y) & 0x1) == 1;
+		const bool has_child = child != 0;
 		if (has_child) {
-			// Step in			
-			
-			// Read child node address
-			const uint child_ptr = node + voxel_node_children_offset(level, P) + brick_idx;
-			node = voxels_read(child_ptr);
-			
+			// Step in
 			++level;
+			node = child;
+			
 			if (level == voxel_leaf_level) {
 				// Hit leaf
 				break;

@@ -55,52 +55,41 @@ void voxel_voxelize(inout vec3 v,
 					inout uint node, 
 					uint level,
 					voxel_data_t data) {
+	const uint child_semaphore_lock = 0xFFFFFFFF;
+
 	const float block = voxel_block_extent(level);
 	const uint P = voxel_block_power(level);
 		
 	// Calculate brick coordinates and index in block
 	const vec3 brick = v * block;
 	const uint child_idx = voxel_brick_index(ivec3(brick), P);
-	const uint child_offset = node + voxel_node_children_offset(level, P) + child_idx;
+	const uint child_offset = node + voxel_node_children_offset(P) + child_idx;
 
-	const uvec2 binary_map_address = voxel_binary_map_address(child_idx);
-	const uint binary_map_word_ptr = node + voxel_node_binary_map_offset(P) + binary_map_address.x;
+	const uint old_child = imageAtomicCompSwap(voxels, 
+											   voxels_image_coords(child_offset),
+											   0,
+											   child_semaphore_lock);
 	
-	const uint bit = 1 << binary_map_address.y;
-	uint binary_map_word = imageLoad(voxels, voxels_image_coords(binary_map_word_ptr)).x;
-	
-	// Atomically try to set occupancy bit
-	if ((binary_map_word & bit) == 0) {
-		uint binary_map_word_old_value;
-		while ((binary_map_word_old_value = imageAtomicCompSwap(voxels, 
-																voxels_image_coords(binary_map_word_ptr),  
-																binary_map_word,  
-																binary_map_word | bit)) != binary_map_word &&
-				(binary_map_word_old_value & bit) == 0) { 
-			binary_map_word = binary_map_word_old_value;
-		}
-		
+	if (old_child == 0) {
 		// Subdivide the node and create the child if, and only if, we are the first ones here.
-		if ((binary_map_word_old_value & bit) == 0) {
-			const uint child_level = level + 1;
-			const uint child_size = voxel_node_size(child_level, voxel_P);
+		const uint child_level = level + 1;
+		const uint child_size = voxel_node_size(child_level, voxel_P);
 
-			// Allocate memory for child
-			const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
-			imageStore(voxels, voxels_image_coords(child_offset), child_ptr.xxxx);
+		// Allocate memory for child
+		const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
+		imageStore(voxels, voxels_image_coords(child_offset), child_ptr.xxxx);
 
-			// Clear child
-			const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
-			const uint volatile_data_ptr = child_ptr + voxel_node_binary_map_offset(voxel_P);
-			for (int u=0; u < child_volatile_size; ++u)
-				imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
+		// Clear child
+		const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
+		const uint volatile_data_ptr = child_ptr + voxel_node_children_offset(voxel_P);
+		for (int u=0; u < child_volatile_size; ++u)
+			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
 			
-			// Write user data to leafs
-			if (child_level == voxel_leaf_level) {
-				uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
-				imageStore(voxels, voxels_image_coords(data_ptr + 0), data.normal_roughness_packed.xxxx);
-				imageStore(voxels, voxels_image_coords(data_ptr + 1), data.rgba.xxxx);
-			}
+		// Write user data to leafs
+		if (child_level == voxel_leaf_level) {
+			uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
+			imageStore(voxels, voxels_image_coords(data_ptr + 0), data.normal_roughness_packed.xxxx);
+			imageStore(voxels, voxels_image_coords(data_ptr + 1), data.rgba.xxxx);
 		}
 	}
 
