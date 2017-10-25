@@ -634,10 +634,10 @@ int main()
 	 *	Voxel configuration
 	 */
 	graphics::voxels_configuration voxel_config;
-	voxel_config.Pi = 4;
+	voxel_config.Pi = 5;
 	voxel_config.P = 2;
 	voxel_config.leaf_level = 4;
-	voxel_config.world = 3500;
+	voxel_config.world = 4000;
 
 
 	/*
@@ -855,6 +855,8 @@ int main()
 	/*
 	*	Main loop
 	*/
+
+	ctx.device().wait_idle();
 
 	float time_elapsed = .0f;
 	for (;;) {

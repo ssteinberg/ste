@@ -38,6 +38,9 @@ struct voxels_configuration {
 	auto voxel_tree_root_binary_map_size() const {
 		return byte_t(1 << 3 * (Pi - 1));
 	}
+	auto voxel_tree_root_volatile_data_size() const {
+		return byte_t(1 << 3 * (Pi - 1));
+	}
 	auto voxel_tree_root_size() const {
 		return byte_t((1 << 3 * (Pi - 1)) * 33 + voxel_tree_node_data_size);
 	}

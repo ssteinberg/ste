@@ -3,7 +3,7 @@
 #include <pack.glsl>
 
 // (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 4;
+layout(constant_id=2) const uint voxel_Pi = 5;
 // (2^P)^3 voxels per block
 layout(constant_id=1) const uint voxel_P = 2;
 // Voxel structure end level index
@@ -37,7 +37,7 @@ float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 // Resolution of maximal voxel level
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
 
-const uint voxel_tree_node_data_size = 8;
+const uint voxel_tree_node_data_size = 0;
 const uint voxel_tree_leaf_data_size = 8;
 
 
@@ -187,7 +187,7 @@ uint voxel_node_binary_map_offset(uint P) {
 *	@brief	Returns the offset of the custom data in a voxel node.
 */
 uint voxel_node_data_offset(uint level, uint P) {
-	return mix(voxel_binary_map_size(P), uint(0), level == voxel_leaf_level);
+	return voxel_node_binary_map_offset(P) + mix(voxel_binary_map_size(P), uint(0), level == voxel_leaf_level);
 }
 
 /**

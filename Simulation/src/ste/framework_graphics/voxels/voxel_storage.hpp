@@ -21,7 +21,7 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 2048;
+	static constexpr auto max_voxel_tree_lines = 13500;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
@@ -53,7 +53,7 @@ public:
 						 gl::buffer_usage::storage_buffer,
 						 "voxels counter buffer"),
 		  voxel_list(ctx,
-					 16 * 1024 * 1024,
+					 4 * 1024 * 1024,
 					 gl::buffer_usage::storage_buffer,
 					 "voxel list buffer"),
 		  voxel_list_counter(ctx,
@@ -79,7 +79,7 @@ public:
 	/**
 	 *	@brief	Resets the voxel buffers to initial state
 	 */
-	void clear(gl::command_recorder &recorder) {
+	void clear(gl::command_recorder &recorder) const {
 		// Reset
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels_counter),
 										static_cast<std::uint32_t>(config.voxel_tree_root_size()) >> 2);

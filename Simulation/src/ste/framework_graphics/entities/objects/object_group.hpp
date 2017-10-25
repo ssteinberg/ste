@@ -32,6 +32,7 @@ private:
 private:
 	object_group_draw_buffers draw_buffers;
 	objects_map_type objects;
+	lib::vector<std::uint32_t> object_sizes;
 
 	mutable lib::vector<object*> signalled_objects;
 	mutable std::mutex m;
@@ -49,6 +50,7 @@ public:
 	auto& get_draw_buffers() { return draw_buffers; }
 	auto& get_draw_buffers() const { return draw_buffers; }
 
+	auto& object_size_list() const { return object_sizes; }
 	auto draw_count() const { return objects.size(); }
 };
 

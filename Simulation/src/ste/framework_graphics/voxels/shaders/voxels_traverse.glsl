@@ -26,7 +26,7 @@ uint voxels_read(uint ptr) {
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
-voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
+voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit) {
 	const bvec3 b_dir_gt_z = greaterThan(dir, vec3(.0f));
 	const vec3 edge = mix(vec3(.0f), vec3(1.f), b_dir_gt_z);
 	const vec3 recp_dir = 1.f / dir;
@@ -70,7 +70,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir) {
 
 	// Traverse
 	int level = 0;
-	while (true) {
+	for (uint i=0; i<step_limit; ++i) {
 		// Calculate brick coordinates
 		const uint brick_idx = voxel_brick_index(b, P);
 

@@ -390,25 +390,6 @@ void primary_renderer::record_scene_geometry_cull_fragment(gl::command_recorder 
 }
 
 void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder) {
-	_detail::primary_renderer_atom(profiler, recorder, "clear voxels",
-								   [this, &recorder]() {
-		// Clear voxel buffer
-		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
-																  gl::pipeline_stage::transfer,
-																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
-																							gl::access_flags::shader_read,
-																							gl::access_flags::transfer_write),
-																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_counter_buffer(),
-																							gl::access_flags::shader_read,
-																							gl::access_flags::transfer_write)));
-		buffers.voxels.get().clear(recorder);
-		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																  gl::pipeline_stage::compute_shader,
-																  gl::buffer_memory_barrier(buffers.voxels->voxels_counter_buffer(),
-																							gl::access_flags::transfer_write,
-																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
-	});
-
 	// Voxelize
 	_detail::primary_renderer_atom(profiler, recorder, "voxelizer",
 									[this, &recorder]() {
@@ -417,11 +398,6 @@ void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder)
 																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_buffer(),
 																							gl::access_flags::shader_read,
 																							gl::access_flags::shader_write)));
-		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-																  gl::pipeline_stage::fragment_shader,
-																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_counter_buffer(),
-																							gl::access_flags::transfer_write,
-																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
 		recorder << voxelizer.get();
 	});
 }

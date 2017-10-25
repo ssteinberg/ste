@@ -91,8 +91,9 @@ void voxel_voxelize(inout vec3 v,
 
 			// Clear child
 			const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
+			const uint volatile_data_ptr = child_ptr + voxel_node_binary_map_offset(voxel_P);
 			for (int u=0; u < child_volatile_size; ++u)
-				imageStore(voxels, voxels_image_coords(child_ptr + u), uvec4(0));
+				imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
 			
 			// Write user data to leafs
 			if (child_level == voxel_leaf_level) {
