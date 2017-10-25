@@ -34,8 +34,8 @@ void voxelize(uint level, uint chunk_start, uint chunk_end) {
 			voxel_list_buffer[i].node_x = v.x;
 			voxel_list_buffer[i].node_y = v.y;
 			voxel_list_buffer[i].node_z = v.z;
-			voxel_list_buffer[i].voxel_node = node;
 		}
+		voxel_list_buffer[i].voxel_node = node;
 	}
 	
 	// Need image barrier for voxel grid and buffer barrier for voxel list.
@@ -55,6 +55,14 @@ void main() {
 	for (uint l=0; l<voxel_leaf_level; ++l) {
 		voxelize(l,
 				 chunk_start, chunk_end);
+	}
+
+	// Write data to leafs
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		uint node = imageLoad(voxels, voxels_image_coords(voxel_list_buffer[i].voxel_node)).x;
+		voxel_voxelize_blend_user_data(node,
+									   voxel_leaf_level,
+									   voxel_list_buffer[i].data);
 	}
 
 	// Clear counter for future voxels

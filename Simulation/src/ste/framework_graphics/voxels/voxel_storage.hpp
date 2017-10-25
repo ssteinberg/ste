@@ -21,11 +21,11 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 8000;
+	static constexpr auto max_voxel_tree_lines = 8196;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
-	using voxel_data_t = gl::std430<std::uint32_t, std::uint32_t>;
+	using voxel_data_t = gl::std430<std::uint32_t, std::uint32_t, std::uint32_t>;
 	using voxel_list_element_t = gl::std430<voxel_data_t, float, float, float, std::uint32_t>;
 
 private:

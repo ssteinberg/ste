@@ -51,7 +51,7 @@ void main() {
 
 	voxel_list_element_t element;
 	// Encode voxel data and element position
-	element.data = encode_voxel_data(N, roughness, rgba);
+	element.data = encode_voxel_data(N, roughness, rgba.rgb, rgba.a);
 	element.node_x = v.x;
 	element.node_y = v.y;
 	element.node_z = v.z;

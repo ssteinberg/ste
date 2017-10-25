@@ -9,7 +9,8 @@ layout(set=1, binding = 0) uniform usampler2D voxels;
 struct voxel_unpacked_data_t {
 	vec3 N;
 	float roughness;
-	vec4 rgba;
+	vec3 albedo;
+	float opacity;
 };
 
 struct voxel_traversal_result_t {
@@ -151,9 +152,10 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit) {
 		// Read data
 		uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
 		voxel_data_t data;
-		data.normal_roughness_packed = voxels_read(data_ptr);
-		data.rgba = voxels_read(data_ptr + 1);
-		decode_voxel_data(data, ret.data.N, ret.data.roughness, ret.data.rgba);
+		data.albedo_packed = voxels_read(data_ptr + 0);
+		data.normal_packed = voxels_read(data_ptr + 1);
+		data.opacity_roughness_packed = voxels_read(data_ptr + 2);
+		decode_voxel_data(data, ret.data.N, ret.data.roughness, ret.data.albedo, ret.data.opacity);
 	}
 	else {
 		// No hit

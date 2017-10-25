@@ -16,8 +16,9 @@ const uint voxelizer_work_group_size = 1024;
 
 
 struct voxel_data_t {
-	uint normal_roughness_packed;
-	uint rgba;
+	uint albedo_packed;				// 3x8-bit RGB albedo, 8-bit counter
+	uint normal_packed;				// 2x12-bit normal, 8-bit counter
+	uint opacity_roughness_packed;	// 12-bit opacity, 12-bit roughness, 8-bit counter
 };
 
 struct voxel_list_element_t {
@@ -38,7 +39,7 @@ float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
 
 const uint voxel_tree_node_data_size = 0;
-const uint voxel_tree_leaf_data_size = 8;
+const uint voxel_tree_leaf_data_size = 12;
 
 
 const uint voxel_buffer_line = 32768;
@@ -48,17 +49,20 @@ const uint voxel_buffer_line = 32768;
 *	@brief	Encodes a voxel into voxel list.
 *
 *	@param	N			World-space normal
-*	@param	roughness	Material roughness value
-*	@param	rgba_unorm	RGBA (albedo + opacity) value. Must be in [0, 1] range.
+*	@param	roughness	Material roughness value. Must be in [0, 0.5] range.
+*	@param	albedo		RGB albedo value. Must be in [0, 1] range.
+*	@param	opacity		Opacity value. Must be in [0, 1] range.
 */
-voxel_data_t encode_voxel_data(vec3 N, float roughness, vec4 rgba_unorm) {
-	uvec2 n = uvec2(round((clamp(norm3x32_to_snorm2x32(N), vec2(-1), vec2(1)) + 1.f) * 4095.f / 2.f));
-	uint roughness_norm = uint(roughness * 2.f * 255.f) & 0xFF;
+voxel_data_t encode_voxel_data(vec3 N, float roughness, vec3 albedo, float opacity) {
+	uvec2 n = uvec2(round((clamp(norm3x32_to_snorm2x32(N), vec2(-1), vec2(1)) + 1.f) / 2.f * 4095.f));
+	uint roughness_norm = uint(round(clamp(roughness, .0f, .5f) * 2.f * 4095.f)) & 0xFFF;
+	uint opacity_norm = uint(round(clamp(opacity, .0f, 1.f) * 4095.f)) & 0xFFF;
+	uint albedo_norm = packUnorm4x8(vec4(albedo, .0f));
 
 	voxel_data_t e;
-	
-	e.normal_roughness_packed = n.x + (n.y << 12) + (roughness_norm << 24);
-	e.rgba = packUnorm4x8(rgba_unorm);
+	e.albedo_packed = albedo_norm;
+	e.normal_packed = n.x + (n.y << 12);
+	e.opacity_roughness_packed = opacity_norm + (roughness_norm << 12);
 
 	return e;
 }
@@ -66,27 +70,40 @@ voxel_data_t encode_voxel_data(vec3 N, float roughness, vec4 rgba_unorm) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data_normal_roughness(uint data, out vec3 N, out float roughness) {
+vec3 decode_voxel_data_normal(uint data) {
 	uvec2 n = uvec2(data & 0xFFF, (data >> 12) & 0xFFF);
-	uint roughness_norm = data >> 24;
-
-	N = snorm2x32_to_norm3x32(vec2(n) * 2.f / 4095.f - 1.f);
-	roughness = float(roughness_norm) / 255.f / 2.f;
+	return snorm2x32_to_norm3x32(vec2(n) * 2.f / 4095.f - 1.f);
 }
 
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data_rgba(uint data, out vec4 rgba) {
-	rgba = unpackUnorm4x8(data);
+float decode_voxel_data_roughness(uint data) {
+	return float((data >> 12) & 0xFFF) / 4095.f / 2.f;
 }
 
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 N, out float roughness, out vec4 rgba) {
-	decode_voxel_data_normal_roughness(e.normal_roughness_packed, N, roughness);
-	decode_voxel_data_rgba(e.rgba, rgba);
+vec3 decode_voxel_data_albedo(uint data) {
+	return unpackUnorm4x8(data).rgb;
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+float decode_voxel_data_opacity(uint data) {
+	return float(data & 0xFFF) / 4095.f;
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+void decode_voxel_data(voxel_data_t e, out vec3 N, out float roughness, out vec3 albedo, out float opacity) {
+	N = decode_voxel_data_normal(e.normal_packed);
+	roughness = decode_voxel_data_roughness(e.opacity_roughness_packed);
+	opacity = decode_voxel_data_opacity(e.opacity_roughness_packed);
+	albedo = decode_voxel_data_albedo(e.albedo_packed);
 }
 
 /**
@@ -164,7 +181,8 @@ uint voxel_node_data_offset(uint level, uint P) {
 *	@brief	Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization.
 */
 uint voxel_node_volatile_data_size(uint level, uint P) {
-	return voxel_node_children_offset(P) + voxel_node_children_count(level, P);
+	return voxel_node_children_offset(P) + voxel_node_children_count(level, P) + 
+		mix(uint(0), voxel_node_user_data_size(level), level == voxel_leaf_level);
 }
 
 /**

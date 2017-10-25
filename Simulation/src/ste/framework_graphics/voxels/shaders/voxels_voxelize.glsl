@@ -20,31 +20,28 @@ void voxel_voxelize_blend_user_data(uint node,
 									voxel_data_t data) {
 	uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
 
-	/*if (level == voxel_leaf_level) {
-		// For leaf nodes there 
-		voxel_buffer[data_ptr + 0] = data.normal_roughness_packed;
-		voxel_buffer[data_ptr + 1] = data.rgba;
-		return;
-	}*/
-
 	// Unpack input user data
 	vec3 N;
 	float roughness;
-	vec4 rgba;
-	decode_voxel_data(data, N, roughness, rgba);
+	vec3 albedo;
+	float opacity;
+	decode_voxel_data(data, N, roughness, albedo, opacity);
 
 	// Atomically blend with other data
-	uint old_normal_roughness_packed = 0;
-	uint new_normal_roughness_packed = data.normal_roughness_packed;
-	while ((new_normal_roughness_packed = imageAtomicCompSwap(voxels, 
-															  voxels_image_coords(data_ptr), 
-															  old_normal_roughness_packed,
-															  new_normal_roughness_packed)) != old_normal_roughness_packed) {
-		vec3 dest_N;
-		float dest_roughness;
-		decode_voxel_data_normal_roughness(new_normal_roughness_packed, dest_N, dest_roughness);
+	uint old_albedo_packed = 0;
+	uint new_albedo_packed = data.albedo_packed + (1 << 24);		// Set counter to 1
+	while ((new_albedo_packed = imageAtomicCompSwap(voxels, 
+													voxels_image_coords(data_ptr), 
+													old_albedo_packed,
+													new_albedo_packed)) != old_albedo_packed) {
+		old_albedo_packed = new_albedo_packed;
 
+		// Incerement counter
+		uint counter = min((old_albedo_packed >> 24) + 1, uint(255));
+		// Blend
+		vec3 dst_albedo = mix(decode_voxel_data_albedo(old_albedo_packed), albedo, 1.f / float(counter));
 
+		new_albedo_packed = packUnorm4x8(vec4(dst_albedo.rgb, .0f)) + (counter << 24);
 	}
 }
 
@@ -77,20 +74,13 @@ void voxel_voxelize(inout vec3 v,
 
 		// Allocate memory for child
 		const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
-		imageStore(voxels, voxels_image_coords(child_offset), child_ptr.xxxx);
+		imageAtomicExchange(voxels, voxels_image_coords(child_offset), child_ptr);
 
 		// Clear child
 		const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
 		const uint volatile_data_ptr = child_ptr + voxel_node_children_offset(voxel_P);
 		for (int u=0; u < child_volatile_size; ++u)
 			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
-			
-		// Write user data to leafs
-		if (child_level == voxel_leaf_level) {
-			uint data_ptr = child_ptr + voxel_node_data_offset(child_level, voxel_P);
-			imageStore(voxels, voxels_image_coords(data_ptr + 0), data.normal_roughness_packed.xxxx);
-			imageStore(voxels, voxels_image_coords(data_ptr + 1), data.rgba.xxxx);
-		}
 	}
 
 	// Calculate coordinates in brick
