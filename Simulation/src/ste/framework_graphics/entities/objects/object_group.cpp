@@ -55,9 +55,10 @@ void object_group::add_object(const ste_context &ctx,
 	// Add to objects set
 	objects.insert(std::make_pair(obj,
 								  object_information{ objects.size(), std::move(connection) }));
+	object_sizes.push_back(mdp.count());
 
 	// Append new vertex/index data
-	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::vertex_input | gl::pipeline_stage::vertex_shader | gl::pipeline_stage::compute_shader,
+	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::vertex_input | gl::pipeline_stage::draw_indirect | gl::pipeline_stage::vertex_shader | gl::pipeline_stage::compute_shader,
 															  gl::pipeline_stage::transfer,
 															  gl::buffer_memory_barrier(draw_buffers.get_vertex_buffer(),
 																						gl::access_flags::vertex_attribute_read,
@@ -76,7 +77,7 @@ void object_group::add_object(const ste_context &ctx,
 	recorder << draw_buffers.get_mesh_data_buffer().push_back_cmd(ctx, std::move(md));
 	recorder << draw_buffers.get_mesh_draw_params_buffer().push_back_cmd(ctx, std::move(mdp));
 	recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
-															  gl::pipeline_stage::vertex_input | gl::pipeline_stage::vertex_shader | gl::pipeline_stage::compute_shader,
+															  gl::pipeline_stage::vertex_input | gl::pipeline_stage::draw_indirect | gl::pipeline_stage::vertex_shader | gl::pipeline_stage::compute_shader,
 															  gl::buffer_memory_barrier(draw_buffers.get_mesh_data_buffer(),
 																						gl::access_flags::transfer_write,
 																						gl::access_flags::shader_read),

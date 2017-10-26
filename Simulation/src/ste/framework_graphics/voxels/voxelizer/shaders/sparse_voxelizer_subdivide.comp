@@ -7,58 +7,64 @@
 
 layout(local_size_x = voxelizer_work_group_size) in;
 
-void main() {
-	// Divide voxel list into even sized chunks
-	const uint invocation_id = gl_LocalInvocationID.x;
-	const uint voxel_list_chunk_size = (voxel_list_buffer_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
-	
-	const uint chunk_start = invocation_id * voxel_list_chunk_size;
-	const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, voxel_list_buffer_size);
-	
-	// Root node
-	// Loop over invocation's chunk, traversing and subdividing nodes, and save child pointer.
+
+layout(std430, set=1, binding=2) restrict buffer voxel_list_binding {
+	voxel_list_element_t voxel_list_buffer[];
+};
+layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
+	uint voxel_list_buffer_size;
+};
+
+
+void voxelize(uint level, uint chunk_start, uint chunk_end) {
+	// Loop over invocation's chunk, traversing and subdividing nodes, and save child pointer
 	for (uint i = chunk_start; i < chunk_end; ++i) {
-		uint node = voxel_root_node;
+		uint node = level == 0 ? 
+			voxel_root_node : 
+			imageLoad(voxels, voxels_image_coords(voxel_list_buffer[i].voxel_node)).x;
 		vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
+
 		voxel_voxelize(v, 
 					   node,
-					   0);
+					   level,
+					   voxel_list_buffer[i].data);
 		
-		voxel_list_buffer[i].node_x = v.x;
-		voxel_list_buffer[i].node_y = v.y;
-		voxel_list_buffer[i].node_z = v.z;
-		voxel_list_buffer[i].voxel_node = node;
-	}
-	
-	memoryBarrierBuffer();
-	barrier();
-	
-	// Intermediate level nodes
-	for (uint l=1; l<voxel_leaf_level - 1; ++l) {
-		// Loop over invocation's chunk
-		for (uint i = chunk_start; i < chunk_end; ++i) {
-			uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
-			vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
-			voxel_voxelize(v, 
-						   node, 
-						   l);
-			
+		if (level != voxel_leaf_level - 1) {
+			// For leaf nodes, no need to write out values
 			voxel_list_buffer[i].node_x = v.x;
 			voxel_list_buffer[i].node_y = v.y;
 			voxel_list_buffer[i].node_z = v.z;
-			voxel_list_buffer[i].voxel_node = node;
 		}
-		
-		memoryBarrierBuffer();
-		barrier();
+		voxel_list_buffer[i].voxel_node = node;
 	}
 	
-	// Leaf node
-	for (uint i = chunk_start; i < chunk_end; ++i) {
-		uint node = voxel_buffer[voxel_list_buffer[i].voxel_node];
-		vec3 v = vec3(voxel_list_buffer[i].node_x, voxel_list_buffer[i].node_y, voxel_list_buffer[i].node_z);
-		voxel_voxelize(v, 
-					   node, 
-					   voxel_leaf_level - 1);
+	// Need image barrier for voxel grid and buffer barrier for voxel list.
+	memoryBarrier();
+	barrier();
+}
+
+void main() {
+	const uint invocation_id = gl_LocalInvocationID.x;
+	
+	// Divide voxel list into even sized chunks
+	const uint voxel_list_chunk_size = (voxel_list_buffer_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
+	const uint chunk_start = invocation_id * voxel_list_chunk_size;
+	const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, voxel_list_buffer_size);
+	
+	// Subdivide.
+	for (uint l=0; l<voxel_leaf_level; ++l) {
+		voxelize(l,
+				 chunk_start, chunk_end);
 	}
+
+	// Write data to leafs
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		uint node = imageLoad(voxels, voxels_image_coords(voxel_list_buffer[i].voxel_node)).x;
+		voxel_voxelize_blend_user_data(node,
+									   voxel_leaf_level,
+									   voxel_list_buffer[i].data);
+	}
+
+	// Clear counter for future voxels
+	voxel_list_buffer_size = 0;
 }

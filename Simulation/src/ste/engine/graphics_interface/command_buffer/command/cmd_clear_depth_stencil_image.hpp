@@ -21,6 +21,19 @@ private:
 
 	lib::vector<VkImageSubresourceRange> ranges;
 
+private:
+	void create_ranges(const lib::vector<image_subresource_range> &ranges) {
+		for (auto &r : ranges)
+			this->ranges.push_back(r.vk_descriptor());
+
+		if (this->ranges.size() == 0) {
+			image_subresource_range r;
+			r.image_format = gl::format::d32_sfloat;
+
+			this->ranges.push_back(r.vk_descriptor());
+		}
+	}
+
 public:
 	cmd_clear_depth_stencil_image(cmd_clear_depth_stencil_image &&) = default;
 	cmd_clear_depth_stencil_image(const cmd_clear_depth_stencil_image&) = default;
@@ -30,10 +43,9 @@ public:
 	cmd_clear_depth_stencil_image(const device_image_base &image,
 								  const image_layout &layout,
 								  float clear_depth = .0f,
-								  const lib::vector<VkImageSubresourceRange> &ranges = {})
-		: image(image.get_image_handle()), layout(layout), ranges(ranges) {
-		if (this->ranges.size() == 0)
-			this->ranges.push_back({ VK_IMAGE_ASPECT_DEPTH_BIT, 0, VK_REMAINING_MIP_LEVELS, 0, VK_REMAINING_ARRAY_LAYERS });
+								  const lib::vector<image_subresource_range> &ranges = {})
+		: image(image.get_image_handle()), layout(layout) {
+		create_ranges(ranges);
 		clear_value.depth = clear_depth;
 	}
 

@@ -30,6 +30,8 @@ private:
 
 	lib::unique_ptr<gl::framebuffer> empty_fb;
 
+	std::uint32_t offset, count;
+
 public:
 	voxelizer_generate_voxel_list_fragment(const gl::rendering_system &rs,
 										   voxel_storage *voxels,
@@ -48,7 +50,6 @@ public:
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_idb().get());
 
 		// Attach empty framebuffer
 		pipeline().attach_framebuffer(*empty_fb);
@@ -75,11 +76,26 @@ public:
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<object_vertex_data>());
 	}
 
-	void record(gl::command_recorder &recorder) override final {
-		const auto draw_count = s->get_object_group().draw_count();
+	void prepare() {
+		offset = 0;
+		count = 0;
+	}
+	bool next(std::uint32_t max_vertices_count) {
+		const auto &sizes = s->get_object_group().object_size_list();
 
+		offset += count;
+		count = 0;
+		for (std::uint32_t vc = 0; vc < max_vertices_count && offset + count < sizes.size(); ++count)
+			vc += sizes[offset + count];
+
+		draw_task.attach_indirect_buffer(s->get_idb().get(), offset);
+
+		return offset + count == sizes.size();
+	}
+
+	void record(gl::command_recorder &recorder) override final {
 		// Voxelize
-		recorder << draw_task(static_cast<std::uint32_t>(draw_count));
+		recorder << draw_task(count);
 	}
 };
 
