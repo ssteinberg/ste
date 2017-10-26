@@ -76,7 +76,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit) {
 		const uint brick_idx = voxel_brick_index(b, P);
 
 		// Read child node address
-		const uint child_ptr = node + voxel_node_children_offset(P) + brick_idx;
+		const uint child_ptr = node + voxel_node_children_offset(level, P) + brick_idx;
 		const uint child = voxels_read(child_ptr);
 
 		// Check if we have child here

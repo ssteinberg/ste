@@ -190,25 +190,24 @@ uint voxel_node_user_data_size(uint level) {
 }
 
 /**
-*	@brief	Returns the offset of the children data in a voxel node.
+*	@brief	Returns the offset of the custom data in a voxel node.
 */
-uint voxel_node_children_offset(uint P) {
+uint voxel_node_data_offset(uint level, uint P) {
 	return uint(0);
 }
 
 /**
-*	@brief	Returns the offset of the custom data in a voxel node.
+*	@brief	Returns the offset of the children data in a voxel node.
 */
-uint voxel_node_data_offset(uint level, uint P) {
-	return voxel_node_children_offset(P) + voxel_node_children_count(level, P);
+uint voxel_node_occupancy_offset(uint level, uint P) {
+	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
 }
 
 /**
-*	@brief	Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization.
+*	@brief	Returns the offset of the children data in a voxel node.
 */
-uint voxel_node_volatile_data_size(uint level, uint P) {
-	return voxel_node_children_offset(P) + voxel_node_children_count(level, P) + 
-		mix(uint(0), voxel_node_user_data_size(level), level == voxel_leaf_level);
+uint voxel_node_children_offset(uint level, uint P) {
+	return voxel_node_occupancy_offset(level, P) + 1;
 }
 
 /**
@@ -216,5 +215,17 @@ uint voxel_node_volatile_data_size(uint level, uint P) {
 *			level must be > 0.
 */
 uint voxel_node_size(uint level, uint P) {
-	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
+	return mix(voxel_node_children_offset(level, P) + voxel_node_children_count(level, P), 
+			   voxel_node_user_data_size(level),
+			   level == voxel_leaf_level);
+}
+
+/** 
+*    @brief    Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization. 
+*/ 
+uint voxel_node_volatile_data_size(uint level, uint P) { 
+    return voxel_node_size(level, P);
+}
+uint voxel_node_volatile_data_offset(uint level, uint P) { 
+    return uint(0);
 }

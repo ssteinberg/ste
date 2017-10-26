@@ -59,7 +59,7 @@ void voxel_voxelize_blend_user_data(uint node,
 		// Incerement counter
 		const uint counter = (old_normal_packed >> 24) + 1;
 		// Blend
-		const vec3 dst_normal = mix(decode_voxel_data_normal(old_normal_packed), normal, 1.f / float(counter));
+		const vec3 dst_normal = normalize(mix(decode_voxel_data_normal(old_normal_packed), normal, 1.f / float(counter)));
 
 		new_normal_packed = encode_voxel_data_normal(dst_normal, counter);
 	}
@@ -99,15 +99,15 @@ void voxel_voxelize(inout vec3 v,
 	// Calculate brick coordinates and index in block
 	const vec3 brick = v * block;
 	const uint child_idx = voxel_brick_index(ivec3(brick), P);
-	const uint child_offset = node + voxel_node_children_offset(P) + child_idx;
+	const uint child_offset = node + voxel_node_children_offset(level, P) + child_idx;
 
+	// Attempt to acquire child semaphore lock
 	const uint old_child = imageAtomicCompSwap(voxels, 
 											   voxels_image_coords(child_offset),
 											   0,
 											   child_semaphore_lock);
-	
+	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
 	if (old_child == 0) {
-		// Subdivide the node and create the child if, and only if, we are the first ones here.
 		const uint child_level = level + 1;
 		const uint child_size = voxel_node_size(child_level, voxel_P);
 
@@ -115,11 +115,15 @@ void voxel_voxelize(inout vec3 v,
 		const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
 		imageAtomicExchange(voxels, voxels_image_coords(child_offset), child_ptr);
 
-		// Clear child
-		const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P);
-		const uint volatile_data_ptr = child_ptr + voxel_node_children_offset(voxel_P);
-		for (int u=0; u < child_volatile_size; ++u)
-			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
+		// Increment occupancy counter of parent
+		const uint occupancy_offset = node + voxel_node_occupancy_offset(level, P);
+		imageAtomicAdd(voxels, voxels_image_coords(occupancy_offset), 1);
+		
+		// Clear child 
+		const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P); 
+		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(child_level, voxel_P); 
+		for (int u=0; u < child_volatile_size; ++u) 
+			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0)); 
 	}
 
 	// Calculate coordinates in brick

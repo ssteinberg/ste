@@ -37,10 +37,6 @@ void voxelize(uint level, uint chunk_start, uint chunk_end) {
 		}
 		voxel_list_buffer[i].voxel_node = node;
 	}
-	
-	// Need image barrier for voxel grid and buffer barrier for voxel list.
-	memoryBarrier();
-	barrier();
 }
 
 void main() {
@@ -55,6 +51,10 @@ void main() {
 	for (uint l=0; l<voxel_leaf_level; ++l) {
 		voxelize(l,
 				 chunk_start, chunk_end);
+	
+		// Need image barrier for voxel grid and buffer barrier for voxel list.
+		memoryBarrier();
+		barrier();
 	}
 
 	// Write data to leafs

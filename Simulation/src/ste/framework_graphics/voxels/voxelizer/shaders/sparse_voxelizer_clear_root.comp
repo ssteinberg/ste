@@ -13,9 +13,10 @@ void main() {
 
 	// Clear root node
 	const uint root_volatile_data_size = voxel_node_volatile_data_size(0, voxel_Pi);
+	const uint offset = voxel_node_volatile_data_offset(0, voxel_Pi);
+
 	const uint clears_per_worker = (root_volatile_data_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
-	const uint root_binary_map_offset = voxel_node_children_offset(voxel_Pi);
 
 	for (uint i=clears_per_worker * invocation_id; i<min(root_volatile_data_size, clears_per_worker * (invocation_id + 1)); ++i)
-		imageStore(voxels, voxels_image_coords(root_binary_map_offset + i), uint(0).xxxx);
+		imageStore(voxels, voxels_image_coords(offset + i), uint(0).xxxx);
 }

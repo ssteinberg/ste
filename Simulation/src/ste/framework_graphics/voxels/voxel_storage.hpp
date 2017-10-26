@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -21,7 +21,8 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 8196;
+	static constexpr auto max_voxel_tree_lines = 6000;
+	static constexpr auto voxel_list_size = 4 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
@@ -32,9 +33,12 @@ private:
 	alias<const ste_context> ctx;
 	const voxels_configuration config;
 
+	// Voxel structure
 	gl::texture<gl::image_type::image_2d> voxels;
+	// Allcoation counter
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 
+	// Supporting structures
 	gl::array<voxel_list_element_t> voxel_list;
 	gl::array<gl::std430<std::uint32_t>> voxel_list_counter;
 
@@ -50,16 +54,17 @@ public:
 																				 glm::u32vec2{ voxel_buffer_line, max_voxel_tree_lines })),
 		  voxels_counter(ctx,
 						 1,
-						 gl::buffer_usage::storage_buffer,
+						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
 						 "voxels counter buffer"),
 		  voxel_list(ctx,
-					 4 * 1024 * 1024,
+					 voxel_list_size,
 					 gl::buffer_usage::storage_buffer,
 					 "voxel list buffer"),
 		  voxel_list_counter(ctx,
 							 1,
-							 gl::buffer_usage::storage_buffer,
-							 "voxel list counter buffer") {}
+							 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
+							 "voxel list counter buffer")
+	{}
 
 	~voxel_storage() noexcept {}
 
