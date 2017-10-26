@@ -46,23 +46,49 @@ const uint voxel_buffer_line = 32768;
 
 
 /**
-*	@brief	Encodes a voxel into voxel list.
+*	@brief	Encodes voxel data.
 *
-*	@param	N			World-space normal
+*	@param	albedo		RGB albedo value. Must be in [0, 1] range.
+*/
+uint encode_voxel_data_albedo(vec3 albedo, uint counter) {
+	return packUnorm4x8(vec4(albedo, .0f)) + (min(counter, uint(255)) << 24);
+}
+
+/**
+*	@brief	Encodes voxel data.
+*
+*	@param	normal		World-space normal
+*/
+uint encode_voxel_data_normal(vec3 normal, uint counter) {
+	uvec2 n = uvec2(round((clamp(norm3x32_to_snorm2x32(normal), vec2(-1), vec2(1)) + 1.f) / 2.f * 4095.f));
+	return n.x + (n.y << 12) + (min(counter, uint(255)) << 24);
+}
+
+/**
+*	@brief	Encodes voxel data.
+*
+*	@param	opacity		Opacity value. Must be in [0, 1] range.
+*	@param	roughness	Material roughness value. Must be in [0, 0.5] range.
+*/
+uint encode_voxel_data_opacity_roughness(float opacity, float roughness, uint counter) {
+	uint roughness_norm = uint(round(clamp(roughness, .0f, .5f) * 2.f * 4095.f)) & 0xFFF;
+	uint opacity_norm = uint(round(clamp(opacity, .0f, 1.f) * 4095.f)) & 0xFFF;
+	return opacity_norm + (roughness_norm << 12) + (min(counter, uint(255)) << 24);
+}
+
+/**
+*	@brief	Encodes voxel data.
+*
+*	@param	normal		World-space normal
 *	@param	roughness	Material roughness value. Must be in [0, 0.5] range.
 *	@param	albedo		RGB albedo value. Must be in [0, 1] range.
 *	@param	opacity		Opacity value. Must be in [0, 1] range.
 */
-voxel_data_t encode_voxel_data(vec3 N, float roughness, vec3 albedo, float opacity) {
-	uvec2 n = uvec2(round((clamp(norm3x32_to_snorm2x32(N), vec2(-1), vec2(1)) + 1.f) / 2.f * 4095.f));
-	uint roughness_norm = uint(round(clamp(roughness, .0f, .5f) * 2.f * 4095.f)) & 0xFFF;
-	uint opacity_norm = uint(round(clamp(opacity, .0f, 1.f) * 4095.f)) & 0xFFF;
-	uint albedo_norm = packUnorm4x8(vec4(albedo, .0f));
-
+voxel_data_t encode_voxel_data(vec3 normal, float roughness, vec3 albedo, float opacity) {
 	voxel_data_t e;
-	e.albedo_packed = albedo_norm;
-	e.normal_packed = n.x + (n.y << 12);
-	e.opacity_roughness_packed = opacity_norm + (roughness_norm << 12);
+	e.albedo_packed = encode_voxel_data_albedo(albedo, 1);
+	e.normal_packed = encode_voxel_data_normal(normal, 1);
+	e.opacity_roughness_packed = encode_voxel_data_opacity_roughness(opacity, roughness, 1);
 
 	return e;
 }
@@ -99,8 +125,8 @@ float decode_voxel_data_opacity(uint data) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 N, out float roughness, out vec3 albedo, out float opacity) {
-	N = decode_voxel_data_normal(e.normal_packed);
+void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity) {
+	normal = decode_voxel_data_normal(e.normal_packed);
 	roughness = decode_voxel_data_roughness(e.opacity_roughness_packed);
 	opacity = decode_voxel_data_opacity(e.opacity_roughness_packed);
 	albedo = decode_voxel_data_albedo(e.albedo_packed);

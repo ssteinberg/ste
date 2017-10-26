@@ -15,21 +15,24 @@ ivec2 voxels_image_coords(uint ptr) {
 }
 
 
+/**
+*	@brief	Atomically blends voxel's data
+*/
 void voxel_voxelize_blend_user_data(uint node,
 									uint level,
 									voxel_data_t data) {
-	uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
+	const uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
 
 	// Unpack input user data
-	vec3 N;
+	vec3 normal;
 	float roughness;
 	vec3 albedo;
 	float opacity;
-	decode_voxel_data(data, N, roughness, albedo, opacity);
+	decode_voxel_data(data, normal, roughness, albedo, opacity);
 
-	// Atomically blend with other data
+	// Blend albedo
 	uint old_albedo_packed = 0;
-	uint new_albedo_packed = data.albedo_packed + (1 << 24);		// Set counter to 1
+	uint new_albedo_packed = data.albedo_packed;
 	while ((new_albedo_packed = imageAtomicCompSwap(voxels, 
 													voxels_image_coords(data_ptr), 
 													old_albedo_packed,
@@ -37,11 +40,47 @@ void voxel_voxelize_blend_user_data(uint node,
 		old_albedo_packed = new_albedo_packed;
 
 		// Incerement counter
-		uint counter = min((old_albedo_packed >> 24) + 1, uint(255));
+		const uint counter = (old_albedo_packed >> 24) + 1;
 		// Blend
-		vec3 dst_albedo = mix(decode_voxel_data_albedo(old_albedo_packed), albedo, 1.f / float(counter));
+		const vec3 dst_albedo = mix(decode_voxel_data_albedo(old_albedo_packed), albedo, 1.f / float(counter));
 
-		new_albedo_packed = packUnorm4x8(vec4(dst_albedo.rgb, .0f)) + (counter << 24);
+		new_albedo_packed = encode_voxel_data_albedo(dst_albedo, counter);
+	}
+
+	// Blend normal
+	uint old_normal_packed = 0;
+	uint new_normal_packed = data.normal_packed;
+	while ((new_normal_packed = imageAtomicCompSwap(voxels, 
+													voxels_image_coords(data_ptr + 1), 
+													old_normal_packed,
+													new_normal_packed)) != old_normal_packed) {
+		old_normal_packed = new_normal_packed;
+
+		// Incerement counter
+		const uint counter = (old_normal_packed >> 24) + 1;
+		// Blend
+		const vec3 dst_normal = mix(decode_voxel_data_normal(old_normal_packed), normal, 1.f / float(counter));
+
+		new_normal_packed = encode_voxel_data_normal(dst_normal, counter);
+	}
+
+	// Blend rougness and opacity
+	uint old_opacity_roughness_packed = 0;
+	uint new_opacity_roughness_packed = data.opacity_roughness_packed;
+	while ((new_opacity_roughness_packed = imageAtomicCompSwap(voxels, 
+															   voxels_image_coords(data_ptr + 2),
+															   old_opacity_roughness_packed,
+															   new_opacity_roughness_packed)) != old_opacity_roughness_packed) {
+		old_opacity_roughness_packed = new_opacity_roughness_packed;
+
+		// Incerement counter
+		const uint counter = (old_opacity_roughness_packed >> 24) + 1;
+		// Blend
+		const float f = 1.f / float(counter);
+		const float dst_opacity = mix(decode_voxel_data_opacity(old_opacity_roughness_packed), opacity, f);
+		const float dst_roughness = mix(decode_voxel_data_roughness(old_opacity_roughness_packed), roughness, f);
+
+		new_opacity_roughness_packed = encode_voxel_data_opacity_roughness(dst_opacity, dst_roughness, counter);
 	}
 }
 
