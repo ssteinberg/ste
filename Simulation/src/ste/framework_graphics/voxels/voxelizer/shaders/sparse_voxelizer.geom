@@ -88,7 +88,7 @@ void main() {
 
 	// Compute AABB
 	vec2 minv = min(p0.xy, p1.xy, p2.xy);
-	vout.max_aabb = max(p0.xy, p1.xy, p2.xy) - minv + vec2(1);
+	vout.max_aabb = ceil(max(p0.xy, p1.xy, p2.xy) - minv);
 
 	vec3 transformed_N = invT * N;
 	float d = dot(p0, transformed_N);

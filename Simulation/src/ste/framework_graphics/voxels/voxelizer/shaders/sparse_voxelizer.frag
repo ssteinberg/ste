@@ -7,11 +7,11 @@
 #include <voxels.glsl>
 
 
-layout(std430, set=1, binding=2) restrict writeonly buffer voxel_list_binding {
-	voxel_list_element_t voxel_list_buffer[];
+layout(std430, set=1, binding=2) restrict writeonly buffer voxel_assembly_list_binding {
+	voxel_list_element_t voxel_assembly_list_buffer[];
 };
-layout(std430, set=1, binding=3) restrict buffer voxel_list_counter_binding {
-	uint voxel_list_buffer_size;
+layout(std430, set=1, binding=3) restrict buffer voxel_assembly_list_counter_binding {
+	uint voxel_assembly_list_buffer_size;
 };
 
 
@@ -45,18 +45,18 @@ void main() {
 	const material_layer_descriptor head_layer = mat_layer_descriptor[md.head_layer];
 	const material_layer_unpacked_descriptor descriptor = material_layer_unpack(head_layer, uv);
 	const float roughness = descriptor.roughness;
+	const float ior = descriptor.ior;
+	const float metallicity = descriptor.metallic;
 	vec4 rgba = material_base_texture(md, uv);
 	if (md.emission > .0f) 
 		rgba.rgb = material_emission(md);
 
 	voxel_list_element_t element;
 	// Encode voxel data and element position
-	element.data = encode_voxel_data(N, roughness, rgba.rgb, rgba.a);
-	element.node_x = v.x;
-	element.node_y = v.y;
-	element.node_z = v.z;
+	element.data = encode_voxel_data(N, roughness, rgba.rgb, rgba.a, ior, metallicity);
+	element.voxel_node_position = v;
 	
 	// Add to voxel list
-	uint voxel_list_idx = atomicAdd(voxel_list_buffer_size, 1);
-	voxel_list_buffer[voxel_list_idx] = element;
+	uint voxel_list_idx = atomicAdd(voxel_assembly_list_buffer_size, 1);
+	voxel_assembly_list_buffer[voxel_list_idx] = element;
 }

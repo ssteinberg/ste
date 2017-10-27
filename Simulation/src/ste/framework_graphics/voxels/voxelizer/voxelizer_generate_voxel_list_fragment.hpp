@@ -54,8 +54,8 @@ public:
 		// Attach empty framebuffer
 		pipeline().attach_framebuffer(*empty_fb);
 		// Configure voxelization pipeline
-		pipeline()["voxel_list_counter_binding"] = gl::bind(voxels->voxel_list_counter_buffer());
-		pipeline()["voxel_list_binding"] = gl::bind(voxels->voxel_list_buffer());
+		pipeline()["voxel_assembly_list_counter_binding"] = gl::bind(voxels->voxel_assembly_list_counter_buffer());
+		pipeline()["voxel_assembly_list_binding"] = gl::bind(voxels->voxel_assembly_list_buffer());
 		voxels->configure_voxel_pipeline(pipeline());
 	}
 

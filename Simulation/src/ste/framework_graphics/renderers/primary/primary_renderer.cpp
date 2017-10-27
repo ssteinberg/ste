@@ -395,7 +395,7 @@ void primary_renderer::record_voxelizer_fragment(gl::command_recorder &recorder)
 									[this, &recorder]() {
 		recorder << gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader | gl::pipeline_stage::fragment_shader,
 																  gl::pipeline_stage::fragment_shader,
-																  gl::buffer_memory_barrier(buffers.voxels->voxel_list_buffer(),
+																  gl::buffer_memory_barrier(buffers.voxels->voxel_assembly_list_buffer(),
 																							gl::access_flags::shader_read,
 																							gl::access_flags::shader_write)));
 		recorder << voxelizer.get();

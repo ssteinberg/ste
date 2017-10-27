@@ -1,5 +1,5 @@
 //	StE
-// © Shlomi Steinberg 2015-2017
+// ï¿½ Shlomi Steinberg 2015-2017
 
 #pragma once
 
@@ -21,22 +21,27 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 8196;
+	static constexpr auto max_voxel_tree_lines = 6144;
+	static constexpr auto voxel_list_size = 5 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
-	using voxel_data_t = gl::std430<std::uint32_t, std::uint32_t, std::uint32_t>;
-	using voxel_list_element_t = gl::std430<voxel_data_t, float, float, float, std::uint32_t>;
+	using voxel_data_t = gl::std430<glm::uvec4>;
+	using voxel_assembly_list_element_t = gl::std430<voxel_data_t, glm::vec3, glm::uint>;
+	using voxel_upsample_list_element_t = gl::std430<glm::vec3, glm::uint>;
 
 private:
 	alias<const ste_context> ctx;
 	const voxels_configuration config;
 
+	// Voxel structure
 	gl::texture<gl::image_type::image_2d> voxels;
+	// Allcoation counter
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 
-	gl::array<voxel_list_element_t> voxel_list;
-	gl::array<gl::std430<std::uint32_t>> voxel_list_counter;
+	// Supporting structures
+	gl::array<voxel_assembly_list_element_t> voxel_assembly_list;
+	gl::array<gl::std430<std::uint32_t>> voxel_assembly_list_counter;
 
 public:
 	voxel_storage(const ste_context &ctx,
@@ -50,16 +55,17 @@ public:
 																				 glm::u32vec2{ voxel_buffer_line, max_voxel_tree_lines })),
 		  voxels_counter(ctx,
 						 1,
-						 gl::buffer_usage::storage_buffer,
+						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
 						 "voxels counter buffer"),
-		  voxel_list(ctx,
-					 4 * 1024 * 1024,
-					 gl::buffer_usage::storage_buffer,
-					 "voxel list buffer"),
-		  voxel_list_counter(ctx,
-							 1,
-							 gl::buffer_usage::storage_buffer,
-							 "voxel list counter buffer") {}
+		  voxel_assembly_list(ctx,
+							  voxel_list_size,
+							  gl::buffer_usage::storage_buffer,
+							  "voxel assembly list buffer"),
+		  voxel_assembly_list_counter(ctx,
+									  1,
+									  gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
+									  "voxel list counter buffer")
+	{}
 
 	~voxel_storage() noexcept {}
 
@@ -83,15 +89,15 @@ public:
 		// Reset
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels_counter),
 										static_cast<std::uint32_t>(config.voxel_tree_root_size()) >> 2);
-		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxel_list_counter),
+		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxel_assembly_list_counter),
 										static_cast<std::uint32_t>(0));
 	}
 
 	auto &voxels_buffer_image() const { return voxels; }
 	auto &voxels_counter_buffer() const { return voxels_counter; }
 
-	auto &voxel_list_buffer() const { return voxel_list; }
-	auto &voxel_list_counter_buffer() const { return voxel_list_counter; }
+	auto &voxel_assembly_list_buffer() const { return voxel_assembly_list; }
+	auto &voxel_assembly_list_counter_buffer() const { return voxel_assembly_list_counter; }
 };
 
 }
