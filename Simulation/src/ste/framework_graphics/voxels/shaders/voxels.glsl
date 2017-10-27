@@ -17,17 +17,18 @@ const uint voxelizer_work_group_size = 1024;
 
 
 struct voxel_data_t {
-	uint albedo_packed;					// 3x8-bit RGB albedo, 8-bit counter
-	uint normal_packed;					// 2x12-bit normal, 8-bit counter
-	uint opacity_roughness_packed;		// 12-bit opacity, 12-bit roughness, 8-bit counter
-	uint ior_metallicity_packed;		// 12-bit index-of-refraction, 12-bit metallicity, 8-bit counter
+	// Component 0:		3x8-bit RGB albedo, 8-bit counter
+	// Component 1:		2x12-bit normal, 8-bit counter
+	// Component 2:		12-bit opacity, 12-bit roughness, 8-bit counter
+	// Component 3:		12-bit index-of-refraction, 12-bit metallicity, 8-bit counter
+	uvec4 packed;
 };
 
-struct voxel_list_element_t {	
+struct voxel_list_element_t {
+	voxel_data_t data;
+
 	vec3 voxel_node_position;
 	uint voxel_node;
-	
-	voxel_data_t data;
 };
 
 
@@ -106,10 +107,10 @@ uint encode_voxel_data_ior_metallicity(float ior, float metallicity, uint counte
 */
 voxel_data_t encode_voxel_data(vec3 normal, float roughness, vec3 albedo, float opacity, float ior, float metallicity) {
 	voxel_data_t e;
-	e.albedo_packed = encode_voxel_data_albedo(albedo, 1);
-	e.normal_packed = encode_voxel_data_normal(normal, 1);
-	e.opacity_roughness_packed = encode_voxel_data_opacity_roughness(opacity, roughness, 1);
-	e.ior_metallicity_packed = encode_voxel_data_ior_metallicity(ior, metallicity, 1);
+	e.packed[0] = encode_voxel_data_albedo(albedo, 1);
+	e.packed[1] = encode_voxel_data_normal(normal, 1);
+	e.packed[2] = encode_voxel_data_opacity_roughness(opacity, roughness, 1);
+	e.packed[3] = encode_voxel_data_ior_metallicity(ior, metallicity, 1);
 
 	return e;
 }
@@ -162,12 +163,12 @@ float decode_voxel_data_metallicity(uint data) {
 *	@brief	Decodes voxel information out of the voxel list
 */
 void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity, out float ior, out float metallicity) {
-	normal = decode_voxel_data_normal(e.normal_packed);
-	roughness = decode_voxel_data_roughness(e.opacity_roughness_packed);
-	opacity = decode_voxel_data_opacity(e.opacity_roughness_packed);
-	albedo = decode_voxel_data_albedo(e.albedo_packed);
-	ior = decode_voxel_data_ior(e.ior_metallicity_packed);
-	metallicity = decode_voxel_data_metallicity(e.ior_metallicity_packed);
+	albedo = decode_voxel_data_albedo(e.packed[0]);
+	normal = decode_voxel_data_normal(e.packed[1]);
+	opacity = decode_voxel_data_opacity(e.packed[2]);
+	roughness = decode_voxel_data_roughness(e.packed[2]);
+	ior = decode_voxel_data_ior(e.packed[3]);
+	metallicity = decode_voxel_data_metallicity(e.packed[3]);
 }
 
 /**

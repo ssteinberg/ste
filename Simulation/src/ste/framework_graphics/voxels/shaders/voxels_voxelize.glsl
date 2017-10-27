@@ -34,7 +34,7 @@ void voxel_voxelize_blend_user_data(uint node,
 
 	// Blend albedo
 	uint old_albedo_packed = 0;
-	uint new_albedo_packed = data.albedo_packed;
+	uint new_albedo_packed = data.packed[0];
 	while ((new_albedo_packed = imageAtomicCompSwap(voxels, 
 													voxels_image_coords(data_ptr + 0), 
 													old_albedo_packed,
@@ -51,7 +51,7 @@ void voxel_voxelize_blend_user_data(uint node,
 	
 	// Blend normal
 	uint old_normal_packed = 0;
-	uint new_normal_packed = data.normal_packed;
+	uint new_normal_packed = data.packed[1];
 	while ((new_normal_packed = imageAtomicCompSwap(voxels, 
 													voxels_image_coords(data_ptr + 1), 
 													old_normal_packed,
@@ -68,7 +68,7 @@ void voxel_voxelize_blend_user_data(uint node,
 
 	// Blend rougness and opacity
 	uint old_opacity_roughness_packed = 0;
-	uint new_opacity_roughness_packed = data.opacity_roughness_packed;
+	uint new_opacity_roughness_packed = data.packed[2];
 	while ((new_opacity_roughness_packed = imageAtomicCompSwap(voxels, 
 															   voxels_image_coords(data_ptr + 2),
 															   old_opacity_roughness_packed,
@@ -87,7 +87,7 @@ void voxel_voxelize_blend_user_data(uint node,
 
 	// Blend ior and metallicty
 	uint old_ior_metallicity_packed = 0;
-	uint new_ior_metallicity_packed = data.ior_metallicity_packed;
+	uint new_ior_metallicity_packed = data.packed[3];
 	while ((new_ior_metallicity_packed = imageAtomicCompSwap(voxels, 
 															 voxels_image_coords(data_ptr + 3),
 															 old_ior_metallicity_packed,

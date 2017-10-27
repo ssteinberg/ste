@@ -20,7 +20,7 @@ namespace graphics {
 class voxel_sparse_voxelizer : public gl::fragment {
 	using Base = gl::fragment;
 
-	static constexpr std::uint32_t max_vertices_per_voxelization_chunk = 20000;
+	static constexpr std::uint32_t max_vertices_per_voxelization_chunk = 15000;
 
 private:
 	voxelizer_clear_root clear_root;
