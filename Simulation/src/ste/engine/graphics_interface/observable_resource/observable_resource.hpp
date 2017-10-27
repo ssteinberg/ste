@@ -6,6 +6,8 @@
 #include <stdafx.hpp>
 #include <resource_storage_base.hpp>
 
+#include <command_recorder.hpp>
+
 #include <alias.hpp>
 #include <anchored.hpp>
 
@@ -38,9 +40,17 @@ public:
 	virtual ~observable_resource() noexcept {
 		dealloc();
 	}
+	/**
+	 *	@brief	Should return a copy of the desriptor to upload to device
+	 */
 	virtual resource_descriptor_type get_descriptor() const = 0;
 
 protected:
+	/**
+	 *	@brief	Optionally can records aditional resource updates
+	 */
+	virtual void update_resource(command_recorder &recorder) const {}
+
 	/**
 	*	@brief	On data change that needs to be reflected on the GPU-side, call notify to schedule update.
 	*/
@@ -57,7 +67,9 @@ public:
 	*/
 	void dealloc();
 
-	auto resource_index_in_storage() const { return is_valid() ? storage_ptr->index_of(this) : -1; }
+	auto resource_index_in_storage() const {
+		return is_valid() ? storage_ptr->index_of(this) : -1;
+	}
 	bool is_valid() const { return storage_ptr != nullptr; }
 };
 

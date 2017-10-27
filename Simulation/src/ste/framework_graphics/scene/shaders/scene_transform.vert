@@ -16,7 +16,7 @@ layout(location = 0) out scene_transform {
 	vec3 frag_normal;
 	vec3 frag_tangent;
 	vec2 frag_texcoords;
-	flat int matIdx;
+	flat int material_id;
 } vout;
 
 void main() {
@@ -32,7 +32,7 @@ void main() {
 	vout.frag_texcoords = tex_coords;
 	vout.frag_tangent = tbn[0];
 	vout.frag_normal = tbn[2];
-	vout.matIdx = md.matIdx;
+	vout.material_id = md.material_id;
 
 	gl_Position = project(spos);
 }

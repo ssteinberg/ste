@@ -7,7 +7,6 @@
 #include <ste_device_queue_secondary_command_buffer.hpp>
 
 #include <mutex>
-#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -20,13 +19,18 @@ public:
 	friend class buffer_t;
 
 private:
+	struct shared_data_t {
+		alignas(std::hardware_destructive_interference_size) mutable std::mutex m;
+	};
+
+private:
 	Pool pool;
 
-	mutable lib::aligned_padded_ptr<std::mutex> m;
+	shared_data_t shared_data;
 
 private:
 	void dealloc(buffer_t &&buffer) const {
-		std::unique_lock<std::mutex> l(*m);
+		std::unique_lock<std::mutex> l(shared_data.m);
 		{
 			// Move into temporary
 			auto temp = std::move(buffer);
@@ -39,16 +43,16 @@ public:
 	{}
 
 	auto allocate_secondary_buffer() const {
-		std::unique_lock<std::mutex> l(*m);
+		std::unique_lock<std::mutex> l(shared_data.m);
 		return buffer_t(this, pool.get().get().allocate_secondary_buffer());
 	}
 
 	void reset() {
-		std::unique_lock<std::mutex> l(*m);
+		std::unique_lock<std::mutex> l(shared_data.m);
 		pool.get().reset();
 	}
 	void reset_release() {
-		std::unique_lock<std::mutex> l(*m);
+		std::unique_lock<std::mutex> l(shared_data.m);
 		pool.get().reset_release();
 	}
 };

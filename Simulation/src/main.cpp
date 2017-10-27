@@ -226,10 +226,11 @@ public:
 				const graphics::primary_renderer::camera_t *cam,
 				graphics::scene *s,
 				const graphics::atmospherics_properties<double> &atmospherics_prop,
+				graphics::voxels_configuration voxel_config,
 				text::text_manager &tm)
 		: Base(ctx),
 		presentation(presentation),
-		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, prof),
+		r(ctx, fb_renderer_layout(ctx), cam, s, atmospherics_prop, voxel_config, prof),
 		footer_text_frag(tm.create_fragment())
 	{
 		swap_chain_resized();
@@ -267,6 +268,7 @@ public:
 
 		// Acquire presentation comand batch
 		auto batch = presentation.get().allocate_presentation_command_batch(selector);
+		auto f = batch->get_fence_ptr();
 
 		// Record and submit a batch
 		device().enqueue(selector, [this, batch = std::move(batch)]() mutable {
@@ -293,6 +295,10 @@ public:
 			// Submit command buffer and present
 			presentation.get().submit_and_present(std::move(batch));
 		});
+
+//		(*f)->get_wait();
+//		device().wait_idle();
+//		r.d();
 	}
 };
 
@@ -625,6 +631,16 @@ int main()
 
 
 	/*
+	 *	Voxel configuration
+	 */
+	graphics::voxels_configuration voxel_config;
+	voxel_config.Pi = 5;
+	voxel_config.P = 2;
+	voxel_config.leaf_level = 4;
+	voxel_config.world = 4000;
+
+
+	/*
 	*	Create scene and primary render
 	*/
 	graphics::scene scene(ctx);
@@ -641,6 +657,7 @@ int main()
 													  &camera,
 													  &scene,
 													  atmosphere,
+													  voxel_config,
 													  text_manager);
 	});
 
@@ -675,6 +692,15 @@ int main()
 		if (window.should_close()) {
 			return 0;
 		}
+
+		// Scale mat editor objects
+		auto mat_editor_model_transform = glm::scale(glm::mat4(1.f), glm::vec3{ 3.5f });
+		mat_editor_model_transform = glm::translate(mat_editor_model_transform, glm::vec3{ .0f, -15.f, .0f });
+		//auto mat_editor_model_transform = glm::translate(glm::mat4(), glm::vec3{ .0f, .0f, -50.f });
+		//mat_editor_model_transform = glm::scale(mat_editor_model_transform, glm::vec3{ 65.f });
+		//mat_editor_model_transform = glm::rotate(mat_editor_model_transform, glm::half_pi<float>(), glm::vec3{ .0f, 1.0f, 0.f });
+		for (auto &o : mat_editor_objects)
+			o->set_model_transform(glm::mat4x3(mat_editor_model_transform));
 	}
 
 	// Configure
@@ -760,7 +786,7 @@ int main()
 
 		ImGui::End();
 		
-		for (int i = 0; i < layers_count; ++i) {/*
+		for (int i = 0; i < layers_count; ++i) {
 			if (layers[i]->get_albedo() != base_color[i])
 				layers[i]->set_albedo(base_color[i]);
 			layers[i]->set_roughness(roughness[i]);
@@ -772,7 +798,7 @@ int main()
 			if (layers[i]->get_attenuation_coefficient().x != absorption[i])
 				layers[i]->set_attenuation_coefficient(glm::vec3{ absorption[i] });
 			if (layers[i]->get_scattering_phase_parameter() != phase[i])
-				layers[i]->set_scattering_phase_parameter(phase[i]);*/
+				layers[i]->set_scattering_phase_parameter(phase[i]);
 
 			if (i != 0) {
 				bool enabled = layers[i - 1]->get_next_layer() != nullptr;
@@ -829,6 +855,8 @@ int main()
 	/*
 	*	Main loop
 	*/
+
+	ctx.device().wait_idle();
 
 	float time_elapsed = .0f;
 	for (;;) {

@@ -8,7 +8,7 @@ using namespace ste::gl::profiler;
 profiler::profiler(const ste_context &ctx,
 				   std::uint32_t max_atoms)
 	: ctx(ctx),
-	  timestamp_resolution_ns(ctx.device()->get_physical_device_descriptor().properties.limits.timestampPeriod),
+	  timestamp_resolution_ns(ctx.device()->get_physical_device_descriptor().get_properties().limits.timestampPeriod),
 	  max_atoms(max_atoms) {
 	segments.emplace_back(0,
 						  create_query_pool());

@@ -18,7 +18,6 @@
 #include <array>
 #include <lib/unordered_map.hpp>
 #include <lib/unordered_set.hpp>
-#include <lib/aligned_padded_ptr.hpp>
 #include <alias.hpp>
 
 namespace ste {
@@ -33,7 +32,7 @@ private:
 	struct heap_t {
 		chunks_t chunks;
 		chunks_t private_chunks;
-		lib::aligned_padded_ptr<std::mutex> m;
+		alignas(std::hardware_destructive_interference_size) std::mutex m;
 	};
 
 	static constexpr memory_type_t memory_types = 32;
@@ -72,7 +71,7 @@ private:
 			if (!memory_type_matches_requirements(type, memory_requirements))
 				continue;
 
-			auto &heap = physical_device.memory_properties.memoryTypes[type];
+			auto &heap = physical_device.get_memory_properties().memoryTypes[type];
 			if ((static_cast<memory_properties_flags>(heap.propertyFlags) & preferred_flags) == preferred_flags)
 				return type;
 			if (fallback_memory_type == -1 &&
@@ -94,7 +93,7 @@ private:
 		auto &heap = heaps[memory_type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			chunks_t &chunks = ptr.is_private_allocation() ?
 				heap.private_chunks :
@@ -157,7 +156,7 @@ private:
 		auto &heap = heaps[memory_type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			// Prune private chunks
 			for (auto it = heap.private_chunks.begin(); it != heap.private_chunks.end(); ++it) {
@@ -352,7 +351,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_device_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 
 		lib::unordered_set<std::uint32_t> conforming_heaps;
 		for (std::uint32_t i=0;i<properties.memoryTypeCount;++i) {
@@ -381,7 +380,7 @@ public:
 		auto &heap = heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_commited_memory += it->second.get_heap_size();
@@ -399,7 +398,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_commited_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 		auto total_commited_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {
@@ -424,7 +423,7 @@ public:
 		auto &heap = heaps[type];
 
 		{
-			std::unique_lock<std::mutex> lock(*heap.m);
+			std::unique_lock<std::mutex> lock(heap.m);
 
 			for (auto it = heap.chunks.begin(); it != heap.chunks.end(); ++it)
 				total_allocated_memory += it->second.get_allocated_bytes();
@@ -442,7 +441,7 @@ public:
 	*	@param	flags	Memory type flags
 	*/
 	auto get_total_allocated_memory(const memory_properties_flags &flags = memory_properties_flags::device_local) const {
-		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().memory_properties;
+		const VkPhysicalDeviceMemoryProperties &properties = device.get().get_physical_device_descriptor().get_memory_properties();
 		auto total_allocated_memory = 0_B;
 
 		for (memory_type_t type = 0; type < memory_types; ++type) {

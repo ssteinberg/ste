@@ -54,7 +54,7 @@ public:
 		device_info.pEnabledFeatures = &requested_features;
 
 		VkDevice device;
-		const vk_result res = vkCreateDevice(physical_device.device, &device_info, &host_allocator::allocation_callbacks(), &device);
+		const vk_result res = vkCreateDevice(physical_device, &device_info, &host_allocator::allocation_callbacks(), &device);
 		if (!res) {
 			throw vk_exception(res);
 		}

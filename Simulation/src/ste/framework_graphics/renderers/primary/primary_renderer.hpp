@@ -21,6 +21,7 @@
 #include <hdr_dof_postprocess.hpp>
 #include <scene_prepopulate_depth_fragment.hpp>
 #include <scene_geo_cull_fragment.hpp>
+#include <voxel_sparse_voxelizer.hpp>
 #include <scene_write_gbuffer_fragment.hpp>
 #include <linked_light_lists_gen_fragment.hpp>
 #include <light_preprocessor_fragment.hpp>
@@ -31,7 +32,6 @@
 #include <signal.hpp>
 #include <optional.hpp>
 #include <mutex>
-#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace graphics {
@@ -42,7 +42,7 @@ class primary_renderer : public gl::rendering_system {
 private:
 	class atmospherics_properties_update_t {
 	private:
-		std::mutex m;
+		alignas(std::hardware_destructive_interference_size) std::mutex m;
 		optional<atmospherics_properties<double>> update;
 
 	public:
@@ -79,6 +79,8 @@ private:
 	ste_resource<hdr_dof_postprocess> hdr;
 	ste_resource<fxaa_postprocess> fxaa;
 
+	ste_resource<voxel_sparse_voxelizer> voxelizer;
+
 	ste_resource<gbuffer_downsample_depth_fragment> downsample_depth;
 	ste_resource<scene_prepopulate_depth_back_face_fragment> prepopulate_backface_depth;
 	ste_resource<scene_write_gbuffer_fragment> scene_write_gbuffer;
@@ -88,7 +90,7 @@ private:
 	ste_resource<light_preprocessor_fragment> light_preprocess;
 
 private:
-	lib::aligned_padded_ptr<atmospherics_properties_update_t> atmospherics_properties_update;
+	atmospherics_properties_update_t atmospherics_properties_update;
 
 private:
 	void reattach_framebuffers();
@@ -104,6 +106,7 @@ private:
 
 	void record_light_preprocess_fragment(gl::command_recorder &recorder);
 	void record_scene_geometry_cull_fragment(gl::command_recorder &recorder);
+	void record_voxelizer_fragment(gl::command_recorder &recorder);
 	void record_downsample_depth_fragment(gl::command_recorder &recorder);
 	void record_linked_light_list_generator_fragment(gl::command_recorder &recorder);
 	void record_scene_fragment(gl::command_recorder &recorder);
@@ -116,6 +119,7 @@ public:
 					 const camera_t *cam,
 					 scene *s,
 					 const atmospherics_properties<double> &atmospherics_prop,
+					 voxels_configuration voxel_config,
 					 gl::profiler::profiler *profiler = nullptr);
 	~primary_renderer() noexcept {}
 
@@ -127,7 +131,7 @@ public:
 	 *	@brief		Updates atmospheric properties.
 	 */
 	void update_atmospherics_properties(const atmospherics_properties<double> &atmospherics_prop) {
-		*atmospherics_properties_update = atmospherics_prop;
+		atmospherics_properties_update = atmospherics_prop;
 	}
 
 	/**

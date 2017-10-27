@@ -27,7 +27,6 @@
 #include <chrono>
 #include <limits>
 #include <mutex>
-#include <lib/aligned_padded_ptr.hpp>
 
 namespace ste {
 namespace gl {
@@ -52,7 +51,7 @@ public:
 	};
 
 	struct shared_data_t {
-		mutable std::atomic_flag swap_chain_optimal_flag = ATOMIC_FLAG_INIT;
+		alignas(std::hardware_destructive_interference_size) mutable std::atomic_flag swap_chain_optimal_flag = ATOMIC_FLAG_INIT;
 	};
 
 private:
@@ -65,7 +64,7 @@ private:
 	lib::unique_ptr<vk::vk_swapchain<>> swap_chain{ nullptr };
 	lib::vector<swap_chain_image_t> swap_chain_images;
 
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 
 	ste_window_signals::window_resize_signal_type::connection_type resize_signal_connection;
 
@@ -113,9 +112,9 @@ public:
 
 		// Check surface support
 		bool has_present_support = false;
-		for (unsigned i = 0; i < physical_device.queue_family_properties.size(); ++i) {
+		for (unsigned i = 0; i < physical_device.get_queue_family_properties().size(); ++i) {
 			VkBool32 supported;
-			vkGetPhysicalDeviceSurfaceSupportKHR(physical_device.device, 0, presentation_surface, &supported);
+			vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, 0, presentation_surface, &supported);
 
 			if ((has_present_support |= supported != 0))
 				break;
@@ -129,7 +128,7 @@ public:
 		create_swap_chain();
 
 		// Connect required windowing system signals
-		shared_data->swap_chain_optimal_flag.test_and_set();
+		shared_data.swap_chain_optimal_flag.test_and_set();
 		connect_signals();
 	}
 
@@ -200,7 +199,7 @@ public:
 				 const semaphore &wait_semaphore);
 
 	bool test_and_clear_recreate_flag() const {
-		return !shared_data->swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
+		return !shared_data.swap_chain_optimal_flag.test_and_set(std::memory_order_acquire);
 	}
 
 	/**

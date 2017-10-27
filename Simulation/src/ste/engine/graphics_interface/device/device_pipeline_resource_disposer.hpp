@@ -11,7 +11,6 @@
 #include <condition_variable>
 #include <lib/unique_ptr.hpp>
 #include <chrono>
-#include <lib/aligned_padded_ptr.hpp>
 
 #include <lib/list.hpp>
 #include <lib/concurrent_queue.hpp>
@@ -36,14 +35,14 @@ private:
 	using instance_ptr = queue_t::stored_ptr;
 
 	struct shared_data_t {
-		mutable std::condition_variable notifier;
+		alignas(std::hardware_destructive_interference_size) mutable std::condition_variable notifier;
 
 		queue_t queue;
 	};
 
 private:
 	mutable std::mutex m;
-	lib::aligned_padded_ptr<shared_data_t> shared_data;
+	shared_data_t shared_data;
 	lib::unique_ptr<interruptible_thread> thread;
 
 	lib::list<std::pair<Instance, std::chrono::high_resolution_clock::time_point>> deletion_list;
@@ -55,9 +54,9 @@ public:
 				instance_ptr queued_instance;
 				{
 					std::unique_lock<std::mutex> l(m);
-					shared_data->notifier.wait(l, [&]() {
+					shared_data.notifier.wait(l, [&]() {
 						return interruptible_thread::is_interruption_flag_set() ||
-							(queued_instance = shared_data->queue.pop()) != nullptr;
+							(queued_instance = shared_data.queue.pop()) != nullptr;
 					});
 				}
 
@@ -79,7 +78,7 @@ public:
 				while (queued_instance != nullptr) {
 					deletion_list.push_front(std::make_pair(std::move(*queued_instance), 
 															std::chrono::high_resolution_clock::now()));
-					queued_instance = shared_data->queue.pop();
+					queued_instance = shared_data.queue.pop();
 				}
 
 				if (interruptible_thread::is_interruption_flag_set()) {
@@ -93,7 +92,7 @@ public:
 	~device_pipeline_resource_disposer() noexcept {
 		thread->interrupt();
 
-		do { shared_data->notifier.notify_all(); } while (!m.try_lock());
+		do { shared_data.notifier.notify_all(); } while (!m.try_lock());
 		m.unlock();
 
 		thread->join();
@@ -102,12 +101,12 @@ public:
 		std::atomic_thread_fence(std::memory_order_acquire);
 		for (auto &p : deletion_list)
 			auto temp = std::move(p.first);
-		auto queued_instance = shared_data->queue.pop();
+		auto queued_instance = shared_data.queue.pop();
 		while (queued_instance != nullptr) {
 			{
 				auto temp = std::move(*queued_instance);
 			}
-			queued_instance = shared_data->queue.pop();
+			queued_instance = shared_data.queue.pop();
 		}
 	}
 
@@ -115,8 +114,8 @@ public:
 	 *	@brief	Queue instance deletion
 	 */
 	void queue_deletion(Instance &&ptr) {
-		shared_data->queue.push(std::move(ptr));
-		shared_data->notifier.notify_one();
+		shared_data.queue.push(std::move(ptr));
+		shared_data.notifier.notify_one();
 	}
 };
 

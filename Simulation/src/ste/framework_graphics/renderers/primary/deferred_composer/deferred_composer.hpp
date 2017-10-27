@@ -7,6 +7,7 @@
 #include <rendering_system.hpp>
 
 #include <material_lut_storage.hpp>
+#include <voxel_storage.hpp>
 
 #include <fragment_graphics.hpp>
 
@@ -23,13 +24,16 @@ private:
 	gl::task<gl::cmd_draw> draw_task;
 
 	gl::rendering_system::storage_ptr<material_lut_storage> material_luts;
+	const voxel_storage *voxels;
 
 public:
-	deferred_composer(gl::rendering_system &rs)
+	deferred_composer(gl::rendering_system &rs,
+					  const voxel_storage *voxels)
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
 			   "fullscreen_triangle.vert", "deferred_compose.frag"),
-		material_luts(rs.acquire_storage<material_lut_storage>())
+		material_luts(rs.acquire_storage<material_lut_storage>()),
+		voxels(voxels)
 	{
 		draw_task.attach_pipeline(pipeline());
 
@@ -41,6 +45,11 @@ public:
 																				  rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
 		pipeline()["ltc_ggx_amplitude"] = gl::bind(gl::pipeline::combined_image_sampler(material_luts->get_ltc_ggx_amplitude(),
 																						rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
+
+		// Configure voxelization pipeline
+		pipeline()["voxels"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->voxels_buffer_image(), 
+																			 rs.get_creating_context().device().common_samplers_collection().nearest_clamp_sampler()));
+		voxels->configure_voxel_pipeline(pipeline());
 	}
 	~deferred_composer() noexcept {}
 

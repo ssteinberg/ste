@@ -8,6 +8,8 @@
 
 #include <aligned_padded_ptr.hpp>
 
+#include <new>
+
 namespace ste {
 namespace lib {
 
@@ -18,7 +20,7 @@ static constexpr auto aligned_padded_ptr_size = std::max<std::size_t>(align, ali
 
 }
 
-template <typename T, std::size_t alignment = _detail::aligned_padded_ptr_size<T, 64>>
+template <typename T, std::size_t alignment = _detail::aligned_padded_ptr_size<T, std::hardware_destructive_interference_size>>
 using aligned_padded_ptr = ::ste::aligned_padded_ptr<T, alignment, allocator<std::uint8_t, alignment>>;
 
 }

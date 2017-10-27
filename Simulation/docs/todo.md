@@ -50,8 +50,15 @@
 34. Profiler capture and output
 35. Types: Normalized types.
 36. Voxel GI:
-	- Sparse voxelize
+	- <strike>Sparse voxelizer</strike>
+    - <strike>Voxel ray traversal</strike>
+    - Voxel cone traversal
+    - <strike>Voxel metadata</strike>
+    - Voxel data interpolation
 37. Polygonal lights: Beam focusing
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
 39. Geometry culling: Better bounding volume or low-poly geometry
-40. 
+40. <strike>std::hardware_destructive_interference_size</strike>
+41. Make sense out of gl\::vector/gl\::stable_vector
+42. <strike>VK_KHR_bind_memory2</strike>
+43. LRUCache: Robustness

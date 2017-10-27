@@ -23,19 +23,22 @@
 namespace ste {
 namespace gl {
 
-template <typename T>
-class array : ste_resource_deferred_create_trait, public allow_type_decay<array<T>, device_buffer<T, device_resource_allocation_policy_device>> {
-	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
+template <
+	typename T,
+	class allocation_policy = device_resource_allocation_policy_device
+>
+class array : ste_resource_deferred_create_trait, public allow_type_decay<array<T, allocation_policy>, device_buffer<T, allocation_policy>> {
+//	static_assert(sizeof(T) % 4 == 0, "T size must be a multiple of 4");
 
 private:
-	using buffer_t = device_buffer<T, device_resource_allocation_policy_device>;
+	using buffer_t = device_buffer<T, allocation_policy>;
 
 	static constexpr auto buffer_usage_additional_flags = buffer_usage::transfer_dst;
 
 public:
 	using value_type = T;
 
-	using update_cmd_t = _internal::vector_cmd_update_buffer<array<T>>;
+	using update_cmd_t = _internal::vector_cmd_update_buffer<array<T, allocation_policy>>;
 
 private:
 	buffer_t buffer;

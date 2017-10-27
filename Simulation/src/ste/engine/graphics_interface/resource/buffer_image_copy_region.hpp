@@ -27,7 +27,7 @@ struct buffer_image_copy_region_t {
 		const VkBufferImageCopy c = {
 			buffer_offset * static_cast<std::size_t>(buffer_element_size),
 			buffer_row_length * static_cast<std::uint32_t>(buffer_element_size),
-			buffer_image_height * static_cast<std::uint32_t>(buffer_element_size) * static_cast<std::uint32_t>(buffer_element_size),
+			buffer_image_height * static_cast<std::uint32_t>(buffer_element_size),
 			{
 				static_cast<VkImageAspectFlags>(format_aspect(image_format)),
 				static_cast<std::uint32_t>(mip),

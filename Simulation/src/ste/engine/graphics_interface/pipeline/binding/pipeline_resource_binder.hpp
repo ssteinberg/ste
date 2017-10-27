@@ -107,8 +107,8 @@ auto bind(const device_buffer_sparse<T, a> &buffer,
 *
 *	@param	array	Array to bind
 */
-template <typename T>
-auto bind(const array<T> &array) {
+template <typename T, class allocation_policy>
+auto bind(const array<T, allocation_policy> &array) {
 	return bind(array.get());
 }
 /**

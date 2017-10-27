@@ -17,6 +17,7 @@
 #include <atmospherics_lut_storage.hpp>
 #include <renderer_transform_buffers.hpp>
 #include <linked_light_lists.hpp>
+#include <voxel_storage.hpp>
 
 #include <atomic>
 #include <connection.hpp>
@@ -52,6 +53,7 @@ private:
 	ste_resource<linked_light_lists> linked_light_list_storage;
 	gl::rendering_system::storage_ptr<atmospherics_lut_storage> atmospherics_luts;
 	atmospherics_buffer atmospheric_buffer;
+	ste_resource<voxel_storage> voxels;
 
 	ste_resource<deferred_gbuffer> gbuffer;
 	renderer_transform_buffers transform_buffers;
@@ -71,7 +73,8 @@ public:
 							 const glm::uvec2 &extent,
 							 const scene *s,
 							 gl::rendering_system::storage_ptr<atmospherics_lut_storage> &&atmospherics_luts,
-							 const atmospherics_properties<double> &atmospherics_prop)
+							 const atmospherics_properties<double> &atmospherics_prop,
+							 voxels_configuration voxel_config)
 		: ctx(ctx),
 		s(s),
 		extent(extent),
@@ -79,6 +82,7 @@ public:
 		linked_light_list_storage(ctx, extent),
 		atmospherics_luts(std::move(atmospherics_luts)),
 		atmospheric_buffer(ctx, atmospherics_prop),
+		voxels(ctx, voxel_config),
 
 		gbuffer(ctx, extent, gbuffer_depth_target_levels()),
 		transform_buffers(ctx),

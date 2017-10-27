@@ -37,7 +37,7 @@ public:
 		draw_task.attach_pipeline(pipeline());
 		draw_task.attach_vertex_buffer(s->get_object_group().get_draw_buffers().get_vertex_buffer());
 		draw_task.attach_index_buffer(s->get_object_group().get_draw_buffers().get_index_buffer());
-		draw_task.attach_indirect_buffer(s->get_idb());
+		draw_task.attach_indirect_buffer(s->get_idb().get());
 	}
 	~scene_write_gbuffer_fragment() noexcept {}
 
@@ -63,8 +63,8 @@ public:
 
 		gl::device_pipeline_graphics_configurations config;
 		config.depth_op = gl::depth_operation(gl::compare_op::greater);
-		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::front_bit,
-														gl::front_face::cw);
+		config.rasterizer_op = gl::rasterizer_operation(gl::cull_mode::back_bit,
+														gl::front_face::ccw);
 		auditor.set_pipeline_settings(std::move(config));
 		auditor.set_vertex_attributes(0, gl::vertex_attributes<object_vertex_data>());
 	}

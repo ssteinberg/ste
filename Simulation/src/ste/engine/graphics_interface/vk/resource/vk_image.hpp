@@ -62,9 +62,9 @@ private:
 
 protected:
 	void bind_resource_underlying_memory(const vk_device_memory<host_allocator> &memory, byte_t offset) override {
-		const vk_result res = vkBindImageMemory(this->device.get(), 
-												*this, 
-												memory, 
+		const vk_result res = vkBindImageMemory(this->device.get(),
+												*this,
+												memory,
 												static_cast<std::size_t>(offset));
 		if (!res) {
 			throw vk_exception(res);
@@ -194,23 +194,35 @@ public:
 	}
 
 	memory_requirements get_memory_requirements() const override {
-		VkImageMemoryRequirementsInfo2KHR info = {};
-		VkMemoryDedicatedRequirementsKHR dedicated_info = {};
-		info.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR;
-		info.image = *this;
-		info.pNext = &dedicated_info;
-		dedicated_info.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
-		dedicated_info.pNext = nullptr;
-		
-		VkMemoryRequirements2KHR req;
-		req.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
-		req.pNext = nullptr;
-		device.get().get_extensions_func_pointers().get_memory_requirements2().vkGetImageMemoryRequirements2KHR(this->device.get(),
-																												&info,
-																												&req);
+		if (device.get().get_extensions_func_pointers().get_memory_requirements2().enabled) {
+			// If available, use VK_KHR_get_memory_requirements2 extension to get additional information about the memory requirements
 
-		return memory_requirements(req,
-								   dedicated_info);
+			VkImageMemoryRequirementsInfo2KHR info = {};
+			VkMemoryDedicatedRequirementsKHR dedicated_info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR;
+			info.image = *this;
+			info.pNext = &dedicated_info;
+			dedicated_info.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+			dedicated_info.pNext = nullptr;
+
+			VkMemoryRequirements2KHR req;
+			req.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR;
+			req.pNext = nullptr;
+			device.get().get_extensions_func_pointers().get_memory_requirements2().vkGetImageMemoryRequirements2KHR(device.get(),
+																													&info,
+																													&req);
+
+			return memory_requirements(req,
+									   dedicated_info);
+		}
+		
+		// VK_KHR_get_memory_requirements2 unavailable
+		VkMemoryRequirements req = {};
+		vkGetImageMemoryRequirements(device.get(),
+									 *this,
+									 &req);
+
+		return memory_requirements(req);
 	}
 
 	auto& get_usage() const { return usage; }

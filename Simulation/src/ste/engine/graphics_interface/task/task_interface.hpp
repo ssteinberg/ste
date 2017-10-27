@@ -132,14 +132,14 @@ class task_indirect_buffer_interface {
 public:
 	virtual ~task_indirect_buffer_interface() noexcept {}
 
-	void attach_indirect_buffer(const device_buffer<IndirectBlock> &index_buffer,
+	void attach_indirect_buffer(const device_buffer<IndirectBlock> &indirect_buffer,
 								std::uint32_t offset = 0) {
-		this->indirect_buffer = &index_buffer;
+		this->indirect_buffer = &indirect_buffer;
 		this->offset = offset;
 	}
-	void attach_indirect_buffer(const device_buffer_sparse<IndirectBlock> &index_buffer,
+	void attach_indirect_buffer(const device_buffer_sparse<IndirectBlock> &indirect_buffer,
 								std::uint32_t offset = 0) {
-		this->indirect_buffer = &index_buffer;
+		this->indirect_buffer = &indirect_buffer;
 		this->offset = offset;
 	}
 

@@ -42,7 +42,7 @@ ste_presentation_surface::acquire_next_image_return_t  ste_presentation_surface:
 
 	// Furthermore raise flag to recreate swap-chain
 	if (res != VK_SUCCESS)
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 
 	return ret;
 }
@@ -105,10 +105,10 @@ VkPresentModeKHR ste_presentation_surface::get_surface_presentation_mode() const
 	// Query available presentation modes
 	std::uint32_t present_mode_count;
 	lib::vector<VkPresentModeKHR> supported_present_modes;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(presentation_device->get_physical_device_descriptor().device,
+	vkGetPhysicalDeviceSurfacePresentModesKHR(presentation_device->get_physical_device_descriptor(),
 											  presentation_surface, &present_mode_count, nullptr);
 	supported_present_modes.resize(present_mode_count);
-	vkGetPhysicalDeviceSurfacePresentModesKHR(presentation_device->get_physical_device_descriptor().device,
+	vkGetPhysicalDeviceSurfacePresentModesKHR(presentation_device->get_physical_device_descriptor(),
 											  presentation_surface, &present_mode_count, &supported_present_modes[0]);
 
 	if (!present_mode_count) {
@@ -151,10 +151,10 @@ VkSurfaceFormatKHR ste_presentation_surface::get_surface_format() const {
 	// Query available format
 	std::uint32_t format_count;
 	lib::vector<VkSurfaceFormatKHR> supported_formats;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(presentation_device->get_physical_device_descriptor().device,
+	vkGetPhysicalDeviceSurfaceFormatsKHR(presentation_device->get_physical_device_descriptor(),
 										 presentation_surface, &format_count, nullptr);
 	supported_formats.resize(format_count);
-	vkGetPhysicalDeviceSurfaceFormatsKHR(presentation_device->get_physical_device_descriptor().device,
+	vkGetPhysicalDeviceSurfaceFormatsKHR(presentation_device->get_physical_device_descriptor(),
 										 presentation_surface, &format_count, &supported_formats[0]);
 
 	if (!format_count) {
@@ -226,7 +226,7 @@ VkCompositeAlphaFlagBitsKHR ste_presentation_surface::get_composite_alpha() cons
 
 void ste_presentation_surface::read_device_caps() {
 	// Read device capabilities
-	const vk::vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor().device,
+	const vk::vk_result res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(presentation_device->get_physical_device_descriptor(),
 																		presentation_surface,
 																		&surface_presentation_caps);
 	if (!res) {
@@ -290,7 +290,7 @@ void ste_presentation_surface::connect_signals() {
 
 	resize_signal_connection = make_connection(resize_signal, [this](const glm::i32vec2 &size) {
 		// Raise flag to recreate swap-chain
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 	});
 }
 
@@ -315,13 +315,13 @@ void ste_presentation_surface::present(std::uint32_t image_index,
 
 	vk::vk_result res;
 	{
-		//		std::unique_lock<std::mutex> l(shared_data->swap_chain_guard);
+		//		std::unique_lock<std::mutex> l(shared_data.swap_chain_guard);
 		res = vkQueuePresentKHR(presentation_queue, &info);
 	}
 
 	// Raise flag to recreate swap-chain
 	if (res != VK_SUCCESS)
-		shared_data->swap_chain_optimal_flag.clear(std::memory_order_release);
+		shared_data.swap_chain_optimal_flag.clear(std::memory_order_release);
 	if (res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR && res != VK_ERROR_OUT_OF_DATE_KHR) {
 		throw vk::vk_exception(res);
 	}

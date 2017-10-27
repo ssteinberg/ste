@@ -54,8 +54,8 @@ public:
 	void resize_indirect_command_buffers(const ste_context &ctx,
 										 gl::command_recorder &recorder,
 										 std::size_t size) {
-		recorder << idb->resize_cmd(ctx,
-									size);
+		recorder << idb.get().resize_cmd(ctx,
+										 size);
 	}
 };
 
