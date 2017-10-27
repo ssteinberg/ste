@@ -1,6 +1,7 @@
 
 #include <common.glsl>
 #include <pack.glsl>
+#include <material.glsl>
 
 // (2^Pi)^3 voxels per initial block
 layout(constant_id=2) const uint voxel_Pi = 5;
@@ -16,16 +17,17 @@ const uint voxelizer_work_group_size = 1024;
 
 
 struct voxel_data_t {
-	uint albedo_packed;				// 3x8-bit RGB albedo, 8-bit counter
-	uint normal_packed;				// 2x12-bit normal, 8-bit counter
-	uint opacity_roughness_packed;	// 12-bit opacity, 12-bit roughness, 8-bit counter
+	uint albedo_packed;					// 3x8-bit RGB albedo, 8-bit counter
+	uint normal_packed;					// 2x12-bit normal, 8-bit counter
+	uint opacity_roughness_packed;		// 12-bit opacity, 12-bit roughness, 8-bit counter
+	uint ior_metallicity_packed;		// 12-bit index-of-refraction, 12-bit metallicity, 8-bit counter
 };
 
-struct voxel_list_element_t {
-	voxel_data_t data;
-	
-	float node_x, node_y, node_z;
+struct voxel_list_element_t {	
+	vec3 voxel_node_position;
 	uint voxel_node;
+	
+	voxel_data_t data;
 };
 
 
@@ -39,16 +41,19 @@ float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
 
 const uint voxel_tree_node_data_size = 0;
-const uint voxel_tree_leaf_data_size = 12;
+const uint voxel_tree_leaf_data_size = 16;
 
 
 const uint voxel_buffer_line = 32768;
 
 
+const float voxel_data_roughness_max_value = .5f;
+
+
 /**
 *	@brief	Encodes voxel data.
 *
-*	@param	albedo		RGB albedo value. Must be in [0, 1] range.
+*	@param	albedo		RGB albedo value. Clamped to [0, 1] range.
 */
 uint encode_voxel_data_albedo(vec3 albedo, uint counter) {
 	return packUnorm4x8(vec4(albedo, .0f)) + (min(counter, uint(255)) << 24);
@@ -67,28 +72,44 @@ uint encode_voxel_data_normal(vec3 normal, uint counter) {
 /**
 *	@brief	Encodes voxel data.
 *
-*	@param	opacity		Opacity value. Must be in [0, 1] range.
-*	@param	roughness	Material roughness value. Must be in [0, 0.5] range.
+*	@param	opacity		Opacity value. Clamped to [0, 1] range.
+*	@param	roughness	Material roughness value. Clamped to [0, voxel_data_roughness_max_value] range.
 */
 uint encode_voxel_data_opacity_roughness(float opacity, float roughness, uint counter) {
-	uint roughness_norm = uint(round(clamp(roughness, .0f, .5f) * 2.f * 4095.f)) & 0xFFF;
-	uint opacity_norm = uint(round(clamp(opacity, .0f, 1.f) * 4095.f)) & 0xFFF;
-	return opacity_norm + (roughness_norm << 12) + (min(counter, uint(255)) << 24);
+    uint opacity_norm = uint(round(clamp(opacity, .0f, 1.f) * 4095.f)) & 0xFFF;
+    uint roughness_norm = uint(round(clamp(roughness, .0f, voxel_data_roughness_max_value) / voxel_data_roughness_max_value * 4095.f)) & 0xFFF;
+
+    return opacity_norm + (roughness_norm << 12) + (min(counter, uint(255)) << 24); 
+}
+
+/**
+*	@brief	Encodes voxel data.
+*
+*	@param	ior			Material index-of-refraction. Clamped to [material_layer_min_ior, material_layer_max_ior] range.
+*	@param	metallicity	Material metallicity. Clamped to [0, 1] range.
+*/
+uint encode_voxel_data_ior_metallicity(float ior, float metallicity, uint counter) {
+    uint ior_norm = uint(round(clamp((ior - material_layer_min_ior) / (material_layer_max_ior - material_layer_min_ior), .0f, 1.f) * 4095.f)) & 0xFFF;
+    uint metallicity_norm = uint(round(clamp(metallicity, .0f, 1.f) * 4095.f)) & 0xFFF;
+
+    return ior_norm + (metallicity_norm << 12) + (min(counter, uint(255)) << 24);
 }
 
 /**
 *	@brief	Encodes voxel data.
 *
 *	@param	normal		World-space normal
-*	@param	roughness	Material roughness value. Must be in [0, 0.5] range.
-*	@param	albedo		RGB albedo value. Must be in [0, 1] range.
-*	@param	opacity		Opacity value. Must be in [0, 1] range.
+*	@param	opacity		Opacity value. Clamped to [0, 1] range.
+*	@param	roughness	Material roughness value. Clamped to [0, voxel_data_roughness_max_value] range.
+*	@param	ior			Material index-of-refraction. Clamped to [material_layer_min_ior, material_layer_max_ior] range.
+*	@param	metallicity	Material metallicity. Clamped to [0, 1] range.
 */
-voxel_data_t encode_voxel_data(vec3 normal, float roughness, vec3 albedo, float opacity) {
+voxel_data_t encode_voxel_data(vec3 normal, float roughness, vec3 albedo, float opacity, float ior, float metallicity) {
 	voxel_data_t e;
 	e.albedo_packed = encode_voxel_data_albedo(albedo, 1);
 	e.normal_packed = encode_voxel_data_normal(normal, 1);
 	e.opacity_roughness_packed = encode_voxel_data_opacity_roughness(opacity, roughness, 1);
+	e.ior_metallicity_packed = encode_voxel_data_ior_metallicity(ior, metallicity, 1);
 
 	return e;
 }
@@ -105,7 +126,7 @@ vec3 decode_voxel_data_normal(uint data) {
 *	@brief	Decodes voxel information out of the voxel list
 */
 float decode_voxel_data_roughness(uint data) {
-	return float((data >> 12) & 0xFFF) / 4095.f / 2.f;
+	return float((data >> 12) & 0xFFF) / 4095.f * voxel_data_roughness_max_value;
 }
 
 /**
@@ -125,11 +146,28 @@ float decode_voxel_data_opacity(uint data) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity) {
+float decode_voxel_data_ior(uint data) {
+	const float a = float(data & 0xFFF) / 4095.f;
+	return mix(material_layer_min_ior, material_layer_max_ior, a);
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+float decode_voxel_data_metallicity(uint data) {
+	return float((data >> 12) & 0xFFF) / 4095.f;
+}
+
+/**
+*	@brief	Decodes voxel information out of the voxel list
+*/
+void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity, out float ior, out float metallicity) {
 	normal = decode_voxel_data_normal(e.normal_packed);
 	roughness = decode_voxel_data_roughness(e.opacity_roughness_packed);
 	opacity = decode_voxel_data_opacity(e.opacity_roughness_packed);
 	albedo = decode_voxel_data_albedo(e.albedo_packed);
+	ior = decode_voxel_data_ior(e.ior_metallicity_packed);
+	metallicity = decode_voxel_data_metallicity(e.ior_metallicity_packed);
 }
 
 /**
@@ -199,19 +237,12 @@ uint voxel_node_data_offset(uint level, uint P) {
 /**
 *	@brief	Returns the offset of the children data in a voxel node.
 */
-uint voxel_node_occupancy_offset(uint level, uint P) {
+uint voxel_node_children_offset(uint level, uint P) {
 	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
 }
 
 /**
-*	@brief	Returns the offset of the children data in a voxel node.
-*/
-uint voxel_node_children_offset(uint level, uint P) {
-	return voxel_node_occupancy_offset(level, P) + 1;
-}
-
-/**
-*	@brief	Returns a single child size in a voxel node.
+*	@brief	Returns the size of a voxel node.
 *			level must be > 0.
 */
 uint voxel_node_size(uint level, uint P) {

@@ -32,8 +32,8 @@ public:
 		// Attach voxel storage resources
 		pipeline()["voxels"] = gl::bind(gl::pipeline::storage_image(voxels->voxels_buffer_image()));
 		pipeline()["voxel_counter_binding"] = gl::bind(voxels->voxels_counter_buffer());
-		pipeline()["voxel_list_counter_binding"] = gl::bind(voxels->voxel_list_counter_buffer());
-		pipeline()["voxel_list_binding"] = gl::bind(voxels->voxel_list_buffer());
+		pipeline()["voxel_assembly_list_counter_binding"] = gl::bind(voxels->voxel_assembly_list_counter_buffer());
+		pipeline()["voxel_assembly_list_binding"] = gl::bind(voxels->voxel_assembly_list_buffer());
 
 		// Configure voxelization pipeline
 		voxels->configure_voxel_pipeline(pipeline());

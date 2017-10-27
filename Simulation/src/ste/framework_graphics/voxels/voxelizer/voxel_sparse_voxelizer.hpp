@@ -62,7 +62,7 @@ public:
 																  gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
 																							gl::access_flags::shader_read | gl::access_flags::shader_write,
 																							gl::access_flags::transfer_write),
-																  gl::buffer_memory_barrier(voxels->voxel_list_counter_buffer(),
+																  gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
 																							gl::access_flags::shader_read | gl::access_flags::shader_write,
 																							gl::access_flags::transfer_write)));
 		voxels->clear(recorder);
@@ -71,7 +71,7 @@ public:
 																  gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write),
-																  gl::buffer_memory_barrier(voxels->voxel_list_counter_buffer(),
+																  gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
 
@@ -86,10 +86,10 @@ public:
 				<< generate_voxel_list
 				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
 																 gl::pipeline_stage::compute_shader,
-																 gl::buffer_memory_barrier(voxels->voxel_list_buffer(),
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_buffer(),
 																						   gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
-																 gl::buffer_memory_barrier(voxels->voxel_list_counter_buffer(),
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
 																						   gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read)))
 				// Subdivide tree
@@ -101,10 +101,10 @@ public:
 			recorder
 				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 																 gl::pipeline_stage::fragment_shader,
-																 gl::buffer_memory_barrier(voxels->voxel_list_counter_buffer(),
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
-																 gl::buffer_memory_barrier(voxels->voxel_list_buffer(),
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_buffer(),
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write)));
 		};
