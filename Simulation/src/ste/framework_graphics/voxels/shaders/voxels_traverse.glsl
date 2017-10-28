@@ -118,7 +118,7 @@ voxel_unpacked_data_t voxel_interpolate_data(ivec3 u, vec3 v, uint node, uint le
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
-voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float step_length, float sin_theta, bool interpolate_data) {
+voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float distance_limit, float step_length, float sin_theta, bool interpolate_data) {
 	const bvec3 b_dir_gt_z = greaterThan(dir, vec3(.0f));
 	const vec3 edge = mix(vec3(.0f), vec3(1.f), b_dir_gt_z);
 	const vec3 recp_dir = 1.f / dir;
@@ -133,6 +133,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
 	// Compute voxel world positions
 	vec3 v = V / voxel_world + .5f;
 	const vec3 start_v = v;
+	const float dist_limit_sqr = sqr(distance_limit);
 
 	// Init
 	uint node = voxel_root_node;
@@ -148,12 +149,12 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
 	// Traverse
 	int level = 0;
 	for (uint i=0; i<step_limit; ++i) {
-		// Is cone width greater than level resolution?
 		const vec3 travelled = start_v - v;
 		const float dist_squared = dot(travelled, travelled);
+
+		// Is cone width greater than level resolution?
 		const float w_squared = 4.f * sqr(sin_theta) * dist_squared;
 		if (w_squared >= sqr(res.y) && level != 0 && sin_theta > .0f) {
-			// Hit
 			break;
 		}
 
@@ -203,6 +204,10 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
 
 		// Step v
 		v += step * res.y;
+		// Is distance limit reached?
+		if (!isinf(dist_limit_sqr) && dist_limit_sqr <= dist_squared * sqr(voxel_world)) {
+			break;
+		}
 
 		const int m = 1 << level_resolution;
 		const ivec3 u_hat = (u | ivec3(m - 1)) + mix(-ivec3(m), ivec3(1), b_dir_gt_z);
@@ -263,27 +268,77 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
-voxel_traversal_result_t voxel_traverse_ray(vec3 V, vec3 dir, uint step_limit) {
-	return voxel_traverse(V, dir, step_limit, .0f, .0f, true);
+voxel_traversal_result_t voxel_traverse_ray(vec3 V, vec3 dir, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  .0f, 
+						  .0f, 
+						  true);
+}
+
+/**
+*	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any, without data interpolation.
+*/
+voxel_traversal_result_t voxel_traverse_ray_fast(vec3 V, vec3 dir, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  .0f, 
+						  .0f, 
+						  false);
 }
 
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
-voxel_traversal_result_t voxel_traverse_fixed_step(vec3 V, vec3 dir, float step_length, uint step_limit) {
-	return voxel_traverse(V, dir, step_limit, step_length, .0f, true);
+voxel_traversal_result_t voxel_traverse_ray_fixed_step(vec3 V, vec3 dir, float step_length, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  step_length, 
+						  .0f, 
+						  true);
+}
+
+/**
+*	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any, without data interpolation.
+*/
+voxel_traversal_result_t voxel_traverse_ray_fixed_step_fast(vec3 V, vec3 dir, float step_length, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  step_length, 
+						  .0f, 
+						  false);
 }
 
 /**
 *	@brief	Traverses a cone from V in direction dir with some apex angle.
 */
-voxel_traversal_result_t voxel_traverse_cone(vec3 V, vec3 dir, float sin_theta, uint step_limit) {
-	return voxel_traverse(V, dir, step_limit, .0f, sin_theta, false);
+voxel_traversal_result_t voxel_traverse_cone(vec3 V, vec3 dir, float sin_theta, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  .0f, 
+						  sin_theta, 
+						  false);
 }
 
 /**
 *	@brief	Traverses a cone from V in direction dir with some apex angle.
 */
-voxel_traversal_result_t voxel_traverse_cone_fixed_step(vec3 V, vec3 dir, float sin_theta, float step_length, uint step_limit) {
-	return voxel_traverse(V, dir, step_limit, step_length, sin_theta, false);
+voxel_traversal_result_t voxel_traverse_cone_fixed_step(vec3 V, vec3 dir, float sin_theta, float step_length, uint step_limit, float distance_limit) {
+	return voxel_traverse(V, 
+						  dir, 
+						  step_limit, 
+						  distance_limit, 
+						  step_length, 
+						  sin_theta, 
+						  false);
 }
