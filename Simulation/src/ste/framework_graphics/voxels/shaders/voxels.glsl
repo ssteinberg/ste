@@ -4,7 +4,7 @@
 #include <material.glsl>
 
 // (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 5;
+layout(constant_id=2) const uint voxel_Pi = 4;
 // (2^P)^3 voxels per block
 layout(constant_id=1) const uint voxel_P = 2;
 // Voxel structure end level index
@@ -162,7 +162,7 @@ float decode_voxel_data_metallicity(uint data) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity, out float ior, out float metallicity) {
+void decode_voxel_data(voxel_data_t e, out vec3 albedo, out vec3 normal, out float roughness, out float opacity, out float ior, out float metallicity) {
 	albedo = decode_voxel_data_albedo(e.packed[0]);
 	normal = decode_voxel_data_normal(e.packed[1]);
 	opacity = decode_voxel_data_opacity(e.packed[2]);
@@ -186,6 +186,15 @@ uint voxel_resolution(uint level) {
 uint voxel_resolution_difference(uint level0, uint level1) {
 	uint p = voxel_P * (level1 - level0);
 	return 1 << p;
+}
+
+/**
+*	@brief	Returns the square-root of total possible node descendants.
+*/
+float voxel_full_occupancy_factor(uint level) {
+	uint power = mix(voxel_P * (voxel_leaf_level - level), voxel_Pi + voxel_P * (voxel_leaf_level - 1), level == 0);
+	float x = float(1 << power);
+	return x*x*x;
 }
 
 /**
@@ -236,10 +245,17 @@ uint voxel_node_data_offset(uint level, uint P) {
 }
 
 /**
+*	@brief	Returns the offset of the occupancy counter in a voxel node.
+*/
+uint voxel_node_occupancy_offset(uint level, uint P) {
+	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
+}
+
+/**
 *	@brief	Returns the offset of the children data in a voxel node.
 */
 uint voxel_node_children_offset(uint level, uint P) {
-	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
+	return voxel_node_occupancy_offset(level, P) + 1;
 }
 
 /**

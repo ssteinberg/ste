@@ -8,12 +8,6 @@
 layout(local_size_x = voxelizer_work_group_size) in;
 
 
-struct voxel_upsample_element_t {	
-	vec3 v;
-	uint node;
-};
-
-
 layout(std430, set=1, binding=2) restrict buffer voxel_assembly_list_binding {
 	voxel_list_element_t voxel_assembly_list_buffer[];
 };
@@ -34,13 +28,17 @@ void voxelize(uint level, float res, float block_size, uint chunk_start, uint ch
 		const vec3 v = mod(pos * res, block_size);
 		
 		// Subdivide
+		bool subdivided;
 		node = voxel_voxelize(node, 
 							  v,
 							  level,
-							  voxel_assembly_list_buffer[i].data);
+							  voxel_assembly_list_buffer[i].data,
+							  subdivided);
 		
 		// Save pointer to child node
-		voxel_assembly_list_buffer[i].voxel_node = node;
+		// For leaf nodes: Mark unique voxel fragments that have created a leaf. This allows us later to use them to increment occupancy counters.
+		uint node_writeout = node + (level == voxel_leaf_level-1 && subdivided ? 0x80000000 : 0);
+		voxel_assembly_list_buffer[i].voxel_node = node_writeout;
 	}
 }
 
@@ -51,6 +49,10 @@ void main() {
 	const uint voxel_list_chunk_size = (counter + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
 	const uint chunk_start = invocation_id * voxel_list_chunk_size;
 	const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, counter);
+	
+	// Clear counter, will be reused
+	barrier();
+	counter = 0;
 	
 	// Stage 1 -- Subdivide.
 	for (uint l=0; l<voxel_leaf_level; ++l) {
@@ -67,14 +69,20 @@ void main() {
 
 	// Stage 2 -- Write data to leafs and blend
 	for (uint i = chunk_start; i < chunk_end; ++i) {
-		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
+		const uint ptr = voxel_assembly_list_buffer[i].voxel_node & 0x7FFFFFFF;
 		const uint node = imageLoad(voxels, voxels_image_coords(ptr)).x;
 
 		voxel_voxelize_blend_user_data(node,
 									   voxel_leaf_level,
 									   voxel_assembly_list_buffer[i].data);
 	}
-	
-	// Clear counter, will be reused
-	counter = 0;
+
+	// Stage 3 -- Increment occupancy counters
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
+		if ((ptr & 0x80000000) == 0)
+			continue;
+
+		voxel_voxelize_increment_occupancy_counters(voxel_assembly_list_buffer[i].voxel_node_position);
+	}
 }

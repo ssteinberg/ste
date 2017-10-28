@@ -30,7 +30,7 @@ void voxel_voxelize_blend_user_data(uint node,
 	float opacity;
 	float ior;
 	float metallicity;
-	decode_voxel_data(data, normal, roughness, albedo, opacity, ior, metallicity);
+	decode_voxel_data(data, albedo, normal, roughness, opacity, ior, metallicity);
 
 	// Blend albedo
 	uint old_albedo_packed = 0;
@@ -111,7 +111,8 @@ void voxel_voxelize_blend_user_data(uint node,
 uint voxel_voxelize(uint node, 
 					vec3 brick,
 					uint level,
-					voxel_data_t data) {
+					voxel_data_t data,
+					out bool subdivided) {
 	const uint child_semaphore_lock = 0xFFFFFFFF;
 
 	const float block = voxel_block_extent(level);
@@ -127,7 +128,7 @@ uint voxel_voxelize(uint node,
 											   0,
 											   child_semaphore_lock);
 	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
-	if (old_child == 0) {		
+	if (old_child == 0) {
 		// Allocate memory for child, and write child pointer
 		const uint child_level = level + 1;
 		const uint child_size = voxel_node_size(child_level, voxel_P);
@@ -140,7 +141,33 @@ uint voxel_voxelize(uint node,
 		for (int u=0; u < child_volatile_size; ++u) 
 			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0)); 
 	}
+	
+	subdivided = old_child == 0;
 
 	// Return pointer to child node
 	return child_offset;
+}
+
+/**
+*	@brief	Traverses from root to leaf, atomically incrementing occupancy counter at each node.
+*/
+void voxel_voxelize_increment_occupancy_counters(vec3 v) {
+	uint node = voxel_root_node;
+
+	for (uint l=0; l<voxel_leaf_level; ++l) {
+		const float block = voxel_block_extent(l);
+		const uint P = voxel_block_power(l);
+		const vec3 brick = v * block;
+
+		const uint child_idx = voxel_brick_index(ivec3(brick), P);
+		const uint child_offset = node + voxel_node_children_offset(l, P) + child_idx;
+
+		// Increment occupancy counter
+		const uint occupancy_offset = node + voxel_node_occupancy_offset(l, P);
+		imageAtomicAdd(voxels, voxels_image_coords(occupancy_offset), 1);
+
+		// Traverse
+		node = imageLoad(voxels, voxels_image_coords(child_offset)).x;		
+		v = fract(brick);
+	}
 }

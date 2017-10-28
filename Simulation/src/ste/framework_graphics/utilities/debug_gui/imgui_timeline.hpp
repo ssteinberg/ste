@@ -59,7 +59,7 @@ inline void PlotTimeline(const ste::lib::vector<std::pair<ste::lib::string, floa
 		draw_list->AddText(ImGui::GetFont(),
 						   ImGui::GetFontSize()*1.f,
 						   ImVec2(offset + 3, canvasPosition.y + y0),
-						   ImColor(255, 0, 255, 255),
+						   ImColor(255, 128, 255, 255),
 						   t_str.data(), nullptr, 0.0f,
 						   &clip1);
 
