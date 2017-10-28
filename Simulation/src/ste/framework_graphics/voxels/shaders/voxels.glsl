@@ -189,6 +189,15 @@ uint voxel_resolution_difference(uint level0, uint level1) {
 }
 
 /**
+*	@brief	Returns the square-root of total possible node descendants.
+*/
+float voxel_full_occupancy_factor(uint level) {
+	uint power = mix(voxel_P * (voxel_leaf_level - level), voxel_Pi + voxel_P * (voxel_leaf_level - 1), level == 0);
+	float x = float(1 << power);
+	return x*x*x;
+}
+
+/**
 *	@brief	Returns block extent for given voxel level
 */
 float voxel_block_extent(uint level) {
@@ -236,10 +245,17 @@ uint voxel_node_data_offset(uint level, uint P) {
 }
 
 /**
+*	@brief	Returns the offset of the occupancy counter in a voxel node.
+*/
+uint voxel_node_occupancy_offset(uint level, uint P) {
+	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
+}
+
+/**
 *	@brief	Returns the offset of the children data in a voxel node.
 */
 uint voxel_node_children_offset(uint level, uint P) {
-	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
+	return voxel_node_occupancy_offset(level, P) + 1;
 }
 
 /**
