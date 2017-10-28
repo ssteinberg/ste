@@ -52,6 +52,10 @@ void main() {
 	const uint chunk_start = invocation_id * voxel_list_chunk_size;
 	const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, counter);
 	
+	// Clear counter, will be reused
+	barrier();
+	counter = 0;
+	
 	// Stage 1 -- Subdivide.
 	for (uint l=0; l<voxel_leaf_level; ++l) {
 		const float res = float(voxel_resolution(l));
@@ -74,7 +78,4 @@ void main() {
 									   voxel_leaf_level,
 									   voxel_assembly_list_buffer[i].data);
 	}
-	
-	// Clear counter, will be reused
-	counter = 0;
 }

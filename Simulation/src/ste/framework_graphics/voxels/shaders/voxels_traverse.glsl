@@ -8,11 +8,8 @@ layout(set=1, binding = 0) uniform usampler2D voxels;
 
 struct voxel_unpacked_data_t {
 	vec3 normal;
-	float roughness;
 	vec3 albedo;
-	float opacity;
-	float ior;
-	float metallicity;
+	vec4 roughness_opacity_ior_metallicity;
 };
 
 struct voxel_traversal_result_t {
@@ -26,6 +23,101 @@ uint voxels_read(uint ptr) {
 	uint x = ptr & (voxel_buffer_line-1);
 	uint y = ptr / voxel_buffer_line;
 	return texelFetch(voxels, ivec2(x,y), 0).x;
+}
+
+voxel_unpacked_data_t mix(voxel_unpacked_data_t x, voxel_unpacked_data_t y, float a) {
+	voxel_unpacked_data_t r;
+	r.normal = mix(x.normal, y.normal, a);
+	r.albedo = mix(x.albedo, y.albedo, a);
+	r.roughness_opacity_ior_metallicity = mix(x.roughness_opacity_ior_metallicity, y.roughness_opacity_ior_metallicity, a);
+
+	return r;
+}
+
+voxel_unpacked_data_t voxel_read_and_decode_data(uint node, uint level) {
+	voxel_data_t data;
+
+	uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
+	data.packed[0] = voxels_read(data_ptr + 0);
+	data.packed[1] = voxels_read(data_ptr + 1);
+	data.packed[2] = voxels_read(data_ptr + 2);
+	data.packed[3] = voxels_read(data_ptr + 3);
+
+	voxel_unpacked_data_t ret;
+	decode_voxel_data(data, 
+					  ret.albedo, 
+					  ret.normal, 
+					  ret.roughness_opacity_ior_metallicity.x, 
+					  ret.roughness_opacity_ior_metallicity.y, 
+					  ret.roughness_opacity_ior_metallicity.z, 
+					  ret.roughness_opacity_ior_metallicity.w);
+
+	return ret;
+}
+
+voxel_unpacked_data_t voxel_traverse_read_and_decode_data(ivec3 u, uint level, voxel_unpacked_data_t f) {
+	uint node = voxel_root_node;
+	int level_resolution = int(voxel_P * (level - 1));
+
+	// Traverse
+	for (uint l=0; l<level; ++l) {
+		const float block = voxel_block_extent(l);
+		const uint P = voxel_block_power(l);
+		const ivec3 brick = (u >> level_resolution) % int(1 << P);
+
+		const uint child_idx = voxel_brick_index(brick, P);
+		const uint child_offset = node + voxel_node_children_offset(l, P) + child_idx;
+
+		node = voxels_read(child_offset);
+		if (node == 0) {
+			return f;
+		}
+		
+		level_resolution -= int(voxel_P);
+	}
+	
+	// Read data
+	return voxel_read_and_decode_data(node, level);
+}
+
+voxel_unpacked_data_t voxel_interpolate_data(ivec3 u, vec3 v, uint node, uint level, vec3 dir) {
+	const float level_resolution = float(voxel_resolution(level - 1));
+	const ivec2 step = ivec2(1, 0);
+
+	const vec3 frac = v * level_resolution - (vec3(u) + .5f);
+	const ivec3 s = ivec3(sign(frac));
+	const vec3 f = abs(frac);
+
+	// Read 8 corners
+	voxel_unpacked_data_t d000 = voxel_read_and_decode_data(node, level);
+	voxel_unpacked_data_t d001 = voxel_traverse_read_and_decode_data(u + step.xyy * s, level, d000);
+	voxel_unpacked_data_t d010 = voxel_traverse_read_and_decode_data(u + step.yxy * s, level, d000);
+	voxel_unpacked_data_t d100 = voxel_traverse_read_and_decode_data(u + step.yyx * s, level, d000);
+	voxel_unpacked_data_t d011 = voxel_traverse_read_and_decode_data(u + step.xxy * s, level, mix(d010, d001, .5f));
+	voxel_unpacked_data_t d101 = voxel_traverse_read_and_decode_data(u + step.xyx * s, level, mix(d001, d100, .5f));
+	voxel_unpacked_data_t d110 = voxel_traverse_read_and_decode_data(u + step.yxx * s, level, mix(d010, d100, .5f));
+	voxel_unpacked_data_t d111 = voxel_traverse_read_and_decode_data(u + step.yxx * s, level, mix(d011, d110, .5f));
+	
+	// Mix
+	voxel_unpacked_data_t x00;
+	voxel_unpacked_data_t x01;
+	voxel_unpacked_data_t x11;
+	voxel_unpacked_data_t x10;
+	voxel_unpacked_data_t xy0;
+	voxel_unpacked_data_t xy1;
+	voxel_unpacked_data_t ret;
+	
+	x00 = mix(d000, d001, f.x);
+	x01 = mix(d100, d101, f.x);
+	x10 = mix(d010, d011, f.x);
+	x11 = mix(d110, d111, f.x);
+	
+	xy0 = mix(x00, x01, f.y);
+	xy1 = mix(x10, x11, f.y);
+	
+	ret = mix(xy0, xy1, f.z);
+	
+	return ret;
 }
 
 /**
@@ -117,7 +209,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
         ivec3 b_bar = b + b_offset; 
 
 		// Have we moved past the block edge?
-		const bool past_edge = any(lessThan(b_bar, ivec3(0))) || any(greaterThanEqual(b_bar, ivec3(1 << P)));
+		const bool past_edge = (b_bar & (~((1 << P) - 1))) != ivec3(0);
 		if (past_edge) {
 			if (level == 0) {
 				// No voxel was hit 
@@ -143,22 +235,13 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 dir, uint step_limit, float
 
 	
 	voxel_traversal_result_t ret;
-
-	if (level >= 0) {
+	if (level > 0) {
 		// Compute distance
 		const vec3 pos = (v - .5f) * voxel_world;
 		ret.distance = length(pos - V);
-		ret.level = level;
-		
+		ret.level = level;		
 		// Read data
-		uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
-		voxel_data_t data;
-		data.packed[0] = voxels_read(data_ptr + 0);
-		data.packed[1] = voxels_read(data_ptr + 1);
-		data.packed[2] = voxels_read(data_ptr + 2);
-		data.packed[3] = voxels_read(data_ptr + 3);
-
-		decode_voxel_data(data, ret.data.normal, ret.data.roughness, ret.data.albedo, ret.data.opacity, ret.data.ior, ret.data.metallicity);
+		ret.data = voxel_interpolate_data(u, v, node, level, dir);
 	}
 	else {
 		// No hit

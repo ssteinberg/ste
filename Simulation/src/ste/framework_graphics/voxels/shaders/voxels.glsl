@@ -4,7 +4,7 @@
 #include <material.glsl>
 
 // (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 5;
+layout(constant_id=2) const uint voxel_Pi = 4;
 // (2^P)^3 voxels per block
 layout(constant_id=1) const uint voxel_P = 2;
 // Voxel structure end level index
@@ -162,7 +162,7 @@ float decode_voxel_data_metallicity(uint data) {
 /**
 *	@brief	Decodes voxel information out of the voxel list
 */
-void decode_voxel_data(voxel_data_t e, out vec3 normal, out float roughness, out vec3 albedo, out float opacity, out float ior, out float metallicity) {
+void decode_voxel_data(voxel_data_t e, out vec3 albedo, out vec3 normal, out float roughness, out float opacity, out float ior, out float metallicity) {
 	albedo = decode_voxel_data_albedo(e.packed[0]);
 	normal = decode_voxel_data_normal(e.packed[1]);
 	opacity = decode_voxel_data_opacity(e.packed[2]);

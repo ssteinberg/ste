@@ -30,7 +30,7 @@ void voxel_voxelize_blend_user_data(uint node,
 	float opacity;
 	float ior;
 	float metallicity;
-	decode_voxel_data(data, normal, roughness, albedo, opacity, ior, metallicity);
+	decode_voxel_data(data, albedo, normal, roughness, opacity, ior, metallicity);
 
 	// Blend albedo
 	uint old_albedo_packed = 0;

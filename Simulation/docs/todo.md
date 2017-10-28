@@ -52,9 +52,10 @@
 36. Voxel GI:
 	- <strike>Sparse voxelizer</strike>
     - <strike>Voxel ray traversal</strike>
-    - Voxel cone traversal
+    - <strike>Voxel cone traversal</strike>
     - <strike>Voxel metadata</strike>
-    - Voxel data interpolation
+    - <strike>Voxel data interpolation</strike>
+    - Voxel-based shadows
 37. Polygonal lights: Beam focusing
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.
 39. Geometry culling: Better bounding volume or low-poly geometry
@@ -62,3 +63,4 @@
 41. Make sense out of gl\::vector/gl\::stable_vector
 42. <strike>VK_KHR_bind_memory2</strike>
 43. LRUCache: Robustness
+44. Fix voxel interpolation

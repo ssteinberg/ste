@@ -1528,11 +1528,6 @@
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_voxelize.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_clear_root.comp" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
-    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.frag_old" />
-    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.geom_old" />
-    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer.vert_old" />
-    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxelizer_upsampler.comp_old" />
-    <None Include="Simulation\src\ste\legacy\voxels\shaders\voxels.glsl" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.vert" />
