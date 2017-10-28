@@ -21,8 +21,8 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 6144;
-	static constexpr auto voxel_list_size = 5 * 1024 * 1024;
+	static constexpr auto max_voxel_tree_lines = 8192;
+	static constexpr auto voxel_list_size = 8 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 

@@ -20,7 +20,7 @@ namespace graphics {
 class voxel_sparse_voxelizer : public gl::fragment {
 	using Base = gl::fragment;
 
-	static constexpr std::uint32_t max_vertices_per_voxelization_chunk = 15000;
+	static constexpr std::uint32_t max_vertices_per_voxelization_chunk = 10000;
 
 private:
 	voxelizer_clear_root clear_root;
@@ -90,8 +90,8 @@ public:
 																						   gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
 																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
-																						   gl::access_flags::shader_write,
-																						   gl::access_flags::shader_read)))
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write)))
 				// Subdivide tree
 				<< subdivide;
 
@@ -106,7 +106,17 @@ public:
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
 																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_buffer(),
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																						   gl::access_flags::shader_read | gl::access_flags::shader_write)));
+																						   gl::access_flags::shader_write)))
+				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+																 gl::pipeline_stage::compute_shader,
+																 gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
+																 gl::image_memory_barrier(voxels->voxels_buffer_image().get_image(),
+																						  gl::image_layout::general,
+																						  gl::image_layout::general,
+																						  gl::access_flags::shader_write,
+																						  gl::access_flags::shader_write)));
 		};
 	}
 };
