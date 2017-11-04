@@ -72,7 +72,7 @@ auto host_read_image(const ste_context &ctx,
 	const auto surface_bytes = resource::surface_utilities::bytes<format>(surface_extent,
 																		  mips,
 																		  layers);
-	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent) * static_cast<std::uint64_t>(layers);
+	const auto surface_blocks = resource::surface_utilities::blocks_layer<format>(surface_extent, mips) * static_cast<std::uint64_t>(layers);
 
 	// Create regions to copy
 	lib::vector<buffer_image_copy_region_t> regions;
@@ -113,7 +113,7 @@ auto host_read_image(const ste_context &ctx,
 	// Create copy command
 	cmd_copy_image_to_buffer cpy_cmd(image,
 									 gl::image_layout::transfer_src_optimal,
-									 staging_buffer,
+									 *staging_buffer,
 									 regions);
 
 	// Create a batch
@@ -155,7 +155,7 @@ auto host_read_image(const ste_context &ctx,
 		(*fence)->get_wait();
 
 		// mmap
-		auto staging_ptr = staging_buffer.get_underlying_memory().template mmap<block_type>(0, surface_blocks);
+		auto staging_ptr = staging_buffer->get_underlying_memory().template mmap<block_type>(0, surface_blocks);
 		// Invalidate caches
 		staging_ptr->invalidate_ranges({ vk::vk_mapped_memory_range{ 0, surface_blocks } });
 

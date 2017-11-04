@@ -4,11 +4,11 @@
 #include <material.glsl>
 
 // (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 4;
+layout(constant_id=2) const uint voxel_Pi = 1;
 // (2^P)^3 voxels per block
-layout(constant_id=1) const uint voxel_P = 2;
+layout(constant_id=1) const uint voxel_P = 1;
 // Voxel structure end level index
-layout(constant_id=3) const uint voxel_leaf_level = 4;
+layout(constant_id=3) const uint voxel_leaf_level = 10;
 
 // Voxel world extent
 layout(constant_id=4) const float voxel_world = 1000;
@@ -219,7 +219,7 @@ uint voxel_block_power(uint level) {
 *	@brief	Calculates index of a brick in a block
 */
 uint voxel_brick_index(ivec3 brick, uint P) {
-	return brick.x + (((brick.z << P) + brick.y) << P);
+	return brick.z + (((brick.x << P) + brick.y) << P);
 }
 
 /**
@@ -255,7 +255,7 @@ uint voxel_node_occupancy_offset(uint level, uint P) {
 *	@brief	Returns the offset of the children data in a voxel node.
 */
 uint voxel_node_children_offset(uint level, uint P) {
-	return voxel_node_occupancy_offset(level, P) + 1;
+	return 0;//voxel_node_occupancy_offset(level, P) + 1;
 }
 
 /**

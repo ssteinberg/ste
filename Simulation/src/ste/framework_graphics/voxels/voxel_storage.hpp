@@ -21,7 +21,7 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
-	static constexpr auto max_voxel_tree_lines = 8192;
+	static constexpr auto max_voxel_tree_lines = 4096;
 	static constexpr auto voxel_list_size = 8 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
@@ -49,21 +49,21 @@ public:
 		: ctx(ctx),
 		  config(config),
 		  voxels(resource::surface_factory::image_empty_2d<gl::format::r32_uint>(ctx,
-																				 gl::image_usage::storage | gl::image_usage::sampled,
+																				 gl::image_usage::storage | gl::image_usage::sampled | gl::image_usage::transfer_src,
 																				 gl::image_layout::shader_read_only_optimal,
 																				 "voxels buffer",
 																				 glm::u32vec2{ voxel_buffer_line, max_voxel_tree_lines })),
 		  voxels_counter(ctx,
 						 1,
-						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
+						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst | gl::buffer_usage::transfer_src,
 						 "voxels counter buffer"),
 		  voxel_assembly_list(ctx,
 							  voxel_list_size,
-							  gl::buffer_usage::storage_buffer,
+							  gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_src,
 							  "voxel assembly list buffer"),
 		  voxel_assembly_list_counter(ctx,
 									  1,
-									  gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
+									  gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst | gl::buffer_usage::transfer_src,
 									  "voxel list counter buffer")
 	{}
 
@@ -76,9 +76,9 @@ public:
 	 */
 	void configure_voxel_pipeline(gl::device_pipeline &pipeline) const {
 		// Configure parameters
-		pipeline["voxel_P"] = config.P;
-		pipeline["voxel_Pi"] = config.Pi;
-		pipeline["voxel_leaf_level"] = config.leaf_level;
+//		pipeline["voxel_P"] = config.P;
+//		pipeline["voxel_Pi"] = config.Pi;
+//		pipeline["voxel_leaf_level"] = config.leaf_level;
 		pipeline["voxel_world"] = config.world;
 	}
 

@@ -147,27 +147,3 @@ uint voxel_voxelize(uint node,
 	// Return pointer to child node
 	return child_offset;
 }
-
-/**
-*	@brief	Traverses from root to leaf, atomically incrementing occupancy counter at each node.
-*/
-void voxel_voxelize_increment_occupancy_counters(vec3 v) {
-	uint node = voxel_root_node;
-
-	for (uint l=0; l<voxel_leaf_level; ++l) {
-		const float block = voxel_block_extent(l);
-		const uint P = voxel_block_power(l);
-		const vec3 brick = v * block;
-
-		const uint child_idx = voxel_brick_index(ivec3(brick), P);
-		const uint child_offset = node + voxel_node_children_offset(l, P) + child_idx;
-
-		// Increment occupancy counter
-		const uint occupancy_offset = node + voxel_node_occupancy_offset(l, P);
-		imageAtomicAdd(voxels, voxels_image_coords(occupancy_offset), 1);
-
-		// Traverse
-		node = imageLoad(voxels, voxels_image_coords(child_offset)).x;		
-		v = fract(brick);
-	}
-}
