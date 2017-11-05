@@ -76,9 +76,7 @@ public:
 	 */
 	void configure_voxel_pipeline(gl::device_pipeline &pipeline) const {
 		// Configure parameters
-//		pipeline["voxel_P"] = config.P;
-//		pipeline["voxel_Pi"] = config.Pi;
-//		pipeline["voxel_leaf_level"] = config.leaf_level;
+		pipeline["voxel_leaf_level"] = config.leaf_level;
 		pipeline["voxel_world"] = config.world;
 	}
 
@@ -88,7 +86,7 @@ public:
 	void clear(gl::command_recorder &recorder) const {
 		// Reset
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxels_counter),
-										static_cast<std::uint32_t>(config.voxel_tree_root_size()) >> 2);
+										static_cast<std::uint32_t>(config.node_size(0)) >> 2);
 		recorder << gl::cmd_fill_buffer(gl::buffer_view(voxel_assembly_list_counter),
 										static_cast<std::uint32_t>(0));
 	}

@@ -3,15 +3,13 @@
 #include <pack.glsl>
 #include <material.glsl>
 
-// (2^Pi)^3 voxels per initial block
-layout(constant_id=2) const uint voxel_Pi = 1;
 // (2^P)^3 voxels per block
-layout(constant_id=1) const uint voxel_P = 1;
+const uint voxel_P = 1;
 // Voxel structure end level index
-layout(constant_id=3) const uint voxel_leaf_level = 10;
+layout(constant_id=1) const uint voxel_leaf_level = 5;
 
 // Voxel world extent
-layout(constant_id=4) const float voxel_world = 1000;
+layout(constant_id=2) const float voxel_world = 1000;
 
 const uint voxelizer_work_group_size = 1024;
 
@@ -37,9 +35,8 @@ const uint voxel_root_node = 0;
 
 // Size of voxel block
 float voxel_tree_block_extent = float(1 << voxel_P);
-float voxel_tree_initial_block_extent = float(1 << voxel_Pi);
 // Resolution of maximal voxel level
-float voxel_grid_resolution = voxel_world / ((1 << voxel_Pi) * (1 << (voxel_P * (voxel_leaf_level - 1))));
+float voxel_grid_resolution = voxel_world / (1 << (voxel_P * voxel_leaf_level));
 
 const uint voxel_tree_node_data_size = 0;
 const uint voxel_tree_leaf_data_size = 16;
@@ -175,7 +172,7 @@ void decode_voxel_data(voxel_data_t e, out vec3 albedo, out vec3 normal, out flo
 *	@brief	Computes resolution of a given voxel level
 */
 uint voxel_resolution(uint level) {
-	uint p = voxel_Pi + voxel_P * level;
+	uint p = voxel_P * (level + 1);
 	return 1 << p;
 }
 
@@ -189,45 +186,32 @@ uint voxel_resolution_difference(uint level0, uint level1) {
 }
 
 /**
-*	@brief	Returns the square-root of total possible node descendants.
-*/
-float voxel_full_occupancy_factor(uint level) {
-	uint power = mix(voxel_P * (voxel_leaf_level - level), voxel_Pi + voxel_P * (voxel_leaf_level - 1), level == 0);
-	float x = float(1 << power);
-	return x*x*x;
-}
-
-/**
 *	@brief	Returns block extent for given voxel level
 */
 float voxel_block_extent(uint level) {
-	return mix(voxel_tree_block_extent, 
-			   voxel_tree_initial_block_extent,
-			   level == 0);
+	return voxel_tree_block_extent;
 }
 
 /**
 *	@brief	Returns block power (log2 of extent) for given voxel level
 */
 uint voxel_block_power(uint level) {
-	return mix(voxel_P, 
-			   voxel_Pi, 
-			   level == 0);
+	return voxel_P;
 }
 
 /**
 *	@brief	Calculates index of a brick in a block
 */
-uint voxel_brick_index(ivec3 brick, uint P) {
-	return brick.z + (((brick.x << P) + brick.y) << P);
+uint voxel_brick_index(ivec3 brick) {
+	return brick.z + (((brick.x << voxel_P) + brick.y) << voxel_P);
 }
 
 /**
 *	@brief	Returns the count of children in a node.
 *			Meaningless for leaf nodes.
 */
-uint voxel_node_children_count(uint level, uint P) {
-	return mix(1 << (3 * P), uint(0), level == voxel_leaf_level);
+uint voxel_node_children_count(uint level) {
+	return mix(1 << 3 * voxel_P, uint(0), level == voxel_leaf_level);
 }
 
 /**
@@ -240,30 +224,23 @@ uint voxel_node_user_data_size(uint level) {
 /**
 *	@brief	Returns the offset of the custom data in a voxel node.
 */
-uint voxel_node_data_offset(uint level, uint P) {
+uint voxel_node_data_offset(uint level) {
 	return uint(0);
-}
-
-/**
-*	@brief	Returns the offset of the occupancy counter in a voxel node.
-*/
-uint voxel_node_occupancy_offset(uint level, uint P) {
-	return voxel_node_data_offset(level, P) + voxel_node_user_data_size(level);
 }
 
 /**
 *	@brief	Returns the offset of the children data in a voxel node.
 */
-uint voxel_node_children_offset(uint level, uint P) {
-	return 0;//voxel_node_occupancy_offset(level, P) + 1;
+uint voxel_node_children_offset(uint level) {
+	return 0;
 }
 
 /**
 *	@brief	Returns the size of a voxel node.
 *			level must be > 0.
 */
-uint voxel_node_size(uint level, uint P) {
-	return mix(voxel_node_children_offset(level, P) + voxel_node_children_count(level, P), 
+uint voxel_node_size(uint level) {
+	return mix(voxel_node_children_offset(level) + voxel_node_children_count(level), 
 			   voxel_node_user_data_size(level),
 			   level == voxel_leaf_level);
 }
@@ -271,9 +248,9 @@ uint voxel_node_size(uint level, uint P) {
 /** 
 *    @brief    Returns the size of the volatile part of the node data that needs to be cleared to 0 upon node initialization. 
 */ 
-uint voxel_node_volatile_data_size(uint level, uint P) { 
-    return voxel_node_size(level, P);
+uint voxel_node_volatile_data_size(uint level) { 
+    return voxel_node_size(level);
 }
-uint voxel_node_volatile_data_offset(uint level, uint P) { 
+uint voxel_node_volatile_data_offset(uint level) { 
     return uint(0);
 }

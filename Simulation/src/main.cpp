@@ -634,9 +634,7 @@ int main()
 	 *	Voxel configuration
 	 */
 	graphics::voxels_configuration voxel_config;
-	voxel_config.Pi = 5;
-	voxel_config.P = 2;
-	voxel_config.leaf_level = 4;
+	voxel_config.leaf_level = 10;
 	voxel_config.world = 3500;
 
 
