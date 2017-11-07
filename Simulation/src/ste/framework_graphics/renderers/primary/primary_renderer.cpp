@@ -1,8 +1,6 @@
 ﻿
 #include <stdafx.hpp>
 #include <primary_renderer.hpp>
-#include <host_read_buffer.hpp>
-#include <random>
 
 using namespace ste;
 using namespace ste::graphics;

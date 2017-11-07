@@ -76,13 +76,4 @@ void main() {
 									   voxel_leaf_level,
 									   voxel_assembly_list_buffer[i].data);
 	}
-
-	// Stage 3 -- Increment occupancy counters
-	for (uint i = chunk_start; i < chunk_end; ++i) {
-		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
-		if ((ptr & 0x80000000) == 0)
-			continue;
-
-		voxel_voxelize_increment_occupancy_counters(voxel_assembly_list_buffer[i].voxel_node_position);
-	}
 }

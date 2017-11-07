@@ -444,9 +444,9 @@ void add_scene_lights(const ste_context &ctx,
 	std::mt19937 gen(rd());
 
 	for (auto &v : { metre_vec3{ 491.2_m,226.1_m,-616.67_m },
-					 metre_vec3{ 483.376_m,143_m,-222.51_m },
-					 metre_vec3{ 483.376_m,143_m,144.1_m },
-					 metre_vec3{ -242_m, 153_m, 552_m },
+//					 metre_vec3{ 483.376_m,143_m,-222.51_m },
+//					 metre_vec3{ 483.376_m,143_m,144.1_m },
+//					 metre_vec3{ -242_m, 153_m, 552_m },
 					 metre_vec3{  885_m, 153_m, 552_m } }) {
 #ifdef STATIC_SCENE
 		const graphics::rgb color = graphics::kelvin(1800);
@@ -634,10 +634,8 @@ int main()
 	 *	Voxel configuration
 	 */
 	graphics::voxels_configuration voxel_config;
-	voxel_config.Pi = 5;
-	voxel_config.P = 2;
-	voxel_config.leaf_level = 4;
-	voxel_config.world = 4000;
+	voxel_config.leaf_level = 10;
+	voxel_config.world = 3500;
 
 
 	/*
@@ -714,8 +712,8 @@ int main()
 	auto light1 = create_sphere_light_object(ctx, &scene, 7000_K, 8000_cd, 4_m, light1_pos, materials, material_layers);
 
 	const glm::vec3 sun_direction = glm::normalize(glm::vec3{ 0.f, -1.f, 0.f });
-	auto sun_light = scene.properties().lights_storage().allocate_directional_light(5770_K,
-																					1.88e+9_cd, 1496e+5_km, 695e+3_km, sun_direction);
+//	auto sun_light = scene.properties().lights_storage().allocate_directional_light(5770_K,
+//																					1.88e+9_cd, 1496e+5_km, 695e+3_km, sun_direction);
 
 
 	/*
@@ -915,7 +913,7 @@ int main()
 
 		light0.first->set_position(lp);
 		light0.second->set_model_transform(glm::mat4x3(glm::translate(glm::mat4(1.f), lp.v())));
-		sun_light->set_direction(sun_dir);
+//		sun_light->set_direction(sun_dir);
 #endif
 
 		time_elapsed += frame_time_ms;

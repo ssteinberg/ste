@@ -21,7 +21,7 @@ ivec2 voxels_image_coords(uint ptr) {
 void voxel_voxelize_blend_user_data(uint node,
 									uint level,
 									voxel_data_t data) {
-	const uint data_ptr = node + voxel_node_data_offset(level, voxel_P);
+	const uint data_ptr = node + voxel_node_data_offset(level);
 
 	// Unpack input user data
 	vec3 normal;
@@ -119,8 +119,8 @@ uint voxel_voxelize(uint node,
 	const uint P = voxel_block_power(level);
 		
 	// Calculate child index in block
-	const uint child_idx = voxel_brick_index(ivec3(brick), P);
-	const uint child_offset = node + voxel_node_children_offset(level, P) + child_idx;
+	const uint child_idx = voxel_brick_index(ivec3(brick));
+	const uint child_offset = node + voxel_node_children_offset(level) + child_idx;
 
 	// Attempt to acquire child semaphore lock
 	const uint old_child = imageAtomicCompSwap(voxels,
@@ -131,13 +131,13 @@ uint voxel_voxelize(uint node,
 	if (old_child == 0) {
 		// Allocate memory for child, and write child pointer
 		const uint child_level = level + 1;
-		const uint child_size = voxel_node_size(child_level, voxel_P);
+		const uint child_size = voxel_node_size(child_level);
 		const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
 		imageAtomicExchange(voxels, voxels_image_coords(child_offset), child_ptr);
 		
 		// Clear child 
-		const uint child_volatile_size = voxel_node_volatile_data_size(child_level, voxel_P); 
-		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(child_level, voxel_P); 
+		const uint child_volatile_size = voxel_node_volatile_data_size(child_level); 
+		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(child_level); 
 		for (int u=0; u < child_volatile_size; ++u) 
 			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0)); 
 	}
@@ -146,28 +146,4 @@ uint voxel_voxelize(uint node,
 
 	// Return pointer to child node
 	return child_offset;
-}
-
-/**
-*	@brief	Traverses from root to leaf, atomically incrementing occupancy counter at each node.
-*/
-void voxel_voxelize_increment_occupancy_counters(vec3 v) {
-	uint node = voxel_root_node;
-
-	for (uint l=0; l<voxel_leaf_level; ++l) {
-		const float block = voxel_block_extent(l);
-		const uint P = voxel_block_power(l);
-		const vec3 brick = v * block;
-
-		const uint child_idx = voxel_brick_index(ivec3(brick), P);
-		const uint child_offset = node + voxel_node_children_offset(l, P) + child_idx;
-
-		// Increment occupancy counter
-		const uint occupancy_offset = node + voxel_node_occupancy_offset(l, P);
-		imageAtomicAdd(voxels, voxels_image_coords(occupancy_offset), 1);
-
-		// Traverse
-		node = imageLoad(voxels, voxels_image_coords(child_offset)).x;		
-		v = fract(brick);
-	}
 }

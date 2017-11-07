@@ -20,6 +20,8 @@
 
 #include <cosine_distribution_integration.glsl>
 
+#include <voxels_traverse.glsl>
+
 float get_thickness(ivec2 coord,
 					sampler2D back_face_depth, 
 					sampler2D front_face_depth,
@@ -245,8 +247,16 @@ vec3 deferred_shade_fragment(g_buffer_element gbuffer_frag, ivec2 coord) {
 			continue;
 
 		// Shadow query
-		float shdw = deferred_evaluate_shadowing(frag,
-												 light);
+		/*float shdw = deferred_evaluate_shadowing(frag,
+												 light);*/
+		
+		vec3 biased_w_pos = frag.world_position + frag.n * voxel_grid_resolution;
+		vec3 shadow_v = light.ld.position - biased_w_pos;
+		float shadow_v_length = length(shadow_v);
+		vec3 ray_dir = shadow_v / shadow_v_length;
+//		voxel_traversal_result_t ret = voxel_traverse_ray_fast(biased_w_pos, ray_dir, 1000, shadow_v_length - 2.f * (light.ld.radius + voxel_grid_resolution));
+
+		float shdw = 1.f;//float(isinf(ret.distance));
 		float occlusion = max(.0f, cavity * shdw);
 
 		// For simple materials, bail is fully shadowed

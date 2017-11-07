@@ -26,8 +26,6 @@ void add_to_ll(int light_idx) {
 }
 
 void main() {
-	ll[120] = lights_length;
-
 	int light_idx = int(gl_GlobalInvocationID.x);
 	if (light_idx >= lights_length)
 		return;
