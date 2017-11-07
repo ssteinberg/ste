@@ -46,7 +46,7 @@ void main() {
 
 	vec3 V0 = transform_view_to_world_space(unproject_screen_position(.5f, (vec2( .5f, .5f) + coord) / vec2(backbuffer_size()))) - P;
 	V0 = V0 == vec3(0) ? vec3(1,0,0) : normalize(V0);
-	voxel_traversal_result_t ret0 = voxel_traverse_ray_fast(P, V0, 500);
+	voxel_traversal_result_t ret0 = voxel_traverse_ray(P, V0);
 
 	float dist = ret0.distance;
 

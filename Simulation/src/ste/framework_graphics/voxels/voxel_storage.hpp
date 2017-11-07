@@ -22,7 +22,7 @@ class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768;
 	static constexpr auto max_voxel_tree_lines = 4096;
-	static constexpr auto voxel_list_size = 8 * 1024 * 1024;
+	static constexpr auto voxel_list_size = 6 * 1024 * 1024;
 
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 

@@ -55,22 +55,20 @@ voxel_unpacked_data_t voxel_read_and_decode_data(uint node, uint level) {
 	return ret;
 }
 
-voxel_unpacked_data_t voxel_interpolate_data(ivec3 u, vec3 v, uint node, uint level, bool interpolate_data) {
-	return voxel_read_and_decode_data(node, level);
-}
-
 
 /**
 * @brief Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
-voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float step_length, float sin_theta, bool interpolate_data) {
+voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float step_length) {
 	const bvec3 b_dir_lt_zero = lessThan(D, vec3(.0f));
 	const vec3 dir = max(abs(D), vec3(1e-10f));
 	const vec3 recp_dir = 1.f / dir;
  
-	const uint P = voxel_P; 
-	const int mask = (1 << P) - 1;
-	const uint n = voxel_leaf_level - 1;
+	const uvec3 invert_dir = ivec3(b_dir_lt_zero) * uvec3(4,2,1);
+    const uint a = invert_dir.x + invert_dir.y + invert_dir.z;
+
+	const uint P = voxel_P;
+	const int n = int(voxel_leaf_level) - 1;
 	const float grid_res = float(voxel_resolution(n));
 	
 	// Compute voxel world positions
@@ -81,16 +79,16 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 	// Init
 	uint stack[voxel_leaf_level - 1];
 	uint node = voxel_root_node;
+	int level = 0;
  
 	// Traverse
-	int level = 0;
-	for (uint i=0; i<step_limit; ++i) {
+	const bool no_step_limit = step_limit == 0xFFFFFFFF;
+	for (uint i=0; no_step_limit || i<step_limit; ++i) {
 		const int level_resolution = int(P * (n - level));
 
 		// Calculate brick coordinates
-		ivec3 b = (u >> level_resolution) & mask;
-		b = mix(b, ivec3(mask) - b, b_dir_lt_zero);
-		const uint brick_idx = voxel_brick_index(b);
+		ivec3 b = (u >> level_resolution) & ((1 << P) - 1);
+		const uint brick_idx = voxel_brick_index(b) ^ a;
  
 		// Read child node address
 		const uint child_ptr = node + voxel_node_children_offset(level) + brick_idx;
@@ -111,6 +109,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 		}
 		else {
 			const float res = float(voxel_resolution(level));
+			const float recp_res = 1.f / res;
 
 			// No child, traverse.
 			const vec3 f = fma(-v, res.xxx, vec3(u >> level_resolution));
@@ -120,16 +119,14 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 			const vec3 step = max(t_bar, 1e-3f) * dir;
  
 			// Step v
-			v = fma(step, (1.f / res).xxx, v);
+			v = fma(step, recp_res.xxx, v);
  
-			const int m = 1 << level_resolution;
-			const ivec3 u_hat = (u | ivec3(m - 1)) + ivec3(1);
-			const ivec3 u_bar = step_length == .0f ? mix(ivec3(v * grid_res), u_hat, mixer) : ivec3(v * grid_res);
+			const vec3 u_hat = mix(vec3(0), vec3(0.5), mixer);
+			const ivec3 u_bar = step_length == .0f ? ivec3(fma(v, grid_res.xxx, u_hat)) : ivec3(v * grid_res);
   
 			// Pop, if needed
 			const int msb = max_element(findMSB(u_bar ^ u));
-			const int pop = max(0, msb - level_resolution) / int(P);
-			level -= pop;
+			level = n - msb;
 			if (level < 0) {
 				// No voxel was hit 
 				break;
@@ -149,7 +146,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 		ret.distance = length(pos - V);
  
 		// Read and interpolate data for ray traces
-		ret.data = voxel_interpolate_data(u, v, node, level, interpolate_data);
+		ret.data = voxel_read_and_decode_data(node, level);
 	}
 	else {
 		// No hit
@@ -162,25 +159,21 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 /**
 *	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
 */
+voxel_traversal_result_t voxel_traverse_ray(vec3 V, vec3 dir) {
+	return voxel_traverse(V, 
+						  dir, 
+						  0xFFFFFFFF, 
+						  .0f);
+}
+
+/**
+*	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any.
+*/
 voxel_traversal_result_t voxel_traverse_ray(vec3 V, vec3 dir, uint step_limit) {
 	return voxel_traverse(V, 
 						  dir, 
 						  step_limit, 
-						  .0f, 
-						  .0f, 
-						  true);
-}
-
-/**
-*	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any, without data interpolation.
-*/
-voxel_traversal_result_t voxel_traverse_ray_fast(vec3 V, vec3 dir, uint step_limit) {
-	return voxel_traverse(V, 
-						  dir, 
-						  step_limit, 
-						  .0f, 
-						  .0f, 
-						  false);
+						  .0f);
 }
 
 /**
@@ -190,19 +183,5 @@ voxel_traversal_result_t voxel_traverse_ray_fixed_step(vec3 V, vec3 dir, float s
 	return voxel_traverse(V, 
 						  dir, 
 						  step_limit, 
-						  step_length, 
-						  .0f, 
-						  true);
-}
-
-/**
-*	@brief	Traverses a ray from V in direction dir, returning the first hit voxel, if any, without data interpolation.
-*/
-voxel_traversal_result_t voxel_traverse_ray_fixed_step_fast(vec3 V, vec3 dir, float step_length, uint step_limit) {
-	return voxel_traverse(V, 
-						  dir, 
-						  step_limit, 
-						  step_length, 
-						  .0f, 
-						  false);
+						  step_length);
 }
