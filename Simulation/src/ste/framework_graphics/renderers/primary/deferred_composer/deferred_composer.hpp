@@ -32,11 +32,12 @@ public:
 		: Base(rs,
 			   gl::device_pipeline_graphics_configurations{},
 			   "fullscreen_triangle.vert", "deferred_compose.frag"),
-		material_luts(rs.acquire_storage<material_lut_storage>()),
-		voxels(voxels)
+		  material_luts(rs.acquire_storage<material_lut_storage>()),
+		  voxels(voxels) 
 	{
 		draw_task.attach_pipeline(pipeline());
 
+		// Attach materials resources
 		pipeline()["microfacet_refraction_fit_lut"] = gl::bind(gl::pipeline::combined_image_sampler(material_luts->get_microfacet_refraction_fit_lut(),
 																									rs.get_creating_context().device().common_samplers_collection().nearest_clamp_sampler()));
 		pipeline()["microfacet_transmission_fit_lut"] = gl::bind(gl::pipeline::combined_image_sampler(material_luts->get_microfacet_transmission_fit_lut(),
@@ -46,14 +47,22 @@ public:
 		pipeline()["ltc_ggx_amplitude"] = gl::bind(gl::pipeline::combined_image_sampler(material_luts->get_ltc_ggx_amplitude(),
 																						rs.get_creating_context().device().common_samplers_collection().linear_clamp_sampler()));
 
-		// Configure voxelization pipeline
-		pipeline()["voxels"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->voxels_buffer_image(), 
+		// Attach voxels resources
+		pipeline()["voxels"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->voxels_buffer_image(),
 																			 rs.get_creating_context().device().common_samplers_collection().nearest_clamp_sampler()));
+		pipeline()["bricks_albedo"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->albedo_bricks_image()),
+											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
+		pipeline()["bricks_normal"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->normal_bricks_image()),
+											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
+		pipeline()["bricks_metadata"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->metadata_bricks_image()),
+												 rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
+		// Configure voxels pipeline
 		voxels->configure_voxel_pipeline(pipeline());
 	}
+
 	~deferred_composer() noexcept {}
 
-	deferred_composer(deferred_composer&&) = default;
+	deferred_composer(deferred_composer &&) = default;
 
 	static auto create_fb_layout() {
 		gl::framebuffer_layout fb_layout;
@@ -72,7 +81,8 @@ public:
 	void attach_framebuffer(gl::framebuffer &fb) {
 		pipeline().attach_framebuffer(fb);
 	}
-	const auto& get_framebuffer_layout() const {
+
+	const auto &get_framebuffer_layout() const {
 		return pipeline().get_framebuffer_layout();
 	}
 

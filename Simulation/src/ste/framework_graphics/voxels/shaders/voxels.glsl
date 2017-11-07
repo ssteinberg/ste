@@ -43,6 +43,8 @@ const uint voxel_tree_leaf_data_size = 16;
 
 
 const uint voxel_buffer_line = 32768;
+const uint voxel_brick_line = 4096;
+const uint voxel_bricks_block = 3;
 
 
 const float voxel_data_roughness_max_value = .5f;

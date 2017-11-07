@@ -2,16 +2,25 @@
 #include <voxels.glsl>
 
 
-layout(r32ui, set=1, binding=0) restrict uniform uimage2D voxels;
-layout(std430, set=1, binding=1) restrict buffer voxel_counter_binding {
-	uint voxel_buffer_size;
-};
+layout(r32ui, set=1, binding=2) restrict uniform uimage2D voxels;				// R32 uint
+layout(rgba8, set=1, binding=3) restrict uniform image3D bricks_albedo;			// RGBA8 unorm
+layout(rgba8, set=1, binding=4) restrict uniform image3D bricks_normal;			// RGBA8 unorm
+layout(rgba8, set=1, binding=5) restrict uniform image3D bricks_metadata;		// RGBA8 unorm
+
+layout(std430, set=1, binding=6) restrict buffer voxels_counter_binding { uint voxel_buffer_size; };
+layout(std430, set=1, binding=7) restrict buffer bricks_counter_binding { uint brick_image_size; };
 
 
 ivec2 voxels_image_coords(uint ptr) {
 	uint x = ptr & (voxel_buffer_line-1);
 	uint y = ptr / voxel_buffer_line;
 	return ivec2(x,y);
+}
+
+ivec3 voxels_brick_coords(uint ptr) {
+	uint x = ptr & (voxel_brick_line-1);
+	uint y = ptr / voxel_brick_line;
+	return ivec3(x,y,0) * voxel_bricks_block;
 }
 
 
@@ -110,9 +119,7 @@ void voxel_voxelize_blend_user_data(uint node,
 */
 uint voxel_voxelize(uint node, 
 					vec3 brick,
-					uint level,
-					voxel_data_t data,
-					out bool subdivided) {
+					uint level) {
 	const uint child_semaphore_lock = 0xFFFFFFFF;
 
 	const float block = voxel_block_extent(level);
@@ -127,23 +134,67 @@ uint voxel_voxelize(uint node,
 											   voxels_image_coords(child_offset),
 											   0,
 											   child_semaphore_lock);
+
 	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
 	if (old_child == 0) {
-		// Allocate memory for child, and write child pointer
 		const uint child_level = level + 1;
-		const uint child_size = voxel_node_size(child_level);
-		const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
-		imageAtomicExchange(voxels, voxels_image_coords(child_offset), child_ptr);
+
 		
-		// Clear child 
-		const uint child_volatile_size = voxel_node_volatile_data_size(child_level); 
-		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(child_level); 
-		for (int u=0; u < child_volatile_size; ++u) 
-			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0)); 
+		if (child_level < voxel_leaf_level) {
+			// For nodes:
+			// Allocate memory for child, and write child pointer
+			const uint child_size = voxel_node_size(child_level);
+			const uint child_ptr = atomicAdd(voxel_buffer_size, child_size);
+			imageAtomicExchange(voxels, voxels_image_coords(child_offset), child_ptr);
+		
+			// Clear child 
+			const uint child_volatile_size = voxel_node_volatile_data_size(child_level); 
+			const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(child_level); 
+			for (int u=0; u < child_volatile_size; ++u) 
+				imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
+		}
+		else { // child_level == voxel_leaf_level - 1
+			// For leaf parents:
+			// Allocate a block in bricks image
+			const uint block_idx = atomicAdd(brick_image_size, 1);
+			imageAtomicExchange(voxels, voxels_image_coords(child_offset), block_idx);
+
+			// Clear bricks
+			ivec3 coord = voxels_brick_coords(block_idx);
+			for (int x=0;x<3;++x) {
+				for (int y=0;y<3;++y) {
+					for (int z=0;z<3;++z) {
+						imageStore(bricks_albedo,   coord + ivec3(x,y,z), vec4(.0f));
+						imageStore(bricks_normal,   coord + ivec3(x,y,z), vec4(.0f));
+						imageStore(bricks_metadata, coord + ivec3(x,y,z), vec4(.0f));
+					}
+				}
+			}
+		}
 	}
-	
-	subdivided = old_child == 0;
 
 	// Return pointer to child node
 	return child_offset;
+}
+
+/**
+*	@brief	Traverses a node, atomically marking leafs as occupied.
+*/
+uint voxel_voxelize_leaf(uint node, 
+						 vec3 brick) {
+	const float block = voxel_block_extent(level);
+	const uint P = voxel_block_power(level);
+		
+	// Calculate brick index in block
+	const uint brick_idx = voxel_brick_index(ivec3(brick));
+	const uint m = 1 << (24 + brick_idx);
+	
+	const uint brick_ptr = imageLoad(voxels, voxels_image_coords(node)).x;
+
+	if (brick_ptr & m == 0) {
+		// Atomically set bit
+	}
+
+	const uint brick_image_ptr = (brick_ptr & 0x00FFFFFF) * 8 + brick_idx;
+	return brick_image_ptr;
 }

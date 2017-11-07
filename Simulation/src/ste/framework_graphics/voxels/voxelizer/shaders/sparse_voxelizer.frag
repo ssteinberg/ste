@@ -7,10 +7,10 @@
 #include <voxels.glsl>
 
 
-layout(std430, set=1, binding=2) restrict writeonly buffer voxel_assembly_list_binding {
+layout(std430, set=1, binding=0) restrict writeonly buffer voxels_assembly_list_binding {
 	voxel_list_element_t voxel_assembly_list_buffer[];
 };
-layout(std430, set=1, binding=3) restrict buffer voxel_assembly_list_counter_binding {
+layout(std430, set=1, binding=1) restrict buffer voxels_assembly_list_counter_binding {
 	uint voxel_assembly_list_buffer_size;
 };
 

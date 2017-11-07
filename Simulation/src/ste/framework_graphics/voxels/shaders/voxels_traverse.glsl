@@ -3,7 +3,10 @@
 #include <voxels.glsl>
 
 
-layout(set=1, binding = 0) uniform usampler2D voxels;
+layout(set=1, binding = 2) uniform usampler2D voxels;
+layout(set=1, binding=3) uniform sampler3D bricks_albedo;		// RGBA8 unorm
+layout(set=1, binding=4) uniform sampler3D bricks_normal;		// RGBA8 unorm
+layout(set=1, binding=5) uniform sampler3D bricks_metadata;		// RGBA8 unorm
 
 
 struct voxel_unpacked_data_t {
