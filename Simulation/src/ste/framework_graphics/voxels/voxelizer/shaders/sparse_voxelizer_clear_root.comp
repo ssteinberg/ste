@@ -13,7 +13,7 @@ void main() {
 
 	// Clear root node
 	const uint root_volatile_data_size = voxel_node_volatile_data_size(0);
-	const uint offset = voxel_node_volatile_data_offset(0);
+	const uint offset = voxel_node_volatile_data_offset();
 
 	const uint clears_per_worker = (root_volatile_data_size + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
 

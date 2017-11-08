@@ -32,7 +32,7 @@ private:
 private:
 	using voxel_buffer_word_t = gl::std430<std::uint32_t>;
 
-	using voxel_data_t = gl::std430<glm::uvec4>;
+	using voxel_data_t = gl::std430<glm::uvec3>;
 	using voxel_assembly_list_element_t = gl::std430<voxel_data_t, glm::vec3, glm::uint>;
 	using voxel_upsample_list_element_t = gl::std430<glm::vec3, glm::uint>;
 
@@ -42,9 +42,14 @@ private:
 
 	// Voxel structure
 	gl::texture<gl::image_type::image_2d> voxels;
+	// Bricks images
 	gl::texture<gl::image_type::image_3d> bricks_albedo;
 	gl::texture<gl::image_type::image_3d> bricks_normal;
 	gl::texture<gl::image_type::image_3d> bricks_meta;
+	gl::image_view<gl::image_type::image_3d> bricks_albedo_view_rgba8;
+	gl::image_view<gl::image_type::image_3d> bricks_normal_view_rgba8;
+	gl::image_view<gl::image_type::image_3d> bricks_meta_view_rgba8;
+
 	// Allocation counter
 	gl::array<gl::std430<std::uint32_t>> voxels_counter;
 	gl::array<gl::std430<std::uint32_t>> brick_counter;
@@ -78,6 +83,12 @@ public:
 																					  gl::image_layout::shader_read_only_optimal,
 																					  "voxel metadata bricks",
 																					  glm::u32vec3{ brick_line, max_brick_lines, 1 } * bricks_block)),
+		  bricks_albedo_view_rgba8(bricks_albedo.get_image(),
+								   gl::format::r8g8b8a8_unorm),
+		  bricks_normal_view_rgba8(bricks_normal.get_image(),
+								   gl::format::r8g8b8a8_unorm),
+		  bricks_meta_view_rgba8(bricks_meta.get_image(),
+								 gl::format::r8g8b8a8_unorm),
 		  voxels_counter(ctx,
 						 1,
 						 gl::buffer_usage::storage_buffer | gl::buffer_usage::transfer_dst,
@@ -123,11 +134,15 @@ public:
 	}
 
 	auto &voxels_buffer_image() const { return voxels; }
-	auto &voxels_counter_buffer() const { return voxels_counter; }
 
 	auto &albedo_bricks_image() const { return bricks_albedo; }
 	auto &normal_bricks_image() const { return bricks_normal; }
 	auto &metadata_bricks_image() const { return bricks_meta; }
+	auto &albedo_bricks_image_rgba8() const { return bricks_albedo_view_rgba8; }
+	auto &normal_bricks_image_rgba8() const { return bricks_normal_view_rgba8; }
+	auto &metadata_bricks_image_rgba8() const { return bricks_meta_view_rgba8; }
+
+	auto &voxels_counter_buffer() const { return voxels_counter; }
 	auto &bricks_counter_buffer() const { return brick_counter; }
 
 	auto &voxel_assembly_list_buffer() const { return voxel_assembly_list; }

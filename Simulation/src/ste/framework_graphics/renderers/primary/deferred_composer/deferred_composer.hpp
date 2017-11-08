@@ -50,12 +50,12 @@ public:
 		// Attach voxels resources
 		pipeline()["voxels"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->voxels_buffer_image(),
 																			 rs.get_creating_context().device().common_samplers_collection().nearest_clamp_sampler()));
-		pipeline()["bricks_albedo"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->albedo_bricks_image()),
-											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
-		pipeline()["bricks_normal"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->normal_bricks_image()),
-											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
-		pipeline()["bricks_metadata"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->metadata_bricks_image()),
-												 rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler());
+		pipeline()["bricks_albedo"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->albedo_bricks_image_rgba8(),
+											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler()));
+		pipeline()["bricks_normal"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->normal_bricks_image_rgba8(),
+											   rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler()));
+		pipeline()["bricks_metadata"] = gl::bind(gl::pipeline::combined_image_sampler(voxels->metadata_bricks_image_rgba8(),
+												 rs.get_creating_context().device().common_samplers_collection().linear_clamp_anisotropic16_sampler()));
 		// Configure voxels pipeline
 		voxels->configure_voxel_pipeline(pipeline());
 	}
