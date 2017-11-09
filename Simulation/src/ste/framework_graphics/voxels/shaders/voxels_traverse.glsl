@@ -27,17 +27,21 @@ uint voxels_read(uint ptr) {
 }
 
 
-voxel_unpacked_data_t voxel_read_and_decode_data(vec3 v, uint brick_ptr, int level, const bvec3 b_dir_lt_zero) {
-	const float grid_res = float(voxel_resolution(level));
-	vec3 f = fract(v * grid_res);
-	f = mix(f, 1.f - f, b_dir_lt_zero);
+voxel_unpacked_data_t voxel_read_and_decode_data(vec3 v, ivec3 b, uint brick_ptr, int level, const bvec3 b_dir_lt_zero) {
+	const float grid_res = float(voxel_resolution(level - 1));
+	const vec3 uvw = mod(v * grid_res, 2.f);
+	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + b;
 
-	const ivec3 brick_idx = ivec3(round(f * 2.f));
-	
-	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + brick_idx;
+	// Read and interpolate bricks
+	vec3 n_ior = texelFetch(bricks_normal, coord, 0).xyz;
+	vec3 meta = texelFetch(bricks_metadata, coord, 0).xyz;
+	meta.y *= voxel_data_roughness_max_value;
 
 	voxel_unpacked_data_t ret;
 	ret.albedo = texelFetch(bricks_albedo, coord, 0).rgb;
+	ret.normal = snorm2x32_to_norm3x32(fma(n_ior.xy, vec2(2.f), vec2(-1.f)));
+	ret.roughness_opacity_ior_metallicity.z = mix(material_layer_min_ior, material_layer_max_ior, n_ior.z);
+	ret.roughness_opacity_ior_metallicity.yxw = meta;
 
 	return ret;
 }
@@ -62,19 +66,20 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 	vec3 v = V / voxel_world + .5f;
 	v = mix(v, 1.f - v, b_dir_lt_zero);
 	ivec3 u = ivec3(v * grid_res);
+	ivec3 b;
  
 	// Init
 	uint stack[voxel_leaf_level - 1];
 	uint node = voxel_root_node;
 	int level = 0;
- 
+
 	// Traverse
 	const bool no_step_limit = step_limit == 0xFFFFFFFF;
 	for (uint i=0; no_step_limit || i<step_limit; ++i) {
 		const int level_resolution = int(P) * (n - level);
 
 		// Calculate brick coordinates
-		const ivec3 b = (u >> level_resolution) & ((1 << P) - 1);
+		b = (u >> level_resolution) & ((1 << P) - 1);
 		const uint brick_idx = voxel_brick_index(b) ^ a;
  
 		// Check if we have child
@@ -83,18 +88,14 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 		if (has_child) {
 			// Step in
 			++level;
-
-			// Read child node address
-			const uint children_address = node + voxel_node_children_offset();
-			
    
 			if (level == voxel_leaf_level) {
 				// Hit leaf
-				node = voxels_read(children_address);
+				node = voxels_read(node + voxel_node_brick_image_address_offset());
 				break;
 			}
 			
-			node = voxels_read(children_address + brick_idx);
+			node = voxels_read(node + voxel_node_children_offset() + brick_idx);
 			stack[level - 1] = node;
 		}
 		else {
@@ -130,13 +131,16 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
  
 	voxel_traversal_result_t ret;
 	if (level > 0) {
-		// Compute distance
+		// Realign
 		v = mix(v, 1.f - v, b_dir_lt_zero);
+		b = mix(b, 1 - b, b_dir_lt_zero);
+
+		// Compute distance
 		const vec3 pos = (v - .5f) * voxel_world;
 		ret.distance = length(pos - V);
  
 		// Read and interpolate data for ray traces
-		ret.data = voxel_read_and_decode_data(v, node, level, b_dir_lt_zero);
+		ret.data = voxel_read_and_decode_data(v, b, node, level, b_dir_lt_zero);
 	}
 	else {
 		// No hit

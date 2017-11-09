@@ -14,12 +14,10 @@ layout(std430, set=1, binding=7) restrict buffer bricks_counter_binding { uint b
 /**
 *	@brief	Atomically blends voxel's data
 */
-void voxel_voxelize_blend_user_data(uint brick_node,
-									uint level,
+void voxel_voxelize_blend_user_data(uint brick_ptr,
+									vec3 brick,
 									voxel_data_t data) {
-	const uint brick_ptr = brick_node >> 3;
-	const uint brick_idx = brick_node & 7;
-	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + voxel_brick_coords(brick_idx);
+	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + ivec3(brick);
 
 	// Unpack input user data
 	vec3 normal;
@@ -129,7 +127,6 @@ uint voxel_voxelize(uint node,
 	if (old_child == 0) {
 		const uint child_level = level + 1;
 
-		
 		// For nodes:
 		// Allocate memory for child, and write child pointer
 		const uint child_size = voxel_node_size(child_level);
@@ -162,26 +159,24 @@ uint voxel_voxelize_leaf(uint node,
 	const uint P = voxel_block_power(level);
 		
 	// Calculate child index in block
-	const uint child_idx = voxel_brick_index(ivec3(brick));
-	const uint child_offset = node + voxel_node_children_offset();
+	const uint brick_idx = voxel_brick_index(ivec3(brick));
+	const uint brick_ptr_offset = node + voxel_node_brick_image_address_offset();
 
 	// Attempt to acquire child semaphore lock
 	const uint old_child = imageAtomicCompSwap(voxels,
-											   voxels_image_coords(child_offset),
+											   voxels_image_coords(brick_ptr_offset),
 											   0,
 											   child_semaphore_lock);
 
 	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
 	if (old_child == 0) {
-		const uint child_level = level + 1;
-
 		// For leafs:
 		// Allocate a block in bricks image
-		const uint block_idx = atomicAdd(brick_image_size, 1);
-		imageAtomicExchange(voxels, voxels_image_coords(child_offset), block_idx);
+		const uint address = atomicAdd(brick_image_size, 1);
+		imageAtomicExchange(voxels, voxels_image_coords(brick_ptr_offset), address);
 
 		// Clear bricks
-		ivec3 coord = voxels_brick_image_coords(block_idx);
+		ivec3 coord = voxels_brick_image_coords(address);
 		for (int x=0; x<voxel_bricks_block; ++x) {
 			for (int y=0; y<voxel_bricks_block; ++y) {
 				for (int z=0; z<voxel_bricks_block; ++z) {
@@ -194,8 +189,8 @@ uint voxel_voxelize_leaf(uint node,
 	}
 
 	// Atomically set occupancy bit
-	voxel_atomic_set_bit(node + voxel_node_binary_map_offset(), child_idx);
+	voxel_atomic_set_bit(node + voxel_node_binary_map_offset(), brick_idx);
 
-	// Return pointer to child node
-	return child_offset;
+	// Return pointer to brick image address node
+	return brick_ptr_offset;
 }

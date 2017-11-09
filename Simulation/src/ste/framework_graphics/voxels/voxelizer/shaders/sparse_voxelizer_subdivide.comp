@@ -38,6 +38,22 @@ void voxelize(uint level, float res, float block_size, uint chunk_start, uint ch
 	}
 }
 
+void write_leaf_data(float res, float block_size, uint chunk_start, uint chunk_end) {
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		// Read address of brick image
+		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
+		const uint brick_node = imageLoad(voxels, voxels_image_coords(ptr)).x;
+		// Extrapolate position in node
+		const vec3 pos = voxel_assembly_list_buffer[i].voxel_node_position;
+		const vec3 v = mod(pos * res, block_size);
+
+		// Blend data
+		voxel_voxelize_blend_user_data(brick_node,
+									   v,
+									   voxel_assembly_list_buffer[i].data);
+	}
+}
+
 void main() {
 	const uint invocation_id = gl_LocalInvocationID.x;
 	
@@ -64,12 +80,12 @@ void main() {
 	}
 
 	// Stage 2 -- Write data to leafs and blend
-	for (uint i = chunk_start; i < chunk_end; ++i) {
-		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
-		const uint brick_node = imageLoad(voxels, voxels_image_coords(ptr)).x;
+	const uint leaf_level = voxel_leaf_level - 1;
+	const float res_leaf = float(voxel_resolution(leaf_level));
+	const float block_size_leaf = float(1 << voxel_block_power(leaf_level));
 
-		voxel_voxelize_blend_user_data(brick_node,
-									   voxel_leaf_level,
-									   voxel_assembly_list_buffer[i].data);
-	}
+	write_leaf_data(res_leaf, 
+					block_size_leaf, 
+					chunk_start, 
+					chunk_end);
 }

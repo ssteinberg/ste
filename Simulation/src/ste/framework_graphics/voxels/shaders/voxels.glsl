@@ -219,8 +219,8 @@ ivec3 voxel_brick_coords(uint brick_idx) {
 *	@brief	Returns the count of children in a node.
 *			Meaningless for leaf nodes.
 */
-uint voxel_node_children_count() {
-	return 1u << 3 * voxel_P;
+uint voxel_node_children_count(uint level) {
+	return mix(1u << 3 * voxel_P, 0u, level == voxel_leaf_level);
 }
 
 /**
@@ -238,12 +238,19 @@ uint voxel_node_children_offset() {
 }
 
 /**
+*	@brief	Returns the offset of the brick image address in a voxel node.
+*/
+uint voxel_node_brick_image_address_offset() {
+	return 1u;
+}
+
+/**
 *	@brief	Returns the size of a voxel node.
 *			level must be > 0.
 */
 uint voxel_node_size(uint level) {
 	return voxel_node_children_offset() + 
-		   mix(voxel_node_children_count(), 1u, level == voxel_leaf_level - 1);
+		   mix(voxel_node_children_count(level), 1u, level == voxel_leaf_level - 1);
 }
 
 /** 
