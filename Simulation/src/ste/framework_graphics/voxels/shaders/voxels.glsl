@@ -11,6 +11,12 @@ layout(constant_id=1) const uint voxel_leaf_level = 5;
 // Voxel world extent
 layout(constant_id=2) const float voxel_world = 1000;
 
+// No mip-maps generation under this level
+layout(constant_id=3) const uint voxel_min_mipmap_level = 4;
+
+const uint voxel_mask = (1 << voxel_P) - 1;
+const uint voxel_mips = voxel_leaf_level - voxel_min_mipmap_level - 1;
+
 const uint voxelizer_work_group_size = 1024;
 
 
@@ -21,11 +27,25 @@ struct voxel_data_t {
 	uvec3 packed;
 };
 
+struct voxel_unpacked_data_t {
+	vec4 albedo;
+	vec3 normal;
+	float roughness;
+	float ior;
+	float metallicity;
+};
+
 struct voxel_list_element_t {
 	voxel_data_t data;
+	
+	// xy	node index
+	// z	node address
+	uvec3 voxel_node;
+};
 
-	vec3 voxel_node_position;
-	uint voxel_node;
+struct bricks_list_element_t {
+	// Packed node index (21-bits per component)
+	uvec2 node;
 };
 
 
@@ -39,8 +59,14 @@ float voxel_grid_resolution = voxel_world / (1 << (voxel_P * voxel_leaf_level));
 
 
 const uint voxel_buffer_line = 32768;
-const uint voxel_brick_line = 4096;
-const uint voxel_bricks_block = 3;
+
+// Bricks structure:
+//  albedo bricks		rgba8_unorm		3x8-bit RGB albedo, 8-bit opacity
+//  metadata bricks		rgba8_unorm		2x8-bit normal, 8-bit index-of-refraction, 8-bit metallicity
+//  roughness bricks	rg8_unorm		8-bit roughness, 8-bit occupancy (1.0 or 0.0 only)
+const uint voxel_brick_line = 4096u;
+const uint voxel_brick_max_lines = 2048u;
+const uint voxel_bricks_block = 3u;
 
 
 const float voxel_data_roughness_max_value = .5f;
@@ -56,6 +82,24 @@ ivec3 voxels_brick_image_coords(uint ptr) {
 	uint x = ptr & (voxel_brick_line-1);
 	uint y = ptr / voxel_brick_line;
 	return ivec3(x,y,0) * int(voxel_bricks_block);
+}
+
+vec3 voxels_brick_texture_coords(uint ptr, vec3 frac) {
+	const vec3 normalizer = vec3(voxel_brick_line, voxel_brick_max_lines, 1) * voxel_bricks_block;
+	ivec3 coord = voxels_brick_image_coords(ptr);
+
+	return (vec3(coord) + frac) / normalizer;
+}
+
+uvec2 voxels_pack_coordinates(uvec3 v) {
+	return v.xy | ((v.zz & uvec2(0x7FF, 0x3FF800)) << uvec2(21, 11));
+}
+uvec3 voxels_unpack_coordinates(uvec2 u) {
+	uvec3 v;
+	v.xy = u & 0x1FFFFF;
+	v.z = (u.x >> 21) + ((u.y & 0xFFE00000) >> 11);
+
+	return v;
 }
 
 
@@ -203,16 +247,8 @@ uint voxel_block_power(uint level) {
 /**
 *	@brief	Calculates index of a brick in a block
 */
-uint voxel_brick_index(ivec3 brick) {
+uint voxel_brick_index(uvec3 brick) {
 	return brick.z + (((brick.x << voxel_P) + brick.y) << voxel_P);
-}
-
-/**
-*	@brief	Calculates coordinates of a brick from index
-*/
-ivec3 voxel_brick_coords(uint brick_idx) {
-	ivec3 coord = ivec3((brick_idx.xxx >> ivec3(voxel_P * 2, voxel_P, 0)) & voxel_P);
-	return coord;
 }
 
 /**
@@ -231,13 +267,6 @@ uint voxel_node_binary_map_offset() {
 }
 
 /**
-*	@brief	Returns the offset of the children data in a voxel node.
-*/
-uint voxel_node_children_offset() {
-	return 1u;
-}
-
-/**
 *	@brief	Returns the offset of the brick image address in a voxel node.
 */
 uint voxel_node_brick_image_address_offset() {
@@ -245,12 +274,18 @@ uint voxel_node_brick_image_address_offset() {
 }
 
 /**
+*	@brief	Returns the offset of the children data in a voxel node.
+*/
+uint voxel_node_children_offset() {
+	return 2u;
+}
+
+/**
 *	@brief	Returns the size of a voxel node.
 *			level must be > 0.
 */
 uint voxel_node_size(uint level) {
-	return voxel_node_children_offset() + 
-		   mix(voxel_node_children_count(level), 1u, level == voxel_leaf_level - 1);
+	return mix(voxel_node_children_offset() + voxel_node_children_count(level), 12u, level == voxel_leaf_level);
 }
 
 /** 

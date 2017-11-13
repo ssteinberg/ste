@@ -46,11 +46,11 @@ void main() {
 
 	vec3 V0 = transform_view_to_world_space(unproject_screen_position(.5f, (vec2( .5f, .5f) + coord) / vec2(backbuffer_size()))) - P;
 	V0 = V0 == vec3(0) ? vec3(1,0,0) : normalize(V0);
-	voxel_traversal_result_t ret0 = voxel_traverse_ray(P, V0);
+	voxel_traversal_result_t ret0 = voxel_traverse_ray(P, V0, 150);
 
 	float dist = ret0.distance;
 
-	shaded_fragment = isinf(dist) ? vec3(10000,0,0) : ret0.data.albedo * 25.f;
+	shaded_fragment = isinf(dist) ? vec3(10000,0,0) : ret0.data.albedo.rgb * 25.f;
 	
 	vec3 xyY = XYZtoxyY(RGBtoXYZ(shaded_fragment));
 	frag_color = vec4(xyY, 1);

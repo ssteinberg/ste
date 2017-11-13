@@ -9,6 +9,7 @@
 #include <voxelizer_clear_root.hpp>
 #include <voxelizer_generate_voxel_list_fragment.hpp>
 #include <voxelizer_subdivide_fragment.hpp>
+#include <voxelizer_embed_bricks_fragment.hpp>
 
 #include <scene.hpp>
 
@@ -26,6 +27,7 @@ private:
 	voxelizer_clear_root clear_root;
 	voxelizer_generate_voxel_list_fragment generate_voxel_list;
 	voxelizer_subdivide_fragment subdivide;
+	voxelizer_embed_bricks_fragment embed_bricks;
 
 	const voxel_storage *voxels;
 
@@ -34,14 +36,17 @@ public:
 						   voxel_storage *voxels,
 						   const scene *s)
 		: Base(rs.get_creating_context()),
-		clear_root(rs, voxels),
-		generate_voxel_list(rs,
-							voxels,
-							s),
-		subdivide(rs,
-				  voxels),
-		voxels(voxels)
+		  clear_root(rs, voxels),
+		  generate_voxel_list(rs,
+							  voxels,
+							  s),
+		  subdivide(rs,
+					voxels),
+		  embed_bricks(rs,
+					   voxels),
+		  voxels(voxels) 
 	{}
+
 	~voxel_sparse_voxelizer() noexcept {}
 
 	voxel_sparse_voxelizer(voxel_sparse_voxelizer &&) = default;
@@ -62,7 +67,10 @@ public:
 																  gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
 																							gl::access_flags::shader_read | gl::access_flags::shader_write,
 																							gl::access_flags::transfer_write),
-																  gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
+																  gl::buffer_memory_barrier(voxels->bricks_counter_buffer(),
+																							gl::access_flags::shader_read | gl::access_flags::shader_write,
+																							gl::access_flags::transfer_write),
+																  gl::buffer_memory_barrier(voxels->brick_assembly_counter_buffer(),
 																							gl::access_flags::shader_read | gl::access_flags::shader_write,
 																							gl::access_flags::transfer_write)));
 		voxels->clear(recorder);
@@ -71,7 +79,10 @@ public:
 																  gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write),
-																  gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
+																  gl::buffer_memory_barrier(voxels->bricks_counter_buffer(),
+																							gl::access_flags::transfer_write,
+																							gl::access_flags::shader_read | gl::access_flags::shader_write),
+																  gl::buffer_memory_barrier(voxels->brick_assembly_counter_buffer(),
 																							gl::access_flags::transfer_write,
 																							gl::access_flags::shader_read | gl::access_flags::shader_write)));
 
@@ -82,6 +93,20 @@ public:
 			const bool done = generate_voxel_list.next(max_vertices_per_voxelization_chunk);
 
 			recorder
+				// Clear counters
+				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
+																 gl::pipeline_stage::transfer,
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						   gl::access_flags::transfer_write)))
+				<< gl::cmd_fill_buffer(gl::buffer_view(voxels->voxel_assembly_list_counter_buffer()),
+									   static_cast<std::uint32_t>(0))
+				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::transfer,
+																 gl::pipeline_stage::fragment_shader,
+																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
+																						   gl::access_flags::transfer_write,
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write)))
+
 				// Create voxel list
 				<< generate_voxel_list
 				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::fragment_shader,
@@ -90,8 +115,8 @@ public:
 																						   gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
 																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
-																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																						   gl::access_flags::shader_read | gl::access_flags::shader_write)))
+																						   gl::access_flags::shader_write,
+																						   gl::access_flags::shader_read)))
 				// Subdivide tree
 				<< subdivide;
 
@@ -101,9 +126,6 @@ public:
 			recorder
 				<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
 																 gl::pipeline_stage::fragment_shader,
-																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_counter_buffer(),
-																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
-																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
 																 gl::buffer_memory_barrier(voxels->voxel_assembly_list_buffer(),
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
 																						   gl::access_flags::shader_write)))
@@ -112,12 +134,35 @@ public:
 																 gl::buffer_memory_barrier(voxels->voxels_counter_buffer(),
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
 																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
+																 gl::buffer_memory_barrier(voxels->bricks_counter_buffer(),
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
+																 gl::buffer_memory_barrier(voxels->brick_assembly_counter_buffer(),
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						   gl::access_flags::shader_read | gl::access_flags::shader_write),
 																 gl::image_memory_barrier(voxels->voxels_buffer_image().get_image(),
 																						  gl::image_layout::general,
 																						  gl::image_layout::general,
-																						  gl::access_flags::shader_write,
-																						  gl::access_flags::shader_write)));
-		};
+																						  gl::access_flags::shader_read | gl::access_flags::shader_write,
+																						  gl::access_flags::shader_read | gl::access_flags::shader_write)));
+		}
+
+		// Generate interpolated bricks
+		recorder
+			<< gl::cmd_pipeline_barrier(gl::pipeline_barrier(gl::pipeline_stage::compute_shader,
+															 gl::pipeline_stage::compute_shader,
+															 gl::image_memory_barrier(voxels->voxels_buffer_image().get_image(),
+																					  gl::image_layout::general,
+																					  gl::image_layout::general,
+																					  gl::access_flags::shader_read | gl::access_flags::shader_write,
+																					  gl::access_flags::shader_read | gl::access_flags::shader_write),
+															 gl::buffer_memory_barrier(voxels->brick_assembly_counter_buffer(),
+																					   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																					   gl::access_flags::shader_read | gl::access_flags::shader_write),
+															 gl::buffer_memory_barrier(voxels->brick_assembly_list_buffer(),
+																					   gl::access_flags::shader_read | gl::access_flags::shader_write,
+																					   gl::access_flags::shader_read | gl::access_flags::shader_write)))
+			<< embed_bricks;
 	}
 };
 

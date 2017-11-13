@@ -17,6 +17,9 @@ struct voxels_configuration {
 	//tex: $(2^P)^3$ voxels per block
 	static constexpr std::uint32_t P = 1;
 
+	// No mip-maps generation under this level
+	std::uint32_t min_mipmap_level = 4;
+
 	// Size of voxel block
 	auto tree_block_extent() const {
 		return glm::vec3(static_cast<float>(1 << P));

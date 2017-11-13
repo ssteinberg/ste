@@ -1,0 +1,149 @@
+
+#type compute
+#version 450
+
+#include <voxels.glsl>
+
+layout(local_size_x = voxelizer_work_group_size) in;
+
+layout(r32ui, set=1, binding=2) restrict uniform uimage2D voxels;				// R32 uint
+layout(std430, set=1, binding=7) restrict buffer bricks_counter_binding { uint brick_image_size; };
+
+layout(r32ui, set=1, binding=3) restrict uniform uimage3D bricks_albedo;
+layout(r16ui, set=1, binding=4) restrict uniform uimage3D bricks_roughness;
+layout(r32ui, set=1, binding=5) restrict uniform uimage3D bricks_metadata;
+
+layout(set=1, binding=0) uniform sampler3D bricks_albedo_rgba8;
+layout(set=1, binding=1) uniform sampler3D bricks_roughness_rg8;
+layout(set=1, binding=6) uniform sampler3D bricks_metadata_rgba8;
+
+layout(std430, set=1, binding=9) restrict buffer brick_assembly_list_binding {
+	bricks_list_element_t bricks_assembly_list_buffer[];
+};
+layout(std430, set=1, binding=10) restrict buffer brick_assembly_counter_binding {
+	uint counter;
+};
+
+
+const uint n = voxel_leaf_level - 1;
+
+/**
+*	@brief	Decodes data out of a lead node
+*/
+voxel_data_t voxel_read_leaf_node(uint node) {
+	voxel_data_t data;
+	data.packed[0] = imageLoad(voxels, voxels_image_coords(node + 0)).x;
+	data.packed[1] = imageLoad(voxels, voxels_image_coords(node + 1)).x;
+	data.packed[2] = imageLoad(voxels, voxels_image_coords(node + 2)).x;
+
+	return data;
+}
+
+
+uint traverse_node(uint node, uvec3 v, uint level) {
+	const uint res = voxel_P * (n - level);	
+	const uvec3 brick = (v >> res) & voxel_mask;
+	const uint child_idx = voxel_brick_index(brick);
+	const uint child_offset = node + voxel_node_children_offset() + child_idx;
+		
+	return imageLoad(voxels, voxels_image_coords(child_offset)).x;
+}
+
+void fill(uint node, uint brick_ptr) {
+	const ivec3 coords = voxels_brick_image_coords(brick_ptr);
+
+	for (uint z=0; z<(1 << voxel_P); ++z) {
+		for (uint y=0; y<(1 << voxel_P); ++y) {
+			for (uint x=0; x<(1 << voxel_P); ++x) {
+				const ivec3 b = ivec3(x,y,z);
+				
+				const uint child_offset = node + voxel_node_children_offset() + voxel_brick_index(b);
+				const uint child = imageLoad(voxels, voxels_image_coords(child_offset)).x;
+				const bool occupied = child != 0;
+
+				// Read leaf node
+				voxel_data_t data;
+				if (occupied) {
+					data = voxel_read_leaf_node(child);
+				}
+				else {
+					data.packed[0] = 0;
+					data.packed[1] = 0;
+					data.packed[2] = 0;
+				}
+				
+				// Write brick
+				const uint o0 = (data.packed[0] & 0xFFFFFF) + ((data.packed[2] & 0x0000FF) << 24);
+				const uint o1 = (data.packed[1] & 0xFFFFFF) + ((data.packed[2] & 0xFF0000) << 8);
+				const uint o2 = ((data.packed[2] & 0x00FF00) >> 8) + ((uint(occupied) * 255) << 8);
+				imageStore(bricks_albedo, coords + b, o0.xxxx);
+				imageStore(bricks_metadata, coords + b, o1.xxxx);
+				imageStore(bricks_roughness, coords + b, o2.xxxx);
+			}
+		}
+	}
+}
+
+void allocate_fill(uint level, uint chunk_start, uint chunk_end) {
+	for (uint i = chunk_start; i < chunk_end; ++i) {
+		const uvec3 v = voxels_unpack_coordinates(bricks_assembly_list_buffer[i].node);
+		
+		// Traverse to node
+		uint node = voxel_root_node;
+		for (uint l=0; l<level; ++l) {
+			/*if (l == level-1 && l >= voxel_min_mipmap_level) {
+				// Allocate parent node and add it to bricks list
+				const uint brick_ptr_offset = node + voxel_node_brick_image_address_offset();
+				if (imageAtomicCompSwap(voxels, voxels_image_coords(brick_ptr_offset), 0, 0xFFFFFFFF) == 0)
+					bricks_assembly_list_buffer[atomicAdd(counter, 1)] = bricks_assembly_list_buffer[i];
+			}*/
+
+			node = traverse_node(node, v, l);
+			if (node == 0)
+				// This should never happen!
+				return;
+		}
+		
+		// Allocate a block in bricks image
+		const uint brick_ptr_offset = node + voxel_node_brick_image_address_offset();
+		const uint address = atomicAdd(brick_image_size, 1);
+		imageStore(voxels, voxels_image_coords(brick_ptr_offset), address.xxxx);
+
+		if (level == voxel_leaf_level - 1) {
+			// Fill brick block with node's children data
+			fill(node, address);
+		}
+		else {
+			// Mipmap brick block with bricks children
+			// TODO
+		}
+	}
+}
+
+void main() {
+	const uint invocation_id = gl_LocalInvocationID.x;
+	uint old_counter = 0;
+	
+	for (uint l = voxel_leaf_level-1; l >= voxel_leaf_level-1/*voxel_min_mipmap_level*/; --l) {
+		// Divide brick list into even sized chunks
+		const uint voxel_list_chunk_size = ((counter - old_counter) + voxelizer_work_group_size - 1) / voxelizer_work_group_size;
+		const uint chunk_start = invocation_id * voxel_list_chunk_size;
+		const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, counter - old_counter);
+
+		barrier();
+
+		// Stage 1 -- Allocate and fill 2x2x2 bricks with nodes' data from voxels octree
+		allocate_fill(l, chunk_start, chunk_end);
+		
+		memoryBarrier();
+		barrier();
+
+		// Stage 2 -- Interpolate bricks
+
+		if (l == voxel_leaf_level - 1) {
+			counter = 0;
+			barrier();
+		}
+		old_counter = counter;
+	}
+}

@@ -2087,6 +2087,9 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_clear_root.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_embed_bricks_fragment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />
@@ -2189,5 +2192,6 @@
     <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer.geom" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer.vert" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_clear_root.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_embed_bricks.comp" />
   </ItemGroup>
 </Project>

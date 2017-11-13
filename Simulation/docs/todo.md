@@ -55,6 +55,8 @@
     - <strike>Voxel cone traversal</strike>
     - <strike>Voxel metadata</strike>
     - <strike>Voxel data interpolation</strike>
+    - Voxel bricks
+    - Bricks mipmaps
     - Voxel-based shadows
 37. Polygonal lights: Beam focusing
 38. Lights: Better surface area, fall-off and max distance calculation for non-spherical lights.

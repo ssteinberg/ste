@@ -11,44 +11,63 @@ layout(local_size_x = voxelizer_work_group_size) in;
 layout(std430, set=1, binding=0) restrict buffer voxels_assembly_list_binding {
 	voxel_list_element_t voxel_assembly_list_buffer[];
 };
-layout(std430, set=1, binding=1) restrict buffer voxels_assembly_list_counter_binding {
+layout(std430, set=1, binding=1) restrict readonly buffer voxels_assembly_list_counter_binding {
 	uint counter;
+};
+layout(std430, set=1, binding=9) restrict writeonly buffer brick_assembly_list_binding {
+	bricks_list_element_t bricks_assembly_list_buffer[];
+};
+layout(std430, set=1, binding=10) restrict buffer brick_assembly_counter_binding {
+	uint bricks_assembly_list_counter;
 };
 
 
-void voxelize(uint level, float res, float block_size, uint chunk_start, uint chunk_end) {
+void voxelize(uint level, uint res, uint chunk_start, uint chunk_end) {
 	// Loop over invocation's chunk, traversing and subdividing nodes, and save child pointer
 	for (uint i = chunk_start; i < chunk_end; ++i) {
+		const uvec2 packed_coords = voxel_assembly_list_buffer[i].voxel_node.xy;
+
 		// Read current level node
 		uint node = level == 0 ? 
 			voxel_root_node : 
-			imageLoad(voxels, voxels_image_coords(voxel_assembly_list_buffer[i].voxel_node)).x;
+			imageLoad(voxels, voxels_image_coords(voxel_assembly_list_buffer[i].voxel_node.z)).x;
 		// Extrapolate position in node
-		const vec3 pos = voxel_assembly_list_buffer[i].voxel_node_position;
-		const vec3 v = mod(pos * res, block_size);
+		const uvec3 pos = voxels_unpack_coordinates(packed_coords);
+		const uvec3 v = (pos >> res) & voxel_mask;
 		
 		// Subdivide
-		if (level < voxel_leaf_level - 1)
-			node = voxel_voxelize(node, v, level);
-		else
-			node = voxel_voxelize_leaf(node, v);
+		bool subdivided;
+		node = voxel_voxelize(node, 
+							  v,
+							  level,
+							  subdivided);
 		
 		// Save pointer to child node
-		voxel_assembly_list_buffer[i].voxel_node = node;
+		voxel_assembly_list_buffer[i].voxel_node.z = node;
+
+		if (subdivided && level == voxel_leaf_level - 1) {
+			// Store node address and coordinates
+			bricks_list_element_t e;
+
+			uint idx = atomicAdd(bricks_assembly_list_counter, 1);
+			e.node = packed_coords;
+			
+			bricks_assembly_list_buffer[idx] = e;
+		}
 	}
 }
 
-void write_leaf_data(float res, float block_size, uint chunk_start, uint chunk_end) {
+void write_leaf_data(uint res, uint chunk_start, uint chunk_end) {
 	for (uint i = chunk_start; i < chunk_end; ++i) {
-		// Read address of brick image
-		const uint ptr = voxel_assembly_list_buffer[i].voxel_node;
-		const uint brick_node = imageLoad(voxels, voxels_image_coords(ptr)).x;
+		// Read address of node
+		const uint ptr = voxel_assembly_list_buffer[i].voxel_node.z;
+		const uint node = imageLoad(voxels, voxels_image_coords(ptr)).x;
 		// Extrapolate position in node
-		const vec3 pos = voxel_assembly_list_buffer[i].voxel_node_position;
-		const vec3 v = mod(pos * res, block_size);
+		const uvec3 pos = voxels_unpack_coordinates(voxel_assembly_list_buffer[i].voxel_node.xy);
+		const uvec3 v = (pos >> res) & voxel_mask;
 
 		// Blend data
-		voxel_voxelize_blend_user_data(brick_node,
+		voxel_voxelize_blend_user_data(node,
 									   v,
 									   voxel_assembly_list_buffer[i].data);
 	}
@@ -62,16 +81,14 @@ void main() {
 	const uint chunk_start = invocation_id * voxel_list_chunk_size;
 	const uint chunk_end = min((invocation_id + 1) * voxel_list_chunk_size, counter);
 	
-	// Clear counter, will be reused
-	barrier();
-	counter = 0;
+	const uint n = voxel_leaf_level - 1;
 	
 	// Stage 1 -- Subdivide nodes
 	for (uint l=0; l<voxel_leaf_level; ++l) {
-		const float res = float(voxel_resolution(l));
-		const float block_size = float(1 << voxel_block_power(l));
+		const uint level_resolution = voxel_P * (n - l);
 
-		voxelize(l, res, block_size,
+		// Subdivide
+		voxelize(l, level_resolution,
 				 chunk_start, chunk_end);
 	
 		// Need image barrier for voxel grid and buffer barrier for voxel list.
@@ -80,12 +97,7 @@ void main() {
 	}
 
 	// Stage 2 -- Write data to leafs and blend
-	const uint leaf_level = voxel_leaf_level - 1;
-	const float res_leaf = float(voxel_resolution(leaf_level));
-	const float block_size_leaf = float(1 << voxel_block_power(leaf_level));
-
-	write_leaf_data(res_leaf, 
-					block_size_leaf, 
+	write_leaf_data(0, 
 					chunk_start, 
 					chunk_end);
 }

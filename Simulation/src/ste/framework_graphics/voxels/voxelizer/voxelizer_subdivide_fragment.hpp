@@ -33,13 +33,10 @@ public:
 		pipeline()["voxels"] = gl::bind(gl::pipeline::storage_image(voxels->voxels_buffer_image()));
 		pipeline()["voxels_counter_binding"] = gl::bind(voxels->voxels_counter_buffer());
 
-		pipeline()["bricks_albedo"] = gl::bind(gl::pipeline::storage_image(voxels->albedo_bricks_image()));
-		pipeline()["bricks_normal"] = gl::bind(gl::pipeline::storage_image(voxels->normal_bricks_image()));
-		pipeline()["bricks_metadata"] = gl::bind(gl::pipeline::storage_image(voxels->metadata_bricks_image()));
-		pipeline()["bricks_counter_binding"] = gl::bind(voxels->bricks_counter_buffer());
-
 		pipeline()["voxels_assembly_list_counter_binding"] = gl::bind(voxels->voxel_assembly_list_counter_buffer());
 		pipeline()["voxels_assembly_list_binding"] = gl::bind(voxels->voxel_assembly_list_buffer());
+		pipeline()["brick_assembly_counter_binding"] = gl::bind(voxels->brick_assembly_counter_buffer());
+		pipeline()["brick_assembly_list_binding"] = gl::bind(voxels->brick_assembly_list_buffer());
 
 		// Configure voxelization pipeline
 		voxels->configure_voxel_pipeline(pipeline());

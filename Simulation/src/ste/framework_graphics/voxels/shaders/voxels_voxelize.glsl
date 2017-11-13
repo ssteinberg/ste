@@ -3,9 +3,6 @@
 
 
 layout(r32ui, set=1, binding=2) restrict uniform uimage2D voxels;				// R32 uint
-layout(r32ui, set=1, binding=3) restrict uniform uimage3D bricks_albedo;		// RGBA8 unorm
-layout(r32ui, set=1, binding=4) restrict uniform uimage3D bricks_normal;		// RGBA8 unorm
-layout(r32ui, set=1, binding=5) restrict uniform uimage3D bricks_metadata;		// RGBA8 unorm
 
 layout(std430, set=1, binding=6) restrict buffer voxels_counter_binding { uint voxel_buffer_size; };
 layout(std430, set=1, binding=7) restrict buffer bricks_counter_binding { uint brick_image_size; };
@@ -17,8 +14,6 @@ layout(std430, set=1, binding=7) restrict buffer bricks_counter_binding { uint b
 void voxel_voxelize_blend_user_data(uint brick_ptr,
 									vec3 brick,
 									voxel_data_t data) {
-	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + ivec3(brick);
-
 	// Unpack input user data
 	vec3 normal;
 	float roughness;
@@ -31,8 +26,8 @@ void voxel_voxelize_blend_user_data(uint brick_ptr,
 	// Blend albedo
 	uint old_albedo_packed = 0;
 	uint new_albedo_packed = data.packed[0];
-	while ((new_albedo_packed = imageAtomicCompSwap(bricks_albedo, 
-													coord,
+	while ((new_albedo_packed = imageAtomicCompSwap(voxels, 
+													voxels_image_coords(brick_ptr + 0),
 													old_albedo_packed,
 													new_albedo_packed)) != old_albedo_packed) {
 		old_albedo_packed = new_albedo_packed;
@@ -48,8 +43,8 @@ void voxel_voxelize_blend_user_data(uint brick_ptr,
 	// Blend normal, ior
 	uint old_normal_packed = 0;
 	uint new_normal_packed = data.packed[1];
-	while ((new_normal_packed = imageAtomicCompSwap(bricks_normal, 
-													coord, 
+	while ((new_normal_packed = imageAtomicCompSwap(voxels, 
+													voxels_image_coords(brick_ptr + 1),
 													old_normal_packed,
 													new_normal_packed)) != old_normal_packed) {
 		old_normal_packed = new_normal_packed;
@@ -67,8 +62,8 @@ void voxel_voxelize_blend_user_data(uint brick_ptr,
 	// Blend metadata
 	uint old_metadata_packed = 0;
 	uint new_metadata_packed = data.packed[2];
-	while ((new_metadata_packed = imageAtomicCompSwap(bricks_metadata, 
-													  coord, 
+	while ((new_metadata_packed = imageAtomicCompSwap(voxels, 
+													  voxels_image_coords(brick_ptr + 2),
 													  old_metadata_packed,
 													  new_metadata_packed)) != old_metadata_packed) {
 		old_metadata_packed = new_metadata_packed;
@@ -106,15 +101,13 @@ void voxel_atomic_set_bit(uint node, uint bit) {
 *	@brief	Traverses a node, atomically creating a child at supplied position.
 */
 uint voxel_voxelize(uint node, 
-					vec3 brick,
-					uint level) {
+					uvec3 brick,
+					uint level,
+					out bool subdivided) {
 	const uint child_semaphore_lock = 0xFFFFFFFF;
-
-	const float block = voxel_block_extent(level);
-	const uint P = voxel_block_power(level);
 		
 	// Calculate child index in block
-	const uint child_idx = voxel_brick_index(ivec3(brick));
+	const uint child_idx = voxel_brick_index(brick);
 	const uint child_offset = node + voxel_node_children_offset() + child_idx;
 
 	// Attempt to acquire child semaphore lock
@@ -122,9 +115,10 @@ uint voxel_voxelize(uint node,
 											   voxels_image_coords(child_offset),
 											   0,
 											   child_semaphore_lock);
-
+	
 	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
-	if (old_child == 0) {
+	subdivided = old_child == 0;
+	if (subdivided) {
 		const uint child_level = level + 1;
 
 		// For nodes:
@@ -135,7 +129,7 @@ uint voxel_voxelize(uint node,
 		
 		// Clear child 
 		const uint child_volatile_size = voxel_node_volatile_data_size(child_level); 
-		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset(); 
+		const uint volatile_data_ptr = child_ptr + voxel_node_volatile_data_offset();
 		for (int u=0; u < child_volatile_size; ++u)
 			imageStore(voxels, voxels_image_coords(volatile_data_ptr + u), uvec4(0));
 
@@ -145,52 +139,4 @@ uint voxel_voxelize(uint node,
 
 	// Return pointer to child node
 	return child_offset;
-}
-
-/**
-*	@brief	Traverses a node, atomically creating a child at supplied position.
-*/
-uint voxel_voxelize_leaf(uint node, 
-						 vec3 brick) {
-	const uint child_semaphore_lock = 0xFFFFFFFF;
-	const uint level = voxel_leaf_level - 1;
-
-	const float block = voxel_block_extent(level);
-	const uint P = voxel_block_power(level);
-		
-	// Calculate child index in block
-	const uint brick_idx = voxel_brick_index(ivec3(brick));
-	const uint brick_ptr_offset = node + voxel_node_brick_image_address_offset();
-
-	// Attempt to acquire child semaphore lock
-	const uint old_child = imageAtomicCompSwap(voxels,
-											   voxels_image_coords(brick_ptr_offset),
-											   0,
-											   child_semaphore_lock);
-
-	// Subdivide the node and create the child if, and only if, we have lock. Otherwise, we are done.
-	if (old_child == 0) {
-		// For leafs:
-		// Allocate a block in bricks image
-		const uint address = atomicAdd(brick_image_size, 1);
-		imageAtomicExchange(voxels, voxels_image_coords(brick_ptr_offset), address);
-
-		// Clear bricks
-		ivec3 coord = voxels_brick_image_coords(address);
-		for (int x=0; x<voxel_bricks_block; ++x) {
-			for (int y=0; y<voxel_bricks_block; ++y) {
-				for (int z=0; z<voxel_bricks_block; ++z) {
-					imageStore(bricks_albedo,   coord + ivec3(x,y,z), uvec4(0));
-					imageStore(bricks_normal,   coord + ivec3(x,y,z), uvec4(0));
-					imageStore(bricks_metadata, coord + ivec3(x,y,z), uvec4(0));
-				}
-			}
-		}
-	}
-
-	// Atomically set occupancy bit
-	voxel_atomic_set_bit(node + voxel_node_binary_map_offset(), brick_idx);
-
-	// Return pointer to brick image address node
-	return brick_ptr_offset;
 }

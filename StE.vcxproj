@@ -802,6 +802,7 @@
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_subdivide.comp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_traverse.glsl" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_clear_root.hpp" />
+    <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_embed_bricks_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_generate_voxel_list_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\voxelizer_subdivide_fragment.hpp" />
     <ClInclude Include="Simulation\src\ste\framework_graphics\voxels\voxels_configuration.hpp" />
@@ -1527,6 +1528,7 @@
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\shaders\voxels_voxelize.glsl" />
     <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_clear_root.comp" />
+    <None Include="Simulation\src\ste\framework_graphics\voxels\voxelizer\shaders\sparse_voxelizer_embed_bricks.comp" />
     <None Include="Simulation\src\ste\framework_resources\surfaces\utils\surface_utilities.hpp" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.frag" />
     <None Include="Simulation\src\ste\framework_text\rendering\shaders\text_distance_map_contour.geom" />

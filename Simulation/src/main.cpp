@@ -635,6 +635,7 @@ int main()
 	 */
 	graphics::voxels_configuration voxel_config;
 	voxel_config.leaf_level = 10;
+	voxel_config.min_mipmap_level = 5;
 	voxel_config.world = 3500;
 
 

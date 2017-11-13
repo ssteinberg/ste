@@ -3,17 +3,11 @@
 #include <voxels.glsl>
 
 
-layout(set=1, binding = 2) uniform usampler2D voxels;
+layout(set=1, binding=2) uniform usampler2D voxels;
 layout(set=1, binding=3) uniform sampler3D bricks_albedo;		// RGBA8 unorm
-layout(set=1, binding=4) uniform sampler3D bricks_normal;		// RGBA8 unorm
+layout(set=1, binding=4) uniform sampler3D bricks_roughness;	// R8G8 unorm
 layout(set=1, binding=5) uniform sampler3D bricks_metadata;		// RGBA8 unorm
 
-
-struct voxel_unpacked_data_t {
-	vec3 normal;
-	vec3 albedo;
-	vec4 roughness_opacity_ior_metallicity;
-};
 
 struct voxel_traversal_result_t {
 	float distance;
@@ -27,21 +21,46 @@ uint voxels_read(uint ptr) {
 }
 
 
-voxel_unpacked_data_t voxel_read_and_decode_data(vec3 v, ivec3 b, uint brick_ptr, int level, const bvec3 b_dir_lt_zero) {
+voxel_unpacked_data_t voxel_read_and_decode_brick(vec3 v, ivec3 b, uint brick_ptr, int level, const bvec3 b_dir_lt_zero) {
 	const float grid_res = float(voxel_resolution(level - 1));
 	const vec3 uvw = mod(v * grid_res, 2.f);
-	const ivec3 coord = voxels_brick_image_coords(brick_ptr) + b;
+	const vec3 coord = voxels_brick_texture_coords(brick_ptr, uvw);
 
 	// Read and interpolate bricks
-	vec3 n_ior = texelFetch(bricks_normal, coord, 0).xyz;
-	vec3 meta = texelFetch(bricks_metadata, coord, 0).xyz;
-	meta.y *= voxel_data_roughness_max_value;
+	vec2 roughness_occupancy = textureLod(bricks_roughness, coord, 0).xy;
+	float normalizer = 1.f / roughness_occupancy.y;
+
+	vec4 meta = textureLod(bricks_metadata, coord, 0) * normalizer;
+	roughness_occupancy.x *= normalizer;
 
 	voxel_unpacked_data_t ret;
-	ret.albedo = texelFetch(bricks_albedo, coord, 0).rgb;
-	ret.normal = snorm2x32_to_norm3x32(fma(n_ior.xy, vec2(2.f), vec2(-1.f)));
-	ret.roughness_opacity_ior_metallicity.z = mix(material_layer_min_ior, material_layer_max_ior, n_ior.z);
-	ret.roughness_opacity_ior_metallicity.yxw = meta;
+	ret.albedo = textureLod(bricks_albedo, coord, 0) * normalizer;
+
+	ret.normal = snorm2x32_to_norm3x32(fma(meta.xy, vec2(2.f), vec2(-1.f)));
+	ret.ior = mix(material_layer_min_ior, material_layer_max_ior, meta.z);
+	ret.metallicity = meta.w;
+	ret.roughness = roughness_occupancy.x * voxel_data_roughness_max_value;
+
+	return ret;
+}
+
+/**
+*	@brief	Decodes data out of a lead node
+*/
+voxel_unpacked_data_t voxel_read_and_decode_leaf_node(uint node) {
+	voxel_data_t data;
+	data.packed[0] = voxels_read(node + 0);
+	data.packed[1] = voxels_read(node + 1);
+	data.packed[2] = voxels_read(node + 2);
+
+	voxel_unpacked_data_t ret;
+	decode_voxel_data(data, 
+					  ret.albedo.rgb,
+					  ret.normal,
+					  ret.roughness,
+					  ret.albedo.a,
+					  ret.ior,
+					  ret.metallicity);
 
 	return ret;
 }
@@ -71,15 +90,17 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 	// Init
 	uint stack[voxel_leaf_level - 1];
 	uint node = voxel_root_node;
+	uint brick_ptr;
 	int level = 0;
 
 	// Traverse
 	const bool no_step_limit = step_limit == 0xFFFFFFFF;
-	for (uint i=0; no_step_limit || i<step_limit; ++i) {
+	uint i=0;
+	for (; no_step_limit || i<step_limit; ++i) {
 		const int level_resolution = int(P) * (n - level);
 
 		// Calculate brick coordinates
-		b = (u >> level_resolution) & ((1 << P) - 1);
+		b = (u >> level_resolution) & int(voxel_mask);
 		const uint brick_idx = voxel_brick_index(b) ^ a;
  
 		// Check if we have child
@@ -91,7 +112,7 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
    
 			if (level == voxel_leaf_level) {
 				// Hit leaf
-				node = voxels_read(node + voxel_node_brick_image_address_offset());
+				brick_ptr = voxels_read(node + voxel_node_brick_image_address_offset());
 				break;
 			}
 			
@@ -127,7 +148,9 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 			u = u_bar; 
 		}
 	}
- 
+
+	if (!no_step_limit && i == step_limit)
+		level = -1;
  
 	voxel_traversal_result_t ret;
 	if (level > 0) {
@@ -140,7 +163,8 @@ voxel_traversal_result_t voxel_traverse(vec3 V, vec3 D, uint step_limit, float s
 		ret.distance = length(pos - V);
  
 		// Read and interpolate data for ray traces
-		ret.data = voxel_read_and_decode_data(v, b, node, level, b_dir_lt_zero);
+		ret.data = voxel_read_and_decode_brick(v, b, brick_ptr, level, b_dir_lt_zero);
+		//ret.data = voxel_read_and_decode_leaf_node(node);
 	}
 	else {
 		// No hit

@@ -50,11 +50,13 @@ void main() {
 	vec4 rgba = material_base_texture(md, uv);
 	if (md.emission > .0f) 
 		rgba.rgb = material_emission(md);
+	
+	const float grid_res = float(voxel_resolution(voxel_leaf_level - 1));
 
 	voxel_list_element_t element;
 	// Encode voxel data and element position
 	element.data = encode_voxel_data(N, roughness, rgba.rgb, rgba.a, ior, metallicity);
-	element.voxel_node_position = v;
+	element.voxel_node.xy = voxels_pack_coordinates(uvec3(v * grid_res));
 	
 	// Add to voxel list
 	uint voxel_list_idx = atomicAdd(voxel_assembly_list_buffer_size, 1);
