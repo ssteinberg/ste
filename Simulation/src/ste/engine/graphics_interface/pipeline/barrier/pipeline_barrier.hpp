@@ -25,7 +25,7 @@ struct pipeline_barrier_barriers_expander {
 					lib::vector<buffer_memory_barrier> &buffer_barriers,
 					lib::vector<image_memory_barrier>  &image_barriers,
 					Barrier&& barrier, Barriers&&... barriers) {
-		(*this)(global_memory_barriers,
+		expand(global_memory_barriers,
 				buffer_barriers,
 				image_barriers,
 				std::forward<Barrier>(barrier));
@@ -34,8 +34,13 @@ struct pipeline_barrier_barriers_expander {
 				image_barriers,
 				std::forward<Barriers>(barriers)...);
 	}
+	void operator()(lib::vector<global_memory_barrier>&,
+					lib::vector<buffer_memory_barrier>&,
+					lib::vector<image_memory_barrier>&) const {}
+
+private:
 	template <typename Barrier>
-	void operator()(lib::vector<global_memory_barrier> &global_memory_barriers,
+	void expand(lib::vector<global_memory_barrier> &global_memory_barriers,
 					lib::vector<buffer_memory_barrier> &buffer_barriers,
 					lib::vector<image_memory_barrier>  &image_barriers,
 					Barrier&& barrier,
@@ -43,7 +48,7 @@ struct pipeline_barrier_barriers_expander {
 		global_memory_barriers.emplace_back(std::forward<Barrier>(barrier));
 	}
 	template <typename Barrier>
-	void operator()(lib::vector<global_memory_barrier> &global_memory_barriers,
+	void expand(lib::vector<global_memory_barrier> &global_memory_barriers,
 					lib::vector<buffer_memory_barrier> &buffer_barriers,
 					lib::vector<image_memory_barrier>  &image_barriers,
 					Barrier&& barrier,
@@ -51,7 +56,7 @@ struct pipeline_barrier_barriers_expander {
 		buffer_barriers.emplace_back(std::forward<Barrier>(barrier));
 	}
 	template <typename Barrier>
-	void operator()(lib::vector<global_memory_barrier> &global_memory_barriers,
+	void expand(lib::vector<global_memory_barrier> &global_memory_barriers,
 					lib::vector<buffer_memory_barrier> &buffer_barriers,
 					lib::vector<image_memory_barrier>  &image_barriers,
 					Barrier&& barrier,

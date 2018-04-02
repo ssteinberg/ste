@@ -109,7 +109,7 @@ public:
 	template <typename F>
 	thread_pool_task(F &&f) {
 		static_assert(std::is_invocable_v<F()>, "F not a valid functor of arity 0");
-		static_assert(std::is_void_v<R> || std::is_constructible_v<R, std::result_of_t<F()>>, "Result of F is not convetible to R");
+		static_assert(std::is_void_v<R> || std::is_constructible_v<R, std::invoke_result_t<F>>, "Result of F is not convertible to R");
 
 		std::promise<R> promise;
 		future = promise.get_future();

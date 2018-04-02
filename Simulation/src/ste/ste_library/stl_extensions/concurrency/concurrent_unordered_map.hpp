@@ -84,18 +84,16 @@ private:
 
 	// Arrange all the hashes together with the next pointer in a single cache line, and place the buckets in the next line. This allows us to search a whole 
 	// virtual bucket (7 elements on x86-64, 15 on x86) as well as access the next pointer without cache misses.
-	struct concurrent_map_virtual_bucket {
+	struct alignas(cache_line) concurrent_map_virtual_bucket {
 		std::array<std::atomic<hash_type>, N> hash;
 		std::atomic<concurrent_map_virtual_bucket*> next{ nullptr };
 
 		std::array<std::atomic<concurrent_map_bucket_data*>, N> buckets;
 
-		void *__unused;
-
 		static_assert(N * sizeof(hash_type) == sizeof(decltype(hash)));
 		static_assert(N * sizeof(concurrent_map_bucket_data*) == sizeof(decltype(buckets)));
 		static_assert(sizeof(decltype(buckets)) == sizeof(decltype(hash)));
-		static_assert(sizeof(decltype(next)) == sizeof(decltype(__unused)));
+		static_assert(sizeof(decltype(hash)) + sizeof(decltype(next)) == cache_line);
 
 		concurrent_map_virtual_bucket() {
 			std::fill(std::begin(hash), std::end(hash), 0);

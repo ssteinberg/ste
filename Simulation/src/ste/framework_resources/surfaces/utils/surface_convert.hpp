@@ -148,7 +148,7 @@ private:
 				auto layers = surface.layers();
 
 				// Take ownership of source's data buffer and create target surface storage
-				const auto src_ptr = lib::shared_ptr<std::uint8_t>(std::move(surface.storage));
+				const auto src_ptr = lib::shared_ptr<std::uint8_t[]>(std::move(surface.storage));
 				auto src_ptr_block = lib::reinterpret_pointer_cast<block_type>(src_ptr);
 				_detail::surface_storage<block_type> storage(std::move(src_ptr_block));
 

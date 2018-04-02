@@ -4,9 +4,12 @@
 #ifndef _PCH_
 #define _PCH_
 
+#define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
+#define _SILENCE_CXX17_NEGATORS_DEPRECATION_WARNING
+#define _SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING
+
 #include <cstdint>
 #include <cstddef>
-
 
 #ifdef _MSC_VER
 #include <windows.hpp>
