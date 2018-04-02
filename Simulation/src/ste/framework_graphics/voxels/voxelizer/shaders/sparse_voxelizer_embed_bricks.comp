@@ -91,12 +91,12 @@ void allocate_fill(uint level, uint chunk_start, uint chunk_end) {
 		// Traverse to node
 		uint node = voxel_root_node;
 		for (uint l=0; l<level; ++l) {
-			/*if (l == level-1 && l >= voxel_min_mipmap_level) {
+			if (l == level-1 && l >= voxel_min_mipmap_level) {
 				// Allocate parent node and add it to bricks list
 				const uint brick_ptr_offset = node + voxel_node_brick_image_address_offset();
 				if (imageAtomicCompSwap(voxels, voxels_image_coords(brick_ptr_offset), 0, 0xFFFFFFFF) == 0)
 					bricks_assembly_list_buffer[atomicAdd(counter, 1)] = bricks_assembly_list_buffer[i];
-			}*/
+			}
 
 			node = traverse_node(node, v, l);
 			if (node == 0)

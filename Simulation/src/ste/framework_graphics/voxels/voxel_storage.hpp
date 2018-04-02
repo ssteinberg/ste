@@ -21,9 +21,9 @@ namespace graphics {
 class voxel_storage {
 private:
 	static constexpr auto voxel_buffer_line = 32768u;
-	static constexpr auto max_voxel_tree_lines = 6000u;
+	static constexpr auto max_voxel_tree_lines = 5000u;
 
-	static constexpr auto voxel_assembly_list_size = 6u * 1024 * 1024;
+	static constexpr auto voxel_assembly_list_size = 5u * 1024 * 1024;
 	static constexpr auto brick_assembly_list_size = 16u * 1024 * 1024;
 
 	static constexpr auto brick_line = 4096u;

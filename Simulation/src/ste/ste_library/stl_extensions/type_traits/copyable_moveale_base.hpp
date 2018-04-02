@@ -10,6 +10,9 @@ struct move_ctor_deleter {};
 template <>
 struct move_ctor_deleter<false> {
 	move_ctor_deleter() = default;
+	move_ctor_deleter(const move_ctor_deleter&) = default;
+	move_ctor_deleter &operator=(move_ctor_deleter&&) = default;
+	move_ctor_deleter &operator=(const move_ctor_deleter&) = default;
 	move_ctor_deleter(move_ctor_deleter&&) = delete;
 };
 
@@ -18,6 +21,9 @@ struct move_assign_deleter {};
 template <>
 struct move_assign_deleter<false> {
 	move_assign_deleter() = default;
+	move_assign_deleter(move_assign_deleter&&) = default;
+	move_assign_deleter(const move_assign_deleter&) = default;
+	move_assign_deleter &operator=(const move_assign_deleter&) = default;
 	move_assign_deleter &operator=(move_assign_deleter&&) = delete;
 };
 
@@ -26,6 +32,9 @@ struct copy_ctor_deleter {};
 template <>
 struct copy_ctor_deleter<false> {
 	copy_ctor_deleter() = default;
+	copy_ctor_deleter(copy_ctor_deleter&&) = default;
+	copy_ctor_deleter &operator=(copy_ctor_deleter&&) = default;
+	copy_ctor_deleter &operator=(const copy_ctor_deleter&) = default;
 	copy_ctor_deleter(const copy_ctor_deleter&) = delete;
 };
 
@@ -34,6 +43,9 @@ struct copy_assign_deleter {};
 template <>
 struct copy_assign_deleter<false> {
 	copy_assign_deleter() = default;
+	copy_assign_deleter(copy_assign_deleter&&) = default;
+	copy_assign_deleter(const copy_assign_deleter&) = default;
+	copy_assign_deleter &operator=(copy_assign_deleter&&) = default;
 	copy_assign_deleter &operator=(const copy_assign_deleter&) = delete;
 };
 

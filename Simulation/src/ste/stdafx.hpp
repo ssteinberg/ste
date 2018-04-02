@@ -4,6 +4,8 @@
 #ifndef _PCH_
 #define _PCH_
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include <cstdint>
 #include <cstddef>
 
