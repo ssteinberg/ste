@@ -1373,6 +1373,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\lib\vector.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\atomic\atomic_pod.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\concurrent_vector.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\parking_lot.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\packed_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\functional\functor.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\memory\aligned_allocator.hpp" />
