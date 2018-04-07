@@ -183,6 +183,9 @@
     <ClCompile Include="Simulation\src\ste\framework_graphics\radiometry\spectral\kelvin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\parking_lot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Simulation\src\ste\engine\cache\lru_cache.hpp">
@@ -2088,6 +2091,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\parking_lot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_policies.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
