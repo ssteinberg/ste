@@ -78,9 +78,8 @@ public:
 	bool is_signalled() const noexcept { return signaled; }
 
 	// Returns a wait-performed boolean and the wait state as a pair
-	template <typename ParkPredicate, typename OnPark, typename Clock, typename Duration>
+	template <typename ParkPredicate, typename Clock, typename Duration>
 	std::pair<bool, parking_lot_wait_state> wait_until(ParkPredicate &&park_validation,
-													   OnPark &&on_park,
 													   const std::chrono::time_point<Clock, Duration> &until) {
 		const auto pred = [&]() { return signaled; };
 
@@ -99,7 +98,6 @@ public:
 				return { false, parking_lot_wait_state::park_validation_failed };
 
 			// Park
-			on_park();
 			do {
 				if (until != std::chrono::time_point<Clock, Duration>::max()) {
 					// On cv timeout always return a timeout result, even if the predicate is true at that stage.
@@ -226,8 +224,8 @@ private:
 					   OnPark &&on_park,
 					   const std::chrono::time_point<Clock, Duration> &until) {
 		// Park
+		on_park();
 		auto wait_result = node.wait_until(std::forward<ParkPredicate>(park_predicate),
-										   std::forward<OnPark>(on_park),
 										   until);
 
 		// Unregister node if wait has not been performed or timed-out,
@@ -372,31 +370,33 @@ public:
 	template <typename K, typename F, typename... Args>
 	bool count_and_unpark_all(const K &key, F&& f, const Args&... args) {
 		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
-		std::vector<node_t*> nodes;
-		nodes.reserve(32);
+
+		// Statically allocate, limiting to 32 nodes.
+		std::size_t count = 0;
+		std::array<node_t*, 32> nodes;
 
 		{
 			std::unique_lock<std::mutex> bucket_lock(park.m);
 
 			// Extract suitable nodes
 			auto node = park.head;
-			while (node) {
+			while (node && count < nodes.max_size()) {
 				if (node->id_equals(this, key)) {
 					assert(!node->is_signalled());
 
-					// Erase from dlist, and unpark.
+					// Extract from dlist
 					park.erase(node);
-					nodes.push_back(static_cast<node_t*>(node));
+					nodes[count++] = static_cast<node_t*>(node);
 				}
 
 				node = node->next;
 			}
 
 			// Unpark
-			if (nodes.size()) {
-				f(nodes.size());
-				for (auto &n : nodes)
-					n->signal(args...);
+			if (count) {
+				f(count);
+				for (auto *n = nodes.data();n!=nodes.data()+count;++n)
+					(*n)->signal(args...);
 
 				return true;
 			}

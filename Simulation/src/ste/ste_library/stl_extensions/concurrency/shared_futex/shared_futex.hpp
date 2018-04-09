@@ -17,22 +17,22 @@ class alignas(StoragePolicy::alignment) shared_futex_t {
 public:
 	using storage_policy = StoragePolicy;
 	using storage_type = typename storage_policy::storage_type;
-	using atomic_lock_type = decltype(std::declval<storage_type>().lock);
-	using lock_type = typename atomic_lock_type::value_type;
+	using atomic_latch_type = decltype(std::declval<storage_type>().latch);
+	using latch_type = typename atomic_latch_type::value_type;
 
-	static constexpr lock_type initial_value = storage_policy::initial_value;
+	static constexpr latch_type initial_value = storage_policy::initial_value;
 
-	static constexpr lock_type shared_lock_bit = static_cast<lock_type>(1);
-	static constexpr lock_type upgradeable_lock_bit = static_cast<lock_type>(1) << storage_policy::shared_bits;
-	static constexpr lock_type exclusive_lock_bit = static_cast<lock_type>(1) << (storage_policy::shared_bits + storage_policy::upgradeable_bits);
+	static constexpr latch_type shared_lock_bit = static_cast<latch_type>(1);
+	static constexpr latch_type upgradeable_lock_bit = static_cast<latch_type>(1) << storage_policy::shared_bits;
+	static constexpr latch_type exclusive_lock_bit = static_cast<latch_type>(1) << (storage_policy::shared_bits + storage_policy::upgradeable_bits);
 
-	static constexpr lock_type shared_mask = upgradeable_lock_bit - static_cast<lock_type>(1);
-	static constexpr lock_type upgradeable_mask = (exclusive_lock_bit - static_cast<lock_type>(1)) & ~shared_mask;
-	static constexpr lock_type exclusive_mask = ((exclusive_lock_bit << storage_policy::exclusive_bits) - static_cast<lock_type>(1)) & ~(upgradeable_mask | shared_mask);
-	static constexpr lock_type non_shared_mask = upgradeable_mask | exclusive_mask;
-	static constexpr lock_type all_locks_mask = shared_mask | upgradeable_mask | exclusive_mask;
+	static constexpr latch_type shared_mask = upgradeable_lock_bit - static_cast<latch_type>(1);
+	static constexpr latch_type upgradeable_mask = (exclusive_lock_bit - static_cast<latch_type>(1)) & ~shared_mask;
+	static constexpr latch_type exclusive_mask = ((exclusive_lock_bit << storage_policy::exclusive_bits) - static_cast<latch_type>(1)) & ~(upgradeable_mask | shared_mask);
+	static constexpr latch_type non_shared_mask = upgradeable_mask | exclusive_mask;
+	static constexpr latch_type all_locks_mask = shared_mask | upgradeable_mask | exclusive_mask;
 
-	static constexpr lock_type waiters_counters_offset = storage_policy::shared_bits + storage_policy::upgradeable_bits + storage_policy::exclusive_bits;
+	static constexpr latch_type waiters_counters_offset = storage_policy::shared_bits + storage_policy::upgradeable_bits + storage_policy::exclusive_bits;
 
 private:
 	storage_type storage;
@@ -42,7 +42,7 @@ public:
 
 	~shared_futex_t() {
 		// Futex dtored while lock is held or pending?
-		assert(storage.lock.load() == initial_value);
+		assert(storage.latch.load() == initial_value);
 	}
 
 	shared_futex_t(shared_futex_t &&) = delete;
@@ -170,7 +170,7 @@ template <typename Lock, typename BackoffPolicy, mechanism mec_>
 class generic_locker {
 public:
 	using storage_policy = typename Lock::storage_policy;
-	using lock_type = typename Lock::lock_type;
+	using latch_type = typename Lock::latch_type;
 
 	static constexpr auto mchnsm = mec_;
 
@@ -206,7 +206,7 @@ protected:
 		if (unregister_wait)
 			bits -= waiter_bits;
 
-		const auto prev = l.data().lock.fetch_add(bits);
+		const auto prev = l.data().latch.fetch_add(bits);
 
 		status = valid(prev) ?
 			lock_status::acquired :
@@ -219,7 +219,7 @@ protected:
 		return status == lock_status::acquired;
 	}
 	// Unlocks and registers us as a waiter in one rmw operation
-	lock_type unlock_and_register_waiter(Lock &l) noexcept {
+	latch_type unlock_and_register_waiter(Lock &l) noexcept {
 #ifdef SHARED_FUTEX_DEBUG
 		assert(status == lock_status::unacquired);
 #endif
@@ -228,7 +228,7 @@ protected:
 		const auto waiter_bits = locking_bits << Lock::waiters_counters_offset;
 		const auto bits = waiter_bits - locking_bits;
 
-		const auto new_value = l.data().lock.fetch_add(bits) + bits;
+		const auto new_value = l.data().latch.fetch_add(bits) + bits;
 
 		on_unlock(l, new_value);
 		status = lock_status::waiter;
@@ -266,30 +266,30 @@ protected:
 		const auto waiter_bits = locking_bits << Lock::waiters_counters_offset;
 
 		l.data().parks.fetch_add(-parked_bits);
-		l.data().lock.fetch_add(-waiter_bits);
+		l.data().latch.fetch_add(-waiter_bits);
 		status = lock_status::unacquired;
 
 #ifdef SHARED_FUTEX_STATS
 		debug_statistics.lock_rmw_instructions += 2;
 #endif
 	}
-	static void on_unlock(Lock &l, lock_type new_value) noexcept {
+	static void on_unlock(Lock &l, latch_type new_value) noexcept {
 		BackoffPolicy().on_unlock(l, new_value, mchnsm);
 	}
 
 protected:
-	// Decides whether the lock value, prior to a locking attempt, is valid for lock acquisition.
-	virtual bool valid(lock_type) const noexcept = 0;
+	// Decides whether the latch value, prior to a locking attempt, is valid for lock acquisition.
+	virtual bool valid(latch_type) const noexcept = 0;
 	// Specifies the bits used to perform the lock
-	virtual lock_type lock_bits() const noexcept = 0;
+	virtual latch_type lock_bits() const noexcept = 0;
 
-	virtual std::pair<bool, lock_type> should_try_lock(Lock &l, std::memory_order mo) const noexcept {
+	virtual std::pair<bool, latch_type> should_try_lock(Lock &l, std::memory_order mo) const noexcept {
 #ifdef SHARED_FUTEX_STATS
 		if (mo != std::memory_order_relaxed)
 			++debug_statistics.lock_atomic_loads;
 #endif
 
-		auto val = l.data().lock.load(mo);
+		auto val = l.data().latch.load(mo);
 		return std::make_pair(valid(val), val);
 	}
 	virtual bool should_try_lock_backoff_predicate(Lock &l, std::memory_order mo) const noexcept { return should_try_lock(l, mo).first; }
@@ -343,18 +343,25 @@ public:
 															iteration,
 															until);
 
-				// If we have been parked then one of the following two is possible:
+				// If we have been parked then one of the following is possible:
 				// - We have been signaled and unparked: Then we hold the lock, the unparker handles the lock acquisition for us, including 
 				//   unregistering from wait and park counters.
+				// - Predicate has been triggered, we can immediately try to retake lock.
 				// - Timed-out: Need to unregister and fail.
 				if (status == lock_status::parked) {
-#ifdef SHARED_FUTEX_DEBUG
-					assert(result == backoff_result::unparked || result == backoff_result::timeout);
-#endif
-
 					if (result == backoff_result::unparked) {
 						status = lock_status::acquired;
 						return true;
+					}
+					
+					if (result == backoff_result::park_predicate_triggered) {
+						l.data().parks.fetch_add(-lock_bits());
+						status = lock_status::waiter;
+
+						// Try locking again, also unregisters us from waiter counters
+						if (try_lock_impl<true>(l))
+							return true;
+						break;
 					}
 
 					// Timed-out
@@ -374,13 +381,6 @@ public:
 
 					new_lock_value = p.second;
 				}
-				// In case parking was attempted but not performed due to predicate trigger we can immediately reattempt to take the lock.
-				else if (result == backoff_result::park_predicate_triggered) {
-					// Try locking again, also unregisters us from waiter counters
-					if (try_lock_impl<true>(l))
-						return true;
-					break;
-				}
 			}
 
 #ifdef SHARED_FUTEX_STATS
@@ -396,7 +396,7 @@ public:
 #endif
 
 		const auto bits = -lock_bits();
-		auto new_value = l.data().lock.fetch_add(bits) + bits;
+		auto new_value = l.data().latch.fetch_add(bits) + bits;
 		status = lock_status::unacquired;
 
 #ifdef SHARED_FUTEX_STATS
@@ -418,8 +418,8 @@ class shared_locker final : public shared_futex_detail::generic_locker<
 	Lock, BackoffPolicy, 
 	shared_futex_detail::mechanism::shared_lock
 > {
-	lock_type lock_bits() const noexcept override final { return Lock::shared_lock_bit; }
-	bool valid(lock_type l) const noexcept override final {
+	latch_type lock_bits() const noexcept override final { return Lock::shared_lock_bit; }
+	bool valid(latch_type l) const noexcept override final {
 		return (l & Lock::non_shared_mask) == (Lock::initial_value & Lock::non_shared_mask);
 	}
 };
@@ -430,8 +430,8 @@ class upgradeable_locker final : public shared_futex_detail::generic_locker<
 	Lock, BackoffPolicy,
 	shared_futex_detail::mechanism::upgradeable_lock
 > {
-	lock_type lock_bits() const noexcept override final { return Lock::upgradeable_lock_bit; }
-	bool valid(lock_type l) const noexcept override final {
+	latch_type lock_bits() const noexcept override final { return Lock::upgradeable_lock_bit; }
+	bool valid(latch_type l) const noexcept override final {
 		return (l & Lock::non_shared_mask) == (Lock::initial_value & Lock::non_shared_mask);
 	}
 };
@@ -442,8 +442,8 @@ class exclusive_locker final : public shared_futex_detail::generic_locker<
 	Lock, BackoffPolicy,
 	shared_futex_detail::mechanism::exclusive_lock
 > {
-	lock_type lock_bits() const noexcept override final { return Lock::exclusive_lock_bit; }
-	bool valid(lock_type l) const noexcept override final {
+	latch_type lock_bits() const noexcept override final { return Lock::exclusive_lock_bit; }
+	bool valid(latch_type l) const noexcept override final {
 		return (l & Lock::all_locks_mask) == (Lock::initial_value & Lock::all_locks_mask);
 	}
 };
@@ -460,7 +460,7 @@ class lock_upgrader final : public shared_futex_detail::generic_locker<
 	shared_futex_detail::mechanism::upgrading_to_exclusive_lock
 > {
 
-	lock_type lock_bits() const noexcept override final {
+	latch_type lock_bits() const noexcept override final {
 		// We lock via reverting the upgradeable bit and setting the exclusive bit
 //		if (!lock_taken)
 //			return Lock::exclusive_lock_bit - Lock::upgradeable_lock_bit;
@@ -469,19 +469,19 @@ class lock_upgrader final : public shared_futex_detail::generic_locker<
 	}
 
 	// We just need to make sure there're no more shared holders.
-	bool valid(lock_type l) const noexcept override final { return (l & Lock::non_shared_mask) == (Lock::initial_value & Lock::non_shared_mask); }
+	bool valid(latch_type l) const noexcept override final { return (l & Lock::non_shared_mask) == (Lock::initial_value & Lock::non_shared_mask); }
 
 	// Always try to take lock, as taking lock is simply checking the lock value.
-	std::pair<bool, lock_type> should_try_lock(Lock &l, std::memory_order mo) const noexcept override final {
+	std::pair<bool, latch_type> should_try_lock(Lock &l, std::memory_order mo) const noexcept override final {
 		return std::make_pair(true, Lock::initial_value);
 	}
-	bool should_try_lock_backoff_predicate(Lock &l, std::memory_order mo) const noexcept override final { return valid(l.data().lock.load(mo)); }
+	bool should_try_lock_backoff_predicate(Lock &l, std::memory_order mo) const noexcept override final { return valid(l.data().latch.load(mo)); }
 
 public:
 	bool try_lock(Lock &l) noexcept override final {
 //		assert(!lock_taken);
 
-		const auto should_take = valid(l.data().lock.load());
+		const auto should_take = valid(l.data().latch.load());
 		if (should_take) {
 			// We effectively have the lock, mark it as exclusively owned
 			try_lock_impl<>(l);

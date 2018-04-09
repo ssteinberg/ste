@@ -20,7 +20,6 @@ struct statistics {
 	std::size_t lock_atomic_loads{};
 
 	std::size_t lock_parks{};
-	std::size_t lock_multiple_parks{};
 	std::size_t unparks{};
 };
 
