@@ -1377,6 +1377,7 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\parking_lot.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_common.hpp" />
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_latch.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_policies.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\container\packed_ptr.hpp" />
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\functional\functor.hpp" />

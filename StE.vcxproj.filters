@@ -2102,6 +2102,9 @@
     <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Simulation\src\ste\ste_library\stl_extensions\concurrency\shared_futex\shared_futex_latch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Simulation\src\ste\framework_graphics\material\shaders\material_evaluate.glsl" />

@@ -404,6 +404,17 @@ public:
 
 		return false;
 	}
+
+	/*
+	 *	@brief	Checks atomically if the parking slot is empty
+	 */
+	template <typename K>
+	bool is_slot_empty_hint(const K &key) const noexcept {
+		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
+
+		std::atomic_thread_fence(std::memory_order_acquire);
+		return park.tail == nullptr;
+	}
 };
 
 }
