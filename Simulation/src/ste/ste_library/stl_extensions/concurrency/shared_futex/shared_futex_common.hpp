@@ -4,18 +4,14 @@
 #pragma once
 
 //#define SHARED_FUTEX_DEBUG
-#define SHARED_FUTEX_STATS
+//#define SHARED_FUTEX_STATS
 
 namespace ste::shared_futex_detail {
 
 #ifdef SHARED_FUTEX_STATS
 
 struct statistics {
-	std::chrono::high_resolution_clock::duration unparking_time{};
-	std::chrono::high_resolution_clock::duration spinning_time{};
-
 	std::size_t iterations{};
-	std::size_t in_loop_try_lock_failures{};
 	std::size_t lock_rmw_instructions{};
 	std::size_t lock_atomic_loads{};
 

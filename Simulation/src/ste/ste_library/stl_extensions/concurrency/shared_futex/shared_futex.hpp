@@ -51,7 +51,6 @@ public:
 public:
 	lock_guard() = default;
 	explicit lock_guard(SharedFutex &futex, std::defer_lock_t) noexcept : l(&futex) {}
-
 	explicit lock_guard(SharedFutex &futex) noexcept : l(&futex) {
 		lock();
 	}
@@ -82,7 +81,6 @@ public:
 		std::swap(a.l, b.l);
 		std::swap(a.locker, b.locker);
 	}
-
 	void swap(lock_guard &o) noexcept { swap(*this, o); }
 
 	void lock() noexcept {
@@ -123,137 +121,27 @@ public:
 	operator bool() const noexcept { return owns_lock(); }
 };
 
-/*
-template <typename Latch, typename BackoffPolicy, shared_futex_detail::mechanism mechanism>
-class shared_futex_locking_protocol {
-	using latch_descriptor = typename Latch::latch_descriptor;
 
-protected:
-	latch_descriptor place_in_queue;
-	shared_futex_detail::lock_status status{ shared_futex_detail::lock_status::unacquired };
+namespace shared_futex_detail {
 
-protected:
-	// Checks if lock has reached our queue position
-	bool can_acquire_lock(const latch_descriptor &latch_value) const noexcept {
-		const auto p = Latch::template latch_queue_position<mechanism>(latch_value);
-		const auto shared_consumers = Latch::template consumers_in_flight<shared_futex_detail::mechanism::shared_lock>(latch_value);
+struct random_generator {
+	std::random_device r;
+	std::mt19937 gen;
+	std::uniform_real_distribution<float> dist;
 
-#ifdef SHARED_FUTEX_DEBUG
-		assert(status != shared_futex_detail::lock_status::acquired);
-#endif
+	random_generator() : gen(r()), dist(0,1) {}
 
-		return shared_consumers == 0 && p == place_in_queue;
-	}
-	
-	// Chooses a backoff protocol
-	shared_futex_detail::backoff_aggressiveness backoff_protocol(const latch_descriptor &latch_value) const noexcept {
-		static constexpr auto queue_position_for_normal_backoff = 2;
-		static constexpr auto queue_position_for_relaxed_backoff = 4;
-		
-		// To avoid wasting resources, relax the backoff protocol depending on the current queue position and out punched-in position.
-		const auto p = Latch::template latch_queue_position<mechanism>(latch_value);
-		if (place_in_queue < p + 2)
-			return shared_futex_detail::backoff_aggressiveness::aggressive;
-		if (place_in_queue < p + 3)
-			return shared_futex_detail::backoff_aggressiveness::normal;
-		return shared_futex_detail::backoff_aggressiveness::relaxed;
-	}
+	auto operator()() noexcept { return dist(gen); }
+};
 
-public:
-	bool try_lock(Latch &l) noexcept {
-		if (!l.template try_punch_in_and_acquire_lock<mechanism>())
-			return false;
-
-		status = shared_futex_detail::lock_status::acquired;
-		return true;
-	}
-
-	template <typename Clock, typename Duration>
-	bool try_lock_until(Latch &l, const std::chrono::time_point<Clock, Duration> &until) noexcept {
-		// Attempt lock. We assume this usually succeeds.
-		auto punch_in_result = l.template punch_in<mechanism>();
-		place_in_queue = punch_in_result.first;
-		auto latch_value = punch_in_result.second;
-		// Check if we have effectively acquired lock
-		if (can_acquire_lock(latch_value)) {
-			status = shared_futex_detail::lock_status::acquired;
-			return true;
-		}
-
-		// We have punched in, but it is not yet our turn.
-		status = shared_futex_detail::lock_status::waiting;
-
-		for (int iteration = 1;; ++iteration) {
-#ifdef SHARED_FUTEX_STATS
-			++shared_futex_detail::debug_statistics.iterations;
-#endif
-
-			// Once backoff policy decides to park us, register us as parked.
-			const auto park_predicate = [&]() {
-				// The parking mutex will provide an acquire fence
-				const auto v = l.load(std::memory_order_relaxed);
-				const auto p = Latch::template latch_queue_position<mechanism>(v);
-				return place_in_queue < p + 3;
-			};
-			const auto on_park = [&]() {
-				status = shared_futex_detail::lock_status::parked;
-			};
-			// Choose backoff agressiveness protocol
-			const auto aggressiveness = backoff_protocol(latch_value);
-			// Execute back-off policy
-			const auto backoff_key = Latch::template parking_key<mechanism>(place_in_queue);
-			const auto result = BackoffPolicy::backoff(l,
-													   aggressiveness,
-													   park_predicate,
-													   on_park,
-													   iteration,
-													   backoff_key,
-													   until);
-
-			// If we have been parked then one of the following is possible:
-			// - We have been signaled and unparked: Then we hold the lock, the unparker handles the lock acquisition for us, including 
-			//   unregistering from wait and park counters.
-			// - Predicate has been triggered, therefore lock has been acquired.
-			// - Timed-out: Need to unregister and fail.
-			if (status == shared_futex_detail::lock_status::parked) {
-				if (result == shared_futex_detail::backoff_result::timeout) {
-					// Timed-out
-					assert(false);
-					return false;
-				}
-			}
-
-			// After backoff we check, conservatively without ping-ponging cache lines, if we should reattempt to acquire lock.
-			latch_value = l.load();
-			if (can_acquire_lock(latch_value)) {
-				status = shared_futex_detail::lock_status::acquired;
-				return true;
-			}
-		}
-	}
-
-	void unlock(Latch &l) noexcept {
-#ifdef SHARED_FUTEX_DEBUG
-		assert(status == shared_futex_detail::lock_status::acquired);
-#endif
-
-		l.template punch_out<mechanism>();
-		status = shared_futex_detail::lock_status::unacquired;
-
-		// Try to unpark next one in line
-		const auto unpark_key = Latch::template parking_key<mechanism>(place_in_queue + 3);
-		if (!l.parking.is_slot_empty_hint(unpark_key)) {
-			// We might have a parked thread
-			l.parking.unpark_one(unpark_key);
-		}
-	}
-
-	bool owns_lock() const noexcept { return status == shared_futex_detail::lock_status::acquired; }
-};*/
+}
 
 template <typename Latch, typename BackoffPolicy, shared_futex_detail::mechanism mechanism>
 class shared_futex_locking_protocol {
 	using latch_descriptor = typename Latch::latch_descriptor;
+
+	// Pre-thread random generator
+	static thread_local shared_futex_detail::random_generator rand;
 
 protected:
 	shared_futex_detail::lock_status status{ shared_futex_detail::lock_status::unacquired };
@@ -266,17 +154,61 @@ protected:
 #ifdef SHARED_FUTEX_DEBUG
 		assert(status != shared_futex_detail::lock_status::acquired);
 #endif
-		const auto exclusive_waiters = Latch::template consumers_in_flight<shared_futex_detail::mechanism::exclusive_lock>(latch_value);
-		return exclusive_waiters == 0;
+		const auto exclusive_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::exclusive_lock>(latch_value);
+		const auto upgradeable_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::upgradeable_lock>(latch_value);
+		const auto shared_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::shared_lock>(latch_value);
+
+		if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock ||
+					  mechanism == shared_futex_detail::mechanism::upgradeable_lock) {
+			// Shared lockers are permitted iff there are no exclusive holders
+			return exclusive_holders == 0;
+		}
+		else if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock) {
+			// Exclusive lockers are permitted iff there are no holders of any kind
+			return exclusive_holders == 0 && upgradeable_holders == 0 && shared_holders == 0;
+		}
+		else {
+			static_assert(false, "wtf");
+			return false;
+		}
+	}
+
+	// Computes count of active exclusive waiters
+	std::size_t active_exclusive_waiters_count(Latch &l, const latch_descriptor &latch_value) const noexcept {
+		// We arrive after a lock attempt or lock load, which will provide the acquire memory fence.
+		const auto parked_value = l.load_parked(std::memory_order_relaxed);
+
+		// Read parked exclusive consumers
+		const auto exclusive_parked = Latch::template parked<shared_futex_detail::mechanism::exclusive_lock>(parked_value);
+		// Read waiters count
+		const auto exclusive_waiters = Latch::template waiters<shared_futex_detail::mechanism::exclusive_lock>(latch_value);
+		// Deduce active exclusive waiters
+		auto exclusive_active_waiters = exclusive_waiters - exclusive_parked;
+
+		// Make sure we don't underflow
+		using S = std::make_signed_t<latch_descriptor>;
+		return static_cast<std::size_t>(std::max<S>(0, static_cast<S>(exclusive_active_waiters)));
 	}
 
 	// Chooses a backoff protocol
 	shared_futex_detail::backoff_aggressiveness backoff_protocol(Latch &l, const latch_descriptor &latch_value) const noexcept {
-		// We arrive after a lock attempt or lock load, which will provide the acquire memory fence.
-		const auto parked = l.template load_parked_count<shared_futex_detail::mechanism::exclusive_lock>(std::memory_order_relaxed);
-		// Read waiters
+		static constexpr auto backoff_relaxed_waiters_threshold = 3;
+		static constexpr auto backoff_normal_waiters_threshold = 2;
+		static constexpr auto backoff_aggresive_waiters_threshold = 1;
 
-		return shared_futex_detail::backoff_aggressiveness::normal;
+		const auto x = active_exclusive_waiters_count(l, latch_value);
+		if (x <= backoff_aggresive_waiters_threshold)
+			return shared_futex_detail::backoff_aggressiveness::aggressive;
+		if (x <= backoff_normal_waiters_threshold)
+			return shared_futex_detail::backoff_aggressiveness::normal;
+		if (x <= backoff_relaxed_waiters_threshold)
+			return shared_futex_detail::backoff_aggressiveness::relaxed;
+		return shared_futex_detail::backoff_aggressiveness::very_relaxed;
+	}
+
+	// Specifies backoff key
+	static auto backoff_key() noexcept {
+		return Latch::template parking_key<mechanism>(0);
 	}
 
 public:
@@ -302,7 +234,9 @@ public:
 		}
 
 		// Can't take lock, revert and wait.
-		l.template release<mechanism>();
+		// We do not revert for shared waiters.
+		if constexpr (mechanism != shared_futex_detail::mechanism::shared_lock)
+			l.template revert<mechanism>();
 		status = shared_futex_detail::lock_status::waiting;
 
 		for (int iteration = 1;; ++iteration) {
@@ -321,17 +255,20 @@ public:
 
 				l.template register_parked<mechanism>();
 				status = shared_futex_detail::lock_status::parked;
+				
+#ifdef SHARED_FUTEX_STATS
+				++shared_futex_detail::debug_statistics.lock_parks;
+#endif
 			};
 			// Choose backoff agressiveness protocol
 			const auto aggressiveness = backoff_protocol(l, latch_value);
 			// Execute back-off policy
-			const auto backoff_key = Latch::template parking_key<mechanism>(0);
 			const auto result = BackoffPolicy::backoff(l,
 													   aggressiveness,
 													   park_predicate,
 													   on_park,
 													   iteration,
-													   backoff_key,
+													   backoff_key(),
 													   until);
 			/*		Possible backoff results:
 			 *	Timed-out - First we check if we can acquire lock, otherwise we revert state and fail.
@@ -346,16 +283,22 @@ public:
 			// On successful backoff we check, conservatively without ping-ponging cache lines, if we should reattempt to acquire lock.
 			if (result == shared_futex_detail::backoff_result::park_predicate_triggered || 
 				can_acquire_lock(l.load())) {
-				// Try to acquire
-				latch_value = l.template acquire<mechanism>();
-
-				if (can_acquire_lock(latch_value)) {
-					// We have lock
+				if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock) {
+					// For shared lockers we only wait for non-shared holders to clear out
 					status = shared_futex_detail::lock_status::acquired;
 				}
 				else {
-					// Revert
-					l.template release<mechanism>();
+					// For non-shared we need to actively reattempt lock acquisition
+					latch_value = l.template reattempt_acquire<mechanism>();
+
+					if (can_acquire_lock(latch_value)) {
+						// We have lock
+						status = shared_futex_detail::lock_status::acquired;
+					}
+					else {
+						// Revert
+						l.template revert<mechanism>();
+					}
 				}
 			}
 			
@@ -371,31 +314,73 @@ public:
 				status = shared_futex_detail::lock_status::unacquired;
 				return false;
 			}
+
 			// Otherwise go back to waiting
+
+			// If we have been unparked, reset iterations counter to restart backoff policy.
+			if (status == shared_futex_detail::lock_status::parked)
+				iteration = 0;
 			status = shared_futex_detail::lock_status::waiting;
 		}
 	}
 
 	void unlock(Latch &l) noexcept {
+		// If exclusive waiters count is lower than this threshold, a unpark new one.
+		static constexpr auto exclusive_waiters_count_thershold_for_unpark = 1;
+
 #ifdef SHARED_FUTEX_DEBUG
 		assert(status == shared_futex_detail::lock_status::acquired);
 #endif
 
-		l.template release<mechanism>();
+		const auto latch_value = l.template release<mechanism>();
 		status = shared_futex_detail::lock_status::unacquired;
 
-		// Try to unpark next one in line
-		const auto unpark_key = Latch::template parking_key<mechanism>(0);
-		if (!l.parking.is_slot_empty_hint(unpark_key)) {
-			// We might have a parked thread
-			const auto unparked = l.parking.unpark_one(unpark_key);
-			// Unregister from park counters, as needed.
-			l.template unregister_parked<mechanism>(unparked);
+		const auto parked_value = l.load_parked(std::memory_order_acquire);
+
+		// Try to unpark a shared waiter
+		if constexpr (mechanism != shared_futex_detail::mechanism::shared_lock)
+		{
+			const auto shared_parked = Latch::template parked<shared_futex_detail::mechanism::shared_lock>(parked_value);
+			if (shared_parked > 0) {
+				const auto unpark_key = Latch::template parking_key<shared_futex_detail::mechanism::shared_lock>(0);
+				const auto unparked = l.parking.unpark_all(unpark_key);
+
+				if (unparked) {
+					l.template unregister_parked<mechanism>(unparked);
+#ifdef SHARED_FUTEX_STATS
+					++shared_futex_detail::debug_statistics.unparks;
+#endif
+					return;
+				}
+			}
+		}
+
+		// Try to unpark an exclusive waiter
+		const auto exclusive_active_waiters = active_exclusive_waiters_count(l, latch_value);
+		if (exclusive_active_waiters < exclusive_waiters_count_thershold_for_unpark) {
+			const auto exclusive_parked = Latch::template parked<shared_futex_detail::mechanism::exclusive_lock>(parked_value);
+			if (exclusive_parked > 0) {
+				// We might have a parked thread
+				const auto unpark_key = Latch::template parking_key<shared_futex_detail::mechanism::exclusive_lock>(0);
+				const auto unparked = l.parking.unpark_one(unpark_key);
+				
+				// Unregister from park counters, as needed.
+				if (unparked) {
+					l.template unregister_parked<mechanism>(unparked);
+#ifdef SHARED_FUTEX_STATS
+					++shared_futex_detail::debug_statistics.unparks;
+#endif
+					return;
+				}
+			}
 		}
 	}
 
 	bool owns_lock() const noexcept { return status == shared_futex_detail::lock_status::acquired; }
 };
+
+template <typename Latch, typename BackoffPolicy, shared_futex_detail::mechanism mechanism>
+thread_local shared_futex_detail::random_generator shared_futex_locking_protocol<Latch, BackoffPolicy, mechanism>::rand;
 
 // Upgrading an upgradeable lock implementation
 //

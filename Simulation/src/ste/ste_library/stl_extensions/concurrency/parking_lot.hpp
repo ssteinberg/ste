@@ -193,7 +193,7 @@ public:
 	*/
 	template <typename P, typename K>
 	static parking_lot_slot& slot_for(P* id, const K &key) noexcept {
-		const auto key_hash = std::hash<K>{}(key);
+		const auto key_hash = std::hash<std::decay_t<K>>{}(key);
 		const auto id_hash = std::hash<P*>{}(id);
 
 		// boost::hash_combine
@@ -255,8 +255,8 @@ public:
 	 */
 	template <typename K, typename ParkPredicate, typename OnPark>
 	park_return_t park(ParkPredicate &&park_predicate,
-					 OnPark &&on_park,
-					 K &&key) {
+					   OnPark &&on_park,
+					   K &&key) {
 		return park_until(std::forward<ParkPredicate>(park_predicate),
 						  std::forward<OnPark>(on_park),
 						  std::forward<K>(key),
@@ -409,10 +409,10 @@ public:
 	 *	@brief	Checks atomically if the parking slot is empty
 	 */
 	template <typename K>
-	bool is_slot_empty_hint(const K &key) const noexcept {
+	bool is_slot_empty_hint(const K &key, std::memory_order mo = std::memory_order_relaxed) const noexcept {
 		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
 
-		std::atomic_thread_fence(std::memory_order_acquire);
+		std::atomic_thread_fence(mo);
 		return park.tail == nullptr;
 	}
 };
