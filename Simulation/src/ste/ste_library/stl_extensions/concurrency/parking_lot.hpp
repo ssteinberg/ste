@@ -38,10 +38,10 @@ private:
 	struct {
 		void *id;
 		std::aligned_storage_t<key_size> key;
-	} tag;
+	} tag{};
 
 protected:
-	void signal() {
+	void signal() noexcept {
 		std::unique_lock<std::mutex> ul(m);
 
 		signaled = true;
@@ -64,6 +64,11 @@ public:
 		::new (&tag.key) T(std::forward<K>(key));
 	}
 	virtual ~parking_lot_node_base() noexcept = default;
+	
+	parking_lot_node_base(parking_lot_node_base&&) = delete;
+	parking_lot_node_base(const parking_lot_node_base&) = delete;
+	parking_lot_node_base &operator=(parking_lot_node_base&&) = delete;
+	parking_lot_node_base &operator=(const parking_lot_node_base&) = delete;
 
 	/*
 	 *	@brief	Checks if the serialized tag equals to the supplied id and key.
@@ -129,14 +134,14 @@ public:
 	*	@brief	Signals the node and constructs a Data object to be consumed by the waiter
 	*/
 	template <typename... Args>
-	void signal(Args&&... args) {
+	void signal(Args&&... args) noexcept {
 		data.emplace(std::forward<Args>(args)...);
 		parking_lot_node_base::signal();
 	}
 	/*
 	*	@brief	Extracts the stored data object
 	*/
-	Data&& retrieve_data() && { return data; }
+	Data&& retrieve_data() && noexcept { return data; }
 };
 template <>
 class parking_lot_node<void> final : public parking_lot_node_base {
@@ -147,7 +152,7 @@ public:
 	/*
 	*	@brief	Dummy
 	*/
-	int retrieve_data() && { return 0; }
+	int retrieve_data() && noexcept { return 0; }
 };
 
 class parking_lot_slot {

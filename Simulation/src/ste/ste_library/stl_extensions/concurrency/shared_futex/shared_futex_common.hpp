@@ -3,7 +3,7 @@
 
 #pragma once
 
-//#define SHARED_FUTEX_DEBUG
+#define SHARED_FUTEX_DEBUG
 //#define SHARED_FUTEX_STATS
 
 namespace ste::shared_futex_detail {
@@ -40,7 +40,7 @@ enum class mechanism {
 	shared_lock,
 	upgradeable_lock,
 	exclusive_lock,
-	upgrading_to_exclusive_lock,
+	upgrade_to_exclusive_lock,
 };
 
 enum class backoff_result {

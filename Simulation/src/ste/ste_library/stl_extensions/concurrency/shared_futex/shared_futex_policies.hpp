@@ -16,15 +16,19 @@ namespace ste {
  *	@brief	Policy of shared_futex's data storage
  */
 struct shared_futex_default_storage_policy {
+	// Futex alignment
 	static constexpr std::size_t alignment = std::hardware_destructive_interference_size;
 
-	// Locking variable bit allocation
-	static constexpr std::size_t shared_bits = 12;
-	static constexpr std::size_t upgradeable_bits = 8;
-	static constexpr std::size_t exclusive_bits = 12;
+	/*
+	 *	Locking variable bit allocation
+	 */
+	// Bit depth for simultaneous shared lockers
+	static constexpr std::size_t shared_bits = 14;
+	// Bit depth for simultaneous upgradeable lockers
+	static constexpr std::size_t upgradeable_bits = 10;
+	// Bit depth for simultaneous exclusive lockers
+	static constexpr std::size_t exclusive_bits = 14;
 
-	// We use the first half of the latch variable for the locking mechanism, while the other half is used for waiter counters with 
-	// identical bit allocation.
 	using latch_data_type = std::int64_t;
 	static constexpr latch_data_type initial_value = {};
 
@@ -151,7 +155,7 @@ struct relaxed_backoff_policy {
 		if (until != std::chrono::time_point<Clock, Duration>::max() && Clock::now() >= until)
 			return shared_futex_detail::backoff_result::timeout;
 
-		if (iteration < yield_iterations) {
+		if (iteration < yield_iterations && aggressiveness != shared_futex_detail::backoff_aggressiveness::very_relaxed) {
 			std::this_thread::yield();
 			return shared_futex_detail::backoff_result::success;
 		}

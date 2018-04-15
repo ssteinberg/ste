@@ -10,11 +10,12 @@
 #include <chrono>
 #include <mutex>
 #include <utility>
+#include <optional>
 
 namespace ste {
 
 template <typename StoragePolicy, template <typename> class Latch>
-class alignas(StoragePolicy::alignment) shared_futex_t {
+class shared_futex_t {
 public:
 	using storage_policy = StoragePolicy;
 	using latch_type = Latch<storage_policy>;
@@ -24,11 +25,7 @@ private:
 
 public:
 	shared_futex_t() = default;
-
-	~shared_futex_t() {
-		// Futex dtored while lock is held or pending?
-		assert(latch.load() == storage_policy::initial_value);
-	}
+	~shared_futex_t() noexcept = default;
 
 	shared_futex_t(shared_futex_t &&) = delete;
 	shared_futex_t(const shared_futex_t &) = delete;
@@ -56,7 +53,7 @@ public:
 	}
 
 	~lock_guard() noexcept {
-		if (l)
+		if (owns_lock())
 			unlock();
 	}
 
@@ -139,6 +136,7 @@ struct random_generator {
 template <typename Latch, typename BackoffPolicy, shared_futex_detail::mechanism mechanism>
 class shared_futex_locking_protocol {
 	using latch_descriptor = typename Latch::latch_descriptor;
+	using parks_descriptor = typename Latch::parks_descriptor;
 
 	// Pre-thread random generator
 	static thread_local shared_futex_detail::random_generator rand;
@@ -146,57 +144,161 @@ class shared_futex_locking_protocol {
 protected:
 	shared_futex_detail::lock_status status{ shared_futex_detail::lock_status::unacquired };
 
+private:
+	enum class unpark_tactic { one, all };
+	enum class release_reason { failure, lock_release };
+
+	/*
+	 *	@brief	Unparks threads of a specified mechanism and specified unparking key
+	 *	@return	Count of threads successfully unparked
+	 */
+	template <unpark_tactic tactic, shared_futex_detail::mechanism mechanism_to_unpark>
+	static std::size_t unpark(Latch &l, const std::uint32_t unparking_key_user_value) noexcept {
+		// Generate parking key
+		const auto unpark_key = Latch::template parking_key<mechanism_to_unpark>(unparking_key_user_value);
+		using unpark_key_t = std::decay_t<decltype(unpark_key)>;
+
+		// Choose function for given unpark tactic
+		using parking_lot_t = decltype(l.parking);
+		using F = decltype(&parking_lot_t::template unpark_one<unpark_key_t>);
+		F unparking_function = tactic == unpark_tactic::all ?
+			&parking_lot_t::template unpark_all<unpark_key_t> :
+			&parking_lot_t::template unpark_one<unpark_key_t>;
+
+		// Attempt unpark
+		const auto unparked = std::invoke(unparking_function, l.parking, unpark_key);
+		if (unparked) {
+			// On successful unpark it the unparker's duty to unregister from parked counters
+			l.template unregister_parked<mechanism_to_unpark>(unparked);
+#ifdef SHARED_FUTEX_STATS
+			++shared_futex_detail::debug_statistics.unparks;
+#endif
+		}
+
+		return unparked;
+	}
+
 protected:
 	/*
 	*	@brief	Checks if a latch value is valid for lock acquisition
 	*/
-	bool can_acquire_lock(const latch_descriptor &latch_value) const noexcept {
-#ifdef SHARED_FUTEX_DEBUG
-		assert(status != shared_futex_detail::lock_status::acquired);
-#endif
-		const auto exclusive_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::exclusive_lock>(latch_value);
-		const auto upgradeable_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::upgradeable_lock>(latch_value);
-		const auto shared_holders = Latch::template consumers_in_flight<shared_futex_detail::mechanism::shared_lock>(latch_value);
+	template <shared_futex_detail::mechanism mechanism_to_check = mechanism>
+	static bool can_acquire_lock(const latch_descriptor &latch_value) noexcept {
+		const auto exclusive_holders = latch_value.template consumers<shared_futex_detail::mechanism::exclusive_lock>();
+		const auto upgradeable_holders = latch_value.template consumers<shared_futex_detail::mechanism::upgradeable_lock>();
+		const auto shared_holders = latch_value.template consumers<shared_futex_detail::mechanism::shared_lock>();
 
-		if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock ||
-					  mechanism == shared_futex_detail::mechanism::upgradeable_lock) {
+		if constexpr (mechanism_to_check == shared_futex_detail::mechanism::shared_lock) {
 			// Shared lockers are permitted iff there are no exclusive holders
 			return exclusive_holders == 0;
 		}
-		else if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock) {
+		else if constexpr (mechanism_to_check == shared_futex_detail::mechanism::upgradeable_lock) {
+			// Upgradeable lockers are permitted iff there are no exclusive holders nor upgradeable holders
+			return exclusive_holders == 0 && upgradeable_holders == 0;
+		}
+		else if constexpr (mechanism_to_check == shared_futex_detail::mechanism::exclusive_lock) {
 			// Exclusive lockers are permitted iff there are no holders of any kind
 			return exclusive_holders == 0 && upgradeable_holders == 0 && shared_holders == 0;
 		}
 		else {
-			static_assert(false, "wtf");
-			return false;
+			static_assert(mechanism_to_check == shared_futex_detail::mechanism::upgrade_to_exclusive_lock);
+			// We already hold an upgradeable lock, therefore we only need to wait for the shared holders to clear out.
+			return shared_holders == 0;
 		}
 	}
 
-	// Computes count of active exclusive waiters
-	std::size_t active_exclusive_waiters_count(Latch &l, const latch_descriptor &latch_value) const noexcept {
-		// We arrive after a lock attempt or lock load, which will provide the acquire memory fence.
-		const auto parked_value = l.load_parked(std::memory_order_relaxed);
-
-		// Read parked exclusive consumers
-		const auto exclusive_parked = Latch::template parked<shared_futex_detail::mechanism::exclusive_lock>(parked_value);
+	// Computes count of active waiters
+	template <shared_futex_detail::mechanism mechanism_to_check>
+	static std::size_t active_waiters_count(const latch_descriptor &latch_value, const parks_descriptor &parked_value) noexcept {
+		// Read parked consumers
+		const auto parked = parked_value.template parked<mechanism_to_check>();
 		// Read waiters count
-		const auto exclusive_waiters = Latch::template waiters<shared_futex_detail::mechanism::exclusive_lock>(latch_value);
-		// Deduce active exclusive waiters
-		auto exclusive_active_waiters = exclusive_waiters - exclusive_parked;
+		const auto waiters = latch_value.template waiters<mechanism_to_check>();
+		// Deduce active waiters
+		auto active_waiters = waiters - parked;
 
 		// Make sure we don't underflow
-		using S = std::make_signed_t<latch_descriptor>;
-		return static_cast<std::size_t>(std::max<S>(0, static_cast<S>(exclusive_active_waiters)));
+		using S = std::make_signed_t<decltype(active_waiters)>;
+		return static_cast<std::size_t>(std::max<S>(0, static_cast<S>(active_waiters)));
+	}
+
+	/*
+	 *	@brief	Handles unparking of parked threads.
+	 *	
+	 *			Priority: 
+	 *			Upgrade-to-exclusive first as they block all other lockers. Shared and upgradeable waiters come second, unless boost 
+	 *			flag is set, in which case exclusive waiters come before shared and upgradeable waiters.
+	 */
+	static void unpark_if_needed(Latch &l, const latch_descriptor &latch_value) noexcept {
+		// If active waiters count is lower than this threshold, a unpark new one.
+		static constexpr auto active_waiters_count_thershold_for_unpark = 1;
+
+		std::optional<parks_descriptor> parked_value;
+
+		// Try to unpark an upgrade-to-exclusive waiter (there can only be one at most)
+		if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock) {
+			if (can_acquire_lock<shared_futex_detail::mechanism::upgrade_to_exclusive_lock>(latch_value)) {
+				if (!parked_value) parked_value = l.load_parked();
+
+				const auto upgrading_to_exclusive_parked = parked_value.value().template parked<shared_futex_detail::mechanism::upgrade_to_exclusive_lock>();
+				if (upgrading_to_exclusive_parked > 0 &&
+					unpark<unpark_tactic::one, shared_futex_detail::mechanism::upgrade_to_exclusive_lock>(l, 0))
+					return;
+			}
+		}
+
+		// Try to unpark all shared waiter and/or an upgradeable waiter
+		if constexpr (mechanism != shared_futex_detail::mechanism::shared_lock) {
+			bool unparked_successfully = false;
+
+			if (can_acquire_lock<shared_futex_detail::mechanism::shared_lock>(latch_value)) {
+				if (!parked_value) parked_value = l.load_parked();
+
+				const auto shared_parked = parked_value.value().template parked<shared_futex_detail::mechanism::shared_lock>();
+				const auto upgradeable_parked = parked_value.value().template parked<shared_futex_detail::mechanism::upgradeable_lock>();
+
+				// Unpark all possible shared first
+				if constexpr (mechanism != shared_futex_detail::mechanism::upgradeable_lock)
+					unparked_successfully = shared_parked > 0 && unpark<unpark_tactic::all, shared_futex_detail::mechanism::shared_lock>(l, 0);
+				// Unpark an upgradeable
+				if (upgradeable_parked > 0) {
+					const auto upgradeable_active_waiters = active_waiters_count<shared_futex_detail::mechanism::upgradeable_lock>(latch_value, parked_value.value());
+					if (upgradeable_active_waiters < active_waiters_count_thershold_for_unpark)
+						unparked_successfully &= unpark<unpark_tactic::one, shared_futex_detail::mechanism::upgradeable_lock>(l, 0) > 0;
+				}
+			}
+
+			if (unparked_successfully)
+				return;
+		}
+
+		// Try to unpark an exclusive waiter
+		if (can_acquire_lock<shared_futex_detail::mechanism::exclusive_lock>(latch_value)) {
+			if (!parked_value) parked_value = l.load_parked();
+			const auto exclusive_parked = parked_value.value().template parked<shared_futex_detail::mechanism::exclusive_lock>();
+
+			if (exclusive_parked > 0) {
+				const auto exclusive_active_waiters = active_waiters_count<shared_futex_detail::mechanism::exclusive_lock>(latch_value, parked_value.value());
+				if (exclusive_active_waiters < active_waiters_count_thershold_for_unpark &&
+					unpark<unpark_tactic::one, shared_futex_detail::mechanism::exclusive_lock>(l, 0))
+					return;
+			}
+		}
 	}
 
 	// Chooses a backoff protocol
 	shared_futex_detail::backoff_aggressiveness backoff_protocol(Latch &l, const latch_descriptor &latch_value) const noexcept {
+		if constexpr (mechanism == shared_futex_detail::mechanism::upgrade_to_exclusive_lock) {
+			// We wait for shared holders to clear out
+			// Unlike with exclusive waiters, we can't deduce anything about the remaining life-time of the shared waiters.
+			return shared_futex_detail::backoff_aggressiveness::normal;
+		}
+		
 		static constexpr auto backoff_relaxed_waiters_threshold = 3;
 		static constexpr auto backoff_normal_waiters_threshold = 2;
 		static constexpr auto backoff_aggresive_waiters_threshold = 1;
 
-		const auto x = active_exclusive_waiters_count(l, latch_value);
+		const auto x = active_waiters_count<shared_futex_detail::mechanism::exclusive_lock>(latch_value, l.load_parked(std::memory_order_relaxed));
 		if (x <= backoff_aggresive_waiters_threshold)
 			return shared_futex_detail::backoff_aggressiveness::aggressive;
 		if (x <= backoff_normal_waiters_threshold)
@@ -211,33 +313,129 @@ protected:
 		return Latch::template parking_key<mechanism>(0);
 	}
 
+	// Attempts lock acquisition
+	std::pair<bool, latch_descriptor> acquire(Latch &l) noexcept {
+		// Acquire/Upgrade lock
+		latch_descriptor latch_value;
+		if constexpr (mechanism == shared_futex_detail::mechanism::upgrade_to_exclusive_lock)
+			latch_value = l.upgrade();
+		else
+			latch_value = l.template acquire<mechanism>();
+
+		if (can_acquire_lock(latch_value)) {
+			status = shared_futex_detail::lock_status::acquired;
+			return std::make_pair(true, latch_value);
+		}
+		return std::make_pair(false, latch_value);
+	}
+
+	// Reverts failed lock acquisition attempt
+	latch_descriptor revert(Latch &l) const noexcept {
+		const auto latch_value = l.template revert<mechanism>();
+		unpark_if_needed(l, latch_value);
+
+		return latch_value;
+	}
+
+	/* 
+	 *	@brief	Releases the lock. Also called on failure (e.g. timeout).
+	 *	
+	 *			Priority boosting logic for exclusive lockers is performed here. Each shared unlocker might, in a stochastic manner, 
+	 *			and if there're pending exclusive waiters, to trigger the boost flag, causing a priority inversion between shared and 
+	 *			exclusive lockers. Likewise, exclusive unlockers have a probability to reset the boost flag, flipping the priority 
+	 *			back to the default.
+	 *			Those stochastic, exponential processes balance each other to avoid waiter starvation.
+	 */
+	template <release_reason reason>
+	void release(Latch &l) noexcept {
+		// The probability, multiplied by count of exclusive waiters, that a shared unlocker will raise the boost flag.
+		static constexpr auto probability_to_raise_boost_flag_per_exclusive_waiter = .025f;
+		// The probability that an exclusive unlocker will drop the boost flag, even if there are more exlusive waiters.
+		static constexpr auto probability_to_drop_boost_flag_per_exclusive_unlocker = .05f;
+
+		// Release
+		latch_descriptor latch_value;
+		if constexpr (mechanism == shared_futex_detail::mechanism::upgrade_to_exclusive_lock) {
+			// For upgrade-to-exclusive we need to check if it is a revert back to upgradeable holder or a release
+			if constexpr (reason == release_reason::lock_release)
+				latch_value = l.release_upgraded();
+			else
+				latch_value = l.revert_upgrade();
+		}
+		else
+			latch_value = l.template release<mechanism>();
+
+		if constexpr (reason == release_reason::lock_release) {
+			const auto boost_flag = latch_value.boost_flag();
+
+			// Shared/upgradeable holders: Periodically set the boost flag to avoid exclusive waiters starvation
+			if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock || 
+						  mechanism == shared_futex_detail::mechanism::upgradeable_lock) {
+				if (!boost_flag) {
+					const auto shared_holders = latch_value.template consumers<shared_futex_detail::mechanism::shared_lock>();
+					const auto exclusive_waiters = latch_value.template waiters<shared_futex_detail::mechanism::exclusive_lock>();
+					if (shared_holders > 0 && exclusive_waiters > 0) {
+						const auto x = rand();
+						if (x < probability_to_raise_boost_flag_per_exclusive_waiter * exclusive_waiters)
+							l.set_boost_flag();
+					}
+				}
+			}
+
+			// Exclusive holders: Reset boost flag if it is set and there no more exlusive waiters/holders.
+			if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock ||
+						  mechanism == shared_futex_detail::mechanism::upgrade_to_exclusive_lock) {
+				if (boost_flag) {
+					const auto exclusive_holders = latch_value.template consumers<shared_futex_detail::mechanism::exclusive_lock>();
+					const auto exclusive_waiters = latch_value.template waiters<shared_futex_detail::mechanism::exclusive_lock>();
+					if (exclusive_holders == 0 && exclusive_waiters == 0)
+						l.reset_boost_flag();
+					else {
+						// To avoid shared starvation, we also randomly drop the flag
+						const auto x = rand();
+						if (x < probability_to_drop_boost_flag_per_exclusive_unlocker)
+							l.reset_boost_flag();
+					}
+				}
+			}
+		}
+
+		unpark_if_needed(l, latch_value);
+		status = shared_futex_detail::lock_status::unacquired;
+	}
+
 public:
 	bool try_lock(Latch &l) noexcept {
-		const auto prev = l.template acquire<mechanism>();
-		if (!can_acquire_lock(prev)) {
+		// Attempt lock/upgrade
+		if (!acquire(l).first) {
 			// Release lock on acquisition failure
-			l.template release<mechanism>();
+			release<release_reason::failure>(l);
 			return false;
 		}
 
-		status = shared_futex_detail::lock_status::acquired;
 		return true;
 	}
 
 	template <typename Clock, typename Duration>
 	bool try_lock_until(Latch &l, const std::chrono::time_point<Clock, Duration> &until) noexcept {
-		// Attempt lock. We assume this usually succeeds.
-		auto latch_value = l.template acquire<mechanism>();
-		if (can_acquire_lock(latch_value)) {
-			status = shared_futex_detail::lock_status::acquired;
+		// Attempt lock/upgrade
+		const auto acquire_result = acquire(l);
+		if (acquire_result.first)
 			return true;
-		}
 
-		// Can't take lock, revert and wait.
-		// We do not revert for shared waiters.
-		if constexpr (mechanism != shared_futex_detail::mechanism::shared_lock)
-			l.template revert<mechanism>();
+		// Can't take lock
+		auto latch_value = acquire_result.second;
 		status = shared_futex_detail::lock_status::waiting;
+
+		// Choose mutation mode: Persistent or non-persistent.
+		// Peristent lockers do not revert their latch mutation upon acquisition failure, e.g. upgrade-to-exclusive lockers do not 
+		// revert as only such locker one can exist at a given time and is only required to wait for shared holders to clear out.
+		const bool persistent_mutation = mechanism == shared_futex_detail::mechanism::upgrade_to_exclusive_lock ||
+			(mechanism == shared_futex_detail::mechanism::shared_lock && !latch_value.boost_flag() && !latch_value.upgrade_to_exclusive_flag());
+
+		// Revert failed lock acquisition, if needed.
+		if (!persistent_mutation)
+			latch_value = revert(l);
 
 		for (int iteration = 1;; ++iteration) {
 #ifdef SHARED_FUTEX_STATS
@@ -271,34 +469,36 @@ public:
 													   backoff_key(),
 													   until);
 			/*		Possible backoff results:
-			 *	Timed-out - First we check if we can acquire lock, otherwise we revert state and fail.
-			 *	Unpark - Unparked by another thread, which has also unregistered us from park counters.
-			 *	Park predicate was triggered - Parking failed due to park predicate, immeditately try to acquire lock.
-			 *	Otherwise - Check if we can lock, and if not continue waiting.
+			 *	Timed-out - First we check if we can acquire lock and, if so, attempt to acquire. If we can't or fail to we revert state and 
+			 *				return failure result.
+			 *	Park predicate was triggered - Parking failed due to park predicate, *immeditately* try to acquire lock without checking.
+			 *	Unpark - Unparked by another thread, which has also unregistered us from park counters. Reset iteration counter and continue
+			 *			 as normal.
+			 *	Otherwise - Normal behaviour: Pessimistically check if we can lock, and if not continue waiting.
 			 */
 
 			const bool needs_unregister_parked = result != shared_futex_detail::backoff_result::unparked &&
 				status == shared_futex_detail::lock_status::parked;
 
 			// On successful backoff we check, conservatively without ping-ponging cache lines, if we should reattempt to acquire lock.
+			if (result != shared_futex_detail::backoff_result::park_predicate_triggered)
+				latch_value = l.load();
 			if (result == shared_futex_detail::backoff_result::park_predicate_triggered || 
-				can_acquire_lock(l.load())) {
-				if constexpr (mechanism == shared_futex_detail::mechanism::shared_lock) {
-					// For shared lockers we only wait for non-shared holders to clear out
+				can_acquire_lock(latch_value)) {
+				if (persistent_mutation) {
+					// In case of persistent mutations we only need to wait for the lock conditions to be satisfied.
 					status = shared_futex_detail::lock_status::acquired;
 				}
 				else {
-					// For non-shared we need to actively reattempt lock acquisition
+					// Otherwise we need to actively reattempt lock acquisition
 					latch_value = l.template reattempt_acquire<mechanism>();
-
-					if (can_acquire_lock(latch_value)) {
-						// We have lock
+					
+					// Do we have lock?
+					if (can_acquire_lock(latch_value))
 						status = shared_futex_detail::lock_status::acquired;
-					}
-					else {
+					else
 						// Revert
-						l.template revert<mechanism>();
-					}
+						latch_value = revert(l);
 				}
 			}
 			
@@ -311,6 +511,9 @@ public:
 				return true;			
 			// Timeout?
 			if (result == shared_futex_detail::backoff_result::timeout) {
+				// If locker persistently mutates the latch during acquisition attempt, we revert here on failure.
+				if (persistent_mutation)
+					release<release_reason::failure>(l);
 				status = shared_futex_detail::lock_status::unacquired;
 				return false;
 			}
@@ -325,55 +528,10 @@ public:
 	}
 
 	void unlock(Latch &l) noexcept {
-		// If exclusive waiters count is lower than this threshold, a unpark new one.
-		static constexpr auto exclusive_waiters_count_thershold_for_unpark = 1;
-
 #ifdef SHARED_FUTEX_DEBUG
 		assert(status == shared_futex_detail::lock_status::acquired);
 #endif
-
-		const auto latch_value = l.template release<mechanism>();
-		status = shared_futex_detail::lock_status::unacquired;
-
-		const auto parked_value = l.load_parked(std::memory_order_acquire);
-
-		// Try to unpark a shared waiter
-		if constexpr (mechanism != shared_futex_detail::mechanism::shared_lock)
-		{
-			const auto shared_parked = Latch::template parked<shared_futex_detail::mechanism::shared_lock>(parked_value);
-			if (shared_parked > 0) {
-				const auto unpark_key = Latch::template parking_key<shared_futex_detail::mechanism::shared_lock>(0);
-				const auto unparked = l.parking.unpark_all(unpark_key);
-
-				if (unparked) {
-					l.template unregister_parked<mechanism>(unparked);
-#ifdef SHARED_FUTEX_STATS
-					++shared_futex_detail::debug_statistics.unparks;
-#endif
-					return;
-				}
-			}
-		}
-
-		// Try to unpark an exclusive waiter
-		const auto exclusive_active_waiters = active_exclusive_waiters_count(l, latch_value);
-		if (exclusive_active_waiters < exclusive_waiters_count_thershold_for_unpark) {
-			const auto exclusive_parked = Latch::template parked<shared_futex_detail::mechanism::exclusive_lock>(parked_value);
-			if (exclusive_parked > 0) {
-				// We might have a parked thread
-				const auto unpark_key = Latch::template parking_key<shared_futex_detail::mechanism::exclusive_lock>(0);
-				const auto unparked = l.parking.unpark_one(unpark_key);
-				
-				// Unregister from park counters, as needed.
-				if (unparked) {
-					l.template unregister_parked<mechanism>(unparked);
-#ifdef SHARED_FUTEX_STATS
-					++shared_futex_detail::debug_statistics.unparks;
-#endif
-					return;
-				}
-			}
-		}
+		release<release_reason::lock_release>(l);
 	}
 
 	bool owns_lock() const noexcept { return status == shared_futex_detail::lock_status::acquired; }
@@ -381,52 +539,6 @@ public:
 
 template <typename Latch, typename BackoffPolicy, shared_futex_detail::mechanism mechanism>
 thread_local shared_futex_detail::random_generator shared_futex_locking_protocol<Latch, BackoffPolicy, mechanism>::rand;
-
-// Upgrading an upgradeable lock implementation
-//
-// Upgrade routines must be called on a lock that was successfully upgradeable-locked. Successfully upgrading the lock results in an exclusive hold
-// on the lock, consuming the upgradeable-lock.
-// Logic is different from other lockers as we have a strong guarantee: Only shared holders are possible, and no new ones are allowed. This is similar to the
-// pending-exclusive situation, allowing a fast lock acquisition.
-/*template <typename Lock, typename BackoffPolicy>
-class lock_upgrader final : public shared_futex_detail::generic_locker<
-	Lock, BackoffPolicy,
-	shared_futex_detail::mechanism::upgrading_to_exclusive_lock
-> {
-
-	latch_type lock_bits() const noexcept override final {
-		// We lock via reverting the upgradeable bit and setting the exclusive bit
-//		if (!lock_taken)
-//			return Lock::exclusive_lock_bit - Lock::upgradeable_lock_bit;
-		// We unlock by reverting the exclusive bit
-		return Lock::exclusive_lock_bit;
-	}
-
-	// We just need to make sure there're no more shared holders.
-	bool valid(latch_type l) const noexcept override final { return (l & Lock::non_shared_mask) == (Lock::initial_value & Lock::non_shared_mask); }
-
-	// Always try to take lock, as taking lock is simply checking the lock value.
-	std::pair<bool, latch_type> should_try_lock(Lock &l, std::memory_order mo) const noexcept override final {
-		return std::make_pair(true, Lock::initial_value);
-	}
-	bool should_try_lock_backoff_predicate(Lock &l, std::memory_order mo) const noexcept override final { return valid(l.data().latch.load(mo)); }
-
-public:
-	bool try_lock(Lock &l) noexcept override final {
-//		assert(!lock_taken);
-
-		const auto should_take = valid(l.data().latch.load());
-		if (should_take) {
-			// We effectively have the lock, mark it as exclusively owned
-			try_lock_impl<>(l);
-//			lock_taken = true;
-
-			return true;
-		}
-
-		return false;
-	}
-};*/
 
 
 // shared_futex helpers
@@ -452,22 +564,24 @@ lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latc
 *	@brief	Upgrades the lock owned by an upgradeable lock_guard to an exclusive lock, consuming the guard and returning an exclusive one.
 *			Lock must have been successfully acquired via an upgrade lock.
 *			
-*	@param	upgradeable_guard	Must be a lock_guard using an upgradeable_locker and owning the lock
+*	@param	upgradeable_guard	Must be a lock_guard of an upgradeable_lock mechanism and owning the lock
 */
 template <typename BackoffPolicy, typename SharedFutex, typename B>
-lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::exclusive_lock>> upgrade_lock(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard) {
+auto upgrade_lock(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard)
+{
+	using LockGuard = lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::upgrade_to_exclusive_lock>>;
+
 	// Upgradeable guard owns lock?
 	assert(upgradeable_guard.owns_lock());
 
-	// Read lock and dispose of the upgradeable guard
-	auto lock = &upgradeable_guard.mutex();
+	// Upgrade
+	LockGuard lg(upgradeable_guard.mutex(), std::defer_lock);
+	lg.lock();
+
+	// Dispose of the upgradeable guard
 	upgradeable_guard.release();
 
-	// Ugrade
-//	lock_upgrader<SharedFutex, BackoffPolicy>().try_lock_until(*lock, std::chrono::steady_clock::time_point::max());
-
-	// Return an exclusive guard owning the lock
-	return lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::exclusive_lock>>(*lock, std::defer_lock);
+	return lg;
 }
 
 /*
@@ -475,26 +589,27 @@ lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latc
 *			creates an exclusive one, otherwise leaves the upgradeable guard untouched.
 *			Lock must have been successfully acquired via an upgrade lock.
 *			
-*	@param	upgradeable_guard	Must be a lock_guard using an upgradeable_locker and owning the lock
+*	@param	upgradeable_guard	Must be a lock_guard of an upgradeable_lock mechanism and owning the lock
 *
 *	@return	Returns a pair of a success flag and the new exclusive guard, if successful.
 */
 template <typename BackoffPolicy, typename SharedFutex, typename B, typename Clock, typename Duration>
-std::pair<bool, lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::exclusive_lock>>> try_upgrade_lock_until(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard, const std::chrono::time_point<Clock, Duration> &until) {
+auto try_upgrade_lock_until(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard, const std::chrono::time_point<Clock, Duration> &until) 
+{
+	using LockGuard = lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::upgrade_to_exclusive_lock>>;
+
 	// Upgradeable guard owns lock?
 	assert(upgradeable_guard.owns_lock());
 
-	// Read lock and try to upgrade
-	auto lock = &upgradeable_guard.mutex();
-//	if (lock_upgrader<SharedFutex, BackoffPolicy>().try_lock_until(*lock, until)) {
-//		// Release old guard
-//		upgradeable_guard.release();
-//
-//		// Return an exclusive guard owning the lock
-//		return std::make_pair(true, lock_guard<SharedFutex, exclusive_locker<SharedFutex, BackoffPolicy>>(*lock, std::defer_lock));
-//	}
+	// Upgrade
+	LockGuard lg(upgradeable_guard.mutex(), std::defer_lock);
+	if (!lg.try_lock_until(until))
+		return std::make_pair(false, LockGuard{});
 
-	return std::make_pair(true, lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::exclusive_lock>>{});
+	// Dispose of the upgradeable guard
+	upgradeable_guard.release();
+
+	return std::make_pair(true, std::move(lg));
 }
 
 /*
@@ -502,12 +617,13 @@ std::pair<bool, lock_guard<SharedFutex, shared_futex_locking_protocol<typename S
 *			creates an exclusive one, otherwise leaves the upgradeable guard untouched.
 *			Lock must have been successfully acquired via an upgrade lock.
 *			
-*	@param	upgradeable_guard	Must be a lock_guard using an upgradeable_locker and owning the lock
+*	@param	upgradeable_guard	Must be a lock_guard of an upgradeable_lock mechanism and owning the lock
 *
 *	@return	Returns a pair of a success flag and the new exclusive guard, if successful.
 */
 template <typename BackoffPolicy, typename SharedFutex, typename B, typename Rep, typename Period>
-std::pair<bool, lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, BackoffPolicy, shared_futex_detail::mechanism::exclusive_lock>>> try_upgrade_lock_for(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard, const std::chrono::duration<Rep, Period> &duration) {
+auto try_upgrade_lock_for(lock_guard<SharedFutex, shared_futex_locking_protocol<typename SharedFutex::latch_type, B, shared_futex_detail::mechanism::upgradeable_lock>> &&upgradeable_guard, const std::chrono::duration<Rep, Period> &duration) 
+{
 	const auto until = std::chrono::steady_clock::now() + duration;
 	return try_upgrade_lock_until<BackoffPolicy>(std::move(upgradeable_guard), until);
 }

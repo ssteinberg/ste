@@ -15,99 +15,209 @@ template <typename StoragePolicy>
 class shared_futex_default_latch {
 public:
 	using storage_policy = StoragePolicy;
-	using latch_descriptor = typename storage_policy::latch_data_type;
+	using latch_data_type = typename storage_policy::latch_data_type;
 	using parks_counter_type = typename storage_policy::parks_counter_type;
 
-	static constexpr latch_descriptor initial_value = storage_policy::initial_value;
-	static constexpr auto alignment = storage_policy::alignment;
+	static_assert(std::is_signed_v<latch_data_type> && std::is_signed_v<parks_counter_type>, "Latch and parks counter need to be signed types.");
 
-	static constexpr latch_descriptor waiter_counters_offset = sizeof(latch_descriptor) * 8 / 2;
+	static constexpr latch_data_type initial_value = storage_policy::initial_value;
+	static constexpr auto alignment = std::max(storage_policy::alignment, alignof(std::max_align_t));
+	
+	// Bit depth for futex upgrade-to-exclusive flag
+	static constexpr std::size_t upgrade_to_exclusive_flag_bits = 1;
+	// Bit depth for futex exclusive-priority boosting flag (to counter exclusive starvation)
+	static constexpr std::size_t boost_flag_bits = 1;
 
-	static_assert(storage_policy::shared_bits + storage_policy::upgradeable_bits + storage_policy::exclusive_bits <= sizeof(latch_descriptor) * 8 / 2,
-				  "Total bits count should take no more than half the latch size");
+	class latch_descriptor {
+		friend class shared_futex_default_latch<StoragePolicy>;
+		using T = std::make_unsigned_t<latch_data_type>;
+
+		T shared_consumers					: storage_policy::shared_bits;
+		T upgradeable_consumers				: storage_policy::upgradeable_bits;
+		T exclusive_consumers				: storage_policy::exclusive_bits;
+
+		T upgradeable_waiters				: storage_policy::upgradeable_bits;
+		T exclusive_waiters					: storage_policy::exclusive_bits;
+
+		T upgrade_to_exclusive_flag_value	: upgrade_to_exclusive_flag_bits;
+
+		T boost_flag_value					: boost_flag_bits;
+
+		explicit latch_descriptor(const latch_data_type &l) { *this = *reinterpret_cast<const latch_descriptor*>(&l); }
+		explicit operator latch_data_type() const {
+			latch_data_type t = {};
+			*reinterpret_cast<latch_descriptor*>(&t) = *this;
+			return t;
+		}
+
+		// Accessors and helpers
+
+		template <shared_futex_detail::mechanism mechanism>
+		void inc_consumers(const T &count) noexcept {
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::shared_lock:
+				shared_consumers += count;
+				break;
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				upgradeable_consumers += count;
+				break;
+			case shared_futex_detail::mechanism::exclusive_lock:
+				exclusive_consumers += count;
+				break;
+			default:
+				assert(false);
+			}
+		}
+		template <shared_futex_detail::mechanism mechanism>
+		void inc_waiters(const T &count) noexcept {
+			assert(mechanism == shared_futex_detail::mechanism::exclusive_lock || 
+				   mechanism == shared_futex_detail::mechanism::upgradeable_lock);
+
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				upgradeable_waiters += count;
+				break;
+			case shared_futex_detail::mechanism::exclusive_lock:
+				exclusive_waiters += count;
+				break;
+			default:{}
+			}
+		}
+
+	public:
+		latch_descriptor() = default;
+
+		// Counts number of active consumers
+		template <shared_futex_detail::mechanism mechanism>
+		auto consumers() const noexcept {
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::shared_lock:
+				return shared_consumers;
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				return upgradeable_consumers;
+			case shared_futex_detail::mechanism::exclusive_lock:
+				return exclusive_consumers;
+			default:
+				assert(false);
+				return T{};
+			}
+		}
+		// Counts number of waiting consumers
+		template <shared_futex_detail::mechanism mechanism>
+		auto waiters() const noexcept {
+			static_assert(mechanism == shared_futex_detail::mechanism::exclusive_lock || 
+						  mechanism == shared_futex_detail::mechanism::upgradeable_lock);
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				return upgradeable_waiters;
+			case shared_futex_detail::mechanism::exclusive_lock:
+			default:
+				return exclusive_waiters;
+			}
+		}
+		auto boost_flag() const noexcept { return boost_flag_value; }
+		auto upgrade_to_exclusive_flag() const noexcept { return upgrade_to_exclusive_flag_value; }
+	};
+	class parks_descriptor {
+		friend class shared_futex_default_latch<StoragePolicy>;
+		using T = std::make_unsigned_t<parks_counter_type>;
+
+		T shared_parked					: storage_policy::shared_bits;
+		T upgradeable_parked			: storage_policy::upgradeable_bits;
+		T exclusive_parked				: storage_policy::exclusive_bits;
+		T upgrading_to_exclusive_parked : 1;
+
+		explicit parks_descriptor(const parks_counter_type &l) { *this = *reinterpret_cast<const parks_descriptor*>(&l); }
+		explicit operator parks_counter_type() const {
+			parks_counter_type c = {};
+			*reinterpret_cast<parks_descriptor*>(&c) = *this;
+			return c;
+		}
+
+		// Accessors and helpers
+
+		template <shared_futex_detail::mechanism mechanism>
+		void inc_parked(const T &count) noexcept {
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::shared_lock:
+				shared_parked += count;
+				break;
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				upgradeable_parked += count;
+				break;
+			case shared_futex_detail::mechanism::exclusive_lock:
+				exclusive_parked += count;
+				break;
+			case shared_futex_detail::mechanism::upgrade_to_exclusive_lock:
+				upgrading_to_exclusive_parked += count;
+				break;
+			default:{}
+			}
+		}
+
+	public:
+		parks_descriptor() = default;
+
+		// Counts number of parked consumers
+		template <shared_futex_detail::mechanism mechanism>
+		auto parked() const noexcept {
+			switch (mechanism) {
+			case shared_futex_detail::mechanism::shared_lock:
+				return shared_parked;
+			case shared_futex_detail::mechanism::upgradeable_lock:
+				return upgradeable_parked;
+			case shared_futex_detail::mechanism::exclusive_lock:
+				return exclusive_parked;
+			case shared_futex_detail::mechanism::upgrade_to_exclusive_lock:
+			default:
+				return upgrading_to_exclusive_parked;
+			}
+		}
+	};
+
+private:
+	using latch_atomic_t = std::atomic<latch_data_type>;
+	using parks_atomic_t = std::atomic<parks_counter_type>;
+
+	static_assert(sizeof(latch_descriptor) <= sizeof(latch_data_type), "Total bits count should take no more than the latch size");
+	static_assert(sizeof(parks_descriptor) <= sizeof(parks_counter_type), "Total bits count should take no more than the parks counter size");
+	static_assert(latch_atomic_t::is_always_lock_free, "Latch is not lock-free!");
+	static_assert(parks_atomic_t::is_always_lock_free, "Latch parking counter is not lock-free!");
 
 private:
 	// Latch
-	alignas(alignment) std::atomic<latch_descriptor> latch{ initial_value };
-
+	alignas(alignment) latch_atomic_t latch{ initial_value };
 	// Parking counters
-	alignas(alignment) std::atomic<parks_counter_type> parks{};
+	alignas(alignment) parks_atomic_t parks{};
 
 public:
 	// Parking lot for smart wakeup
 	parking_lot<void> parking;
 
-private:
-	// Helper methods
-
-	template <shared_futex_detail::mechanism mechanism>
-	static constexpr latch_descriptor offset() {
-		switch (mechanism) {
-		case shared_futex_detail::mechanism::shared_lock:
-			return 0;
-		case shared_futex_detail::mechanism::upgradeable_lock:
-			return storage_policy::shared_bits;
-		case shared_futex_detail::mechanism::exclusive_lock:
-		case shared_futex_detail::mechanism::upgrading_to_exclusive_lock:
-		default:
-			return storage_policy::shared_bits + storage_policy::upgradeable_bits;
-		}
-	}
-	template <shared_futex_detail::mechanism mechanism>
-	static constexpr latch_descriptor bit_count() {
-		switch (mechanism) {
-		case shared_futex_detail::mechanism::shared_lock:
-			return storage_policy::shared_bits;
-		case shared_futex_detail::mechanism::upgradeable_lock:
-			return storage_policy::upgradeable_bits;
-		case shared_futex_detail::mechanism::exclusive_lock:
-		case shared_futex_detail::mechanism::upgrading_to_exclusive_lock:
-		default:
-			return storage_policy::exclusive_bits;
-		}
-	}
-	template <shared_futex_detail::mechanism mechanism>
-	static constexpr latch_descriptor lock_bit() {
-		return static_cast<latch_descriptor>(1) << offset<mechanism>();
-	}
-	template <shared_futex_detail::mechanism mechanism>
-	static constexpr latch_descriptor mask() {
-		static constexpr auto one = static_cast<latch_descriptor>(1);
-		switch (mechanism) {
-		case shared_futex_detail::mechanism::shared_lock:
-			return (one << offset<shared_futex_detail::mechanism::upgradeable_lock>()) - one;
-		case shared_futex_detail::mechanism::upgradeable_lock:
-			static const auto mu = ~mask<shared_futex_detail::mechanism::shared_lock>();
-			return ((one << offset<shared_futex_detail::mechanism::exclusive_lock>()) - one) & mu;
-		case shared_futex_detail::mechanism::exclusive_lock:
-		case shared_futex_detail::mechanism::upgrading_to_exclusive_lock:
-		default:
-			static const auto me = ~(mask<shared_futex_detail::mechanism::shared_lock>() | mask<shared_futex_detail::mechanism::upgradeable_lock>());
-			static const auto x = offset<shared_futex_detail::mechanism::exclusive_lock>() + bit_count<shared_futex_detail::mechanism::exclusive_lock>();
-			return ((one << x) - one) & me;
-		}
-	}
-
-	static constexpr latch_descriptor all_locks_mask =
-		mask<shared_futex_detail::mechanism::shared_lock>() |
-		mask<shared_futex_detail::mechanism::upgradeable_lock>() |
-		mask<shared_futex_detail::mechanism::exclusive_lock>();
-
-	template <shared_futex_detail::mechanism mechanism>
-	static constexpr latch_descriptor mechanism_msb() { return (mask<mechanism>() + lock_bit<mechanism>()) >> 1; }
-
 public:
+	shared_futex_default_latch() = default;
+	~shared_futex_default_latch() noexcept {
+		// Latch dtored while lock is held or pending?
+		assert(latch.load() == initial_value);
+	}
+
+	shared_futex_default_latch(shared_futex_default_latch&&) = default;
+	shared_futex_default_latch &operator=(shared_futex_default_latch&&) = default;
+
+	shared_futex_default_latch(const shared_futex_default_latch&) = delete;
+	shared_futex_default_latch &operator=(const shared_futex_default_latch&) = delete;
+
 	latch_descriptor load(std::memory_order mo = std::memory_order_acquire) const noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_atomic_loads;
 #endif
-		return latch.load(mo);
+		return latch_descriptor{ latch.load(mo) };
 	}
-	parks_counter_type load_parked(std::memory_order mo = std::memory_order_acquire) const noexcept {
+	parks_descriptor load_parked(std::memory_order mo = std::memory_order_acquire) const noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_atomic_loads;
 #endif
-		return parks.load(mo);
+		return parks_descriptor{ parks.load(mo) };
 	}
 	
 	// Attempts to acquire lock
@@ -116,9 +226,11 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-		// Attempts lock acquisition 
-		const auto bits = lock_bit<mechanism>();
-		return latch.fetch_add(bits);
+		// Attempts lock acquisition
+		latch_descriptor d = {};
+		d.template inc_consumers<mechanism>(1);
+		const auto bits = static_cast<latch_data_type>(d);
+		return latch_descriptor{ latch.fetch_add(bits) };
 	}
 	// Re-attempts lock acquisition and decreases waiter counter
 	template <shared_futex_detail::mechanism mechanism>
@@ -126,8 +238,12 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-		const auto bits = lock_bit<mechanism>() - (lock_bit<mechanism>() << waiter_counters_offset);
-		return latch.fetch_add(bits);
+		latch_descriptor d1 = {}, d2 = {};
+		d1.template inc_consumers<mechanism>(1);
+		if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock || mechanism == shared_futex_detail::mechanism::upgradeable_lock)
+			d2.template inc_waiters<mechanism>(1);
+		const auto bits = static_cast<latch_data_type>(d1) - static_cast<latch_data_type>(d2);
+		return latch_descriptor{ latch.fetch_add(bits) };
 	}
 	// Reverts lock acquisition and increases waiter counter
 	template <shared_futex_detail::mechanism mechanism>
@@ -135,8 +251,12 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-		const auto bits = (lock_bit<mechanism>() << waiter_counters_offset) - lock_bit<mechanism>();
-		return latch.fetch_add(bits) + bits;
+		latch_descriptor d1 = {}, d2 = {};
+		d1.template inc_consumers<mechanism>(1);
+		if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock || mechanism == shared_futex_detail::mechanism::upgradeable_lock)
+			d2.template inc_waiters<mechanism>(1);
+		const auto bits = static_cast<latch_data_type>(d2) - static_cast<latch_data_type>(d1);
+		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
 	// Release lock
 	template <shared_futex_detail::mechanism mechanism>
@@ -144,34 +264,79 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-
 		// Decrease comsumer count
-		const auto bits = -lock_bit<mechanism>();
-		return latch.fetch_add(bits) + bits;
-	}
-	
-	// Counts number of active consumers
-	template <shared_futex_detail::mechanism mechanism>
-	static latch_descriptor consumers_in_flight(const latch_descriptor &latch_value) noexcept {
-		return (latch_value & mask<mechanism>()) >> offset<mechanism>();
-	}
-	// Counts number of waiters
-	template <shared_futex_detail::mechanism mechanism>
-	static latch_descriptor waiters(const latch_descriptor &latch_value) noexcept {
-		return ((latch_value >> waiter_counters_offset) & mask<mechanism>()) >> offset<mechanism>();
-	}
-	// Returns the count of parked thread of a given mechanism
-	template <shared_futex_detail::mechanism mechanism>
-	static parks_counter_type parked(const parks_counter_type &parked_value) noexcept {
-		return (parked_value & mask<mechanism>()) >> offset<mechanism>();
+		latch_descriptor d = {};
+		d.template inc_consumers<mechanism>(1);
+		const auto bits = -static_cast<latch_data_type>(d);
+		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
 
-	// Generates a per-mechanism unique parking key.
+	// Upgrades an upgradeable lock to an exclusive lock
+	latch_descriptor upgrade() noexcept {
+#ifdef SHARED_FUTEX_STATS
+		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
+#endif
+		// Attempts lock upgrade, sets the upgrade-to-exclusive flag, increases exclusive count and releases the upgradeable consumer.
+		latch_descriptor d1 = {}, d2 = {};
+		d1.upgrade_to_exclusive_flag_value = 1;
+		d1.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
+		d2.template inc_consumers<shared_futex_detail::mechanism::upgradeable_lock>(1);
+		const auto bits = static_cast<latch_data_type>(d1) - static_cast<latch_data_type>(d2);
+		return latch_descriptor{ latch.fetch_add(bits) };
+	}
+	// Reverts lock upgrade
+	latch_descriptor revert_upgrade() noexcept {
+#ifdef SHARED_FUTEX_STATS
+		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
+#endif
+		// Reverts lock upgrade, resets the upgrade-to-exclusive flag, releases the exclusive consumer and increases the upgradeable consumers counter.
+		latch_descriptor d1 = {}, d2 = {};
+		d1.upgrade_to_exclusive_flag_value = 1;
+		d1.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
+		d2.template inc_consumers<shared_futex_detail::mechanism::upgradeable_lock>(1);
+		const auto bits = static_cast<latch_data_type>(d2) - static_cast<latch_data_type>(d1);
+		return latch_descriptor{ latch.fetch_add(bits) + bits };
+	}
+	// Release an upgraded lock
+	latch_descriptor release_upgraded() noexcept {
+#ifdef SHARED_FUTEX_STATS
+		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
+#endif
+		// Reverts lock upgrade, resets the upgrade-to-exclusive flag and increases the upgradeable holder.
+		latch_descriptor d = {};
+		d.upgrade_to_exclusive_flag_value = 1;
+		d.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
+		const auto bits = -static_cast<latch_data_type>(d);
+		return latch_descriptor{ latch.fetch_add(bits) + bits };
+	}
+
+	// Raises the boost flag
+	void set_boost_flag(std::size_t value = 1) noexcept {
+#ifdef SHARED_FUTEX_STATS
+		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
+#endif
+		// Set the boost flag
+		latch_descriptor d = {};
+		d.boost_flag_value = value;
+		const auto bits = static_cast<latch_data_type>(d);
+		latch.fetch_or(bits);
+	}
+	// Resets the boost flag
+	void reset_boost_flag() noexcept {
+#ifdef SHARED_FUTEX_STATS
+		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
+#endif
+		// Atomically AND to unset the flag
+		latch_descriptor d = {};
+		d.boost_flag_value = 1;
+		const auto bits = ~static_cast<latch_data_type>(d);
+		latch.fetch_and(bits);
+	}
+
+	// Generates a parking key which is unique per-mechanism and a 32-bit user value.
 	template <shared_futex_detail::mechanism mechanism>
-	static latch_descriptor parking_key(const latch_descriptor &modifier) noexcept {
-		// Mark the mechanism with the msb bit
-		const auto x = (modifier << offset<mechanism>()) & (mechanism_msb<mechanism>() - static_cast<latch_descriptor>(1));
-		return mechanism_msb<mechanism>() | x;
+	static std::uint64_t parking_key(const std::uint32_t user_value) noexcept {
+		return static_cast<uint64_t>(user_value) | (static_cast<uint64_t>(mechanism) << 32);
 	}
 
 	// Register parked thread
@@ -180,8 +345,10 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-
-		parks.fetch_add(lock_bit<mechanism>());
+		parks_descriptor d = {};
+		d.template inc_parked<mechanism>(1);
+		const auto bits = static_cast<parks_counter_type>(d);
+		parks.fetch_add(bits);
 	}
 	// Unregister parked thread(s)
 	template <shared_futex_detail::mechanism mechanism>
@@ -192,7 +359,10 @@ public:
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
-		parks.fetch_add(-(static_cast<latch_descriptor>(count) * lock_bit<mechanism>()));
+		parks_descriptor d = {};
+		d.template inc_parked<mechanism>(count);
+		const auto bits = -static_cast<parks_counter_type>(d);
+		parks.fetch_add(bits);
 	}
 };
 
