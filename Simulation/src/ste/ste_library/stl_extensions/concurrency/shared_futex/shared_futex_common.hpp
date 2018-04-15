@@ -36,7 +36,7 @@ enum class lock_status : std::uint8_t {
 	acquired
 };
 
-enum class mechanism {
+enum class modus_operandi {
 	shared_lock,
 	upgradeable_lock,
 	exclusive_lock,
@@ -51,10 +51,10 @@ enum class backoff_result {
 };
 
 enum class backoff_aggressiveness {
-	very_relaxed,
-	relaxed,
+	aggressive,
 	normal,
-	aggressive
+	relaxed,
+	very_relaxed,
 };
 
 }

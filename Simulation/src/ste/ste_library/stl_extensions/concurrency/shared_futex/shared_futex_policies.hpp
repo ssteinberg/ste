@@ -168,4 +168,26 @@ struct relaxed_backoff_policy {
 	}
 };
 
+
+/*
+ *	@brief	Policy that controls a shared_futex protcol's fairness and starvation-avoidness mechanisms
+ */
+struct shared_futex_protocol_policy {
+	// The probability, multiplied by count of exclusive waiters, that a shared unlocker will raise the boost flag.
+	static constexpr auto probability_to_raise_boost_flag_per_exclusive_waiter = .025f;
+	// The probability that an exclusive unlocker will drop the boost flag, even if there are more exlusive waiters.
+	static constexpr auto probability_to_drop_boost_flag_per_exclusive_unlocker = .05f;
+	
+	// Count of active (spinning) waiters, that might block the current thread, required to trigger a very relaxed backoff policy.
+	static constexpr auto waiters_threshold_for_very_relaxed_backoff = 3;
+	// Count of active (spinning) waiters, that might block the current thread, required to trigger a relaxed backoff policy.
+	static constexpr auto waiters_threshold_for_relaxed_backoff = 2;
+	// Count of active (spinning) waiters, that might block the current thread, required to trigger a normal backoff policy.
+	static constexpr auto waiters_threshold_for_normal_backoff = 1;
+	
+	// When looking for candidates to unpark, we unpark a waiter if count of active waiters, that might block said waiter, is lower than 
+	// this threshold.
+	static constexpr auto active_waiters_count_thershold_for_unpark = 1;
+};
+
 }

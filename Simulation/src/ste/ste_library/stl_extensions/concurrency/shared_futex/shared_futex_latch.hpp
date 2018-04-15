@@ -52,32 +52,32 @@ public:
 
 		// Accessors and helpers
 
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		void inc_consumers(const T &count) noexcept {
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::shared_lock:
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::shared_lock:
 				shared_consumers += count;
 				break;
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				upgradeable_consumers += count;
 				break;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 				exclusive_consumers += count;
 				break;
 			default:
 				assert(false);
 			}
 		}
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		void inc_waiters(const T &count) noexcept {
-			assert(mechanism == shared_futex_detail::mechanism::exclusive_lock || 
-				   mechanism == shared_futex_detail::mechanism::upgradeable_lock);
+			assert(modus_operandi == shared_futex_detail::modus_operandi::exclusive_lock || 
+				   modus_operandi == shared_futex_detail::modus_operandi::upgradeable_lock);
 
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				upgradeable_waiters += count;
 				break;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 				exclusive_waiters += count;
 				break;
 			default:{}
@@ -88,14 +88,14 @@ public:
 		latch_descriptor() = default;
 
 		// Counts number of active consumers
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		auto consumers() const noexcept {
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::shared_lock:
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::shared_lock:
 				return shared_consumers;
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				return upgradeable_consumers;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 				return exclusive_consumers;
 			default:
 				assert(false);
@@ -103,14 +103,14 @@ public:
 			}
 		}
 		// Counts number of waiting consumers
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		auto waiters() const noexcept {
-			static_assert(mechanism == shared_futex_detail::mechanism::exclusive_lock || 
-						  mechanism == shared_futex_detail::mechanism::upgradeable_lock);
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			static_assert(modus_operandi == shared_futex_detail::modus_operandi::exclusive_lock || 
+						  modus_operandi == shared_futex_detail::modus_operandi::upgradeable_lock);
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				return upgradeable_waiters;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 			default:
 				return exclusive_waiters;
 			}
@@ -136,19 +136,19 @@ public:
 
 		// Accessors and helpers
 
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		void inc_parked(const T &count) noexcept {
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::shared_lock:
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::shared_lock:
 				shared_parked += count;
 				break;
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				upgradeable_parked += count;
 				break;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 				exclusive_parked += count;
 				break;
-			case shared_futex_detail::mechanism::upgrade_to_exclusive_lock:
+			case shared_futex_detail::modus_operandi::upgrade_to_exclusive_lock:
 				upgrading_to_exclusive_parked += count;
 				break;
 			default:{}
@@ -159,16 +159,16 @@ public:
 		parks_descriptor() = default;
 
 		// Counts number of parked consumers
-		template <shared_futex_detail::mechanism mechanism>
+		template <shared_futex_detail::modus_operandi modus_operandi>
 		auto parked() const noexcept {
-			switch (mechanism) {
-			case shared_futex_detail::mechanism::shared_lock:
+			switch (modus_operandi) {
+			case shared_futex_detail::modus_operandi::shared_lock:
 				return shared_parked;
-			case shared_futex_detail::mechanism::upgradeable_lock:
+			case shared_futex_detail::modus_operandi::upgradeable_lock:
 				return upgradeable_parked;
-			case shared_futex_detail::mechanism::exclusive_lock:
+			case shared_futex_detail::modus_operandi::exclusive_lock:
 				return exclusive_parked;
-			case shared_futex_detail::mechanism::upgrade_to_exclusive_lock:
+			case shared_futex_detail::modus_operandi::upgrade_to_exclusive_lock:
 			default:
 				return upgrading_to_exclusive_parked;
 			}
@@ -221,52 +221,54 @@ public:
 	}
 	
 	// Attempts to acquire lock
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	latch_descriptor acquire() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		// Attempts lock acquisition
 		latch_descriptor d = {};
-		d.template inc_consumers<mechanism>(1);
+		d.template inc_consumers<modus_operandi>(1);
 		const auto bits = static_cast<latch_data_type>(d);
 		return latch_descriptor{ latch.fetch_add(bits) };
 	}
 	// Re-attempts lock acquisition and decreases waiter counter
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	latch_descriptor reattempt_acquire() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		latch_descriptor d1 = {}, d2 = {};
-		d1.template inc_consumers<mechanism>(1);
-		if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock || mechanism == shared_futex_detail::mechanism::upgradeable_lock)
-			d2.template inc_waiters<mechanism>(1);
+		d1.template inc_consumers<modus_operandi>(1);
+		if constexpr (modus_operandi == shared_futex_detail::modus_operandi::exclusive_lock || 
+					  modus_operandi == shared_futex_detail::modus_operandi::upgradeable_lock)
+			d2.template inc_waiters<modus_operandi>(1);
 		const auto bits = static_cast<latch_data_type>(d1) - static_cast<latch_data_type>(d2);
 		return latch_descriptor{ latch.fetch_add(bits) };
 	}
 	// Reverts lock acquisition and increases waiter counter
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	latch_descriptor revert() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		latch_descriptor d1 = {}, d2 = {};
-		d1.template inc_consumers<mechanism>(1);
-		if constexpr (mechanism == shared_futex_detail::mechanism::exclusive_lock || mechanism == shared_futex_detail::mechanism::upgradeable_lock)
-			d2.template inc_waiters<mechanism>(1);
+		d1.template inc_consumers<modus_operandi>(1);
+		if constexpr (modus_operandi == shared_futex_detail::modus_operandi::exclusive_lock || 
+					  modus_operandi == shared_futex_detail::modus_operandi::upgradeable_lock)
+			d2.template inc_waiters<modus_operandi>(1);
 		const auto bits = static_cast<latch_data_type>(d2) - static_cast<latch_data_type>(d1);
 		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
 	// Release lock
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	latch_descriptor release() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		// Decrease comsumer count
 		latch_descriptor d = {};
-		d.template inc_consumers<mechanism>(1);
+		d.template inc_consumers<modus_operandi>(1);
 		const auto bits = -static_cast<latch_data_type>(d);
 		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
@@ -279,8 +281,8 @@ public:
 		// Attempts lock upgrade, sets the upgrade-to-exclusive flag, increases exclusive count and releases the upgradeable consumer.
 		latch_descriptor d1 = {}, d2 = {};
 		d1.upgrade_to_exclusive_flag_value = 1;
-		d1.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
-		d2.template inc_consumers<shared_futex_detail::mechanism::upgradeable_lock>(1);
+		d1.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
+		d2.template inc_consumers<shared_futex_detail::modus_operandi::upgradeable_lock>(1);
 		const auto bits = static_cast<latch_data_type>(d1) - static_cast<latch_data_type>(d2);
 		return latch_descriptor{ latch.fetch_add(bits) };
 	}
@@ -292,8 +294,8 @@ public:
 		// Reverts lock upgrade, resets the upgrade-to-exclusive flag, releases the exclusive consumer and increases the upgradeable consumers counter.
 		latch_descriptor d1 = {}, d2 = {};
 		d1.upgrade_to_exclusive_flag_value = 1;
-		d1.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
-		d2.template inc_consumers<shared_futex_detail::mechanism::upgradeable_lock>(1);
+		d1.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
+		d2.template inc_consumers<shared_futex_detail::modus_operandi::upgradeable_lock>(1);
 		const auto bits = static_cast<latch_data_type>(d2) - static_cast<latch_data_type>(d1);
 		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
@@ -305,7 +307,7 @@ public:
 		// Reverts lock upgrade, resets the upgrade-to-exclusive flag and increases the upgradeable holder.
 		latch_descriptor d = {};
 		d.upgrade_to_exclusive_flag_value = 1;
-		d.template inc_consumers<shared_futex_detail::mechanism::exclusive_lock>(1);
+		d.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
 		const auto bits = -static_cast<latch_data_type>(d);
 		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
@@ -333,25 +335,25 @@ public:
 		latch.fetch_and(bits);
 	}
 
-	// Generates a parking key which is unique per-mechanism and a 32-bit user value.
-	template <shared_futex_detail::mechanism mechanism>
+	// Generates a parking key which is unique per-modus operandi and a 32-bit user value.
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	static std::uint64_t parking_key(const std::uint32_t user_value) noexcept {
-		return static_cast<uint64_t>(user_value) | (static_cast<uint64_t>(mechanism) << 32);
+		return static_cast<uint64_t>(user_value) | (static_cast<uint64_t>(modus_operandi) << 32);
 	}
 
 	// Register parked thread
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	void register_parked() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		parks_descriptor d = {};
-		d.template inc_parked<mechanism>(1);
+		d.template inc_parked<modus_operandi>(1);
 		const auto bits = static_cast<parks_counter_type>(d);
 		parks.fetch_add(bits);
 	}
 	// Unregister parked thread(s)
-	template <shared_futex_detail::mechanism mechanism>
+	template <shared_futex_detail::modus_operandi modus_operandi>
 	void unregister_parked(const std::size_t count = 1) noexcept {
 #ifdef SHARED_FUTEX_DEBUG
 		assert(count);
@@ -360,7 +362,7 @@ public:
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
 		parks_descriptor d = {};
-		d.template inc_parked<mechanism>(count);
+		d.template inc_parked<modus_operandi>(count);
 		const auto bits = -static_cast<parks_counter_type>(d);
 		parks.fetch_add(bits);
 	}
