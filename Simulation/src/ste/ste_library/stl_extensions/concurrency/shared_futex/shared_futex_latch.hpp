@@ -23,8 +23,6 @@ public:
 	static constexpr latch_data_type initial_value = storage_policy::initial_value;
 	static constexpr auto alignment = std::max(storage_policy::alignment, alignof(std::max_align_t));
 	
-	// Bit depth for futex upgrade-to-exclusive flag
-	static constexpr std::size_t upgrade_to_exclusive_flag_bits = 1;
 	// Bit depth for futex exclusive-priority boosting flag (to counter exclusive starvation)
 	static constexpr std::size_t boost_flag_bits = 1;
 
@@ -35,11 +33,9 @@ public:
 		T shared_consumers					: storage_policy::shared_bits;
 		T upgradeable_consumers				: storage_policy::upgradeable_bits;
 		T exclusive_consumers				: storage_policy::exclusive_bits;
-
+		
 		T upgradeable_waiters				: storage_policy::upgradeable_bits;
 		T exclusive_waiters					: storage_policy::exclusive_bits;
-
-		T upgrade_to_exclusive_flag_value	: upgrade_to_exclusive_flag_bits;
 
 		T boost_flag_value					: boost_flag_bits;
 
@@ -116,7 +112,6 @@ public:
 			}
 		}
 		auto boost_flag() const noexcept { return boost_flag_value; }
-		auto upgrade_to_exclusive_flag() const noexcept { return upgrade_to_exclusive_flag_value; }
 	};
 	class parks_descriptor {
 		friend class shared_futex_default_latch<StoragePolicy>;
@@ -248,7 +243,7 @@ public:
 	}
 	// Reverts lock acquisition and increases waiter counter
 	template <shared_futex_detail::modus_operandi modus_operandi>
-	latch_descriptor revert() noexcept {
+	latch_descriptor standby() noexcept {
 #ifdef SHARED_FUTEX_STATS
 		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
 #endif
@@ -280,7 +275,6 @@ public:
 #endif
 		// Attempts lock upgrade, sets the upgrade-to-exclusive flag, increases exclusive count and releases the upgradeable consumer.
 		latch_descriptor d1 = {}, d2 = {};
-		d1.upgrade_to_exclusive_flag_value = 1;
 		d1.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
 		d2.template inc_consumers<shared_futex_detail::modus_operandi::upgradeable_lock>(1);
 		const auto bits = static_cast<latch_data_type>(d1) - static_cast<latch_data_type>(d2);
@@ -293,22 +287,9 @@ public:
 #endif
 		// Reverts lock upgrade, resets the upgrade-to-exclusive flag, releases the exclusive consumer and increases the upgradeable consumers counter.
 		latch_descriptor d1 = {}, d2 = {};
-		d1.upgrade_to_exclusive_flag_value = 1;
 		d1.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
 		d2.template inc_consumers<shared_futex_detail::modus_operandi::upgradeable_lock>(1);
 		const auto bits = static_cast<latch_data_type>(d2) - static_cast<latch_data_type>(d1);
-		return latch_descriptor{ latch.fetch_add(bits) + bits };
-	}
-	// Release an upgraded lock
-	latch_descriptor release_upgraded() noexcept {
-#ifdef SHARED_FUTEX_STATS
-		++shared_futex_detail::debug_statistics.lock_rmw_instructions;
-#endif
-		// Reverts lock upgrade, resets the upgrade-to-exclusive flag and increases the upgradeable holder.
-		latch_descriptor d = {};
-		d.upgrade_to_exclusive_flag_value = 1;
-		d.template inc_consumers<shared_futex_detail::modus_operandi::exclusive_lock>(1);
-		const auto bits = -static_cast<latch_data_type>(d);
 		return latch_descriptor{ latch.fetch_add(bits) + bits };
 	}
 
