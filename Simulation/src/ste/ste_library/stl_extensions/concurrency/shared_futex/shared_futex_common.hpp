@@ -3,8 +3,8 @@
 
 #pragma once
 
-#define SHARED_FUTEX_DEBUG
-//#define SHARED_FUTEX_STATS
+// #define SHARED_FUTEX_DEBUG
+// #define SHARED_FUTEX_STATS
 
 namespace ste::shared_futex_detail {
 
@@ -28,7 +28,7 @@ static thread_local statistics debug_statistics;
 enum class lock_status : std::uint8_t {
 	// Lock unacquired
 	unacquired,
-	// Punched in and waiting for lock acquisition
+	// Waiting for lock acquisition
 	waiting,
 	// Thread parked
 	parked,
@@ -36,25 +36,35 @@ enum class lock_status : std::uint8_t {
 	acquired
 };
 
-enum class modus_operandi {
+enum class modus_operandi : std::uint8_t {
 	shared_lock,
 	upgradeable_lock,
 	exclusive_lock,
 	upgrade_to_exclusive_lock,
 };
 
-enum class backoff_result {
+enum class backoff_result : std::uint8_t {
 	unparked,
 	park_predicate_triggered,
 	timeout,
 	success,
 };
+enum class unpark_operation : std::uint8_t {
+	none,
+	unpark,
+	reserve_and_unpark,
+};
 
-enum class backoff_aggressiveness {
+enum class backoff_aggressiveness : std::uint8_t {
 	aggressive,
 	normal,
 	relaxed,
 	very_relaxed,
+};
+
+struct backoff_return_t {
+	backoff_result result;
+	unpark_operation unpark_op{ unpark_operation::none };
 };
 
 }

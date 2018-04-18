@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <functional>
 #include <optional>
+#include <intrin.h>
 
 namespace ste {
 
@@ -24,15 +25,35 @@ enum class parking_lot_wait_state {
 
 namespace parking_lot_detail {
 
+class simple_spinner {
+	std::atomic_flag f = ATOMIC_FLAG_INIT;
+
+public:
+	void lock() noexcept {
+		// Spin
+		if (!f.test_and_set())
+			return;
+
+		do {
+			::_mm_pause();
+		} while(f.test_and_set());
+	}
+	void unlock() noexcept {
+		f.clear();
+	}
+};
+
 class parking_lot_node_base {
 public:
 	static constexpr std::size_t key_size = 8;
 
 private:
-	std::mutex m;
-	std::condition_variable cv;
+	using mutex_t = simple_spinner;
 
-	alignas(std::hardware_destructive_interference_size) bool signaled{ false };
+	mutex_t m;
+	std::condition_variable_any cv;
+
+	bool signaled{ false };
 
 	// Node tag
 	struct {
@@ -42,7 +63,7 @@ private:
 
 protected:
 	void signal() noexcept {
-		std::unique_lock<std::mutex> ul(m);
+		std::unique_lock<mutex_t> ul(m);
 
 		signaled = true;
 		cv.notify_one();
@@ -93,7 +114,7 @@ public:
 			return { false, parking_lot_wait_state::signaled };
 
 		{
-			std::unique_lock<std::mutex> ul(m);
+			std::unique_lock<mutex_t> ul(m);
 
 			if (pred())
 				return { false, parking_lot_wait_state::signaled };
@@ -141,7 +162,7 @@ public:
 	/*
 	*	@brief	Extracts the stored data object
 	*/
-	Data&& retrieve_data() && noexcept { return data; }
+	Data&& retrieve_data() && noexcept { return std::move(data).value(); }
 };
 template <>
 class parking_lot_node<void> final : public parking_lot_node_base {
@@ -309,9 +330,8 @@ public:
 		// Unpark one
 		{
 			std::unique_lock<std::mutex> bucket_lock(park.m);
-
-			auto node = park.head;
-			while (node) {
+			
+			for (auto node = park.head; node; ) {
 				// Signalling might destroy the node once wait_until() goes out of scope, take a copy of next.
 				auto next = node->next;
 
@@ -332,22 +352,21 @@ public:
 	}
 
 	/*
-	 *	@brief	Attempts to unpark all nodes using args, which will be used to construct a NodeData object that
-	 *			will be passed to the signaled thread.
+	 *	@brief	Attempts to unpark all nodes using f, which will be used to construct a NodeData object that
+	 *			will be passed to the signaled thread. f will be passed the current count of unparked nodes.
 	 *			
 	 *	@return	Number of nodes that were signaled
 	 */
-	template <typename K, typename... Args>
-	std::size_t unpark_all(const K &key, const Args&... args) {
+	template <typename K, typename F>
+	std::size_t unpark_all_closure(const K &key, F&& f) {
 		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
-		std::size_t ret = 0;
+		std::size_t count = 0;
 
 		// Unpark all
 		{
 			std::unique_lock<std::mutex> bucket_lock(park.m);
 
-			auto node = park.head;
-			for (; node; ++ret) {
+			for (auto node = park.head; node; ) {
 				// Signalling might destroy the node once wait_until() goes out of scope, take a copy of next.
 				auto next = node->next;
 
@@ -356,24 +375,84 @@ public:
 
 					// Erase from dlist, and unpark.
 					park.erase(node);
-					static_cast<node_t*>(node)->signal(args...);
+					if constexpr (!std::is_void_v<NodeData>) {
+						static_cast<node_t*>(node)->signal(f(count));
+					}
+					else {
+						f(count);
+						static_cast<node_t*>(node)->signal();
+					}
+
+					++count;
 				}
 
 				node = next;
 			}
 		}
 
-		return ret;
+		return count;
 	}
 
 	/*
-	*	@brief	First counts how many suitable nodes can be unparked, then, if any found and while holding lock, invokes the supplied lambda, 
-	*			passing the count as argument, after that unparks all just as unpark_all().
+	 *	@brief	Attempts to unpark all nodes using args, which will be used to construct a NodeData object that
+	 *			will be passed to the signaled thread.
+	 *			
+	 *	@return	Number of nodes that were signaled
+	 */
+	template <typename K, typename... Args>
+	std::size_t unpark_all(const K &key, const Args&... args) {
+		if constexpr (!std::is_void_v<NodeData>)
+			return unpark_all_closure(key, [t = NodeData(std::forward<Args>(args)...)](std::size_t) { return t; });
+		else
+			return unpark_all_closure(key, [](std::size_t) {});
+	}
+
+	/*
+	 *	@brief	Attempts to unpark a single node using args. If a node to unpark is found, invokes f and if f returns true will unpark one node
+	 *			similar to unpark_one().
+	 *			
+	 *	@return	Number of nodes that were signaled
+	 */
+	template <typename K, typename F, typename... Args>
+	std::size_t try_unpark_one(const K &key, F&& f, Args&&... args) {
+		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
+
+		// Unpark one
+		{
+			std::unique_lock<std::mutex> bucket_lock(park.m);
+			
+			for (auto node = park.head; node; ) {
+				// Signalling might destroy the node once wait_until() goes out of scope, take a copy of next.
+				auto next = node->next;
+
+				if (node->id_equals(this, key)) {
+					assert(!node->is_signalled());
+
+					if (!f(1))
+						return 0;
+
+					park.erase(node);
+					static_cast<node_t*>(node)->signal(std::forward<Args>(args)...);
+
+					return 1;
+				}
+
+				node = next;
+			}
+		}
+
+		return 0;
+	}
+
+	/*
+	*	@brief	First counts how many suitable nodes can be unparked, then, if any found and while holding lock, invokes the supplied closure, 
+	*			passing the count as argument. Ultimately, unparks all similarly to unpark_all().
+	*			Limited to 32 nodes!
 	*			
 	*	@return	True if any nodes where found and unparked, false otherwise.
 	*/
 	template <typename K, typename F, typename... Args>
-	bool count_and_unpark_all(const K &key, F&& f, const Args&... args) {
+	std::size_t count_and_unpark_all(const K &key, F&& f, const Args&... args) {
 		auto &park = parking_lot_detail::parking_lot_slot::slot_for(this, key);
 
 		// Statically allocate, limiting to 32 nodes.
@@ -384,8 +463,7 @@ public:
 			std::unique_lock<std::mutex> bucket_lock(park.m);
 
 			// Extract suitable nodes
-			auto node = park.head;
-			while (node && count < nodes.max_size()) {
+			for (auto node = park.head; node && count < nodes.max_size(); ) {
 				if (node->id_equals(this, key)) {
 					assert(!node->is_signalled());
 
@@ -403,11 +481,11 @@ public:
 				for (auto *n = nodes.data();n!=nodes.data()+count;++n)
 					(*n)->signal(args...);
 
-				return true;
+				return count;
 			}
 		}
 
-		return false;
+		return 0;
 	}
 
 	/*
