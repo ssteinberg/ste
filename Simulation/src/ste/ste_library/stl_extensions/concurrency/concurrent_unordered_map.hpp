@@ -342,6 +342,10 @@ private:
 
 			if (virtual_bucket.next.compare_exchange_strong(next_ptr, new_next, std::memory_order_acq_rel, std::memory_order_acquire))
 				next_ptr = new_next;
+			else {
+				new_next->~virtual_bucket_type();
+				Allocator::template rebind<virtual_bucket_type>::other().deallocate(new_next, 1);
+			}
 
 			assert(next_ptr);
 		}
